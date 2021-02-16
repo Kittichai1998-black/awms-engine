@@ -169,6 +169,10 @@ const AmManualCreateDoc = props => {
   const [inputError, setInputError] = useState([])
   const [dialogState, setDialogState] = useState({});
   const [autoFocus, setAutoFocus] = useState(true)
+  const [dialog, setDialog] = useState(false);
+  const [last, setLast] = useState("");
+  const [docCode, setDocCode] = useState("");
+  const [docCodeClose, setDocCodeClose] = useState("");
   //============================================================================
   useEffect(() => {
     if (count > 0) {
@@ -366,6 +370,7 @@ const AmManualCreateDoc = props => {
       setToggleModal(false)
     }
   }
+
   const onHandleDelete = (docCode) => {
     let postdata = {
       documentCode: docCode
@@ -382,11 +387,39 @@ const AmManualCreateDoc = props => {
 
 
   }
-  const onHandleUpdate = (docCode) => {
+  const onHandleUpdate = () => {
+    console.log(docCode)
+    let postdata = {
+      documentCode: docCode,
+      lastPallet: last
+    };
+    Axios.post(window.apipath + "/v2/update_last_pallet", postdata).then(res => {
+      if (res.data._result.status === 1) {
+        setDialogState({ type: "success", content: "Success", state: true })
+        clear()
+      } else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
+        clear()
+      }
+    })
 
   }
-  const onHandleClose = (docCode) => {
+  const onHandleClose = (doc) => {
+    console.log(doc)
+    let postdata = {
+      documentCode: doc,
 
+    };
+
+    Axios.post(window.apipath + "/v2/closed_document_manual_bycode", postdata).then(res => {
+      if (res.data._result.status === 1) {
+        setDialogState({ type: "success", content: "Success", state: true })
+        clear()
+      } else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
+        clear()
+      }
+    })
   }
   const generateCard = (datas) => {
     if (datas != undefined) {
@@ -400,7 +433,7 @@ const AmManualCreateDoc = props => {
 
       return groupDocumentArr.map((x, index) => {
         //console.log(x)
-
+        // setDocCode(x)
         return <Card style={{ width: "100%", marginTop: "10px", padding: "0px" }}>
           < CardContent style={{ paddingBottom: "0px" }}>
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "18px" }}>{x}</label>
@@ -414,7 +447,7 @@ const AmManualCreateDoc = props => {
             {props.edit === true ? <Tooltip title="Update">
               <IconButton size="small" aria-label="info" style={{ marginTop: "5px", float: "right" }}>
                 <Edit fontSize="small" style={{ color: "orange" }}
-                  onClick={() => { onHandleUpdate(x) }}
+                  onClick={() => { setDocCode(x); setDialog(true) }}
                 />
               </IconButton>
             </Tooltip> : null}
@@ -587,9 +620,52 @@ const AmManualCreateDoc = props => {
         </Card >
       })
     }
-
-
   }
+  const onHandleUpdateLastConfirm = (status) => {
+
+    if (status) {
+      onHandleUpdate()
+    }
+    setDialog(false);
+  };
+  const DataGenerateLast = () => {
+    const columns = [
+      {
+        field: "Option",
+        type: "input",
+        name: "Last Pallet",
+        placeholder: "Last Pallet",
+        required: true
+      }
+    ];
+    return columns.map(y => {
+      return {
+        field: y.field,
+        component: (data = null, cols, key) => {
+          return (
+            <div key={key}>
+              <FormInline>
+                {" "}
+                <LabelH style={{ width: "100px" }}>{"Last Pallet"} : </LabelH>
+                <InputDiv>
+                  <AmInput
+                    id={cols.field}
+                    type="number"
+                    style={{ width: "270px", margin: "0px" }}
+                    onChange={val => {
+                      setLast(val);
+                    }}
+                  />
+                </InputDiv>
+              </FormInline>
+
+            </div>
+          );
+        }
+      };
+    });
+  };
+
   const getAuditStatusValue = Status => {
     if (Status === 0) {
       return <AuditStatusIcon style={{ width: "50px" }} key={0} statusCode={0} />
@@ -603,6 +679,7 @@ const AmManualCreateDoc = props => {
       return null;
     }
   }
+
   const clear = () => {
     setDataModal({})
     setAutoFocus(true)
@@ -625,6 +702,13 @@ const AmManualCreateDoc = props => {
         data={dataModal}
         objColumnsAndFieldCheck={{ objColumn: props.columnEdit, fieldCheck: "accessor" }}
         columns={editorListcolunm(props.columnEdit, ref, inputError, dataModal, onChangeEditor)}
+      />
+      <ModalForm
+        open={dialog}
+        onAccept={(status, rowdata) => onHandleUpdateLastConfirm(status)}
+        titleText={"Last Pallet"}
+        data={"text"}
+        columns={DataGenerateLast()}
       />
       <Paper >
         <Grid container spacing={3} style={{ marginTop: "10px" }}>

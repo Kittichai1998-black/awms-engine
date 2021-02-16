@@ -28,15 +28,15 @@ namespace ProjectGCL.Engine.Document
         public class TReq 
         {
             public string documentCode;
-            public string lastPallet;
+            public int lastPallet;
         }
 
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            var dataDoc = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<amt_Document>(
+            var dataDoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                   new SQLConditionCriteria[] {
                     new SQLConditionCriteria("Code",reqVO.documentCode, SQLOperatorType.EQUALS)
-                  }, this.BuVO);
+                  }, this.BuVO).FirstOrDefault();
 
             var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ID, this.BuVO);
             var listDocChild = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
@@ -44,18 +44,22 @@ namespace ProjectGCL.Engine.Document
                                     new SQLConditionCriteria("ParentDocument_ID",docParent.ID, SQLOperatorType.EQUALS),
                                 }, this.BuVO);
 
+            var optionsDoc = AMWUtil.Common.ObjectUtil.QryStrSetValue(dataDoc.Options, GCLOptionVOConst.OPT_LAST_PALLET, reqVO.lastPallet);
+           
             ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(dataDoc.ID.Value, this.BuVO,
                 new KeyValuePair<string, object>[]
                 {
-                    new KeyValuePair<string, object>(GCLOptionVOConst.OPT_LAST_PALLET,reqVO.lastPallet)
+                   new KeyValuePair<string, object>("Options", optionsDoc),
                 });
 
             listDocChild.ForEach(x =>
             {
+                var optionsDocChild = AMWUtil.Common.ObjectUtil.QryStrSetValue(x.Options, GCLOptionVOConst.OPT_LAST_PALLET, reqVO.lastPallet);
+
                 ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
                     new KeyValuePair<string, object>[]
                     {
-                        new KeyValuePair<string, object>(GCLOptionVOConst.OPT_LAST_PALLET,reqVO.lastPallet)
+                        new KeyValuePair<string, object>("Options",optionsDocChild)
                     });
             });
 
