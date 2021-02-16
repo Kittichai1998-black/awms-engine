@@ -8,6 +8,7 @@ using AMWUtil.Common;
 using AMSModel.Entity;
 using AMWUtil.Logger;
 using AMWUtil.Exception;
+using AMWUtil.Model;
 
 namespace AMSModel.Criteria
 {

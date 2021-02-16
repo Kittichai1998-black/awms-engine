@@ -12,10 +12,7 @@ namespace ADO.WCSDB
     {
         public act_McWork GetByMstID(long mstID, VOCriteria BuVO)
         {
-            return DataADO.GetInstant().SelectBy<act_McWork>(
-                new KeyValuePair<string, object>[]{
-                    new KeyValuePair<string, object>("McMaster_ID", mstID)
-                }, BuVO).FirstOrDefault();
+            return DataADO.GetInstant().SelectByID<act_McWork>(mstID, BuVO);
         }
     }
 }

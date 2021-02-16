@@ -40,11 +40,7 @@ namespace AWCSEngine
 
         private void menuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if(e.ClickedItem == this.menuMachineLayout)
-            {
-                formDesignMachineLayout form = new formDesignMachineLayout(this.BuVO);
-                form.Show();
-            }
+            
         }
     }
 }
