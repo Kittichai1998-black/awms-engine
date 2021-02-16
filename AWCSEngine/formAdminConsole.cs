@@ -1,4 +1,5 @@
-﻿using AMSModel.Criteria;
+﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using AWCSEngine.Controller;
 using AWCSEngine.Engine;
 using System;
@@ -28,14 +29,25 @@ namespace AWCSEngine
 
         private void txtCommand_Enter(object sender, EventArgs e)
         {
+            this.lisDisplayCommand.Items.Insert(0, "COMMAND > " + this.txtCommand.Text);
             string[] comm = this.txtCommand.Text.Split(',', 2);
             if (comm.Length != 2)
             {
-                this.lisDisplayCommand.Items.Insert(0, "E > รูปแบบคำสั่งไม่ถูกต้อง [machine] [command] [val1] [val2...]");
+                this.lisDisplayCommand.Items.Insert(0, "ERROR > รูปแบบคำสั่งไม่ถูกต้อง [machine] [command] [location1] [location2]");
             }
             else
             {
-
+                try
+                {
+                    Controller.McController.GetInstant().Command(
+                        comm[0],
+                        AMWUtil.Common.EnumUtil.GetValueEnum<McCommand>(comm[1]),
+                        comm.Length >= 3 ? comm[2] : string.Empty);
+                }
+                catch (Exception ex)
+                {
+                    this.lisDisplayCommand.Items.Insert(0, "ERROR > " + ex.Message);
+                }
             }
         }
 

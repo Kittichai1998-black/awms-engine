@@ -28,7 +28,8 @@ namespace AMWUtil.DataAccess
                 object v = parameter.Get<object>(x);
                 if(v == null)
                     return string.Format("@{0}=NULL", x);
-
+                if (v is bool)
+                    return string.Format("@{0}={1}", x, (bool)v ? 1 : 0);
                 return string.Format("@{0}='{1}'", x, v.Json());
             }));
         }
