@@ -25,7 +25,7 @@ import Edit from '@material-ui/icons/Edit';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from '@material-ui/core/Tooltip';
-import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
+import AmDocumentStatus from "../../../components/AmDocumentStatus";
 import AuditStatusIcon from "../../../components/AmAuditStatus";
 
 const Axios = new apicall();
@@ -172,7 +172,6 @@ const AmManualCreateDoc = props => {
   const [dialog, setDialog] = useState(false);
   const [last, setLast] = useState("");
   const [docCode, setDocCode] = useState("");
-  const [docCodeClose, setDocCodeClose] = useState("");
   //============================================================================
   useEffect(() => {
     if (count > 0) {
@@ -423,7 +422,7 @@ const AmManualCreateDoc = props => {
   }
   const generateCard = (datas) => {
     if (datas != undefined) {
-
+      console.log(datas)
       var groupDocument = _.groupBy(datas, "DocumentParentCode");
       var groupDocumentArr = []
       for (let indexName in groupDocument) {
@@ -434,9 +433,13 @@ const AmManualCreateDoc = props => {
       return groupDocumentArr.map((x, index) => {
         //console.log(x)
         // setDocCode(x)
-        return <Card style={{ width: "100%", marginTop: "10px", padding: "0px" }}>
+        return <Card style={{ width: "100%", marginTop: "10px", padding: "0px", border: "solid", borderWidth: "thin" }}>
           < CardContent style={{ paddingBottom: "0px" }}>
+
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "18px" }}>{x}</label>
+
+            <AmDocumentStatus statusCode={groupDocument[x][0].EventStatus} />
+
             {props.delete === true ? <Tooltip title="Delete">
               <IconButton size="small" aria-label="info" style={{ marginTop: "5px", float: "right" }}>
                 <DeleteIcon fontSize="small" style={{ color: "red" }}
@@ -527,7 +530,7 @@ const AmManualCreateDoc = props => {
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Putaway  : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.distoQty === null ? (' - ' + '/' + y.Quantity) : (y.distoQty + '/' + y.Quantity)}</label>
+                      <label style={{ backgroundColor: "#ffe57f", margin: "2px" }}  >{y.distoQty === null ? (' - ' + '/' + y.Quantity) : (y.distoQty + '/' + y.Quantity)}</label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Status : </label>
@@ -536,7 +539,6 @@ const AmManualCreateDoc = props => {
                       {getAuditStatusValue(y.AuditStatus)}
                     </Grid>
                   </Grid>
-                  <hr style={{ marginTop: "0px" }} />
                 </span>
                 )
               } else {
@@ -684,6 +686,8 @@ const AmManualCreateDoc = props => {
     setDataModal({})
     setAutoFocus(true)
     setqrcode()
+    setLast("")
+    setDocCode("")
   }
 
   return (
