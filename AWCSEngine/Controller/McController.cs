@@ -1,5 +1,7 @@
 ﻿using AMSModel.Constant.EnumConst;
+using AMWUtil.Exception;
 using AWCSEngine.Engine;
+using AWCSEngine.Engine.Mc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,9 +46,9 @@ namespace AWCSEngine.Controller
             return this.McObjectList.FirstOrDefault(x => x.ID == mcID);
         }
 
-        public void Command(string mcCode, McCommand command, string locCode)
+        public void Command(string mcCode, McCommand command, string souLocCode, string desLocCode)
         {
-            //this.GetMcObject(mcCode).
+            this.GetMcObject(mcCode).Command(command, souLocCode, desLocCode);
         }
     }
 }

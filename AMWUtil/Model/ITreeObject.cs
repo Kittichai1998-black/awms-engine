@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AMWUtil.Common
+namespace AMWUtil.Model
 {
     public interface ITreeObject
     {

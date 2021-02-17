@@ -79,7 +79,7 @@ namespace AWCSEngine
                         mcPos.DrawPosY + PropertySimulation.block_border,
                         PropertySimulation.block_w - (PropertySimulation.block_border * 2), 
                         PropertySimulation.block_h - (PropertySimulation.block_border * 2)));
-                g.DrawString("<<" + mcPos.GroupCode + ">>", drawFont, Brushes.White, (float)mcPos.DrawPosX + (PropertySimulation.block_w/2), (float)mcPos.DrawPosY + (int)(PropertySimulation.block_h * 0.20), drawFormat);
+                g.DrawString("<<" + mcPos.GroupName + ">>", drawFont, Brushes.White, (float)mcPos.DrawPosX + (PropertySimulation.block_w/2), (float)mcPos.DrawPosY + (int)(PropertySimulation.block_h * 0.20), drawFormat);
                 g.DrawString(mcPos.Code + " (" + mcPos.ID + ")", drawFont, Brushes.White, (float)mcPos.DrawPosX + (PropertySimulation.block_w / 2), (float)mcPos.DrawPosY + (int)(PropertySimulation.block_h * 0.50), drawFormat);
                 g.DrawString(mcPos.DrawPosX +","+mcPos.DrawPosY, drawFont, Brushes.White, (float)mcPos.DrawPosX + (PropertySimulation.block_w / 2), (float)mcPos.DrawPosY + (int)(PropertySimulation.block_h * 0.75), drawFormat);
 
@@ -90,8 +90,8 @@ namespace AWCSEngine
 
             foreach (var mcRoute in this.McPositionRoutes)
             {
-                Point pSou = this.McPositions.Where(x => x.ID == mcRoute.Sou_McPosition_ID).Select(x => new Point(x.DrawPosX, x.DrawPosY)).First();
-                Point pDes = this.McPositions.Where(x => x.ID == mcRoute.Des_McPosition_ID).Select(x => new Point(x.DrawPosX, x.DrawPosY)).First();
+                Point pSou = this.McPositions.Where(x => x.ID == mcRoute.Sou_Location_ID).Select(x => new Point(x.DrawPosX, x.DrawPosY)).First();
+                Point pDes = this.McPositions.Where(x => x.ID == mcRoute.Des_Location_ID).Select(x => new Point(x.DrawPosX, x.DrawPosY)).First();
 
                 //pSou.X += 50;
                 //pSou.Y += 50;

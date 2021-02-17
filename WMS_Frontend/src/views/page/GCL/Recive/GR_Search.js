@@ -37,7 +37,7 @@ const DocumentSearch = props => {
   const GeneratePopup = (data) => {
     var dataGenerate = DataGeneratePopup(data)
     var dataGenerateStatus = DataGenerateStatus(data)
-
+    console.log(dataGenerateStatus[0].statusValue)
     return <div style={{ textAlign: "center" }}>
       <AmDocumentStatus key={dataGenerateStatus[0].status} statusCode={dataGenerateStatus[0].statusValue} />{" "}
       {dataGenerate[0].label !== "error" ? null : <IconButton

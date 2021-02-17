@@ -42,6 +42,10 @@ namespace AMWUtil.Exception
         [AMWExceptionCodeAttribute("V0106", DefaultMessage = "ไม่พบเอกสารรับเข้าสินค้า")]
         V0_DOC_NOT_FOUND,
 
+        [AMWExceptionCodeAttribute("V0107", DefaultMessage = "ไม่พบข้อมูล Location.")]
+        V0_LOCATION_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0108", DefaultMessage = "เครื่องจักร์ยังไม่พร้อมรับคำสั่ง")]
+        V0_MC_NOT_IDEL,
 
 
 
@@ -82,9 +86,12 @@ namespace AMWUtil.Exception
         /// <summary>Time Out : {0}</summary>
         [AMWExceptionCodeAttribute("S0003", DefaultMessage = "{0}")]
         S0003,
-        /// <summary>SQLDatabase Deadlock : {0}</summary>
-        [AMWExceptionCodeAttribute("S0004", DefaultMessage = "{0}")]
+        /// <summary>DB Deadlock : {0}</summary>
+        [AMWExceptionCodeAttribute("S0004", DefaultMessage = "DB Deadlock : {0}")]
         S0004,
+        /// <summary>DB Update Fail : {0}</summary>
+        [AMWExceptionCodeAttribute("S0005", DefaultMessage = "DB Update Fail : {0}")]
+        S0005,
 
 
         /// <summary>Username หรือ Password ไม่ถูกต้อง</summary>
