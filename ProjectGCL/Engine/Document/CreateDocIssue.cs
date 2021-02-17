@@ -12,7 +12,6 @@ using AMWUtil.Exception;
 using AWMSEngine.Common;
 using AMWUtil.Common;
 using AMSModel.Criteria.SP.Request;
-using AMSModel.Criteria.SP.Response;
 using AMSModel.Constant.StringConst;
 using AWMSEngine.Engine.V2.Business.Document;
 using GCLModel.Criteria;
@@ -34,6 +33,7 @@ namespace ProjectGCL.Engine.Document
             public string api_ref;
             public string doc_wms;
             public string doc_wcs;
+            public DateTime Date_time;
         }
         public class ResConfirmResult
         {
@@ -44,9 +44,12 @@ namespace ProjectGCL.Engine.Document
         {
             amt_Document document = new amt_Document();
             amt_Document documentPK = new amt_Document();
+           
             ResConfirmResult dataProcessQ = new ResConfirmResult();
             this.Chacknull(this.Logger, reqVO, this.BuVO);
-            var staging =  this.genStaging(this.Logger, reqVO, this.BuVO);
+            string[] stagingwords = reqVO.staging.Split(",-,-");
+            string[] docwords = reqVO.Dock_no.Split(",-,-");
+            var staging =  this.genStaging(this.Logger, stagingwords[0], this.BuVO);
 
             var customer = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_Customer>(
                     new SQLConditionCriteria[] {
@@ -123,8 +126,8 @@ namespace ProjectGCL.Engine.Document
                     {
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentPKCheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
                     }
-                    document = this.CreateDocGI(this.Logger, reqVO, warehouse, staging,area, customer, sku, pack, this.BuVO);
-                    documentPK = this.CreateDocPK(this.Logger, reqVO, warehouse, staging, area, customer, sku, pack, document, this.BuVO);
+                    document = this.CreateDocGI(this.Logger, reqVO, warehouse, staging,area, customer, sku, pack, docwords[0], this.BuVO);
+                    documentPK = this.CreateDocPK(this.Logger, reqVO, warehouse, staging, area, customer, sku, pack, document, docwords[0], this.BuVO);
                     //dataProcessQ = this.AutoProcess(documentPK, true,staging, reqVO, this.BuVO);
 
 
@@ -137,8 +140,8 @@ namespace ProjectGCL.Engine.Document
             }
             else
             {
-                document = this.CreateDocGI(this.Logger, reqVO, warehouse,staging,area, customer, sku, pack, this.BuVO);
-                documentPK = this.CreateDocPK(this.Logger, reqVO, warehouse,staging, area, customer, sku, pack, document, this.BuVO);
+                document = this.CreateDocGI(this.Logger, reqVO, warehouse,staging,area, customer, sku, pack, docwords[0], this.BuVO);
+                documentPK = this.CreateDocPK(this.Logger, reqVO, warehouse,staging, area, customer, sku, pack, document, docwords[0], this.BuVO);
                 //dataProcessQ = this.AutoProcess(documentPK, true, staging, reqVO, this.BuVO);
             }
 
@@ -149,18 +152,19 @@ namespace ProjectGCL.Engine.Document
             {
                 api_ref = reqVO.api_ref,
                 doc_wms = reqVO.doc_wms,
-                doc_wcs = document.Code
-
+                doc_wcs = document.Code,
+                Date_time =  reqVO.Date_time,
+                
             };
             return res;
         }
-        private amt_Document CreateDocGI(AMWLogger logger, TReq reqVO, ams_Warehouse warehouse,ams_AreaMaster staging,ams_AreaMaster area, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, VOCriteria buVO)
+        private amt_Document CreateDocGI(AMWLogger logger, TReq reqVO, ams_Warehouse warehouse,ams_AreaMaster staging,ams_AreaMaster area, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack,string docwords, VOCriteria buVO)
         {
             amt_Document docResultGI = new amt_Document();
             List<CreateGIDocument.TReq.IssueItem> docItemsList = new List<CreateGIDocument.TReq.IssueItem>();
 
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_STAGING, reqVO.staging);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_DOCK,string.IsNullOrWhiteSpace(reqVO.dock) ? (area != null ? reqVO.staging : staging.Code) : reqVO.dock);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_DOCK,string.IsNullOrWhiteSpace(docwords) ? (area != null ? reqVO.staging : staging.Code) : docwords);
         
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
 
@@ -169,7 +173,8 @@ namespace ProjectGCL.Engine.Document
                 documentTypeID = DocumentTypeID.GOODS_ISSUE,
                 ref1 = reqVO.grade,
                 ref2 = reqVO.doc_wms,
-                ref3 = string.IsNullOrWhiteSpace(reqVO.dock) ? (area != null? reqVO.staging:staging.Code) : reqVO.dock,
+                ref3 = string.IsNullOrWhiteSpace(docwords) ? (area != null? reqVO.staging:staging.Code) : docwords,
+                ref4 = reqVO.Group_Task,
                 souBranchID = null,
                 desAreaMasterCode= staging.Code,
                 desBranchID = null,
@@ -199,7 +204,8 @@ namespace ProjectGCL.Engine.Document
                 orderNo = null,
                 ref1 = reqVO.grade,
                 ref2 = reqVO.doc_wms,
-                ref3 = string.IsNullOrWhiteSpace(reqVO.dock) ? (area != null ? reqVO.staging : staging.Code) : reqVO.dock,
+                ref3 = string.IsNullOrWhiteSpace(docwords) ? (area != null ? reqVO.staging : staging.Code) : docwords,
+                ref4 = reqVO.Group_Task,
                 auditStatus = AdditStatus,
                 eventStatus = DocumentEventStatus.NEW,
                 options = optionsDocItems
@@ -213,13 +219,15 @@ namespace ProjectGCL.Engine.Document
 
         }
 
-        private amt_Document CreateDocPK(AMWLogger logger, TReq reqVO, ams_Warehouse warehouse,ams_AreaMaster staging,ams_AreaMaster area, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, amt_Document DocGI, VOCriteria buVO)
+        private amt_Document CreateDocPK(AMWLogger logger, TReq reqVO, ams_Warehouse warehouse,ams_AreaMaster staging,ams_AreaMaster area, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, amt_Document DocGI,string docwords, VOCriteria buVO)
         {
             amt_Document docResultPK = new amt_Document();
             List<CreateGIDocument.TReq.IssueItem> docItemsList = new List<CreateGIDocument.TReq.IssueItem>();
 
+            var giDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(DocGI.ID.Value, this.BuVO);
+
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_STAGING, reqVO.staging);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_DOCK,string.IsNullOrWhiteSpace(reqVO.dock) ? (area != null ? reqVO.staging : staging.Code) : reqVO.dock);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_DOCK,string.IsNullOrWhiteSpace(docwords) ? (area != null ? reqVO.staging : staging.Code) : docwords);
           
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
 
@@ -229,7 +237,8 @@ namespace ProjectGCL.Engine.Document
                 parentDocumentID = DocGI.ID.Value,
                 ref1 = reqVO.grade,
                 ref2 = reqVO.doc_wms,
-                ref3 = string.IsNullOrWhiteSpace(reqVO.dock) ? (area != null ? reqVO.staging : staging.Code) : reqVO.dock,
+                ref3 = string.IsNullOrWhiteSpace(docwords) ? (area != null ? reqVO.staging : staging.Code) : docwords,
+                ref4 = reqVO.Group_Task,
                 souBranchID = null,
                 desAreaMasterCode = staging.Code,
                 desBranchID = null,
@@ -248,6 +257,7 @@ namespace ProjectGCL.Engine.Document
 
             docItemsList.Add(new CreateGIDocument.TReq.IssueItem
             {
+                parentDocumentItem_ID = giDocItem[0].ID,
                 skuCode = sku.Code,
                 packCode = pack.Code,
                 quantity = reqVO.qty,
@@ -259,7 +269,8 @@ namespace ProjectGCL.Engine.Document
                 orderNo = null,
                 ref1 = reqVO.grade,
                 ref2 = reqVO.doc_wms,
-                ref3 = string.IsNullOrWhiteSpace(reqVO.dock) ? (area != null ? reqVO.staging : staging.Code) : reqVO.dock,
+                ref3 = string.IsNullOrWhiteSpace(docwords) ? (area != null ? reqVO.staging : staging.Code) : docwords,
+                ref4 = reqVO.Group_Task,
                 auditStatus = AdditStatus,
                 eventStatus = DocumentEventStatus.NEW,
                 options = optionsDocItems
@@ -322,7 +333,7 @@ namespace ProjectGCL.Engine.Document
                         locationCode = null,
                         baseCode = null,
                         skuCode = docItem.Code,
-                        priority = 2,
+                        priority = reqVO.Priority == 0 ? 5 : 2,
                         useShelfLifeDate = false,
                         useExpireDate = false,
                         useIncubateDate = false ,
@@ -339,7 +350,7 @@ namespace ProjectGCL.Engine.Document
 
 
             var wq = new ASRSProcessQueue.TReq()
-            {
+            { 
                 desASRSWarehouseCode = StaticValue.Warehouses.First(x => x.Code == reqVO.warehouse).Code,
                 desASRSAreaCode = StaticValue.AreaMasters.First(x => x.Code == staging.Code).Code,
                 desASRSLocationCode = null,
@@ -392,10 +403,10 @@ namespace ProjectGCL.Engine.Document
         }
 
 
-        private ams_AreaMaster genStaging(AMWLogger logger, TReq reqVO, VOCriteria buVO)
+        private ams_AreaMaster genStaging(AMWLogger logger, string stagingwords, VOCriteria buVO)
         {
 
-            var stagingData = Regex.Replace(reqVO.staging, "^.*[^0-9]([0-9]+)$", "$1");
+            var stagingData = Regex.Replace(stagingwords, "^.*[^0-9]([0-9]+)$", "$1");
 
             if(stagingData == null)
                 throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Format staging ไม่ถูกต้อง");
@@ -411,7 +422,7 @@ namespace ProjectGCL.Engine.Document
 
             var areastaging = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaMaster>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Code",reqVO.staging,SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Code",stagingwords,SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.STA_CONSO, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();

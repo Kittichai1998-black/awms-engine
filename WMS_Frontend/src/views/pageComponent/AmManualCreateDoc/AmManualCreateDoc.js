@@ -223,8 +223,8 @@ const AmManualCreateDoc = props => {
 
   const ref = useRef(props.columnEdit.map(() => createRef()))
   const onScan = (datas) => {
-    console.log(datas)
-    console.log(datas.split("|")[5])
+    // console.log(datas)
+    // console.log(datas.split("|").length)
     if (props.doctype === 1011) {
       if (datas && datas.split("|").length === 12) {
         const _editData = {
@@ -387,7 +387,7 @@ const AmManualCreateDoc = props => {
 
   }
   const onHandleUpdate = () => {
-    console.log(docCode)
+    // console.log(docCode)
     let postdata = {
       documentCode: docCode,
       lastPallet: last
@@ -404,7 +404,7 @@ const AmManualCreateDoc = props => {
 
   }
   const onHandleClose = (doc) => {
-    console.log(doc)
+    //console.log(doc)
     let postdata = {
       documentCode: doc,
 
@@ -422,7 +422,7 @@ const AmManualCreateDoc = props => {
   }
   const generateCard = (datas) => {
     if (datas != undefined) {
-      console.log(datas)
+      //console.log(datas)
       var groupDocument = _.groupBy(datas, "DocumentParentCode");
       var groupDocumentArr = []
       for (let indexName in groupDocument) {

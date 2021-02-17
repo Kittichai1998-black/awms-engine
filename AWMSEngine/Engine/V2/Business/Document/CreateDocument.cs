@@ -198,6 +198,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
                 Ref3 = reqVO.ref3,
+                Ref4 = reqVO.ref4,
                 DocumentItems = new List<amt_DocumentItem>(),
             };
 
