@@ -30,7 +30,7 @@ namespace ADO.WCSStaticValue
         }
         public acs_Location GetLocation(long id)
         {
-            return this.Location.FirstOrDefault(x => x.ID == id);
+            return this.Locations.FirstOrDefault(x => x.ID == id);
         }
     }
 }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace AMSModel.Constant.EnumConst
 {
-    public enum LocationGroupType
+    public enum McLocationGroupType
     {
-        MachineWay = 11,
-        StorageLocation = 21,
+        Machine = 1,
+        Storage = 2
     }
 }

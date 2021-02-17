@@ -1,7 +1,7 @@
 ﻿
 namespace AWCSEngine
 {
-    partial class formAdminConsole
+    partial class formConsole
     {
         /// <summary>
         /// Required designer variable.
@@ -37,19 +37,19 @@ namespace AWCSEngine
             // 
             // txtCommand
             // 
-            this.txtCommand.Location = new System.Drawing.Point(1, 559);
+            this.txtCommand.Location = new System.Drawing.Point(744, 559);
             this.txtCommand.Name = "txtCommand";
             this.txtCommand.Size = new System.Drawing.Size(357, 23);
             this.txtCommand.TabIndex = 0;
-            this.txtCommand.Enter += new System.EventHandler(this.txtCommand_Enter);
+            this.txtCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCommand_KeyDown);
             // 
             // lisDisplayEngine
             // 
             this.lisDisplayEngine.FormattingEnabled = true;
             this.lisDisplayEngine.ItemHeight = 15;
-            this.lisDisplayEngine.Location = new System.Drawing.Point(364, 0);
+            this.lisDisplayEngine.Location = new System.Drawing.Point(4, 0);
             this.lisDisplayEngine.Name = "lisDisplayEngine";
-            this.lisDisplayEngine.Size = new System.Drawing.Size(436, 589);
+            this.lisDisplayEngine.Size = new System.Drawing.Size(737, 589);
             this.lisDisplayEngine.TabIndex = 1;
             // 
             // wkDisplay
@@ -61,20 +61,20 @@ namespace AWCSEngine
             // 
             this.lisDisplayCommand.FormattingEnabled = true;
             this.lisDisplayCommand.ItemHeight = 15;
-            this.lisDisplayCommand.Location = new System.Drawing.Point(1, 0);
+            this.lisDisplayCommand.Location = new System.Drawing.Point(744, 0);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
             this.lisDisplayCommand.Size = new System.Drawing.Size(357, 559);
             this.lisDisplayCommand.TabIndex = 2;
             // 
-            // formAdminConsole
+            // formConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 583);
+            this.ClientSize = new System.Drawing.Size(1102, 583);
             this.Controls.Add(this.lisDisplayCommand);
             this.Controls.Add(this.lisDisplayEngine);
             this.Controls.Add(this.txtCommand);
-            this.Name = "formAdminConsole";
+            this.Name = "formConsole";
             this.Text = "formAdminConsole";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.formAdminConsole_FormClosing);
             this.Load += new System.EventHandler(this.formAdminConsole_Load);
@@ -82,7 +82,6 @@ namespace AWCSEngine
             this.PerformLayout();
 
         }
-
         #endregion
 
         private System.Windows.Forms.TextBox txtCommand;
