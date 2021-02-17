@@ -523,13 +523,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var skutype = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
             if (skutype == null)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
+           
             if(skutype.GroupType != SKUGroupType.ESP)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "สินค้าประเภท " + skutype.GroupType + "ไม่สามารถเบิกได้");
 
             ams_PackMaster packMaster = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
             if (packMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
-
 
             desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
                 if (desWarehouse == null)
