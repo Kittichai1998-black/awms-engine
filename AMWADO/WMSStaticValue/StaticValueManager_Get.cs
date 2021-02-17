@@ -119,7 +119,14 @@ namespace ADO.WMSStaticValue
             {
                 string c = string.Format(code.Attribute<EnumValueAttribute>().ValueString, (int)processType);
                 var res = GetConfigValue(c);
-                return res;
+                if (String.IsNullOrWhiteSpace(res))
+                {
+                    throw new Exception("ไม่พบ Configs '" + c + "' ในระบบ!");
+                }
+                else
+                {
+                    return res;
+                }
             }
             catch
             {

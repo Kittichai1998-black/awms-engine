@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ADO.WCSPLC
 {
@@ -22,5 +23,6 @@ namespace ADO.WCSPLC
         public void SetDevicelLong(string key, long value);
         public void SetDevicelFloat(string key, float value);
         public void SetDevicelDouble(string key, double value);
+
     }
 }

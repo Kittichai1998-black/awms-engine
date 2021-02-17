@@ -7,6 +7,9 @@ namespace AMSModel.Constant.EnumConst
     public enum McCommand
     {
         Move = 1,
-        Keep = 2,
+        Transfer = 2,
+
+        Start = 8,
+        Shutdown = 9,
     }
 }
