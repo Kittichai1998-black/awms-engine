@@ -90,7 +90,7 @@ namespace AMWUtil.DataAccess
         public static void CreateWCSFileJSON<T>(string pathIn, string pathOut, string pathOutRes, string fileName, T data)
             where T : class
         {
-            if(!File.Exists(pathOut) && !File.Exists(pathOutRes))
+            if(!File.Exists($"{pathOut}/{fileName}.json") && !File.Exists($"{pathOutRes}/{fileName}.json"))
             {
                 var jsonObj = Newtonsoft.Json.JsonConvert.SerializeObject(data);
                 CreateTextFile(pathIn, jsonObj, $"{fileName}.json");
