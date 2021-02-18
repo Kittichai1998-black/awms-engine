@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.Business.Wave;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.V2.Wave

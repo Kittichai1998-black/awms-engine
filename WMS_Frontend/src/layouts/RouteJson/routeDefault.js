@@ -418,14 +418,61 @@ const GR_PalletEmpByHH = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_PalletEmpByHH"),
   loading: Loading
 });
-
-
 const AddminPage = Loadable({
   loader: () => import("../../views/pageComponent/AddminPage"),
   loading: Loading
 });
 
+const MonitorTest = Loadable({
+  loader: () => import("../../views/page/Monitor/MonitorTest"),
+  loading: Loading
+});
+const GR_Create_QRCode = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create_QRCode"),
+  loading: Loading
+});
 
+const MonitorLocation = Loadable({
+  loader: () => import("../../views/page/GCL/Monitor/Monitor_Location"),
+  loading: Loading
+});
+const SKUMasterLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/SKUMasterLog"),
+  loading: Loading
+});
+const SKUConvertorLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/SKUConvertorLog"),
+  loading: Loading
+});
+const BaseMasterLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/BaseMasterLog"),
+  loading: Loading
+});
+const PalletTypeLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/PalletTypeLog"),
+  loading: Loading
+});
+const SupplierLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/SupplierLog"),
+  loading: Loading
+});
+const CustomerLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/CustomerLog"),
+  loading: Loading
+});
+const AreaLocationConditionLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/LocationConditionLog"),
+  loading: Loading
+});
+const UserEventLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/UserLog"),
+  loading: Loading
+});
+
+const RoleEventLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/RoleEventLog"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
@@ -501,28 +548,30 @@ let routes = [
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
 
-  //{ path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
-  //{ path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
-  //{ path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+  { path: "/receive/createbyqrcode", name: "GR Create QRCode", compoment: GR_Create_QRCode, exact: true },
+
+  { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+  { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
+  { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
   //{ path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
   //{ path: "/receive/emp", name: "GR EMP", compoment: GR_PalletEmpByHH, exact: true },
-  //{ path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
-  //{ path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
-  //{ path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
+  { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
+  { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
+  { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
 
-  //{ path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
-  //{ path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
-  //{ path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
+  { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
+  { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
+  { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
   //{ path: "/issue/pickingchecker", name: "PK Checker", compoment: PK_Checker, exact: true },
 
-  //{ path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
-  //{ path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
-  //{ path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
-  //{ path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
+  { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
+  { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
+  { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
+  { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/shipment/create", name: "SO Create", compoment: SO_Create, exact: true },
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
-  { path: "/shipment/search", name: "SO Search", compoment: SO_Search, exact: true, child:true },
+  { path: "/shipment/search", name: "SO Search", compoment: SO_Search, exact: true, child: true },
 
   //{ path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
   //{ path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
@@ -533,8 +582,18 @@ let routes = [
   { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
   { path: "/warehouse/managemtnplan", name: "Manage Maintenance Plan", compoment: ManageMaintenancePlan, exact: true },
-  //{ path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true , child: true },
-  { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true , child: true },
+  { path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true, child: true },
+  { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true, child: true },
+  { path: "/monitor/monitorLocation", name: "monitor Location", compoment: MonitorLocation, exact: true, child: true },
+  { path: "/masterlog/skulog", name: "SKU Master Log", compoment: SKUMasterLog, exact: true, child: true },
+  { path: "/masterlog/skuconvertorlog", name: "SKU Convertor Log", compoment: SKUConvertorLog, exact: true, child: true },
+  { path: "/masterlog/palletlog", name: "Pallet Master Log", compoment: BaseMasterLog, exact: true, child: true },
+  { path: "/masterlog/pallettypelog", name: "Pallet Type Log", compoment: PalletTypeLog, exact: true, child: true },
+  { path: "/masterlog/supplierlog", name: "supplier Log", compoment: SupplierLog, exact: true, child: true },
+  { path: "/masterlog/customerlog", name: "Customer Log", compoment: CustomerLog, exact: true, child: true },
+  { path: "/masterlog/locationconditionlog", name: "Area Location Condition Log", compoment: AreaLocationConditionLog, exact: true, child: true },
+  { path: "/masterlog/userlog", name: "User Log", compoment: UserEventLog, exact: true, child: true },
+  { path: "/masterlog/roleLog", name: "roleLog ", compoment: RoleEventLog, exact: true, child: true },
 ];
 
 export default routes;

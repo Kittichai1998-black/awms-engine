@@ -4,6 +4,7 @@ import { PutandPickContext } from './PutandPickContext';
 import Grid from '@material-ui/core/Grid';
 import { apicall } from "../../../components/function/CoreFunction";
 import AmDialogs from '../../../components/AmDialogs'
+import queryString from "query-string";
 import moment from "moment";
 import "moment/locale/pt-br";
 const Axios = new apicall()
@@ -37,7 +38,6 @@ const AmputAndpickManage = (props) => {
             parentDocumentID: null,
             ref1: null,
             ref2: null,
-            ref4: null,
             refID: null,
             remark: null,
             souAreaMasterCode: null,
@@ -49,7 +49,6 @@ const AmputAndpickManage = (props) => {
             souSupplierCode: null,
             souSupplierID: null,
             souWarehouseCode: null,
-            productOwnerID: null,
             souWarehouseID: null,
             transportID: null
         }
@@ -65,38 +64,77 @@ const AmputAndpickManage = (props) => {
         var remark = 'remark='
         var pallet = 'palletcode='
         var optn;
-        doc.dataSourceItemTB.map(x => {
-            if (x.PalletCode != null && x.remark != null && x.Options != null) {
-                optn = x.Options + '&' +
-                    pallet.concat(x.PalletCode) + '&' +
-                    remark.concat(x.remark)
-            } else if (x.PalletCode && x.remark && x.Options === null) {
-                optn = pallet.concat(x.PalletCode) + '&' +
-                    remark.concat(x.remark)
-            } else if (x.remark === null && x.PalletCode && x.Options) {
-                optn = x.Options + '&' +
-                    pallet.concat(x.PalletCode)
-            } else if (x.PalletCode === null && x.remark && x.Options) {
-                optn = x.Options + '&' +
-                    remark.concat(x.remark)
-            } else if (x.PalletCode && x.remark === null && x.Options === null) {
-                optn = pallet.concat(x.PalletCode)
-            } else if (x.PalletCode === null && x.remark && x.Options === null) {
-                optn = remark.concat(x.remark)
-            } else if (x.PalletCode === null && x.remark === null && x.Options) {
-                optn = x.Options
+
+        let dataOptions = doc.dataSourceItemTB.map(x => {
+            let Options = x.options ? x.options : x.Options ? x.Options : null
+            let qryStrOption = Options ? queryString.parse(Options) : {}
+            let palletcode = x.palletcode ? x.palletcode : null
+            let remarks = x.remark ? x.remark : null
+            let qtyrd = x.qtyrandom ? x.qtyrandom : null
+
+            //if (qryStrOption) {
+            //    if (qryStrOption.remark && remarks) {
+            //        Options = Options
+            //        remarks = null
+            //    } else {
+            //        Options = Options
+            //    }
+            //}
+
+            if (palletcode && remarks && Options && qtyrd) {
+                qryStrOption["palletcode"] = palletcode
+                qryStrOption["qtyrandom"] = qtyrd
+                qryStrOption["remark"] = remarks
+
+                //optn = Options + '&' +
+                //    pallet.concat(palletcode) + '&' + qtyrandom.concat(qtyrd) + '&' +
+                //    remark.concat(remarks)
+            } else if (palletcode && remarks && Options) {
+                qryStrOption["palletcode"] = palletcode
+                qryStrOption["remark"] = remarks
+            } else if (palletcode && Options && qtyrd) {
+                qryStrOption["palletcode"] = palletcode
+                qryStrOption["qtyrandom"] = qtyrd
+            } else if (palletcode && remarks && qtyrd) {
+                qryStrOption["palletcode"] = palletcode
+                qryStrOption["qtyrandom"] = qtyrd
+                qryStrOption["remark"] = remarks
+            } else if (remarks && Options && qtyrd) {
+                qryStrOption["qtyrandom"] = qtyrd
+                qryStrOption["remark"] = remarks
+            } else if (palletcode && Options) {
+                qryStrOption["palletcode"] = palletcode
+            } else if (palletcode && remarks) {
+                qryStrOption["remark"] = remarks
+            } else if (palletcode && qtyrd) {
+                qryStrOption["palletcode"] = palletcode
+                qryStrOption["qtyrandom"] = qtyrd
+            } else if (remarks && qtyrd) {
+                qryStrOption["qtyrandom"] = qtyrd
+                qryStrOption["remark"] = remarks
+            } else if (Options && qtyrd) {
+                qryStrOption["qtyrandom"] = qtyrd
+            } else if (remarks) {
+                qryStrOption["remark"] = remarks
+            } else if (palletcode) {
+                qryStrOption["palletcode"] = palletcode
+            } else if (Options) {
+                optn = Options
+            } else if (qtyrd) {
+                qryStrOption["qtyrandom"] = qtyrd
             }
+
+            return optn = queryString.stringify(qryStrOption)
+
         })
 
-
         if (props.doccreateDocType === "putAway") {
-            docs.receiveItems = doc.dataSourceItemTB.map(x => {
+            docs.receiveItems = doc.dataSourceItemTB.map((x,i) => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
                 x.quantity = x.DiffQty
                 x.baseQuantity = x.BaseQuantity
                 x.baseunitType = x.BaseUnitType_Code
-                x.baseCode = x.BaseCode
                 x.batch = x.Batch
                 x.lot = x.Lot
                 x.orderNo = x.OrderNo
@@ -108,7 +146,7 @@ const AmputAndpickManage = (props) => {
                 x.ref2 = x.Ref2
                 x.ref3 = x.Ref3
                 x.ref4 = x.Ref4
-                x.options = optn
+                x.options = dataOptions[i]
                 x.parentDocumentItem_ID = x.ID
                 x.incubationDay = x.IncubationDay
                 x.ExpireDate = x.ExpireDates
@@ -116,17 +154,17 @@ const AmputAndpickManage = (props) => {
                 x.expireDate = x.ExpireDates
                 x.productionDate = x.ProductionDates
                 x.shelfLifeDay = x.ShelfLifeDay
+                x.eventStatus = 10
 
                 return x
             })
 
         } else if (props.doccreateDocType === "picking") {
-            docs.issueItems = doc.dataSourceItemTB.map(x => {
+            docs.issueItems = doc.dataSourceItemTB.map((x,i) => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
                 x.quantity = x.DiffQty
                 x.baseQuantity = x.BaseQuantity
-                x.baseCode = x.BaseCode
                 x.baseunitType = x.BaseUnitType_Code
                 x.batch = x.Batch
                 x.lot = x.Lot
@@ -139,7 +177,7 @@ const AmputAndpickManage = (props) => {
                 x.ref2 = x.Ref2
                 x.ref3 = x.Ref3
                 x.ref4 = x.Ref4
-                x.options = optn
+                x.options = dataOptions[i]
                 x.parentDocumentItem_ID = x.ID
                 x.incubationDay = x.IncubationDay
                 x.ExpireDate = x.ExpireDates
@@ -147,14 +185,16 @@ const AmputAndpickManage = (props) => {
                 x.expireDate = x.ExpireDates
                 x.productionDate = x.ProductionDates
                 x.shelfLifeDay = x.ShelfLifeDay
+                x.eventStatus = 10
                 return x
             })
         }
 
 
         if (Object.keys(docs).length > countDoc) {
-           console.log(docs) 
-           CreateDocuments(docs)
+            //console.log(docs)
+            CreateDocuments(docs)
+ 
         }
 
     }
@@ -184,7 +224,7 @@ const AmputAndpickManage = (props) => {
                         onClick={() => {
                             OnCreateDocument();
                         }}
-                    >CREATE</AmButton> : null}
+                    >CREATE</AmButton>: null}
 
                 </div>
             </Grid>

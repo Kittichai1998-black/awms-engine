@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;

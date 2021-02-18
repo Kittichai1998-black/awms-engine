@@ -302,7 +302,7 @@ const AmMappingPalletEmp = props => {
   function getSteps() {
     return [
       { label: "Pallet Description", value: null },
-      { label: "Mapping Pallet", value: null },
+      { label: "Scan Mapping Pallet", value: null },
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
@@ -475,6 +475,7 @@ const AmMappingPalletEmp = props => {
           if (dataDoc !== undefined && dataDoc !== null) {
             dataDoc.datas.forEach(element => {
               postdata.pstos.push(element)
+              setDisPlayButton(false)
             });
           }
         } else {
@@ -721,7 +722,7 @@ const AmMappingPalletEmp = props => {
 
                         }}
                       />
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         aria-label="info"
                         style={{ paddingTop: "10px" }}
@@ -730,7 +731,7 @@ const AmMappingPalletEmp = props => {
                           fontSize="small"
                           onClick={() => { getDocByQRCode(qrCode) }}
                         />
-                      </IconButton>
+                      </IconButton> */}
                     </FormInline>
                   </div> :
                   <div>

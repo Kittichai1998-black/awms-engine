@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Exception;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var wq = ADO.WMSDB.WorkQueueADO.GetInstant().Get(reqVO.wqID, this.BuVO);
-            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(wq.StorageObject_ID.Value, AWMSModel.Constant.EnumConst.StorageObjectType.BASE, false, true, this.BuVO);
+            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(wq.StorageObject_ID.Value, AMSModel.Constant.EnumConst.StorageObjectType.BASE, false, true, this.BuVO);
             if(wq == null || sto == null)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Work Queue ID : " + reqVO.wqID.ToString() + " Not Found.");

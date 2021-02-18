@@ -4,10 +4,10 @@ using AMWUtil.Logger;
 
 using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,12 +63,12 @@ namespace AWMSEngine.Engine.Business
                 var dataMap = this.mapPallet(this.Logger, mapsto, newBaseQty, newbstoBaseMaster, reqVO, this.BuVO);
                 var ck = dataupdate.mapstos.FindAll(x => x.id == reqVO.psto).FirstOrDefault();
                 if (ck.qty == 0)
-                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(bsto.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                 var ckQty = dataupdate.mapstos.TrueForAll(x => x.qty == 0);
                 if (ckQty)
                 {
-                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
                     res.bsto = dataMap;
                 }
                 

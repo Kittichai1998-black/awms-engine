@@ -303,7 +303,7 @@ const AmMappingPalletV2 = props => {
   function getSteps() {
     return [
       { label: "Pallet Description", value: null },
-      { label: "Mapping Pallet", value: null },
+      { label: "Scan Mapping Pallet", value: null },
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
@@ -375,9 +375,9 @@ const AmMappingPalletV2 = props => {
     valueManual[fieldDataKey] = value;
   };
   function handleBack() {
-    valueInput.warehouseID = null
-    valueInput.processType = null
-    valueInput.areaID = null
+    // valueInput.warehouseID = null
+    // valueInput.processType = null
+    // valueInput.areaID = null
     valueInput.palletCode = null
     valueInput.addQty = null
     setDisPlayQr(true)
@@ -392,7 +392,7 @@ const AmMappingPalletV2 = props => {
     setActiveStep(activeStep - 1);
   }
   const onHandledataConfirm = (status, rowdata) => {
-    console.log(status)
+    //console.log(status)
     if (status) {
       scanMappingSto(valueInput.palletCode, "edit")
     } else {
@@ -403,9 +403,15 @@ const AmMappingPalletV2 = props => {
   function getDocByQRCode(value) {
     Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${value}`).then(res => {
       if (res.data._result.status === 1) {
-        setDataDoc(res.data)
-        setFlaggetDataDoc(true)
-        setDisPlayButton(true)
+        if (res.data.grCode !== null) {
+          //console.log(res.data)
+          setDataDoc(res.data)
+          setFlaggetDataDoc(true)
+          setDisPlayButton(true)
+        } else {
+          setDialogState({ type: "error", content: "QRCode ไม่ถูกต้อง", state: true })
+        }
+
       } else {
         setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
@@ -618,6 +624,7 @@ const AmMappingPalletV2 = props => {
             <StyledTreeItem nodeId="1" label={dataPallet !== undefined && dataPallet !== null ? dataPallet.code : null}>
               {dataPallet === undefined || dataPallet === null ? null :
                 dataPallet.mapstos === null ? null : dataPallet.mapstos.map((x, index) => {
+                  //console.log(x)
                   return (
                     <div key={index} syle={{ marginLeft: "30px" }} >
                       <StyledTreeItem
@@ -633,7 +640,8 @@ const AmMappingPalletV2 = props => {
                             &nbsp;{"- " + x.name}
                           </Typography>
                           <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity:" + x.qty + " " + x.unitCode}</Typography>
-                          <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography>
+                          {x.skuTypeID === 5 ? <Typography variant="body2" className={classes.labelText} noWrap>{"Vendor Lot:" + (x.ref1 === null ? "" : x.ref1)}</Typography> :
+                            <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography>}
 
                         </div>}
                       />

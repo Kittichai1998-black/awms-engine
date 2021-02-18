@@ -1,10 +1,10 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace AWMSModel.Entity
+namespace AMSModel.Entity
 {
     public abstract class BaseEntitySTD : BaseEntityCreateModify
     {

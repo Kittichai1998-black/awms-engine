@@ -80,8 +80,8 @@ const AreaLocationCondition = props => {
         { Header: "Bank", accessor: "LocationBankNumRange" },
         { Header: "Bay", accessor: "LocationBayNumRange" },
         { Header: "Level", accessor: "LocationLvNumRange" },
-        { Header: "MinQuantity", accessor: "MinQuantity" },
-        { Header: "MaxQuantity", accessor: "MaxQuantity" },
+        { Header: "Min Qty", accessor: "MinQuantity" },
+        { Header: "Max Qty", accessor: "MaxQuantity" },
         { Header: "SKU Code", accessor: "SKU_Code" },
         { Header: "SKU Name", accessor: "SKU_Name" },
         { Header: "SKUType", accessor: "SKUType_Name" },
@@ -342,6 +342,7 @@ const AreaLocationCondition = props => {
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
                 customTopLeft={<span> ** Bank 1-4 more than less 30  degree Celsius,
                     **Bank  5-8  between 30  degree Celsius and 35  degree Celsius</span>}
+                 linkLog={"/masterlog/locationconditionlog?id="}
             />
         </>
     );

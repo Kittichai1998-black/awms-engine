@@ -2,9 +2,9 @@
 using AMWUtil.Exception;
 using ADO.WMSStaticValue;
 using AWMSEngine.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,6 +198,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
                 Ref3 = reqVO.ref3,
+                Ref4 = reqVO.ref4,
                 DocumentItems = new List<amt_DocumentItem>(),
             };
 
@@ -239,10 +240,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
 
                 }
-                else if (!Item.options.Contains("basecode") && reqVO.docTypeId != DocumentTypeID.PHYSICAL_COUNT)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
-                }
+                //else if (!Item.options.Contains("basecode") && reqVO.docTypeId != DocumentTypeID.PHYSICAL_COUNT)
+                //{
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
+                //}
                 ConvertUnitCriteria baseUnitTypeConvt = null;
                 if (Item.quantity.HasValue && packMst != null)
                 {
@@ -283,7 +284,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
-                    Code = skuMst != null ? skuMst.Code : ObjectUtil.QryStrGetValue(Item.options, "basecode"),
+                    Code = skuMst != null ? skuMst.Code : null,
                     SKUMaster_ID = skuMst != null ? skuMst.ID : null,
                     PackMaster_ID = packMst != null ? packMst.ID : null,
                     BaseCode = Item.baseCode,

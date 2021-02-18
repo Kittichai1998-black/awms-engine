@@ -5,11 +5,11 @@ using ADO.WMSStaticValue;
 using ADO.WMSDB;
 using AWMSEngine.Engine.V2.Business.Wave;
 using AWMSEngine.Engine.V2.General;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Request;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -216,27 +216,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             }
             void updateSTO(StorageObjectCriteria sto)
-            {            
-                var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-                if (done_des_event_status == null || done_des_event_status.Length == 0)
+            {
+                if (sto.eventStatus == StorageObjectEventStatus.PACK_RECEIVING)
                 {
-                    sto.eventStatus = StorageObjectEventStatus.RECEIVED;
-                }
-                else {
-                    StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
-                    sto.eventStatus = eventStatus;
-                    RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
+                    var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+                    if (done_des_event_status == null || done_des_event_status.Length == 0)
+                    {
+                        sto.eventStatus = StorageObjectEventStatus.PACK_RECEIVED;
+                    }
+                    else
+                    {
+                        StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
+                        sto.eventStatus = eventStatus;
+                        RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
 
+                    }
+                    //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
+                    //{
+                    //    sto.IsStock = true;
+                    //    ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
+                    //       new KeyValuePair<string, object>[] {
+                    //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
+                    //       });
+                    //}
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 }
-                //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
-                //{
-                //    sto.IsStock = true;
-                //    ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
-                //       new KeyValuePair<string, object>[] {
-                //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
-                //       });
-                //}
-                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
             }
         }
         private void ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
@@ -311,7 +315,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var done_des_event_status = ObjectUtil.QryStrGetValue(issuedSto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                 if (done_des_event_status == null || done_des_event_status.Length == 0)
                 {
-                    issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
+                    issuedSto.eventStatus = StorageObjectEventStatus.PACK_PICKED;
                 }
                 else
                 {
@@ -329,7 +333,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 if (updSto.baseQty == 0)
                 {
-                    updSto.eventStatus = StorageObjectEventStatus.REMOVED;
+                    updSto.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
                     ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
                 }
                 else
@@ -345,7 +349,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
                         if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
                         {
-                            updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                            updSto.eventStatus = StorageObjectEventStatus.PACK_RECEIVED;
                         }
                         else
                         {
@@ -374,7 +378,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (stocheckpallet == null || stocheckpallet.Count == 0)
                     {
                         //ถ้าไม่มีให้ลบพาเลท
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parent_id, null, null, StorageObjectEventStatus.REMOVE, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parent_id, null, null, StorageObjectEventStatus.BASE_REMOVE, this.BuVO);
                         if (getParent.parentID.HasValue)
                             updatePallet(getParent.parentID.Value, getParent.parentType.Value);
                     }

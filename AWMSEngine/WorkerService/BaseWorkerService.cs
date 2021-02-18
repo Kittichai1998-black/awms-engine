@@ -1,8 +1,9 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.DataAccess.Http;
+using AMWUtil.Logger;
 using AWMSEngine.HubService;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace AWMSEngine.WorkerService
         protected long WorkerServiceID { get; set; }
         protected AMWLogger Logger { get; set; }
         protected readonly IHubContext<CommonMessageHub> CommonMsgHub;
+        private IHubContext<CommonMessageHub> commonHub;
 
         protected abstract void ExecuteEngine(Dictionary<string,string> options, VOCriteria buVO);
 
@@ -29,10 +31,22 @@ namespace AWMSEngine.WorkerService
             this.Logger = logger;
         }
 
+        protected BaseWorkerService(long workerServiceID, IHubContext<CommonMessageHub> commonHub)
+        {
+            WorkerServiceID = workerServiceID;
+            this.commonHub = commonHub;
+        }
+
         public Task Execute()
         {
             VOCriteria buVO = new VOCriteria();
-            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, this.Logger);
+            buVO.Set(AMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, this.Logger);
+            buVO.Set(AMSModel.Constant.StringConst.BusinessVOConst.KEY_FINAL_DB_LOG,
+                  new FinalDatabaseLogCriteria()
+                  {
+                      documentOptionMessages = new List<FinalDatabaseLogCriteria.DocumentOptionMessage>(),
+                      sendAPIEvents = new List<HttpResultModel>()
+                  });
             var job = ADO.WMSStaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
             string prefixLog = "[" + job.Code + "(" + job.ID + ")] ";
             var options = AMWUtil.Common.ObjectUtil.QryStrToDictionary(job.Options);

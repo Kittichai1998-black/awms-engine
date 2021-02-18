@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Logger;
 using AWMSEngine.Common;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
 using AMWUtil.Common;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using AMWUtil.Exception;
 
 namespace AWMSEngine.Engine.V2.General

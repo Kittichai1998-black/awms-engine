@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;

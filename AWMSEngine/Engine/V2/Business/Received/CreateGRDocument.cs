@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSEngine.Engine.V2.Business.Document;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string ref4;
             public string options;
             public DocumentProcessTypeID documentProcessTypeID;
-
+            public DocumentTypeID documentTypeID;
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public List<ReceiveItem> receiveItems;
@@ -77,7 +77,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string options;
                 public long? parentDocumentItem_ID;
                 public long? incubationDay;
-
+                
                 public DateTime? expireDate;
                 public DateTime? productionDate;
                 public long? shelfLifeDay;
@@ -153,7 +153,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                     souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-                     docTypeId = DocumentTypeID.PUTAWAY,
+                    docTypeId = reqVO.documentTypeID,
                     desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                     desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
                     desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,

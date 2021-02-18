@@ -1,13 +1,13 @@
-﻿using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria.SP.Response;
+﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using AMWUtil.Common;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 
-namespace AWMSModel.Criteria
+namespace AMSModel.Criteria
 {
     public class StorageObjectFullCriteria : SPOutSTOSearchCriteria
     {

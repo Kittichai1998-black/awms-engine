@@ -1,7 +1,7 @@
 ﻿using AMWUtil.DataAccess.Http;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +17,8 @@ namespace ADO.WMSDB
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@LogRefID", buVO.Logger.LogRefID);
             param.Add("@TrxRefID", buVO.TrxRefID);
-            param.Add("@Token", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_TOKEN));
-            param.Add("@APIKey ", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY));
+            param.Add("@Token", buVO.Get<string>(AMSModel.Constant.StringConst.BusinessVOConst.KEY_TOKEN));
+            param.Add("@APIKey ", buVO.Get<string>(AMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY));
             param.Add("@APIService_ID ", service != null ? service.ID : null);
             param.Add("@APIService_Code ", service != null ? service.Code : null);
             param.Add("@APIService_Name ", serviceName);

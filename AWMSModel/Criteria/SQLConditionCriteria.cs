@@ -1,12 +1,12 @@
 ﻿using AMWUtil.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria.Attribute;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria.Attribute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AWMSModel.Criteria
+namespace AMSModel.Criteria
 {
     public class SQLConditionCriteria
     {

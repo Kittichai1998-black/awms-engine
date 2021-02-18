@@ -62,10 +62,11 @@ const User = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", width: 120 },
-    { Header: "Name", accessor: "Name", width: 200 },
+    { Header: "Username", accessor: "Code", width: 120 },
+    { Header: "Full Name", accessor: "Name", width: 200 },
     { Header: "Email Addres", accessor: "EmailAddress", width: 250 },
     { Header: "Mobile", accessor: "TelMobile", width: 150 },
+    { Header: "Remark", accessor: "Info3", width: 150 },
     { Header: "Update By", accessor: "LastUpdateBy", width: 150 },
     {
       Header: "Update Time",
@@ -138,6 +139,12 @@ const User = props => {
       name: "Mobile",
       placeholder: "Mobiles",
       validate: /^[0-9\.]+$/
+    },
+    {
+      field: "Info3",
+      type: "input",
+      name: "Remark",
+      placeholder: "Remark",
     }
   ];
 
@@ -179,6 +186,12 @@ const User = props => {
       name: "Status",
       dataDropDown: EntityEventStatus,
       placeholder: "Status"
+    },
+    {
+      field: "Info3",
+      type: "input",
+      name: "Remark",
+      placeholder: "Remark",
     }
   ];
   const primarySearch = [
@@ -458,6 +471,8 @@ const User = props => {
         pageSize={25}
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+        showLinkLog={true}
+        linkLog={"/masterlog/userlog?id="}
       />
     </>
   );

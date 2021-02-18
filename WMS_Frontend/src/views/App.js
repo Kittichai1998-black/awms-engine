@@ -5,7 +5,6 @@ import Login from './page/Pages/Login/Login';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import AmSpinner from "../components/AmSpinner";
 import MonitorIO from "./page/Monitor/MonitorIO"
-import Monitor from "./externalPage/monitor"
 
 
 const App = (props) => {
@@ -21,7 +20,6 @@ const App = (props) => {
         <Switch>
           <Route path="/Login" name="Login Page" render={() => <Login alternateLogin={false} loginCount={1}/>} />
           <Route path="/monitor_io" name="Monitor IO" render={() => container(<MonitorIO />)} />
-          <Route path="/monitor" name="Main" render={() => <Monitor/>}/>
           <Route path="/404" name="Not Found" component={P404} />
           <Route path="/" name="Home" component={Layout} />  
         </Switch>

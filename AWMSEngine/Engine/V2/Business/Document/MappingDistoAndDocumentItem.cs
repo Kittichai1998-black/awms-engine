@@ -4,10 +4,10 @@ using AMWUtil.Exception;
 using ADO.WMSStaticValue;
 using ADO.WMSDB;
 using AWMSEngine.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
@@ -134,7 +134,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             }
                             else if (newBaseQty < 0)
                             {
-                                if (psto.EventStatus == StorageObjectEventStatus.REMOVED || disto.BaseQuantity.Value + newBaseQty <= 0)
+                                if (psto.EventStatus == StorageObjectEventStatus.PACK_REMOVED || disto.BaseQuantity.Value + newBaseQty <= 0)
                                 {
                                     // 50 + (-100)
                                     if (disto.BaseQuantity + newBaseQty <= 0)
@@ -261,7 +261,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     {   //docitem ไม่ระบุจำนวนรับเข้า
                         if (newBaseQty < 0)
                         {
-                            if (psto.EventStatus == StorageObjectEventStatus.REMOVED) {
+                            if (psto.EventStatus == StorageObjectEventStatus.PACK_REMOVED) {
                                 disto.BaseQuantity = 0;
                                 disto.Quantity = 0;
                                 disto.Status = EntityStatus.REMOVE;

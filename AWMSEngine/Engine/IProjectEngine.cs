@@ -1,9 +1,10 @@
 ﻿using AMWUtil.Logger;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ADO.WMSStaticValue;
 
 namespace AWMSEngine.Engine
 {
@@ -14,6 +15,7 @@ namespace AWMSEngine.Engine
         protected AMWLogger Logger { get; set; }
         protected VOCriteria BuVO { get; set; }
         protected TReq ReqVO { get; set; }
+        public StaticValueManager StaticValue { get; set; }
 
         protected abstract TRes ExecuteEngine(AMWLogger logger, VOCriteria buVO, TReq reqVO);
 
@@ -25,9 +27,10 @@ namespace AWMSEngine.Engine
 
         public TRes Execute(Type typeEngine, AMWLogger logger, VOCriteria buVO, TReq reqVO)
         {
+            this.StaticValue = StaticValueManager.GetInstant();
             this.TypeEngine = typeEngine;
             this.Logger = logger;
-            this.BuVO = BuVO;
+            this.BuVO = buVO;
             this.ReqVO = reqVO;
             return ExecuteEngine(logger, buVO, reqVO);
         }

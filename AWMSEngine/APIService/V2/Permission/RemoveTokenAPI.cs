@@ -1,8 +1,8 @@
 ﻿using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Validation;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

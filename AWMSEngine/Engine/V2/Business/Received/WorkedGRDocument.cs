@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 
 namespace AWMSEngine.Engine.V2.Business.Received
 {
-    public class WorkedGRDocument : BaseEngine<WorkedGRDocument.TReq, AWMSModel.Criteria.NullCriteria>
+    public class WorkedGRDocument : BaseEngine<WorkedGRDocument.TReq, AMSModel.Criteria.NullCriteria>
     {
         public class TReq
         {

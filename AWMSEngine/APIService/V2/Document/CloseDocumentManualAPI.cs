@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.Document;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Constant.EnumConst;
 using AWMSEngine.APIService;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using AMWUtil.Exception;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using ADO.WMSDB;
 using AMWUtil.Logger;
 
@@ -82,7 +82,7 @@ namespace AWMSEngine.APIService.V2.Document
                                 else
                                 {
                                     //var findlistChild = listChilds.FindAll(x => x.EventStatus != DocumentEventStatus.NEW);
-
+                                     
                                     foreach (var listChild in listChilds)
                                     {
                                         if (listChild.EventStatus == DocumentEventStatus.NEW)
@@ -239,8 +239,8 @@ namespace AWMSEngine.APIService.V2.Document
                                 if (listChildsParent.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSED))
                                 {
 
-                                    //ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
-                                    //ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                    //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
+                                    //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
                                     if (parent.EventStatus == DocumentEventStatus.WORKED)
                                     {
                                         ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(parent.ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
@@ -258,7 +258,7 @@ namespace AWMSEngine.APIService.V2.Document
                     {
                         if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                         {
-                            //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                            //var docParent = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
                             var listChilds = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                                                 new SQLConditionCriteria[] {
                                                 new SQLConditionCriteria("ParentDocument_ID",docs.ID, SQLOperatorType.EQUALS),
@@ -267,8 +267,8 @@ namespace AWMSEngine.APIService.V2.Document
                             //var checkDoc = listChilds.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSED || x.EventStatus == DocumentEventStatus.WORKED);
                             if (listChilds.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSED))
                             {
-                                //ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(docs.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
-                                //ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(docs.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
+                                //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
 
                                 ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docs.ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
 
@@ -394,17 +394,17 @@ namespace AWMSEngine.APIService.V2.Document
                 if (pallet != null)
                 {
                     var ckPallet = pallet.mapstos.TrueForAll(x =>
-                        x.eventStatus == StorageObjectEventStatus.NEW
-                       || x.eventStatus == StorageObjectEventStatus.RECEIVED
-                       || x.eventStatus == StorageObjectEventStatus.PICKED
-                       || x.eventStatus == StorageObjectEventStatus.AUDITED
-                       || x.eventStatus == StorageObjectEventStatus.COUNTED);
+                        x.eventStatus == StorageObjectEventStatus.PACK_NEW
+                       || x.eventStatus == StorageObjectEventStatus.PACK_RECEIVED
+                       || x.eventStatus == StorageObjectEventStatus.PACK_PICKED
+                       || x.eventStatus == StorageObjectEventStatus.PACK_AUDITED
+                       || x.eventStatus == StorageObjectEventStatus.PACK_COUNTED);
 
                     if (ckPallet == false)
                         throw new AMWException(Logger, AMWExceptionCode.V2002, x.rootCode + " กำลังทำงาน");
                 }
             });
-            if (grDocItem != null && grDocItem.Count() > 0)
+            if (grDocItem != null && grDocItem.Count > 0)
             {
                 grDocItem.ForEach(item =>
                 {
@@ -415,9 +415,9 @@ namespace AWMSEngine.APIService.V2.Document
                             var packsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
                             if (packsto != null)
                             {
-                                if (packsto.eventStatus == StorageObjectEventStatus.NEW)
+                                if (packsto.eventStatus == StorageObjectEventStatus.PACK_NEW)
                                 {
-                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(packsto.parentID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(packsto.parentID.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                                     disto.Status = EntityStatus.REMOVE;
                                     DistoADO.GetInstant().Update(disto, this.BuVO);

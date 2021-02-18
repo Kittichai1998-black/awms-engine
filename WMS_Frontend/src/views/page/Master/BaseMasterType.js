@@ -13,17 +13,18 @@ const BaseMasterType = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      filterType: "dropdown",
-      colStyle: { textAlign: "center" },
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: EntityEventStatus,
-        typeDropDown: "normal"
+      filterType:"dropdown",
+      colStyle:{textAlign:"center"},
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
       },
       Cell: e => getStatus(e.original)
     },
     { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name" },
+    { Header: "Remark", accessor: "Description" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -47,6 +48,12 @@ const BaseMasterType = props => {
       name: "Base Type Name",
       placeholder: "Name",
       required: true
+    },
+    {
+        field: "Description",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
     }
   ];
 
@@ -72,6 +79,12 @@ const BaseMasterType = props => {
       name: "Status",
       dataDropDown: EntityEventStatus,
       placeholder: "Status"
+    },
+    {
+        field: "Description",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
     }
   ];
   const primarySearch = [
@@ -130,7 +143,16 @@ const BaseMasterType = props => {
   };
   return (
     <>
-
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"BaseMasterType"}
+        table={"ams_BaseMasterType"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -144,6 +166,7 @@ const BaseMasterType = props => {
         pageSize={25}
         height={500}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+        linkLog={"/masterlog/pallettypelog?id="}
       />
     </>
   );

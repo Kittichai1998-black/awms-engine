@@ -3,10 +3,10 @@ using AMWUtil.Exception;
 
 using ADO.WMSStaticValue;
 using ADO.WMSDB;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,14 +66,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         issuedSto.qty = qtyConvert_issued.newQty;
                         issuedSto.parentID = null;
                         issuedSto.mapstos = null;
-                        issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
+                        issuedSto.eventStatus = StorageObjectEventStatus.PACK_PICKED;
                         var stoIDIssued = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
                         ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
 
 
                         if (updSto.baseQty == 0)
                         {
-                            updSto.eventStatus = StorageObjectEventStatus.REMOVED;
+                            updSto.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
 
                             ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
 
@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
                                 if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
                                 {
-                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                                    updSto.eventStatus = StorageObjectEventStatus.PACK_RECEIVED;
                                 }
                                 else
                                 {
@@ -144,7 +144,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             return status == EntityStatus.DONE;
                         }))
                         {
-                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.REMOVE, this.BuVO);
+                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.BASE_REMOVE, this.BuVO);
                             if (parentUpdate.parentID.HasValue)
                                 updatePallet(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
                         }

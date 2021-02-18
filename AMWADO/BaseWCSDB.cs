@@ -1,6 +1,6 @@
 ﻿using AMWUtil.DataAccess;
 using AMWUtil.PropertyFile;
-using AWMSModel.Constant.StringConst;
+using AMSModel.Constant.StringConst;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;

@@ -2,7 +2,7 @@ import React from "react";
 //import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import { EntityEventStatus } from "../../../components/Models/EntityStatus";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const SKUMasterType = props => {
@@ -14,23 +14,23 @@ const SKUMasterType = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      filterType: "dropdown",
-      colStyle: { textAlign: "center" },
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: EntityEventStatus,
-        typeDropDown: "normal"
+      filterType:"dropdown",
+      colStyle:{textAlign:"center"},
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "SKU Type Code", accessor: "Code", width: 300 },
-    { Header: "SKU Type Name", accessor: "Name", width: 150 },
-    { Header: "Update By", accessor: "LastUpdateBy", width: 150 },
+    { Header: "SKU Type Code", accessor: "Code", width:300 },
+    { Header: "SKU Type Name", accessor: "Name", width:150 },
+    { Header: "Update By", accessor: "LastUpdateBy", width:150  },
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      filterable: false,
-      width: 130,
+      filterable:false,
+      width:130,
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
     }
@@ -135,7 +135,16 @@ const SKUMasterType = props => {
 
   return (
     <>
-
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"SKUMasterType"}
+        table={"ams_SKUMasterType"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}

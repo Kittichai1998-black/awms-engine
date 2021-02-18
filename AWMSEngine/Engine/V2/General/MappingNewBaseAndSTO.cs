@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Exception;
 using ADO.WMSStaticValue;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.V2.General
                 StorageObjectCriteria baseSto = new StorageObjectCriteria()
                 {
                     code = reqVO.baseCode,
-                    eventStatus = reqVO.isEmptyPallet ? StorageObjectEventStatus.RECEIVED : StorageObjectEventStatus.NEW,
+                    eventStatus = reqVO.isEmptyPallet ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_NEW,
                     name = reqVO.isEmptyPallet ? "Empty Pallet" : "Pallet",
                     qty = 1,
                     unitCode = _unitType.Code,

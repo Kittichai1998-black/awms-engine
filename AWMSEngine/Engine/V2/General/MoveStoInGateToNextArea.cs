@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;

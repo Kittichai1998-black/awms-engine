@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,7 +119,14 @@ namespace ADO.WMSStaticValue
             {
                 string c = string.Format(code.Attribute<EnumValueAttribute>().ValueString, (int)processType);
                 var res = GetConfigValue(c);
-                return res;
+                if (String.IsNullOrWhiteSpace(res))
+                {
+                    throw new Exception("ไม่พบ Configs '" + c + "' ในระบบ!");
+                }
+                else
+                {
+                    return res;
+                }
             }
             catch
             {
@@ -133,10 +140,8 @@ namespace ADO.WMSStaticValue
         }
         public string GetConfigValue(string code)
         {
-            string _namespace = code.LastIndexOf('.') > 0 ? code.Substring(0, code.LastIndexOf('.')) : string.Empty;
-            string _datakey = code.LastIndexOf('.') > 0 ? code.Substring(code.LastIndexOf('.')+1) : code;
 
-            var config = this.Configs.FirstOrDefault(x => x.DataKey == _datakey && (x.Namespace ?? string.Empty) == _namespace);
+            var config = this.Configs.FirstOrDefault(x => x.DataKey == code);
             if (config == null)
                 return string.Empty;
             return config.DataValue.Get<string>();

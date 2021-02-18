@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.HubService;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -137,6 +137,16 @@ namespace AWMSEngine.Controllers.V2
                 if (serviceMst != null)
                 {
                     Type type = ClassType.GetClassType(serviceMst.FullClassName.Trim());//Type.GetType(className.FullClassName);
+                    if(type == null)
+                        return new
+                        {
+                            _result = new
+                            {
+                                status = 0,
+                                code = AMWUtil.Exception.AMWExceptionCode.S0001.ToString(),
+                                message = "service class not found"
+                            }
+                        };
                     var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { (ControllerBase)this, (int)serviceMst.ID.Value, isAuthen });
                     var res = getInstanct.Execute(jsonObj);
                     return res;

@@ -1,9 +1,9 @@
-﻿using AWMSModel.Entity;
+﻿using AMSModel.Entity;
 using System;
 using System.Linq;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.General
@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.V2.General
                         uname = user.Name,
                         exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXPIRE_HR).Get<int>()),
                         extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXTEND_HR).Get<int>()),
-                        pms = permissions.Select(x=>x.ID.Value).ToArray(),
+                        //pms = permissions.Select(x=>x.ID.Value).ToArray(),
                         pos = prodOwner.Select(x=> x.ProductOwner_ID).ToArray()
                     }
                 };

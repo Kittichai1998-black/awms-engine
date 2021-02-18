@@ -1,4 +1,4 @@
-﻿using AWMSModel.Criteria;
+﻿using AMSModel.Criteria;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

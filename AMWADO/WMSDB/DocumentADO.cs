@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Common;
 using ADO.WMSStaticValue;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,8 +103,8 @@ namespace ADO.WMSDB
                 param.Add("@ref1", doc.Ref1);
                 param.Add("@ref2", doc.Ref2);
                 param.Add("@ref3", doc.Ref3);
-                param.Add("@ref4", doc.Ref4);
-                
+                param.Add("@ref4", doc.Ref4);                
+
                 param.Add("@for_customer_ID", doc.For_Customer_ID);
                 param.Add("@productOwner", doc.ProductOwner_ID);
 
@@ -146,8 +146,6 @@ namespace ADO.WMSDB
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);
-            param.Add("@baseCode", docItem.BaseCode);
-            param.Add("@locationCode", docItem.LocationCode);
             param.Add("@quantity", docItem.Quantity);
             param.Add("@baseQuantity", docItem.BaseQuantity);
             param.Add("@unitTypeID", docItem.UnitType_ID);
@@ -166,6 +164,8 @@ namespace ADO.WMSDB
             param.Add("@cartonNo", docItem.CartonNo);
             param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@lot", docItem.Lot);
+            param.Add("@baseCode", docItem.BaseCode);
+            param.Add("@locationCode", docItem.LocationCode);
             param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
             param.Add("@incubationDay", docItem.IncubationDay);
@@ -185,8 +185,8 @@ namespace ADO.WMSDB
             docItem.ID = docItemTmp.ID;
             if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
                 docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; DistoADO.GetInstant().Insert(x, buVO); });
-            
-            /*docItem.StorageObjectIDs = DataADO.GetInstant()
+
+            /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
                 .Select(x=>x.StorageObject_ID)
                 .ToList();*/

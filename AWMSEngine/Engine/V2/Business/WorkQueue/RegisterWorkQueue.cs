@@ -1,8 +1,8 @@
-﻿using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Request;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Common;
 using AMWUtil.Logger;
-using AWMSModel.Constant.StringConst;
+using AMSModel.Constant.StringConst;
 using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Business.Received;
@@ -68,22 +68,24 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this.ValidateObjectSizeLimit(sto);
             var docItem = GetDocumentItemAndDISTO(sto, reqVO);
             var desLocation = this.GetDesLocations(sto, reqVO);
+            if (desLocation == null)
+            {
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่สามารถนำพาเลทรับเข้าผ่าน Area นี้ได้");
+            }
             var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
             if (queueTrx.IOType == IOType.OUTPUT)
             {
                 ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
                 StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
-                StorageObjectEventStatus.PICKING, this.BuVO);
+                StorageObjectEventStatus.PACK_PICKING, this.BuVO);
             }
             else
             {
                 var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                 packs.ForEach(pack => {
-                    if (pack.eventStatus == StorageObjectEventStatus.NEW ||
-                    pack.eventStatus == StorageObjectEventStatus.AUDITED ||
-                    pack.eventStatus == StorageObjectEventStatus.COUNTED)
+                    if (pack.eventStatus == StorageObjectEventStatus.PACK_NEW)
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.PACK_RECEIVING, this.BuVO);
                     }
                 });
 
@@ -188,7 +190,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                     if (stopacks == null || stopacks.Count == 0)
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.PACK_NEW, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                         sto = this.CreateSto(reqVO);
                     }
@@ -307,7 +309,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 { 
 
                     //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, 
-                    if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
+                    if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.PACK_NEW))
                     {
                         //get Document
                         var docItemLists = ADO.WMSDB.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
@@ -521,13 +523,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var skutype = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
             if (skutype == null)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
+           
             if(skutype.GroupType != SKUGroupType.ESP)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "สินค้าประเภท " + skutype.GroupType + "ไม่สามารถเบิกได้");
 
             ams_PackMaster packMaster = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
             if (packMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
-
 
             desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
                 if (desWarehouse == null)

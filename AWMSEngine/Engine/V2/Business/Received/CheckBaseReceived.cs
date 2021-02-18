@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 
 namespace AWMSEngine.Engine.V2.Business.Received
 {
@@ -52,7 +52,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                       new SQLConditionCriteria[] {
                             new SQLConditionCriteria("AreaLocationMaster_ID",location.ID.Value, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
-                            new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS)
+                            new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PACK_NEW, SQLOperatorType.EQUALS)
                             //new SQLConditionCriteria("Status",E, SQLOperatorType.EQUALS, SQLConditionType.AND)
                       }, this.BuVO).FirstOrDefault();
 

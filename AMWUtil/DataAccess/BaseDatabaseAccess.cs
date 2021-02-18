@@ -28,7 +28,8 @@ namespace AMWUtil.DataAccess
                 object v = parameter.Get<object>(x);
                 if(v == null)
                     return string.Format("@{0}=NULL", x);
-
+                if (v is bool)
+                    return string.Format("@{0}={1}", x, (bool)v ? 1 : 0);
                 return string.Format("@{0}='{1}'", x, v.Json());
             }));
         }
@@ -42,26 +43,42 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             IEnumerable<T> res = null;
-            if (logger != null) logger.LogDebug("[BEGIN_QUERY] " + cmdTxt + " | " + DynamicParametersToString(parameter));
-            if (transaction != null)
+            DateTime dt = DateTime.Now;
+            try
             {
-                res = transaction.Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
-            }
-            else if(conn != null)
-            {
-                res = conn.Query<T>(cmdTxt, parameter, null, true, 60, commandType);
-            }
-            else
-            {
-                using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
+                if (transaction != null)
                 {
-                    Connection.Open();
-                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
-                    transaction.Commit();
+                    res = transaction.Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
+                }
+                else if (conn != null)
+                {
+                    res = conn.Query<T>(cmdTxt, parameter, null, true, 60, commandType);
+                }
+                else
+                {
+                    using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
+                    {
+                        Connection.Open();
+                        transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                        res = Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
+                        transaction.Commit();
+                    }
                 }
             }
-            if (logger != null) logger.LogDebug("[END_QUERY] output count > " + res.Count());
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                if (logger != null)
+                    logger.LogDebug(string.Format("[QUERY] [{0}ms] rows={1} | {2}; {3}",
+                        (DateTime.Now - dt).TotalMilliseconds,
+                        (res == null ? "" : res.ToString()),
+                        cmdTxt,
+                        DynamicParametersToString(parameter)
+                        ));
+            }
             return res;
         }
 
@@ -74,27 +91,46 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             T res;
-            if (logger != null) logger.LogDebug("[BEGIN_SCALAR] " + cmdTxt + " | " + DynamicParametersToString(parameter));
-            if (transaction != null)
+            object res2 = null;
+            DateTime dt = DateTime.Now;
+            try
             {
-                res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
-            }
-            else if(conn != null)
-            {
-                res = conn.ExecuteScalar<T>(cmdTxt, parameter, null, 60, commandType);
-            }
-            else
-            {
-                using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
+                
+                if (transaction != null)
                 {
-                    Connection.Open();
-                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
-                    transaction.Commit();
-
+                    res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
                 }
+                else if (conn != null)
+                {
+                    res = conn.ExecuteScalar<T>(cmdTxt, parameter, null, 60, commandType);
+                }
+                else
+                {
+                    using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
+                    {
+                        Connection.Open();
+                        transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                        res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
+                        transaction.Commit();
+
+                    }
+                }
+                res2 = res;
             }
-            if (logger != null) logger.LogDebug("[END_SCALAR] output value > " + res);
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                if (logger != null)
+                    logger.LogDebug(string.Format("[SCALAR] [{0}ms] value={1} | {2} {3}",
+                        (DateTime.Now - dt).TotalMilliseconds,
+                        res2,
+                        cmdTxt,
+                        DynamicParametersToString(parameter)
+                        ));
+            }
             return res;
         }
 
@@ -106,27 +142,44 @@ namespace AMWUtil.DataAccess
             SqlTransaction transaction = null,
             SqlConnection conn = null)
         {
-            int res;
-            if (logger != null) logger.LogDebug("[BEGIN_EXECUTE] " + cmdTxt + " | " + DynamicParametersToString(parameter));
-            if (transaction != null)
+            int res = -1;
+            var dt = DateTime.Now;
+            try
             {
-                res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
-            }
-            else if(conn != null)
-            {
-                res = conn.Execute(cmdTxt, parameter, null, 60, commandType);
-            }
-            else
-            {
-                using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
+                if (transaction != null)
                 {
-                    Connection.Open();
-                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
-                    transaction.Commit();
+                    res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
                 }
+                else if (conn != null)
+                {
+                    res = conn.Execute(cmdTxt, parameter, null, 60, commandType);
+                }
+                else
+                {
+                    using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
+                    {
+                        Connection.Open();
+                        transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                        res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
+                        transaction.Commit();
+                    }
+                }
+
             }
-            if (logger != null) logger.LogDebug("[END_EXECUTE] output value > " + res);
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                if (logger != null)
+                    logger.LogDebug(string.Format("[EXEC] [{0}ms] status={1} | {2}; {3}",
+                        (DateTime.Now - dt).TotalMilliseconds,
+                        res,
+                        cmdTxt,
+                        DynamicParametersToString(parameter)
+                        ));
+            }
             return res;
         }
 

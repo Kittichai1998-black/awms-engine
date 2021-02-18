@@ -1,8 +1,6 @@
 ﻿using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
-using AWCSModel.Constant.StringConst;
-using AWCSModel.Criteria;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,7 +15,7 @@ namespace AWCSEngine
 {
     public partial class formMain : Form
     {
-        public formMain()
+        public formMain(VOCriteria buVO)
         {
             InitializeComponent();
         }
@@ -42,11 +40,7 @@ namespace AWCSEngine
 
         private void menuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if(e.ClickedItem == this.menuMachineLayout)
-            {
-                formDesignMachineLayout form = new formDesignMachineLayout(this.BuVO);
-                form.Show();
-            }
+            
         }
     }
 }

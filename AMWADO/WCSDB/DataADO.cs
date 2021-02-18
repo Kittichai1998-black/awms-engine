@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Logger;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,8 +9,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSModel.Criteria.Attribute;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Criteria.Attribute;
+using AMSModel.Constant.EnumConst;
 using System.Text.RegularExpressions;
 
 namespace ADO.WCSDB
@@ -364,6 +364,11 @@ namespace ADO.WCSDB
                 new SQLConditionCriteria[] { new SQLConditionCriteria("Code", code, SQLOperatorType.EQUALS) }, 
                 values,
                 buVO);
+        }
+        public long? UpdateBy<T>(T model, VOCriteria buVO)
+             where T : BaseEntityID
+        {
+            return UpdateByID<T>(model.ID.Value, buVO, model.PropertieFieldKeyValuePairs().ToArray());
         }
         public long? UpdateBy<T>(SQLConditionCriteria[] wheres, KeyValuePair<string, object>[] values, VOCriteria buVO)
              where T : IEntityModel

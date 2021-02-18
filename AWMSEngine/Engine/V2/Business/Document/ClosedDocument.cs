@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,10 +95,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                             var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, false, false, BuVO);
                                             if (stosPack != null)
                                             {
-                                                if (stosPack.eventStatus != StorageObjectEventStatus.RECEIVED
-                                                || stosPack.eventStatus != StorageObjectEventStatus.PICKING
-                                                || stosPack.eventStatus != StorageObjectEventStatus.PICKED)
-                                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(stosPack.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                                                if (stosPack.eventStatus == StorageObjectEventStatus.PACK_COUNTED)
+                                                {
+                                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(stosPack.id.Value, null, null, StorageObjectEventStatus.PACK_RECEIVED, this.BuVO);
+                                                }
                                             }
                                         });
                                     }

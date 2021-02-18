@@ -51,6 +51,21 @@ namespace AMWUtil.Common
             return res + (new String('0', space - res.Length > 0 ? space - res.Length : 0));
         }
 
+        public static bool CompareFields<T>(this T model1,T model2)
+        {
+            foreach (var f1 in model1.GetType().GetFields())
+            {
+                if (f1.GetValue(model1) != f1.GetValue(model2))
+                    return false;
+            }
+            foreach (var f1 in model1.GetType().GetProperties())
+            {
+                if (f1.GetValue(model1) != f1.GetValue(model2))
+                    return false;
+            }
+            return true;
+        }
+
         public static T ConvertTextFormatToModel<T>(string txt,string format)
             where T : class, new()
         {
@@ -95,6 +110,15 @@ namespace AMWUtil.Common
             return t;
         }
 
+        public static T Get<T>(this object o)
+        {
+            return o.ToString().Get<T>();
+        }
+        public static T? GetTry<T>(this object o)
+            where T : struct
+        {
+            return o.ToString().GetTry<T>();
+        }
         public static T Get<T>(this string s)
         {
             if (typeof(T) == typeof(string)) return (T)(object)s;
@@ -104,6 +128,7 @@ namespace AMWUtil.Common
             if (typeof(T) == typeof(double)) return (T)(object)double.Parse(s);
             if (typeof(T) == typeof(float)) return (T)(object)float.Parse(s);
             if (typeof(T) == typeof(long)) return (T)(object)long.Parse(s);
+            if (typeof(T) == typeof(short)) return (T)(object)short.Parse(s);
             if (typeof(T) == typeof(DateTime))
             {
                 if(s.Contains("\\") || s.Contains("-"))
@@ -419,8 +444,16 @@ namespace AMWUtil.Common
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonX);
         }
 
-        public static List<KeyValuePair<string, object>> FieldKeyValuePairs<T>(this T obj)
+        public static List<KeyValuePair<string, object>> PropertieFieldKeyValuePairs<T>(this T obj)
             where T : class
+        {
+            var res = obj.PropertieKeyValuePairs();
+            res.AddRange(obj.FieldKeyValuePairs());
+            return res;
+        }
+
+        public static List<KeyValuePair<string, object>> FieldKeyValuePairs<T>(this T obj)
+        where T : class
         {
             List<KeyValuePair<string, object>> res = new List<KeyValuePair<string, object>>();
             var fs = typeof(T).GetFields();
