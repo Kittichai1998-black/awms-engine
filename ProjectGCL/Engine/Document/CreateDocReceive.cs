@@ -31,6 +31,7 @@ namespace ProjectGCL.Engine.Document
             public string api_ref;
             public string doc_wms;
             public string doc_wcs;
+            public DateTime Date_time;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -116,7 +117,8 @@ namespace ProjectGCL.Engine.Document
             {
                 api_ref = reqVO.api_ref,
                 doc_wms = reqVO.doc_wms,
-                doc_wcs = document.Code
+                doc_wcs = document.Code,
+                Date_time = reqVO.Date_time
 
             };
             return res;
@@ -188,6 +190,8 @@ namespace ProjectGCL.Engine.Document
             List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
             var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
 
+            var grDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(DocGR.ID.Value, this.BuVO);
+
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.discharge);
             optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, reqVO.start_pallet);
             optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, reqVO.end_pallet);
@@ -218,7 +222,7 @@ namespace ProjectGCL.Engine.Document
 
             docItemsList.Add(new CreateGRDocument.TReq.ReceiveItem
             {
-
+                parentDocumentItem_ID = grDocItem[0].ID,
                 skuCode = sku.Code,
                 packCode = pack.Code,
                 quantity = reqVO.qty,
@@ -234,7 +238,7 @@ namespace ProjectGCL.Engine.Document
                 eventStatus = DocumentEventStatus.NEW,
                 options = optionsDocItems
 
-            });
+            }); ;
 
             docH.receiveItems = docItemsList;
             docResultPA = new CreateGRDocument().Execute(Logger, this.BuVO, docH);

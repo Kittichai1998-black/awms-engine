@@ -21,7 +21,10 @@ namespace GCLModel.Criteria
             public string status;
             public string warehouse; //Sou
             public string staging;
-            public string dock;
+            public string Dock_no;
+            public decimal Priority;
+            public string Group_Task;
+            public DateTime Date_time;
 
     }
 }
