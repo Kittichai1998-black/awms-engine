@@ -103,8 +103,8 @@ namespace ADO.WMSDB
                 param.Add("@ref1", doc.Ref1);
                 param.Add("@ref2", doc.Ref2);
                 param.Add("@ref3", doc.Ref3);
-                param.Add("@ref4", doc.Ref4);
-                
+                param.Add("@ref4", doc.Ref4);                
+
                 param.Add("@for_customer_ID", doc.For_Customer_ID);
                 param.Add("@productOwner", doc.ProductOwner_ID);
 
@@ -164,6 +164,8 @@ namespace ADO.WMSDB
             param.Add("@cartonNo", docItem.CartonNo);
             param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@lot", docItem.Lot);
+            param.Add("@baseCode", docItem.BaseCode);
+            param.Add("@locationCode", docItem.LocationCode);
             param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
             param.Add("@incubationDay", docItem.IncubationDay);

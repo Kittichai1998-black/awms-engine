@@ -239,10 +239,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
 
                 }
-                else if (!Item.options.Contains("basecode") && reqVO.docTypeId != DocumentTypeID.PHYSICAL_COUNT)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
-                }
+                //else if (!Item.options.Contains("basecode") && reqVO.docTypeId != DocumentTypeID.PHYSICAL_COUNT)
+                //{
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
+                //}
                 ConvertUnitCriteria baseUnitTypeConvt = null;
                 if (Item.quantity.HasValue && packMst != null)
                 {
@@ -283,7 +283,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
-                    Code = skuMst != null ? skuMst.Code : ObjectUtil.QryStrGetValue(Item.options, "basecode"),
+                    Code = skuMst != null ? skuMst.Code : null,
                     SKUMaster_ID = skuMst != null ? skuMst.ID : null,
                     PackMaster_ID = packMst != null ? packMst.ID : null,
                     BaseCode = Item.baseCode,
