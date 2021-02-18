@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using AMWUtil.Exception;
+using AMWUtil.Common;
 
 namespace AMWUtil.DataAccess
 {
@@ -37,6 +38,11 @@ namespace AMWUtil.DataAccess
                 {
                     file.MoveTo($"{desPath}/{file.Name}");
                 }
+                else
+                {
+                    File.Delete($"{desPath}/{file.Name}");
+                    file.MoveTo($"{desPath}/{file.Name}");
+                }
             }
             catch
             {
@@ -46,8 +52,17 @@ namespace AMWUtil.DataAccess
                         Directory.CreateDirectory(errorPath);
                     if (!File.Exists($"{desPath}/{file.Name}"))
                     {
-                        file.Replace($"{desPath}/{file.Name}", null);
+                        file.MoveTo($"{desPath}/{file.Name}");
                     }
+                    else
+                    {
+                        File.Delete($"{desPath}/{file.Name}");
+                        file.MoveTo($"{desPath}/{file.Name}");
+                    }
+                }
+                else
+                {
+                    File.Delete($"{desPath}/{file.Name}");
                 }
             }
         }
@@ -70,6 +85,26 @@ namespace AMWUtil.DataAccess
                 throw new System.Exception(ex.ToString());
             }
             
+        }
+
+        public static void CreateWCSFileJSON<T>(string pathIn, string pathOut, string pathOutRes, string fileName, T data)
+            where T : class
+        {
+            if(!File.Exists(pathOut) && !File.Exists(pathOutRes))
+            {
+                var jsonObj = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+                CreateTextFile(pathIn, jsonObj, $"{fileName}.json");
+                bool checkRead = false;
+                while (checkRead == false)
+                {
+                    if (File.Exists(pathOut))
+                    {
+                        var fileInfo = new FileInfo($"{pathOut}/{fileName}.json");
+                        MoveFile(fileInfo, pathOutRes, pathOutRes);
+                        checkRead = true;
+                    }
+                }
+            }
         }
     }
 }
