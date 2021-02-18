@@ -46,18 +46,19 @@ namespace AMWUtil.DataAccess
             }
             catch
             {
+                string fileName = file.Name + DateTime.Now.ToString();
                 if (!string.IsNullOrWhiteSpace(errorPath))
                 {
                     if (!Directory.Exists(errorPath))
                         Directory.CreateDirectory(errorPath);
-                    if (!File.Exists($"{desPath}/{file.Name}"))
+                    if (!File.Exists($"{desPath}/{fileName}"))
                     {
-                        file.MoveTo($"{desPath}/{file.Name}");
+                        file.MoveTo($"{desPath}/{fileName}");
                     }
                     else
                     {
-                        File.Delete($"{desPath}/{file.Name}");
-                        file.MoveTo($"{desPath}/{file.Name}");
+                        File.Delete($"{desPath}/{fileName}");
+                        file.MoveTo($"{desPath}/{fileName}");
                     }
                 }
                 else
