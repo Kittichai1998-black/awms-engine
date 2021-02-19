@@ -10,12 +10,13 @@ namespace AMSModel.Constant.EnumConst
         PASSED = 1,
         REJECTED = 2,
         NOTPASS = 3,
-        UR = 4,
-        QI = 5,
-        BLOCK = 6,
-        HOLD = 9
-        //GCL
-        // ACC / ACD / ACN / ACM
-
+        QI = 4, //GCL, DOH
+        ACC = 5, //GCL
+        ACD = 6,//GCL
+        ACN = 7,//GCL
+        ACM = 8,//GCL
+        HOLD = 9,
+        BLOCK = 10,//DOH
+        UR = 11//DOH
     }
 }

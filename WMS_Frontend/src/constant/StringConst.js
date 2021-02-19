@@ -9,3 +9,4 @@ export const OPT_DATE = "date";
 export const OPT_SUPPLIER_ID = "supplier_id";
 export const OPT_AUTO_DOC = "_autodoc";
 export const OPT_PARENT_DOCUMENT_ID = "_parent_document_id";
+export const OPT_DOCITEM_ID = "_docitem_id";

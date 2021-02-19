@@ -95,6 +95,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     ref4 = item.ref4,
                     auditStatus = _auditstatus,
                     eventStatus = DocumentEventStatus.NEW,
+                    productionDate = item.productionDate,
+                    expireDate = item.expireDate
                 });
 
             });
@@ -156,6 +158,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         ref4 = item.Ref4,
                         auditStatus = item.AuditStatus.Value,
                         eventStatus = DocumentEventStatus.NEW,
+                        productionDate = item.ProductionDate,
+                        expireDate = item.ExpireDate
                     });
                 });
                 

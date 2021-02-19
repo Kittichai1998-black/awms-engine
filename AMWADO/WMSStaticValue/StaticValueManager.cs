@@ -227,7 +227,7 @@ namespace ADO.WMSStaticValue
         {
             var unitPackH = this.PackUnitConverts.FindAll(x => x.SKUMaster_ID == skuID).FirstOrDefault();
             var unitPack = this.PackUnitConverts.FindAll(x => x.SKUMaster_ID == skuID);
-           
+
 
             if (unitPackH == null)
                 throw new Exception("Fail : UnitType ไม่มีใน Pack Convert");
@@ -259,7 +259,7 @@ namespace ADO.WMSStaticValue
                 throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config Convert");
 
 
-            var dataConvert_C2 = CovertUnit(oldQty, oldUnitTypeID, newUnitTypeID,arr.covertLists);
+            var dataConvert_C2 = CovertUnit(oldQty, oldUnitTypeID, newUnitTypeID, arr.covertLists);
             var dataConvert_BaseQty = CovertUnit(oldQty, oldUnitTypeID, unitPackH.SKUMaster_UnitType_ID, arr.covertLists);
 
             if (checkUnit == null)
@@ -281,12 +281,12 @@ namespace ADO.WMSStaticValue
                                                                                unitPackH.C2_PackMaster_Code : null,
                 newQty = dataConvert_C2 == null ? 0 : dataConvert_C2.Value,
                 newUnitType_ID = newUnitTypeID,
-             
+
             };
             return res;
         }
 
-        private static decimal? CovertUnit(decimal c1qty, long c1unit, long c2unit,List< dataConvert.convertList> arr)
+        private static decimal? CovertUnit(decimal c1qty, long c1unit, long c2unit, List<dataConvert.convertList> arr)
         {
 
             var cm = arr.FirstOrDefault(x => x.unitType_C1 == c1unit && x.unitType_C2 == c2unit);
@@ -322,7 +322,7 @@ namespace ADO.WMSStaticValue
         }
         public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal oldQty, long oldUnitTypeID, long newUnitTypeID)
         {
-            int skuID = this.PackUnitConverts.First(x => x.C1_PackMaster_ID == packID || x.C2_PackMaster_ID  == packID).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.C1_PackMaster_ID == packID || x.C2_PackMaster_ID == packID).SKUMaster_ID;
             return this.ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, newUnitTypeID);
         }
 

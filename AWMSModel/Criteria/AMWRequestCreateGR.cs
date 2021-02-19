@@ -39,7 +39,7 @@ namespace AMSModel.Criteria
             public string ref2;
             public string ref3;
             public string ref4;
-
+            public string options;
         }
 
     }
