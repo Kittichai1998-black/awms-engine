@@ -210,7 +210,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<ams_WaveSeqTemplate> waveTemplate = new List<ams_WaveSeqTemplate>();
             var Wave = new amt_Wave()
             {
-                IOType = IOType.OUTPUT,
+                IOType = IOType.OUTBOUND,
                 Code = "Code",
                 Name = "Name",
                 Des_Area_ID = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.desASRSAreaCode).ID.Value,

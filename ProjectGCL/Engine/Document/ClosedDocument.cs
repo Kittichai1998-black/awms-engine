@@ -61,17 +61,23 @@ namespace ProjectGCL.Engine.Document
                                             if (stosPack != null)
                                             { 
                                                 //update last pallet storageObject
+
                                                 if(count == (distos.Count - 1))
                                                 {
-                                                    var convertBase = ADO.WMSStaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(stosPack.skuID.Value, Int32.Parse(optionsLastpallet), stosPack.unitID);
+                                                    if( optionsLastpallet != "")
+                                                    {
+                                                        var convertBase = ADO.WMSStaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(stosPack.skuID.Value, Int32.Parse(optionsLastpallet), stosPack.unitID);
 
-                                                    disto.Quantity = Int32.Parse(optionsLastpallet);
-                                                    disto.BaseQuantity = convertBase.newQty;
-                                                    ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
+                                                        disto.Quantity = Int32.Parse(optionsLastpallet);
+                                                        disto.BaseQuantity = convertBase.newQty;
+                                                        ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
 
-                                                    stosPack.qty = Int32.Parse(optionsLastpallet);
-                                                    stosPack.baseQty = convertBase.newQty;
+                                                        stosPack.qty = Int32.Parse(optionsLastpallet);
+                                                        stosPack.baseQty = convertBase.newQty;
+                                                    }
+
                                                 }
+
                                                 stosPack.IsStock = true;
                                                 ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stosPack, buVO);
                                                 updatePallet(stosPack.parentID.Value, stosPack.parentType.Value);

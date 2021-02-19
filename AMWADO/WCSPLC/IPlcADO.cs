@@ -8,8 +8,9 @@ namespace ADO.WCSPLC
 {
     public interface IPlcADO
     {
-        //public PlcCommunicationType GetPlcCommunicationType();
-        public IPlcADO GetInstant(int logicalNum);
+        public string LogicalNum { get;  }
+        public void Open();
+        public void Close();
         public string GetDevicelString(string key, int length);
         public short GetDevicelShot(string key);
         public int GetDevicelInt(string key);

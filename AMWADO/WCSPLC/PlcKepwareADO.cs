@@ -5,76 +5,74 @@ using System.Text;
 
 namespace ADO.WCSPLC
 {
-    public class PlcKepwareADO : IPlcADO
+    public class PlcKepwareADO : BasePlcADO<PlcKepwareADO>
     {
-        private static Dictionary<int, PlcKepwareADO> instants;
-        public IPlcADO GetInstant(int logicalNum)
-        {
-            if (PlcKepwareADO.instants == null)
-            {
-                PlcKepwareADO.instants = new Dictionary<int, PlcKepwareADO>();
-            }
-            if (!PlcKepwareADO.instants.ContainsKey(logicalNum))
-                PlcKepwareADO.instants.Add(logicalNum, new PlcKepwareADO());
-            return instants[logicalNum];
-        }
-
-        public double GetDevicelDouble(string key)
+        public override void Open()
         {
             throw new NotImplementedException();
         }
 
-        public float GetDevicelFloat(string key)
+        public override double GetDevicelDouble(string key)
         {
             throw new NotImplementedException();
         }
 
-        public int GetDevicelInt(string key)
+        public override float GetDevicelFloat(string key)
         {
             throw new NotImplementedException();
         }
 
-        public long GetDevicelLong(string key)
+        public override int GetDevicelInt(string key)
         {
             throw new NotImplementedException();
         }
 
-        public short GetDevicelShot(string key)
+        public override long GetDevicelLong(string key)
         {
             throw new NotImplementedException();
         }
 
-        public string GetDevicelString(string key, int length)
+        public override short GetDevicelShot(string key)
         {
             throw new NotImplementedException();
         }
 
-        public void SetDevicelString(string key, string value)
+        public override string GetDevicelString(string key, int length)
         {
             throw new NotImplementedException();
         }
 
-        public void SetDevicelShot(string key, short value)
+        public override void SetDevicelDouble(string key, double value)
         {
             throw new NotImplementedException();
         }
 
-        public void SetDevicelInt(string key, int value)
+        public override void SetDevicelFloat(string key, float value)
         {
             throw new NotImplementedException();
         }
 
-        public void SetDevicelLong(string key, long value)
+        public override void SetDevicelInt(string key, int value)
         {
             throw new NotImplementedException();
         }
 
-        public void SetDevicelFloat(string key, float value)
+        public override void SetDevicelLong(string key, long value)
         {
             throw new NotImplementedException();
         }
 
-        public void SetDevicelDouble(string key, double value)
+        public override void SetDevicelShot(string key, short value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetDevicelString(string key, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Close()
         {
             throw new NotImplementedException();
         }

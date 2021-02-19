@@ -10,45 +10,59 @@ namespace AWCSEngine.Common
 {
     public static class LocationUtil
     {
-        public static TreeNode<int> GetLocationRouteTree(string souLocCode, string desLocCode)
+        public static TreeNode<long> GetLocationRouteTree(string souLocCode, string desLocCode)
         {
-            int souLocID = (int)StaticValueManager.GetInstant().Locations.First(x => x.Code == souLocCode).ID.Value;
-            int desLocID = (int)StaticValueManager.GetInstant().Locations.First(x => x.Code == souLocCode).ID.Value;
-            return GetLocationRouteTree(souLocID, desLocID);
+            var souLoc = StaticValueManager.GetInstant().Locations.First(x => x.Code == souLocCode);
+            var desLoc = StaticValueManager.GetInstant().Locations.First(x => x.Code == desLocCode);
+            var res = GetLocationRouteTree(souLoc.ID.Value, desLoc.ID.Value, new List<acs_LocationRoute>());
+            return res;
         }
-        public static TreeNode<int> GetLocationRouteTree(int souLocID, int desLocID)
+        public static TreeNode<long> GetLocationRouteTree(long souLocID, long desLocID)
         {
             var res = GetLocationRouteTree(souLocID, desLocID, new List<acs_LocationRoute>());
             return res;
         }
-        private static TreeNode<int> GetLocationRouteTree(int souLocID, int desLocID, List<acs_LocationRoute> useLocRoutes)
+        private static TreeNode<long> GetLocationRouteTree(long souLocID, long desLocID, List<acs_LocationRoute> useLocRoutes)
         {
-            var locs = StaticValueManager.GetInstant().LocationRoutes.FindAll(x => x.Sou_Location_ID == souLocID && !useLocRoutes.Contains(x));
+            var souLoc = StaticValueManager.GetInstant().Locations.First(x => x.ID == souLocID);
+            var desLoc = StaticValueManager.GetInstant().Locations.First(x => x.ID == desLocID);
+
+            var locs = StaticValueManager.GetInstant().LocationRoutes
+                .FindAll(x => x.Sou_Area_ID == souLoc.Area_ID && (!x.Sou_Location_ID.HasValue || x.Sou_Location_ID == souLoc.ID) && !useLocRoutes.Contains(x));
             useLocRoutes.AddRange(locs);
             //useLocRoutes.RemoveAll(x=>locs.Contains(x));
+            TreeNode<long> tree = null;
             foreach (var loc in locs)
             {
                 if (loc == null) return null;
 
-                if (loc.Des_Location_ID == desLocID)
+                if (loc.Des_Area_ID==desLoc.Area_ID && (!loc.Des_Location_ID.HasValue || loc.Des_Location_ID == desLocID))
                 {
-                    TreeNode<int> child = new TreeNode<int>(desLocID);
-                    TreeNode<int> tree = new TreeNode<int>(souLocID);
+                    TreeNode<long> child = new TreeNode<long>(desLocID);
+                    if (tree == null)
+                        tree = new TreeNode<long>(souLocID);
                     tree.Add(child);
-                    return tree;
                 }
                 else
                 {
-                    TreeNode<int> child = GetLocationRouteTree(loc.Des_Location_ID, desLocID, useLocRoutes);
-                    if (child != null)
-                    {
-                        TreeNode<int> tree = new TreeNode<int>(souLocID);
-                        tree.Add(child);
-                        return tree;
-                    }
+                    StaticValueManager
+                        .GetInstant()
+                        .Locations
+                        .FindAll(x => x.Area_ID == loc.Des_Area_ID && (loc.Des_Location_ID.HasValue || x.ID == loc.Des_Location_ID))
+                        .ForEach(newSouLoc =>
+                        {
+                            TreeNode<long> child = GetLocationRouteTree(newSouLoc.ID.Value, desLocID, useLocRoutes);
+                            if (child != null)
+                            {
+                                if (tree == null)
+                                    tree = new TreeNode<long>(souLocID);
+                                tree.Add(child);
+                            }
+                        });
+
                 }
             }
-            return null;
+            return tree;
         }
     }
 }

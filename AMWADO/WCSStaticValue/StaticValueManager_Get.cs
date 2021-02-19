@@ -26,11 +26,31 @@ namespace ADO.WCSStaticValue
         }
         public acs_McRegistry GetMcRegistry(string key)
         {
-            return this.McRegistrys.FirstOrDefault(x => x.DataKey == key);
+            return this.McRegistrys.FirstOrDefault(x => x.DriverKey == key);
         }
         public acs_Location GetLocation(long id)
         {
             return this.Locations.FirstOrDefault(x => x.ID == id);
+        }
+        public acs_Location GetLocation(string code)
+        {
+            return this.Locations.FirstOrDefault(x => x.Code == code);
+        }
+        public acs_APIFileService GetAPIFile(long id)
+        {
+            return this.APIFiles.FirstOrDefault(x => x.ID == id);
+        }
+        public acs_APIFileService GetAPIFile(string code)
+        {
+            return this.APIFiles.FirstOrDefault(x => x.Code == code);
+        }
+        public acs_BotService GetBotService(long id)
+        {
+            return this.BotService.FirstOrDefault(x => x.ID == id);
+        }
+        public acs_BotService GetBotService(string code)
+        {
+            return this.BotService.FirstOrDefault(x => x.Code == code);
         }
     }
 }

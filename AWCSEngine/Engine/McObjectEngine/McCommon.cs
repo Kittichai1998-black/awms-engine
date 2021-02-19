@@ -3,12 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWCSEngine.Engine.Mc
+namespace AWCSEngine.Engine.McObjectEngine
 {
-    public class McCommon : BaseMcEngine
+    public class McCommon : BaseMcObjectEngine
     {
         public McCommon(acs_McMaster mcMst) : base(mcMst)
         {
+        }
+
+        protected override void Read_Plc2McWork_OnRun()
+        {
+
         }
 
         protected override bool OnIdle()
@@ -23,6 +28,7 @@ namespace AWCSEngine.Engine.Mc
 
         protected override bool OnWorking()
         {
+            this.McObject.Location_ID = this.McObject.Des_Location_ID;
             return false;
         }
 
@@ -35,5 +41,6 @@ namespace AWCSEngine.Engine.Mc
         {
             return false;
         }
+
     }
 }

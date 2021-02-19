@@ -30,7 +30,15 @@ namespace ADO.WCSStaticValue
         {
             return this._LocationRoutes = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_LocationRoute>("status", 1, buVO ?? new VOCriteria());
         }
+        public List<acs_APIFileService> LoadAPIFileService(VOCriteria buVO = null)
+        {
+            return this._APIFiles = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_APIFileService>("status", 1, buVO ?? new VOCriteria());
+        }
+        public List<acs_BotService> LoadBotService(VOCriteria buVO = null)
+        {
+            return this._BotService = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_BotService>("status", 1, buVO ?? new VOCriteria());
+        }
 
-        
+
     }
 }

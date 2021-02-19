@@ -1,7 +1,7 @@
 ﻿using AMSModel.Constant.EnumConst;
 using AMWUtil.Exception;
 using AWCSEngine.Engine;
-using AWCSEngine.Engine.Mc;
+using AWCSEngine.Engine.McObjectEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,26 +9,16 @@ using System.Text;
 
 namespace AWCSEngine.Controller
 {
-    public class McController
+    public class McController : BaseController<McController>
     {
 
-        private static McController instant;
-        public static McController GetInstant()
-        {
-            if (McController.instant == null)
-                McController.instant = new McController();
-            return McController.instant;
-        }
 
+        private List<BaseMcObjectEngine> McObjectList { get; set; }
 
-        private List<BaseMcEngine> McObjectList { get; set; }
-        private McController()
+        public void AddMC(BaseMcObjectEngine mcEng)
         {
-            this.McObjectList = new List<BaseMcEngine>();
-        }
-
-        public void AddMC(BaseMcEngine mcEng)
-        {
+            if (McObjectList == null)
+                this.McObjectList = new List<BaseMcObjectEngine>();
             this.McObjectList.Add(mcEng);
         }
 
@@ -37,11 +27,11 @@ namespace AWCSEngine.Controller
             return this.McObjectList.Select(x => x.Code + " > " + x.MessageLog).ToArray();
         }
 
-        public BaseMcEngine GetMcObject(string mcCode)
+        public BaseMcObjectEngine GetMcObject(string mcCode)
         {
             return this.McObjectList.FirstOrDefault(x => x.Code == mcCode);
         }
-        public BaseMcEngine GetMcObject(int mcID)
+        public BaseMcObjectEngine GetMcObject(int mcID)
         {
             return this.McObjectList.FirstOrDefault(x => x.ID == mcID);
         }

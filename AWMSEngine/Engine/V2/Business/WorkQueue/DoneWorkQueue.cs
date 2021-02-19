@@ -101,11 +101,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (queueTrx.Des_Warehouse_ID == _warehouse.ID.Value)
             {
 
-                if (queueTrx.IOType == IOType.INPUT)
+                if (queueTrx.IOType == IOType.INBOUND)
                 {
                     ManageDocumentInput(reqVO, docs, queueTrx, docItems, stos);
                 }
-                else if (queueTrx.IOType == IOType.OUTPUT)
+                else if (queueTrx.IOType == IOType.OUTBOUND)
                 {
                     if(docs.DocumentType_ID == DocumentTypeID.PICKING)
                     {
@@ -401,7 +401,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
 
-                if (queueTrx.IOType == IOType.OUTPUT)
+                if (queueTrx.IOType == IOType.OUTBOUND)
                 {
                     if (docItems.Count > 0)
                     {
