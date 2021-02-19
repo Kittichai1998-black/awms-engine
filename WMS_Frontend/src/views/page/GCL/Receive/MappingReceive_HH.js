@@ -235,7 +235,10 @@ const MappingReceive_HH = (props) => {
     const [areaMasterLoc, setareaMasterLoc] = useState();
     const [bodyCode, setbodyCode] = useState();
     const [warehouseID, setwarehouseID] = useState(0);
+    const [warehouseCode, setwarehouseCode] = useState();
     const [gateCode, setgateCode] = useState();
+    const [gateID, setgateID] = useState();
+    const [barCodeDoc, setbarCodeDoc] = useState();
     const [inputList, setInputList] = useState([{ barcode: "" }]);
     const [barCode, setbarCode] = useState([]);
     const [dataDoc, setdataDoc] = useState({});
@@ -289,7 +292,7 @@ const MappingReceive_HH = (props) => {
 
         var locationCode = "";
         if (valueInput) {
-            if (valueInput.locationCode) { locationCode = valueInput.locationCode; }
+            if (valueInput.locationCode) { locationCode = gateCode; }
         }
         return [
             { label: t("Select Gate"), value: locationCode,idrow : 1 },
@@ -305,6 +308,7 @@ const MappingReceive_HH = (props) => {
         list[index][name] = value;
         barCode.push(list)
         setInputList(list);
+
     };
 
     // handle click event of the Remove button
@@ -333,16 +337,16 @@ const MappingReceive_HH = (props) => {
                 if (row.idrow && row.idrow === 1) {
                       valueGate = row.value
                 }
-                console.log(valueGate)
+
 
                 return <div style={{ display: "flex" }}>
                     <AmInput
                         id={"locationCode"}
                         type="input"
-                        placeholder={valueGate.length > 0 ? valueGate :'Select Gate'}
+                        placeholder={'Select Gate'}
                         autoFocus={true}
                         style={{ width: "100%" }}
-                        defaultValue={valueGate.length > 0 ? 'AA' : ''}
+                        defaultValue={valueGate ?  valueGate :'' }
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, "locationCode")}
                         onKeyPress={(value, obj, element, event) => {
                             if (event.key === "Enter") {
@@ -402,9 +406,6 @@ const MappingReceive_HH = (props) => {
  const RenderAddBarCode = React.memo(({ data }) => {
         return <div>
             {data.map((x, i) => {
-
-                console.log(i)
-                console.log(x)
                 return (
                   
                     <div style={{ display: "flex" }}>
@@ -474,24 +475,31 @@ const MappingReceive_HH = (props) => {
     }
 
     const handleBack = (index) => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
         if (index === 1) {
-            setValueInput({ ...valueInput, locationCode: null })
-            setInputList([{ barcode: "" }]);
+            let ele = document.getElementById("locationCode");
+            if (ele)
+                ele.value = gateCode;
 
         }
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+       
 
     }
 
     const handleReset = () => {
-        setValueInput({});
+        //setValueInput({});
         setActiveStep(0);
         setDatas(null);
-        setInputList([{ barcode: "" }]);
+        //setInputList([{ barcode: "" }]);
     };
 
     const onHandleChangeInput = (value, field) => {
-        valueInput[field] = value;
+        if (value) {
+            if (field === 'locationCode') {
+                setgateCode(value)
+            }
+            valueInput[field] = value;
+        }
     };
 
     const CheckBarcodeMappingDocument = (listBarcode) => {
@@ -501,29 +509,57 @@ const MappingReceive_HH = (props) => {
         let qrCodes;
         listBarcode.forEach((x, i) => {
             qrCodes = {
-                "qrCode1": listBarcode[0] ? listBarcode[0] : null,
-                "qrCode2": listBarcode[1] ? listBarcode[1] : null
+                "qrCode1": listBarcode[0] ? listBarcode[0] : "null",
+                "qrCode2": listBarcode[1] ? listBarcode[1] : "null"
             }
  
         })
         qrCode.push(qrCodes)
         barCode['qrCodes'] = qrCode
-        console.log(barCode)
+        setbarCodeDoc(barCode);
 
-        Axios.post(window.apipath + '/v2/GetDocByQRCode', barCode).then((res) => {
+        Axios.post(window.apipath + '/v2/FindDocByQRCode', barCode).then((res) => {
             if (res.data._result.status === 1) {
                 setdataDoc(res.data);
             } else {
-                setSettingAlert({ type: 'sucess', message: res.data._result.message });
+                setSettingAlert({ type: 'warning', message: res.data._result.message });
                 setOpenAlert(true);
                 setdataDoc();
             }
         });   
 
     }
+
     const ConfirmReceive = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        // return <></>
+        alertDialogRenderer("success", t("Sucess"))
+        let barcode_pstos = [];
+        let bars = barCodeDoc['qrCodes'][0]
+        if (bars.qrCode1 && bars.qrCode2) {
+            barcode_pstos.push(bars.qrCode1)
+            barcode_pstos.push(bars.qrCode2)
+        } else if (bars.qrCode){
+            barcode_pstos.push(bars.qrCode1)
+        }
+
+        let datas = {}
+        datas = {
+            "warehouseCode" : warehouseCode,
+            "locationCode" : gateCode,
+            "barcode_pstos": barcode_pstos 
+        }
+
+        Axios.post(window.apipath + '/v2/checkregist_wc', barCode).then((res) => {
+            if (res.data._result.status === 1) {
+                //setdataDoc(res.data);
+            } else {
+                setSettingAlert({ type: 'warning', message: res.data._result.message });
+                //setOpenAlert(true);
+                //setdataDoc();
+            }
+        }); 
+
+
     }
     // Alert Dialog
     const alertDialogRenderer = (type, message) => {
@@ -595,9 +631,10 @@ const MappingReceive_HH = (props) => {
         if (value && dataObject && fieldDataKey) {
             if (fieldDataKey === 'WarehouseID') {
                 setwarehouseID(value)
-            } else if (fieldDataKey === 'AreaLocCode') {
-                valueInput['locationCode'] = value;
+                setwarehouseCode(dataObject.Code)
+            } else if (fieldDataKey === 'AreaLocCode') {              
                 setgateCode(value)
+                setgateID(dataObject.ID)
             }
         }
     
@@ -606,8 +643,14 @@ const MappingReceive_HH = (props) => {
     const onHandleEditConfirm = (status, rowdata, inputError) => {
         if (status) {           
             setdialogGate(false)
+            let ele = document.getElementById("locationCode");
+            if (ele)
+                ele.value = gateCode;
+
+               valueInput['locationCode'] = gateCode;
 
         } else {
+            valueInput["locationCode"] = ''
             setdialogGate(false)
         }
 
@@ -658,8 +701,8 @@ const MappingReceive_HH = (props) => {
                         
                         <Step key={row.label}>
                             <StepLabel>
-                                <Typography variant="h6">{t(row.label)}
-                                    {row.value ? <label style={{ fontWeight: 'bolder', textDecorationLine: 'underline', textDecorationColor: indigo[700] }}>{row.value}</label> : null}
+                                <Typography variant="h6">{t(row.label)}{row.value ? " : " : ""}
+                                    <label style={{ fontWeight: 'bolder', textDecorationLine: 'underline', textDecorationColor: indigo[700] }}>{row.value}</label>
                                 </Typography>
                             </StepLabel>
                             <StepContent>

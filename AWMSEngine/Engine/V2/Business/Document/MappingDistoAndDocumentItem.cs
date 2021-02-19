@@ -52,13 +52,14 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
             if (psto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND);
+            
 
             var docItems = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("EventStatus","10", SQLOperatorType.IN),
                 new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL),
-                new SQLConditionCriteria("ParentDocumentItem_ID", ObjectUtil.QryStrGetValue(OptionVOConst.OPT_DOCITEM_ID, psto.Options), SQLOperatorType.ISNOTNULL)
+                new SQLConditionCriteria("ID", ObjectUtil.QryStrGetValue(psto.Options, OptionVOConst.OPT_DOCITEM_ID), SQLOperatorType.IN)
             }, this.BuVO);
 
             var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
