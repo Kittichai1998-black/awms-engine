@@ -64,7 +64,7 @@ namespace AMWUtil.Logger
                 string logFileFormat = logManager.LogFileFormat;
                 Dictionary<string, string> dicMapKey = new Dictionary<string, string>();
                 dicMapKey.Add("{MachineName}", System.Environment.MachineName);
-                dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
+                //dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
                 dicMapKey.Add("{LogName}", logName);
                 dicMapKey.Add("{ServiceName}", serviceName);
 

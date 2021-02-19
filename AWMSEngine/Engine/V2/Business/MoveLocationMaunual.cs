@@ -67,7 +67,7 @@ namespace AWMSEngine.Engine.V2.Business
 
             var area = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaMaster>(reqVO.DesLocationID, this.BuVO);
             var wq = new amt_WorkQueue() { 
-                IOType = IOType.OUTPUT,
+                IOType = IOType.OUTBOUND,
                 StorageObject_ID = sto.id.Value,
                 StorageObject_Code = sto.code,
                 Sou_Warehouse_ID= sto.warehouseID,

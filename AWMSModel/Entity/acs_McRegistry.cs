@@ -4,11 +4,11 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class acs_McRegistry : BaseEntityID
+    public class acs_McRegistry : BaseEntitySTD
     {
-        public int McMasterID;
-        public string DataType;
-        public string DataKey;
-        public string DataValue;
+        public long McMasterID;
+        public string DriverType;
+        public string DriverKey;
+        public int DriverStringLength;
     }
 }

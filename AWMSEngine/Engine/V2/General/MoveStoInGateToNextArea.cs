@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.V2.General
             var mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.stoID.Value, reqVO.stoType.Value, false, true, this.BuVO);
             if (mapsto != null)
             {
-                var desAreas = ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, mapsto.areaID.Value, this.BuVO);
+                var desAreas = ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(IOType.OUTBOUND, mapsto.areaID.Value, this.BuVO);
 
                 var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
 

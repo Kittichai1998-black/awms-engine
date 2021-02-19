@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         ID = null,
                         RefID = AMWUtil.Common.ObjectUtil.GenUniqID(),
                         Seq = 1,
-                        IOType = IOType.OUTPUT,
+                        IOType = IOType.OUTBOUND,
                         Priority = rsto.priority,
                         StorageObject_ID = rsto.rstoID,
                         StorageObject_Code = rsto.rstoCode,

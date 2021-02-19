@@ -10,9 +10,9 @@ namespace ADO.WCSDB
 {
     public class McWorkADO : BaseWCSDB<McWorkADO>
     {
-        public act_McWork GetByMstID(long mstID, VOCriteria BuVO)
+        public act_McObject GetByMstID(long mstID, VOCriteria BuVO)
         {
-            return DataADO.GetInstant().SelectByID<act_McWork>(mstID, BuVO);
+            return DataADO.GetInstant().SelectByID<act_McObject>(mstID, BuVO);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using ADO.WCSStaticValue;
+using AMSModel.Constant.StringConst;
 using AMSModel.Entity;
 using AMWUtil.Common;
+using AMWUtil.PropertyFile;
 using AWCSEngine.Worker.Model;
 using System;
 using System.Collections.Generic;
@@ -10,21 +12,22 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadCoreWorker
+    public class ThreadMcObjectEngine : IThreadWorker
     {
+        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_engine_dalay].Get<int>();
 
         private List<McThread> McThreads { get; set; }
-        private static ThreadCoreWorker instant;
-        public static ThreadCoreWorker GetInstant()
+        private static ThreadMcObjectEngine instant;
+        public static ThreadMcObjectEngine GetInstant()
         {
-            if (ThreadCoreWorker.instant == null)
+            if (ThreadMcObjectEngine.instant == null)
             {
-                instant = new ThreadCoreWorker();
+                instant = new ThreadMcObjectEngine();
             }
             return instant;
         }
-        private ThreadCoreWorker()
-        {;
+        private ThreadMcObjectEngine()
+        {
             this.McThreads = new List<McThread>();
         }
 
@@ -57,7 +60,7 @@ namespace AWCSEngine.Worker
             mcCore.AddMc(mcMst);
         }
 
-        private void Run(object _mcCore)
+        public void Run(object _mcCore)
         {
             McThread mcCore = (McThread)_mcCore;
             while (true)
@@ -66,7 +69,7 @@ namespace AWCSEngine.Worker
                 {
                     mcEng.Runtime();
                 });
-                Thread.Sleep(200);
+                Thread.Sleep(this.DELAY_MS);
             }
         }
 

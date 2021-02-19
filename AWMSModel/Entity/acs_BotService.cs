@@ -4,7 +4,8 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class act_McWorkQueue : BaseEntityCreateModify
+    public class acs_BotService : BaseEntitySTD
     {
+        public string FullClassName;
     }
 }

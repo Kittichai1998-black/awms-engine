@@ -15,7 +15,7 @@ namespace AWCSEngine
         public VOCriteria BuVO { get; set; }
         public List<acs_Location> McPositions { get; set; }
         public List<acv_McPositionRouteVisible> McPositionRoutes { get; set; }
-        public List<act_McWork> McObjects { get; set; }
+        public List<act_McObject> McObjects { get; set; }
 
         public Font drawFont { get; set; }
         public StringFormat drawFormat { get; set; }
@@ -48,7 +48,7 @@ namespace AWCSEngine
             this.McPositionRoutes = ADO.WCSDB.DataADO.GetInstant().SelectBy<acv_McPositionRouteVisible>(
                 new SQLConditionCriteria("Status", "1", SQLOperatorType.IN), BuVO);
 
-            this.McObjects = ADO.WCSDB.DataADO.GetInstant().SelectBy<act_McWork>(
+            this.McObjects = ADO.WCSDB.DataADO.GetInstant().SelectBy<act_McObject>(
                 new SQLConditionCriteria("Status", "1", SQLOperatorType.IN), BuVO);
 
 

@@ -35,18 +35,28 @@ namespace AMWUtil.Exception
 
         [AMWExceptionCodeAttribute("V0103", DefaultMessage = "develop menu not found.")]
         V0_DEVMENU_NOT_FOUND,
-        [AMWExceptionCodeAttribute("V0104", DefaultMessage = "ไม่พบข้อมูลในคลังสินค้า")]
+        [AMWExceptionCodeAttribute("V0104", DefaultMessage = "ไม่พบข้อมูลสินค้า {0} ในคลังสินค้า")]
         V0_STO_NOT_FOUND,
-        [AMWExceptionCodeAttribute("V0105", DefaultMessage = "สินค้าเกินจำนวนเอกสารรับเข้า")]
+        [AMWExceptionCodeAttribute("V0105", DefaultMessage = "สินค้าเกินจำนวนรอรับเข้า จากเอกสารรับเข้า {0}")]
         V0_STO_OVER_DOC,
-        [AMWExceptionCodeAttribute("V0106", DefaultMessage = "ไม่พบเอกสารรับเข้าสินค้า")]
+        [AMWExceptionCodeAttribute("V0106", DefaultMessage = "ไม่พบเอกสารรับเข้า {0} ในรับบ")]
         V0_DOC_NOT_FOUND,
 
-        [AMWExceptionCodeAttribute("V0107", DefaultMessage = "ไม่พบข้อมูล Location.")]
+        [AMWExceptionCodeAttribute("V0107", DefaultMessage = "ไม่พบข้อมูล Location. {0}")]
         V0_LOCATION_NOT_FOUND,
-        [AMWExceptionCodeAttribute("V0108", DefaultMessage = "เครื่องจักร์ยังไม่พร้อมรับคำสั่ง")]
+        [AMWExceptionCodeAttribute("V0108", DefaultMessage = "เครื่องจักร {0} ยังไม่พร้อมรับคำสั่ง")]
         V0_MC_NOT_IDEL,
+        [AMWExceptionCodeAttribute("V0109", DefaultMessage = "ไม่รองอรับ DataType {0} นี้.")]
+        V0_DATATYPE_NOT_SUPPORT,
 
+        [AMWExceptionCodeAttribute("V0110", DefaultMessage = "ไม่พบข้อมูล {0} McRegistry")]
+        V0_MCREGISTRY_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0111", DefaultMessage = "ไม่สามารถหาเส้นทาง {0} ไป {1} ได้")]
+        V0_ROUTE_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0112", DefaultMessage = "พาเลท {0} ไปอยู่ในสถานะ {1} ไม่พร้อมเบิก!")]
+        V0_PALLET_STATUS_CANT_ISSUE,
+        [AMWExceptionCodeAttribute("V0113", DefaultMessage = "พาเลทเลที่ {0} มีซ้ำในระบบ")]
+        V0_BASE_DUPLICATE,
 
 
         /// <summary>Data Input Not Found : {0}</summary>

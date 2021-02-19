@@ -52,6 +52,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
             if (psto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND);
+            
 
             var docItems = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
             {

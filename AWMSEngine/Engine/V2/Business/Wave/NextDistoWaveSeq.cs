@@ -227,7 +227,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
 
                 RefID = AMWUtil.Common.ObjectUtil.GenUniqID(),
                 Seq = 1,
-                IOType = IOType.OUTPUT,
+                IOType = IOType.OUTBOUND,
                 Priority = wave.Priority,
                 StorageObject_ID = bsto.ID.Value,
                 StorageObject_Code = bsto.Code,
