@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class ams_AreaRoute : BaseEntityID
+    public class ams_AreaRoute : BaseEntityCreateModify
     {
         public int Sou_AreaMaster_ID;
         public int? Sou_AreaLocationMaster_ID;

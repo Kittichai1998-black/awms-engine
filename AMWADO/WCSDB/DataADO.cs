@@ -433,13 +433,13 @@ namespace ADO.WCSDB
             return res;
         }
 
-        public long? Insert<T>(VOCriteria buVO, T data)
+        public long? Insert<T>(T data,VOCriteria buVO)
              where T : IEntityModel
         {
             var d = AMWUtil.Common.ObjectUtil.ObjectToKeyValue<T>(data);
-            return Insert<T>(buVO, d.ToArray());
+            return Insert<T>(d.ToArray(),buVO);
         }
-        public long? Insert<T>(VOCriteria buVO, params KeyValuePair<string, object>[] values)
+        public long? Insert<T>(KeyValuePair<string, object>[] values, VOCriteria buVO)
          where T : IEntityModel
         {
             string commFields = string.Empty;

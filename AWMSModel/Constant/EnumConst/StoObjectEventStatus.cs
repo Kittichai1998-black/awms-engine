@@ -4,10 +4,9 @@ using System.Text;
 
 namespace AMSModel.Constant.EnumConst
 {
-    public enum IOType
+    public enum BaseObjectEventStatus
     {
-        INBOUND = 0,
-        OUTBOUND = 1,
-        MOVE = 2
+        IDEL = 10,
+        MOVE = 12
     }
 }

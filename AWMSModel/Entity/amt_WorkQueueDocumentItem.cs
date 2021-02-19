@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class amt_WorkQueueDocumentItem : BaseEntityID
+    public class amt_WorkQueueDocumentItem : BaseEntityCreateModify
     {
         public long DocumentItem_ID;
         public long WorkQueue_ID;

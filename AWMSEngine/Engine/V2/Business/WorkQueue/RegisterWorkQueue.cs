@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TReq //ข้อมูล Request จาก WCS
         {
             public string baseCode;//รหัสพาเลท
-            public IOType ioType = IOType.INPUT;
+            public IOType ioType = IOType.INBOUND;
             public decimal? weight;//น้ำหนัก Kg.
             public decimal? width;//กว้าง M.
             public decimal? length;//ยาว M.
@@ -73,7 +73,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่สามารถนำพาเลทรับเข้าผ่าน Area นี้ได้");
             }
             var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
-            if (queueTrx.IOType == IOType.OUTPUT)
+            if (queueTrx.IOType == IOType.OUTBOUND)
             {
                 ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
                 StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
@@ -286,7 +286,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 ////DF Code
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
-                if (reqVO.ioType == IOType.OUTPUT)
+                if (reqVO.ioType == IOType.OUTBOUND)
                 {
                     //สร้างเอกสารเบิกpallet เปล่า
                     //get Document

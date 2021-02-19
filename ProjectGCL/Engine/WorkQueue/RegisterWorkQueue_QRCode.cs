@@ -29,7 +29,7 @@ namespace ProjectGCL.Engine.WorkQueue
         public class TReq //ข้อมูล Request จาก WCS
         {
             public string baseCode;//รหัสพาเลท
-            public IOType ioType = IOType.INPUT;
+            public IOType ioType = IOType.INBOUND;
             public decimal? weight;//น้ำหนัก Kg.
             public decimal? width;//กว้าง M.
             public decimal? length;//ยาว M.

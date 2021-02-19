@@ -36,6 +36,19 @@ namespace AMSModel.Constant.StringConst
         public const string APP_KEY_form_simulation_arrow_size = "form.simulation.arrow.size";
         public const string APP_KEY_form_simulation_arrow_margin = "form.simulation.arrow.margin";
 
+        public const string APP_KEY_wk_engine_dalay = "thread.worker.engine.delay";
+
+        public const string APP_KEY_wk_bot_dalay = "thread.worker.control.delay";
+
+        public const string APP_KEY_wk_wakeup_delay = "thread.worker.wakeup.delay";
+        public const string APP_KEY_wk_wakeup_count = "thread.worker.wakeup.count";
+
+        public const string APP_KEY_wk_api_dalay = "thread.worker.api.delay";
+        public const string APP_KEY_wk_bot_count = "thread.worker.api.count";
+        public const string APP_KEY_wk_api_in = "thread.worker.api.dir_in";
+        public const string APP_KEY_wk_api_out = "thread.worker.api.dir_out";
+
+
         
     }
 }

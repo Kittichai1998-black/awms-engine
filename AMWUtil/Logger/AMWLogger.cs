@@ -17,38 +17,40 @@ namespace AMWUtil.Logger
     public class AMWLogger : IDisposable, ILogger
     {
         //public FileStream FileLogger { get; set; }
-        private string _LogRefID;
-        public string LogRefID { get { return this._LogRefID; } }
-        public bool IsLogging { get; set; }
+        public string LogRefID { get; private set; }
+        public DateTime LogDateTime { get; private set; }
+        public bool IsLogging { get; private set; }
+        public string ServiceName { get; private set; }
         public string SubServiceName { get; set; }
-        private string _ServiceName { get; set; }
-        private string _FileFullName { get; set; }
-        private string _FileName { get; set; }
-        private static List<KeyValuePair<string, object>> _LockFiles = new List<KeyValuePair<string, object>>();
+        public string FileFullName { get; private set; }
+
+        private static Dictionary<string, object> _LockFiles { get; set; }
         private static int _LockDay;
 
-        public static bool ClearLockFiles()
+        public static void ClearLockFiles()
         {
             if (AMWLogger._LockFiles == null)
-                AMWLogger._LockFiles = new List<KeyValuePair<string, object>>();
+                return;
             if (AMWLogger._LockDay != DateTime.Now.Day)
             {
                 AMWLogger._LockDay = DateTime.Now.Day;
-                string lockDay = AMWLogger._LockDay.ToString() + ",";
-                AMWLogger._LockFiles.RemoveAll(x => x.Key.StartsWith(lockDay));
-                return true;
+                var remove_keys = _LockFiles.Keys.ToList().FindAll(x => !x.StartsWith(AMWLogger._LockDay + ","));
+                remove_keys.ForEach(x =>
+                {
+                    _LockFiles.Remove(x);
+                });
             }
-            return false;
         }
 
 
         public AMWLogger(string fileName, string serviceName, bool isLogging = true)
         {
-            this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
-            this._ServiceName = serviceName;
-            this._FileFullName = fileName;
+            this.LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
+            this.ServiceName = serviceName;
+            this.FileFullName = fileName;
             this.IsLogging = isLogging;
-            this._FileName = fileName.Split(new char[] { '\\', '/' }).Last();
+            this.LogDateTime = DateTime.Now;
+            
         }
 
 
@@ -56,20 +58,23 @@ namespace AMWUtil.Logger
         {
             if (!this.IsLogging)
                 return;
-            string _key = DateTime.Now.Day + "," + this._FileName;
+            string _fileFullName = this.FileFullName.Replace("{Date}", DateTime.Now.ToString("yyyyMMdd"));
+            string _fileName = _fileFullName.Split(new char[] { '\\', '/' }).Last();
+
+            string _key = DateTime.Now.Day + "," + _fileName;
             if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
-                AMWLogger._LockFiles.Add(new KeyValuePair<string, object>(_key, new object()));
+                AMWLogger._LockFiles.Add(_key, new object());
 
             object _lock = AMWLogger._LockFiles.First(x => x.Key == _key).Value;
             lock (_lock)
             {
-                using (var fw = new StreamWriter(this._FileFullName, true))
+                using (var fw = new StreamWriter(this.FileFullName, true))
                 {
                     message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) > {6}",
                                             DateTime.Now,
                                             this.LogRefID,
                                             logLV,
-                                            this._ServiceName,
+                                            this.ServiceName,
                                             sourceFile.Split('\\').Last(),
                                             lineNumber,
                                             message.Replace("\r", string.Empty).Replace("\n", @"\n"));

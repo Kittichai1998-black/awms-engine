@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var wq = ADO.WMSDB.WorkQueueADO.GetInstant().Get(reqVO.wqID, this.BuVO);
             if(wq != null)
             {
-                if(wq.IOType == IOType.INPUT && (wq.Status == EntityStatus.ACTIVE || wq.Status == EntityStatus.INACTIVE))
+                if(wq.IOType == IOType.INBOUND && (wq.Status == EntityStatus.ACTIVE || wq.Status == EntityStatus.INACTIVE))
                 {
                     var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDistoByWorkQueue(reqVO.wqID, this.BuVO);
                     var sto = RejectStorageObject(wq, distos);

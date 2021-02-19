@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var stos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID.Value, null, false, true, this.BuVO);
             var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
             var docs = ADO.WMSDB.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
-            if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
+            if (queueTrx.IOType == IOType.OUTBOUND && docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
             {
                 var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                 var listDisto = new List<amt_DocumentItemStorageObject>();
