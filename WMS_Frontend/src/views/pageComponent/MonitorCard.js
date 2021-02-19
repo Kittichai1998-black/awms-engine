@@ -133,7 +133,8 @@ const MasterData = (props) => {
 
     useEffect(() => {
       Axios.get(createQueryString(AreaMaster)).then(res => {
-        setAreaData(res.data.datas)
+        setAreaData(res.data.datas.filter(x => x.Code !== "WH003" && x.Code !== "WH005"))
+        console.log("res.data.datas>>>",res.data.datas)
       });
   }, [])
 
@@ -189,21 +190,22 @@ const MasterData = (props) => {
             .then(() => {
                 connection.on(pathMonitor, res => {
                     let list = JSON.parse(res);
+                    console.log(">>>>>>>",list.length)
                     let list2 = []
                     let list3 = []
-                    if (list[0].data.length) {
-                       list2 =list[0].data.filter(x => x.ObjectType === 1) 
-                       list3 =list[0].data.filter(x => x.ObjectType === 2) 
+                    if (list.length !== 0) {
+                      list2 =list[0].data.filter(x => x.ObjectType === 1) 
+                      list3 =list[0].data.filter(x => x.ObjectType === 2) 
+                      list2 = list2.map(x=>{
+                        return {
+                          BaseCodeID : x.ID,
+                          BaseCode : x.Code,
+                          rows: list3.filter(r=> x.ID === r.ParentStorageObject_ID)
+                        }
+                      })
+                      setData([...list2]); 
                     }
-                   
-                    list2 = list2.map(x=>{
-                      return {
-                        BaseCodeID : x.ID,
-                        BaseCode : x.Code,
-                        rows: list3.filter(r=> x.ID === r.ParentStorageObject_ID)
-                      }
-                    })
-                    setData([...list2]); 
+            
                 })
             })
             .catch((err) => {
@@ -271,7 +273,8 @@ const MasterData = (props) => {
     console.log(value)
     if (value === 1) {
       setPathMonitor("WareHouse8");
-    } else {
+    } else if (value === 2){
+      // setPathMonitor("WareHouse3");
       // TODO
     }
 };
@@ -314,7 +317,7 @@ const AreaMaster = {
                           </Typography>
                         }
                       />
-                      {console.log("ROWS",y.rows)}
+                      
                       {y.rows ? y.rows.map((r,idx) => {
                         return <>
                                        

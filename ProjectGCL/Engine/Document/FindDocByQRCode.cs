@@ -12,11 +12,12 @@ using AMSModel.Constant.EnumConst;
 
 namespace ProjectGCL.Engine.Document
 {
-    public class GetDocByQRCode : BaseEngine<GetDocByQRCode.TReq, GetDocByQRCode.TRes>
+    public class FindDocByQRCode : BaseEngine<FindDocByQRCode.TReq, FindDocByQRCode.TRes>
     {
 
         public class TReq
         {
+            public string qr_barCode;
             public List<qrCode> qrCodes;
             
             public class qrCode {
@@ -110,9 +111,13 @@ namespace ProjectGCL.Engine.Document
                    new SQLConditionCriteria("ref1",string.Join(',',qrModel1.gade), SQLOperatorType.IN),
                       }, this.BuVO);
 
+                        var docItembylot = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                   new SQLConditionCriteria("lot1",string.Join(',',qrModel1.lot), SQLOperatorType.IN),
+                      }, this.BuVO);
+
                         docItembygade.ForEach(docI =>
                         {
-                            var documents = docItembygade.Find(x => x.Document_ID == docI.Document_ID);
+                            var documents = docItembylot.Find(x => x.Document_ID == docI.Document_ID);
 
                             var datasdocument = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
                                 new SQLConditionCriteria("ID",string.Join(',',docI.Document_ID), SQLOperatorType.IN),
@@ -126,7 +131,7 @@ namespace ProjectGCL.Engine.Document
                                 if (docI.Options != null && docTypeIDs == 1011)
                                 {
 
-                                    var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "start_pallet={startPallet}&end_pallet={endPallet}");
+                                    var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
                                     var startPallet = Int32.Parse(docoption.startPallet);
                                     var endPallet = Int32.Parse(docoption.endPallet);
                                     var noPallet1 = Int32.Parse(qrModel1.pallet);
@@ -218,6 +223,74 @@ namespace ProjectGCL.Engine.Document
                         });
                     });
 
+                }else if (reqVO.qr_barCode != null)
+                {
+                    var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr_barCode, "{gade}_{lot}_{pallet}");
+
+                    if (qrModel == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
+
+                    List<string> gade = qrModel.gade.Split(',').ToList();
+                    List<string> lot = qrModel.lot.Split(',').ToList();
+                    List<string> pallet = qrModel.pallet.Split(',').ToList();
+
+
+                    if (qrModel.gade.Length > 8)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, " QRCode Gade Not Correct");
+
+                    if (qrModel.lot.Length > 9)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, " QRCode Lot Not Correct");
+
+                    if (qrModel.pallet.Length > 4)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, " QRCode Pallet Not Correct");
+
+                    var docItembygade = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                   new SQLConditionCriteria("ref1",string.Join(',',qrModel.gade), SQLOperatorType.IN),
+                      }, this.BuVO);
+
+                    var docItembylot = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("lot",string.Join(',',qrModel.lot), SQLOperatorType.IN),
+                     }, this.BuVO);
+
+
+                    docItembygade.ForEach(docI =>
+                    {
+                        var documents = docItembygade.Find(x => x.Document_ID == docI.Document_ID);
+
+                        var datasdocument = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
+                                new SQLConditionCriteria("ID",string.Join(',',docI.Document_ID), SQLOperatorType.IN),
+                                 }, this.BuVO);
+
+
+                        datasdocument.ForEach(doc =>
+                        {
+                            var docTypeIDs = doc.DocumentType_ID.GetValueInt();
+
+                            if (docI.Options != null && docTypeIDs == 1011)
+                            {
+
+                                var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "start_pallet={startPallet}&end_pallet={endPallet}");
+                                var startPallet = Int32.Parse(docoption.startPallet);
+                                var endPallet = Int32.Parse(docoption.endPallet);
+                                var noPallet = Int32.Parse(qrModel.pallet);
+
+                                if (noPallet < endPallet)
+                                {
+                                    res.start_pallet = docoption.startPallet;
+                                    res.end_pallet = docoption.endPallet;
+                                    res.docId = doc.ID;
+
+                                }
+                                else
+                                {
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
+                                }
+                            }
+
+                        });
+                    });
+
+
                 }
             }
 
@@ -235,58 +308,66 @@ namespace ProjectGCL.Engine.Document
                     if (docTypeIDs == 1011)
                     {
                         var datadocumentItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("Document_ID",string.Join(',',datadoc.ID), SQLOperatorType.IN),}, this.BuVO);
+                        new SQLConditionCriteria("Document_ID", string.Join(',', datadoc.ID), SQLOperatorType.IN), }, this.BuVO);
+
+                        var datadocumentItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Document_ID", string.Join(',', datadoc.ID), SQLOperatorType.IN), }, this.BuVO);
 
                         res.docCode = datadoc.Code;
 
+
                         datadocumentItem.ForEach(Item =>
                         {
-                            res.skuCode = Item.SKUMaster_Code;
-                            res.skuName = Item.SKUMaster_Name;
-                            res.skuId = Item.SKUMaster_ID;
-                            res.lot = Item.Lot;
-                            res.gade = Item.Ref1;
+                           
+                                res.skuCode = Item.SKUMaster_Code;
+                                res.skuName = Item.SKUMaster_Name;
+                                res.skuId = Item.SKUMaster_ID;
+                                res.lot = Item.Lot;
+                                res.gade = Item.Ref1;
 
-                            packList.Add(new PackSto()
-                            {
-                                pstoCode = Item.SKUMaster_Code,
-                                pstoName = Item.SKUMaster_Name,
-                                batch = Item.Batch,
-                                lot = Item.Lot,
-                                orderNo = Item.OrderNo,
-                                itemNo = Item.ItemNo,
-                                refID = Item.RefID,
-                                ref1 = Item.Ref1,
-                                ref2 = Item.Ref2,
-                                ref3 = Item.Ref3,
-                                ref4 = Item.Ref4,
-                                cartonNo = Item.CartonNo,
-                                forCustomerID = datadoc.For_Customer_ID,
-                                //options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docitemPutaway.Options,new KeyValuePair<string, object>(OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt), new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID)),
-                                options = Item.Options,
-                                addQty = Item.Quantity,
-                                unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == Item.UnitType_ID).Code,
-                                packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == Item.BaseUnitType_ID).Code,
-                                expiryDate = Item.ExpireDate,
-                                productDate = Item.ProductionDate,
-                                auditStatus = Item.AuditStatus
-                            });
 
-                            i++;
+
+                                packList.Add(new PackSto()
+                                {
+                                    pstoCode = Item.SKUMaster_Code,
+                                    pstoName = Item.SKUMaster_Name,
+                                    batch = Item.Batch,
+                                    lot = Item.Lot,
+                                    orderNo = Item.OrderNo,
+                                    itemNo = Item.ItemNo,
+                                    refID = Item.RefID,
+                                    ref1 = Item.Ref1,
+                                    ref2 = Item.Ref2,
+                                    ref3 = Item.Ref3,
+                                    ref4 = Item.Ref4,
+                                    cartonNo = Item.CartonNo,
+                                    forCustomerID = datadoc.For_Customer_ID,
+                                    //options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docitemPutaway.Options,new KeyValuePair<string, object>(OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt), new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID)),
+                                    options = Item.Options,
+                                    addQty = Item.Quantity,
+                                    unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == Item.UnitType_ID).Code,
+                                    packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == Item.BaseUnitType_ID).Code,
+                                    expiryDate = Item.ExpireDate,
+                                    productDate = Item.ProductionDate,
+                                    auditStatus = Item.AuditStatus
+                                });
+
+                                i++;
+                            
+                      
                         });
                         res.datas = packList;
 
                     }
+                
+                      
                 });
+
             }
 
                   
            return res;
         }
-
-        internal object Execute(AMWLogger logger, VOCriteria buVO, TReq.qrCode reqVO)
-        {
-            throw new NotImplementedException();
-        }
+ 
     }
 }

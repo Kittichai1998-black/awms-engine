@@ -24,6 +24,7 @@ namespace GCLModel.Criteria
             public string status;
             public string warehouse; //Des
             public string discharge;
+            public DateTime Date_time;
 
     }
 }
