@@ -36,9 +36,9 @@ namespace AWCSEngine.Controller
             return this.McObjectList.FirstOrDefault(x => x.ID == mcID);
         }
 
-        public void Command(string mcCode, McCommand command, string souLocCode, string desLocCode)
+        public void Command(string mcCode, McCommandType command, string souLocCode, string desLocCode)
         {
-            this.GetMcObject(mcCode).Command(command, souLocCode, desLocCode);
+            this.GetMcObject(mcCode).PostCommand(command, souLocCode, desLocCode);
         }
     }
 }

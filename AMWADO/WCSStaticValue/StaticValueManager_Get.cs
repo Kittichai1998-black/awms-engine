@@ -24,9 +24,19 @@ namespace ADO.WCSStaticValue
         {
             return this.McMasters.FirstOrDefault(x => x.Code == code);
         }
-        public acs_McRegistry GetMcRegistry(string key)
+        public acs_McCommand GetMcCommand(long mcMstID, McCommandType cmdType)
         {
-            return this.McRegistrys.FirstOrDefault(x => x.DriverKey == key);
+            var mccm = this.McCommandMcMasters.FindAll(x => x.McMaster_ID == mcMstID);
+            return this.McCommands.FirstOrDefault(x => x.McCommandType == cmdType && mccm.Any(y => y.McMaster_ID == x.ID));
+        }
+        public List<acs_McCommand> ListMcCommand(long mcMstID)
+        {
+            var mccm = this.McCommandMcMasters.FindAll(x => x.McMaster_ID == mcMstID);
+            return this.McCommands.FindAll(x => mccm.Any(y => y.McMaster_ID == x.ID));
+        }
+        public List<acs_McCommandAction> ListMcCommandAction(long cmdID)
+        {
+            return this.McCommandRegistrys.FindAll(x => x.McCommand_ID == cmdID);
         }
         public acs_Location GetLocation(long id)
         {

@@ -110,6 +110,18 @@ namespace AMWUtil.Common
             return t;
         }
 
+        public static void Set(this object o, string name, object? value)
+        {
+            o.GetType().GetField(name).SetValue(o, value);
+        }
+        public static object Get(this object o, string name)
+        {
+            return o.GetType().GetField(name).GetValue(o);
+        }
+        public static T Get<T>(this object o, string name)
+        {
+            return o.GetType().GetField(name).GetValue(o).Get<T>();
+        }
         public static T Get<T>(this object o)
         {
             return o.ToString().Get<T>();
@@ -308,7 +320,7 @@ namespace AMWUtil.Common
             return res;
         }
 
-        public static List<KeyValuePair<string, string>> QryStrToKeyValues(string param)
+        public static List<KeyValuePair<string, string>> QryStrToKeyValues(this string param)
         {
             List<KeyValuePair<string, string>> res = new List<KeyValuePair<string, string>>();
             try

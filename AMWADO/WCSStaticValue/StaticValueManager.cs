@@ -15,8 +15,12 @@ namespace ADO.WCSStaticValue
     {
         private List<acs_Config> _Configs;
         public List<acs_Config> Configs { get => this._Configs ?? this.LoadConfig(); }
-        private List<acs_McRegistry> _McRegistrys;
-        public List<acs_McRegistry> McRegistrys { get => this._McRegistrys ?? this.LoadMcRegistry(); }
+        private List<acs_McCommand> _McCommands;
+        public List<acs_McCommand> McCommands { get => this._McCommands ?? this.LoadMcCommand(); }
+        private List<acs_McCommandMcMaster> _McCommandMcMasters;
+        public List<acs_McCommandMcMaster> McCommandMcMasters { get => this._McCommandMcMasters ?? this.LoadMcCommandMcMaster(); }
+        private List<acs_McCommandAction> _McCommandRegistrys;
+        public List<acs_McCommandAction> McCommandRegistrys { get => this._McCommandRegistrys ?? this.LoadMcCommandRegistry(); }
         private List<acs_McMaster> _McMasters;
         public List<acs_McMaster> McMasters { get => this._McMasters ?? this.LoadMcMaster(); }
         private List<acs_Location> _Locations;

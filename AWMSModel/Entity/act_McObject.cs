@@ -7,13 +7,38 @@ namespace AMSModel.Entity
 {
     public class act_McObject : BaseEntityCreateModify
     {
-        public McCommand Command;
+        public McCommandType Command;
         public long? StoObject_ID;
         public long? Sou_Location_ID;
         public long? Des_Location_ID;
         public long? Location_ID;
 
-        public int PlcStatus;
+
+        public short DV_Set_Comm;
+        public short DV_Con_Comm;
+        public short DV_Pre_Comm;
+
+        public short DV_Pre_Status;
+
+        public short DV_Set_Unit;
+        public short DV_Con_Unit;
+        public short DV_Pre_Unit;
+
+        public float DV_Pre_WeiKG;
+
+        public string DV_Pre_BarPallet;
+        public string DV_Pre_BarProd;
+
+
+        public string DV_Set_SouLoc;
+        public string DV_Con_SouLoc;
+        public string DV_Pre_SouLoc;
+        public string DV_Set_DesLoc;
+        public string DV_Con_DesLoc;
+        public string DV_Pre_DesLoc;
+        public string DV_Set_CurLoc;
+        public string DV_Con_CurLoc;
+        public string DV_Pre_CurLoc;
         public McObjectEventStatus EventStatus;
 
     }

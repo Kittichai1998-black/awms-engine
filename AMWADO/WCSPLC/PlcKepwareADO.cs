@@ -67,7 +67,7 @@ namespace ADO.WCSPLC
             throw new NotImplementedException();
         }
 
-        public override void SetDevicelString(string key, string value)
+        public override void SetDevicelString(string key, string value, int length)
         {
             throw new NotImplementedException();
         }

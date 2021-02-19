@@ -57,6 +57,8 @@ namespace AMWUtil.Exception
         V0_PALLET_STATUS_CANT_ISSUE,
         [AMWExceptionCodeAttribute("V0113", DefaultMessage = "พาเลทเลที่ {0} มีซ้ำในระบบ")]
         V0_BASE_DUPLICATE,
+        [AMWExceptionCodeAttribute("V0114", DefaultMessage = "Format ผิดพลาด {0}")]
+        V0_FORMAT_FAIL,
 
 
         /// <summary>Data Input Not Found : {0}</summary>

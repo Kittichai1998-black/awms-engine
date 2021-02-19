@@ -61,7 +61,7 @@ namespace AWCSEngine
                     {
                         Controller.McController.GetInstant().Command(
                             comm[0],
-                            AMWUtil.Common.EnumUtil.GetValueEnum<McCommand>(comm[1]),
+                            AMWUtil.Common.EnumUtil.GetValueEnum<McCommandType>(comm[1]),
                             comm.Length >= 3 ? comm[2] : string.Empty,
                             comm.Length >= 4 ? comm[3] : string.Empty);
                     }

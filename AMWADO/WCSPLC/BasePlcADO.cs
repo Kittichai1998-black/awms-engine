@@ -43,7 +43,7 @@ namespace ADO.WCSPLC
         public abstract float GetDevicelFloat(string key);
         public abstract double GetDevicelDouble(string key);
 
-        public abstract void SetDevicelString(string key, string value);
+        public abstract void SetDevicelString(string key, string value, int length);
         public abstract void SetDevicelShot(string key, short value);
         public abstract void SetDevicelInt(string key, int value);
         public abstract void SetDevicelLong(string key, long value);

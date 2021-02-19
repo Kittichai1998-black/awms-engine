@@ -46,7 +46,7 @@ namespace ADO.WCSPLC
             return datas.ContainsKey(key) ? datas[key].Get<string>() : "";
         }
 
-        public override void SetDevicelString(string key, string value)
+        public override void SetDevicelString(string key, string value, int length)
         {
             datas.Add(key, value);
         }

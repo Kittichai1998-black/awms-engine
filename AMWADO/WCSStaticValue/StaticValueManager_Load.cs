@@ -18,9 +18,17 @@ namespace ADO.WCSStaticValue
         {
             return this._McMasters = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McMaster>("status", 1, buVO ?? new VOCriteria());
         }
-        public List<acs_McRegistry> LoadMcRegistry(VOCriteria buVO = null)
+        public List<acs_McCommand> LoadMcCommand(VOCriteria buVO = null)
         {
-            return this._McRegistrys = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McRegistry>("status", 1, buVO ?? new VOCriteria());
+            return this._McCommands = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McCommand>("status", 1, buVO ?? new VOCriteria());
+        }
+        public List<acs_McCommandMcMaster> LoadMcCommandMcMaster(VOCriteria buVO = null)
+        {
+            return this._McCommandMcMasters = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McCommandMcMaster>("status", 1, buVO ?? new VOCriteria());
+        }
+        public List<acs_McCommandAction> LoadMcCommandRegistry(VOCriteria buVO = null)
+        {
+            return this._McCommandRegistrys = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McCommandAction>("status", 1, buVO ?? new VOCriteria());
         }
         public List<acs_Location> LoadLocation(VOCriteria buVO = null)
         {

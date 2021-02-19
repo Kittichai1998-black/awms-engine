@@ -18,7 +18,7 @@ namespace ADO.WCSPLC
         public float GetDevicelFloat(string key);
         public double GetDevicelDouble(string key);
 
-        public void SetDevicelString(string key, string value);
+        public void SetDevicelString(string key, string value, int length);
         public void SetDevicelShot(string key, short value);
         public void SetDevicelInt(string key, int value);
         public void SetDevicelLong(string key, long value);

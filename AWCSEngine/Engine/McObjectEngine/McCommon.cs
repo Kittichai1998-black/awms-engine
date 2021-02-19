@@ -11,10 +11,6 @@ namespace AWCSEngine.Engine.McObjectEngine
         {
         }
 
-        protected override void Read_Plc2McWork_OnRun()
-        {
-
-        }
 
         protected override bool OnIdle()
         {
@@ -28,7 +24,7 @@ namespace AWCSEngine.Engine.McObjectEngine
 
         protected override bool OnWorking()
         {
-            this.McObject.Location_ID = this.McObject.Des_Location_ID;
+            this.McObj.Location_ID = this.McObj.Des_Location_ID;
             return false;
         }
 
