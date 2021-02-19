@@ -236,7 +236,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     skutype = StaticValueManager.GetInstant().SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
                     if (skutype == null)
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
-                    var docprocessMaster = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
+                    var docprocessMaster = DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("ID", reqVO.processType, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("SKUGroupType", skutype.GroupType, SQLOperatorType.EQUALS)
                     }, BuVO).FirstOrDefault();
@@ -244,21 +244,24 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "SKU นี้ไม่สามารถรับเข้าผ่าน Document Process Type : " + reqVO.processType + " นี้ได้");
 
 
-                    var pack_unitType = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.unitTypeCode, BuVO);
+                    var pack_unitType = DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.unitTypeCode, BuVO);
                     var base_UnitType = new ams_UnitType(); //base
                     if (String.IsNullOrEmpty(psto.packUnitTypeCode))
                     {
-                        //packUnitType = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID.Value, BuVO);
+                        //packUnitType = ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID.Value, BuVO);
                         unitTypeConvt = StaticValue.ConvertToNewUnitBySKU(sku.ID.Value, psto.addQty, pack_unitType.ID.Value, sku.UnitType_ID.Value);
                     }
                     else
                     {
-                        base_UnitType = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.packUnitTypeCode, BuVO);
+                        base_UnitType = DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.packUnitTypeCode, BuVO);
                         unitTypeConvt = StaticValue.ConvertToNewUnitBySKU(sku.ID.Value, psto.addQty, pack_unitType.ID.Value, base_UnitType.ID.Value);
                     }
 
-                    pack = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(unitTypeConvt.newPackMaster_ID, BuVO);
-
+                    pack = DataADO.GetInstant().SelectBy<ams_PackMaster>(
+                        new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Code", unitTypeConvt.newPackMaster_Code, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("UnitType_ID", unitTypeConvt.oldUnitType_ID, SQLOperatorType.EQUALS)
+                    }, BuVO).FirstOrDefault();
                 }
                
                 var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, reqVO.processType);

@@ -129,34 +129,40 @@ namespace AWMSEngine.APIService.V2.Document
                                     docLists.AddRange(resClosed);
                                     this.CommitTransaction();
 
-                                }
-                                var parent = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
-                                   new SQLConditionCriteria[] {
-                                        new SQLConditionCriteria("ID",docs.ParentDocument_ID, SQLOperatorType.EQUALS),
-                                        new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS),
-                                   }, this.BuVO).FirstOrDefault();
-                                if (parent != null)
-                                {
-                                    var listChildsParent = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
-                                      new SQLConditionCriteria[] {
-                                        new SQLConditionCriteria("ParentDocument_ID",parent.ID, SQLOperatorType.EQUALS),
-                                        new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS),
-                                      }, this.BuVO);
-
-                                    var checkDocParent = listChildsParent.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSED);
-                                    if (checkDocParent)
+                                    if (resClosed == null || resClosed.Count == 0)
                                     {
-                                        if (parent.EventStatus == DocumentEventStatus.CLOSING)
+                                        var parent = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                                            new SQLConditionCriteria[] {
+                                            new SQLConditionCriteria("ID",docs.ParentDocument_ID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS),
+                                       }, this.BuVO).FirstOrDefault();
+                                        if (parent != null)
                                         {
-                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
-                                        }
-                                        else
-                                        {
-                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
-                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                            var listChildsParent = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                                                new SQLConditionCriteria[] {
+                                                new SQLConditionCriteria("ParentDocument_ID",parent.ID, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS),
+                                              }, this.BuVO);
+
+                                            var checkDocParent = listChildsParent.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSED);
+                                            if (checkDocParent)
+                                            {
+                                                if (parent.EventStatus == DocumentEventStatus.CLOSING)
+                                                {
+                                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                                }
+                                                //else
+                                                //{
+                                                //    ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
+                                                //    ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(parent.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                                //}
+                                            }
                                         }
                                     }
+
                                 }
+
+                                
                             }
 
                         }
@@ -364,17 +370,34 @@ namespace AWMSEngine.APIService.V2.Document
                 else
                 {
                     this.checkStoDocument(docsData, this.BuVO);
-                    var grDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(docsData.ID.Value, this.BuVO);
-                    grDocItem.ForEach(x =>
+                    var paDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(docsData.ID.Value, this.BuVO);
+                    paDocItem.ForEach(x =>
                     {
                         x.EventStatus = DocumentEventStatus.WORKED;
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                     });
-                    if (grDocItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
+                    if (paDocItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                     {
                         docsData.EventStatus = DocumentEventStatus.WORKED;
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(docsData.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                         docLists.Add(docsData.ID.Value);
+                    }
+                    if (docsData.ParentDocument_ID != null)
+                    {
+                        var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docsData.ParentDocument_ID.Value, this.BuVO);
+                        if (getParentDoc == null)
+                        {
+                            throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
+                        }
+                        getParentDoc.DocumentItems.ForEach(x =>
+                        {
+                            x.EventStatus = DocumentEventStatus.WORKED;
+                            ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                        });
+                        if (getParentDoc.DocumentItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
+                        {
+                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(getParentDoc.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                        }
                     }
                 }
             }
@@ -420,6 +443,9 @@ namespace AWMSEngine.APIService.V2.Document
                                     ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(packsto.parentID.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                                     disto.Status = EntityStatus.REMOVE;
+                                    disto.Quantity = 0;
+                                    disto.Quantity = 0;
+
                                     DistoADO.GetInstant().Update(disto, this.BuVO);
                                 }
                             }

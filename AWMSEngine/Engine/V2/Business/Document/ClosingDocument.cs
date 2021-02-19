@@ -62,6 +62,14 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                                 ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(getParentDoc.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
                                             }
                                         }
+                                        else
+                                        {
+                                            this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                            {
+                                                docID = x,
+                                                msgError = "Status of all document items didn't 'WORKED'."
+                                            });
+                                        }
                                     }
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);
                                     docLists.Add(x);

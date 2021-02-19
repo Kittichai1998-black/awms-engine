@@ -44,7 +44,12 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
-import CommentIcon from '@material-ui/icons/Comment';
+import EditIcon from '@material-ui/icons/Edit';
+import Divider from '@material-ui/core/Divider';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
 
 const Axios = new apicall();
 
@@ -184,54 +189,172 @@ const styles = theme => ({
     },
 });
 
+const DialogEditQty = withStyles(theme => ({
+
+
+}))(props => {
+    const { classes, open, onClose, dataSel, onAlert, ...other } = props;
+
+    const [valueQty, setValueQty] = useState(null);
+
+    const handleClose = () => {
+        onClose(dataSel);
+    };
+    const onHandleChangeQty = (value) => {
+        setValueQty(value)
+    }
+    const handleConfirm = () => {
+        if (valueQty) {
+            if (parseInt(valueQty) > dataSel.Quantity) {
+                onAlert("warning", "ไม่สามารถแก้ไขจำนวนสินค้าเกินกว่าที่เอกสารกำหนดได้");
+            } else if (parseInt(valueQty) == 0) {
+                onAlert("warning", "กรุณากรอกจำนวนสินค้า");
+            } else {
+                dataSel.NewQuantity = parseInt(valueQty);
+                onClose(dataSel);
+            }
+        } else {
+            onAlert("warning", "กรุณากรอกจำนวนสินค้า");
+        }
+    }
+    return (
+        <div>
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="simple-dialog-title" onClose={handleClose}>Edit Quantity</DialogTitle>
+                <DialogContent>
+                    <AmInput
+                        id={"qty"}
+                        type="number"
+                        placeholder="Quantity"
+                        autoFocus={true}
+                        style={{ width: "100%" }}
+                        onChange={(value, obj, element, event) => onHandleChangeQty(value)}
+                        onKeyPress={(value, obj, element, event) => {
+                            if (event.key === "Enter") {
+                                onHandleChangeQty(value);
+                                handleConfirm()
+                            }
+                        }
+                        }
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <AmButton styleType="confirm_clear" onClick={handleConfirm} >
+                        Edit
+                    </AmButton>
+                    <AmButton styleType="delete_clear" onClick={handleClose} >
+                        Cancel
+                    </AmButton>
+                </DialogActions>
+            </Dialog>
+
+        </div>
+    )
+});
 const CheckboxList = withStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 360,
         backgroundColor: theme.palette.background.paper,
     },
+    inline: {
+        display: 'inline',
+    },
+    listItemIcon: {
+        minWidth: '26px',
+    },
+    iconButton: {
+        padding: 4
+    },
 }))(props => {
-    const { classes, dataList, ...other } = props;
-    const [checked, setChecked] = useState([0]);
+    const { classes, data, onClickUpdate, onAlert, ...other } = props;
+    const [checked, setChecked] = useState([]);
+    const [newData, setNewData] = useState(data);
+    const [open, setOpen] = useState(false);
+    const [dataSel, setDataSel] = useState(null);
     const handleToggle = (value, idx) => () => {
         const currentIndex = checked.indexOf(idx);
         const newChecked = [...checked];
-
         if (currentIndex === -1) {
             newChecked.push(idx);
+
+            const resDatas = newData.map(p =>
+                p.ID === value.ID
+                    ? { ...p, Checked: 1 }
+                    : p
+            );
+
+            setNewData(resDatas)
+            onClickUpdate(resDatas)
         } else {
             newChecked.splice(currentIndex, 1);
+            const resDatas = newData.map(p =>
+                p.ID === value.ID
+                    ? { ...p, Checked: 0 }
+                    : p
+            );
+            setNewData(resDatas)
+            onClickUpdate(resDatas)
         }
 
         setChecked(newChecked);
     };
+
+    const onHandleClickOpen = (dataselect) => {
+        setDataSel(dataselect)
+        setOpen(true);
+    }
+    const handleClose = (value) => {
+        setOpen(false);
+        onClickUpdate(newData)
+    };
     return (
-        <List className={classes.root}>
-            {
-                dataList.map((value, idx) => {
+        <>
+            <DialogEditQty open={open} open={open} onClose={handleClose} dataSel={dataSel} onAlert={onAlert} />
+            <List className={classes.root}>
+                {newData.map((value, idx) => {
                     const labelId = `checkbox-list-label-${value.ID}`;
                     return (
-                        <ListItem key={idx} role={undefined} dense button onClick={handleToggle(value, idx)}>
-                            <ListItemIcon>
-                                <Checkbox
-                                    edge="start"
-                                    checked={checked.indexOf(idx) !== -1}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ 'aria-labelledby': labelId }}
+                        <>
+                            <ListItem key={idx} role={undefined} dense button onClick={handleToggle(value, idx)}>
+                                <ListItemIcon className={classes.listItemIcon}>
+                                    <Checkbox
+                                        edge="start"
+                                        className={classes.iconButton}
+                                        checked={checked.indexOf(idx) !== -1}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText
+                                    id={labelId}
+                                    primary={`SKU: ${value.PackItems}`}
+                                    secondary={
+                                        <React.Fragment>
+                                            {value.Ref1 ? <Typography variant="body2" >{`Serial: ${value.Ref1}`}</Typography> : null}
+                                            {value.Batch ? <Typography variant="body2">{`Batch: ${value.Batch}`}</Typography> : null}
+                                            {value.Lot ? <Typography variant="body2">{`Lot: ${value.Lot}`}</Typography> : null}
+                                            {value.NewQuantity ?
+                                                <Typography variant="body2">{`Qty: ${value.NewQuantity} ${value.UnitType_Code}`}</Typography> :
+                                                value.Quantity ?
+                                                    <Typography variant="body2">{`Qty: ${value.Quantity} ${value.UnitType_Code}`}</Typography>
+                                                    : null}
+                                        </React.Fragment>
+                                    }
                                 />
-                            </ListItemIcon>
-                            <ListItemText id={labelId} primary={`Line item ${idx + 1}`} />
-                            <ListItemSecondaryAction>
-                                <IconButton edge="end" aria-label="comments">
-                                    <CommentIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
+                                <ListItemSecondaryAction>
+                                    <IconButton edge="end" aria-label="comments" className={classes.iconButton}>
+                                        <EditIcon onClick={() => onHandleClickOpen(value)} />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                            {idx === (data.length - 1) ? null : <Divider variant="inset" component="li" />}
+                        </>
                     )
-                })
-            }
-        </List>
+                })}
+            </List>
+        </>
     )
 });
 
@@ -244,7 +367,8 @@ const HandheldReceive = (props) => {
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
 
-
+    const [datasto, setDatasto] = useState(null);
+    const [req, setReq] = useState(null);
     //steps
     const steps = getSteps();
 
@@ -282,7 +406,10 @@ const HandheldReceive = (props) => {
                     />
                 </div>;
             case 1:
-                return <CheckboxList data={datas} onClick={(sel) => onEditQty(sel)} />
+                return <CheckboxList data={datas}
+                    onClickUpdate={(res) => onReturnData(res)}
+                    onAlert={alertDialogRenderer}
+                />
             default:
                 return 'Unknown step';
         }
@@ -295,9 +422,9 @@ const HandheldReceive = (props) => {
                 alertDialogRenderer("warning", "กรุณากรอกหมายเลขพาเลท")
             }
         }
-        // if (index === 1) {
-        //     ConfirmRemoveWorkQueue(valueInput.bstoCode);
-        // }
+        if (index === 1) {
+            ConfirmPutaway();
+        }
     };
     const handleBack = (index) => {
         if (index === 1) {
@@ -325,7 +452,7 @@ const HandheldReceive = (props) => {
     const GetDetailPallet = (bstoCode) => {
         // var req = { 'bstoCode': bstoCode.trim() }
         var queryGet = {
-            queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+            queryString: window.apipath + "/v2/SelectDataViwAPI/",
             t: "DocumentItem",
             q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},'
                 + '{"f": "ParentDocumentItem_ID", "c":"is not null", "v": ""},'
@@ -354,13 +481,179 @@ const HandheldReceive = (props) => {
             }
         });
     }
-    // const RenderTreeViewData = React.memo(({ data, onClick }) => {
 
-    // });
-    const onEditQty = (sel) => {
-        var req = { ...sel };
-        console.log(req);
+    const onReturnData = (resItems) => {
+        console.log(resItems)
+        // let groupItem =
+        //     _.chain(res)
+        //         // Group the elements of Array based on `color` property
+        //         .groupBy("BaseCode")
+        //         // `key` is group's name (color), `value` is the array of objects
+        //         .map((value, key) => ({ BaseCode: key, Items: value }))
+        //         .value();
+
+        let rootSto ={
+            bstoCode: resItems[0].BaseCode,
+            processType: resItems[0].DocumentProcessType_ID,
+            warehouseID: 1,
+            areaID: 12,
+            pstos: []
+        }
+        resItems.forEach((item, index) => {
+            console.log(item.NewQuantity)
+            let qryStrOpt = queryString.parse(item.Options);
+            qryStrOpt[SC.OPT_DOCITEM_ID] = item.ID.toString();
+            let qryStr = queryString.stringify(qryStrOpt)
+            let uri_opt = decodeURIComponent(qryStr) || null;
+            let pstos ={
+                pstoCode: item.Code,
+                batch: item.Batch,
+                lot: item.Lot,
+                cartonNo: item.CartonNo,
+                itemNo: item.ItemNo,
+                orderNo: item.OrderNo,
+                forCustomerID: item.Des_Customer_ID ? item.Des_Customer_ID : null,
+                ref1: item.Ref1,
+                ref2: item.Ref2,
+                ref3: item.Ref3,
+                ref4: item.Ref4,
+                addQty: item.NewQuantity ? item.NewQuantity : item.Quantity,
+                unitTypeCode: item.UnitType_Code,
+                packUnitTypeCode: item.BaseUnitType_Code,
+                auditStatus: item.AuditStatus,
+                expiryDate: item.ExpireDate,
+                productDate: item.ProductionDate,
+                options: uri_opt
+            }
+            rootSto.pstos.push(pstos)
+        });
+ 
+        console.log(rootSto)
+        
+        
+        setReq(rootSto)
     }
+
+    const ConfirmPutaway = () => {
+        console.log(req)
+        if (req) {
+            Axios.post(window.apipath + "/v2/MappingandConfirmPutawayAPI", req).then(res => {
+                if (res.data._result.status === 1) {
+                    alertDialogRenderer("success", "สร้างข้อมูลพาเลทสินค้าสำเร็จ")
+                    setDatasto(res.data)
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                } else {
+                    alertDialogRenderer("error", res.data._result.message)
+                }
+            });
+        }
+    }
+
+    const RenderTreeViewData = React.memo(({ data }) => {
+        // console.log(data)
+        if (data != null && data.stos != null && data.stos.mapstos != null && data.stos.mapstos.length > 0) {
+            //    let bstoCode 
+            let treeItems = [];
+            {
+                data.stos.mapstos.map((sto, idx) => {
+                    let pstoCode = sto.code != null ? sto.code : "";
+                    let pstoName = sto.name != null ? sto.name : "";
+                    let lot = sto.lot != null && sto.lot.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Lot: " + sto.lot}</Typography>
+                        : null;
+                    let batch = sto.batch != null && sto.batch.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Batch: " + sto.batch}</Typography>
+                        : null;
+                    let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Control No.: " + sto.orderNo}</Typography>
+                        : null;
+                    let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No.: " + sto.cartonNo}</Typography>
+                        : null;
+                    let serial = sto.ref1 != null && sto.ref1.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Serial: " + sto.ref1}</Typography>
+                        : null;
+
+                    let currentQty = sto.qty != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.qty + " " + sto.unitCode}</Typography>
+                        : null;
+
+                    let remark = sto.remark != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Remark: " + sto.remark}</Typography>
+                        : null;
+                    let productDate = sto.productDate != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"MFG.Date: " + moment(sto.productDate).format("DD/MM/YYYY")}</Typography>
+                        : null;
+                    let expiryDate = sto.expiryDate != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Expire Date: " + moment(sto.expiryDate).format("DD/MM/YYYY")}</Typography>
+                        : null;
+                    let auditstatus = null;
+                    if (sto.AuditStatus != null) {
+                        let audit = "Quality Status: ";
+                        auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
+                            <AmAuditStatus className={classes.statusLabel} statusCode={sto.AuditStatus} />
+                        </Typography>
+
+                    }
+                    let eventstatus = null;
+                    if (sto.eventStatus != null) {
+                        let event = "Status: ";
+                        eventstatus = <Typography variant="body2" className={classes.labelText} noWrap>{event}
+                            <AmStorageObjectStatus className={classes.statusLabel} statusCode={sto.eventStatus} />
+                        </Typography>
+
+                    }
+                    let treeItem = {
+                        nodeId: sto.id.toString(),
+                        labelText:
+                            <div className={classes.textNowrap}>
+                                <Typography variant="body2" className={classes.labelText} noWrap>
+                                    <span className={classes.labelHead}>{pstoCode}</span>
+                                    &nbsp;{"- " + pstoName}
+                                </Typography>
+                                {currentQty}
+                                {serial}{lot}{batch}{orderNo}{cartonNo}{productDate}{expiryDate}{remark}{auditstatus}{eventstatus}
+                            </div>,
+                        labelIcon: InboxIcon,
+                        // labelInfo: currentQty,
+                        bgColor: "#e8f0fe",
+                        color: "#1a73e8",
+                        dataItem: sto,
+                        // onIconClick: (dataItem) => onClick(dataItem),
+                        // onLabelClick: (dataItem) => onClick(dataItem)
+                    };
+
+                    treeItems.push(treeItem);
+                })
+            }
+             
+            // let warehouse = data.warehouseCode != null ?
+            // <Typography variant="body2" className={classes.labelText} noWrap>{"Warehouse: " + data.warehouseCode}</Typography>
+            // : null;
+
+            // let areaLoc = data.locationCode != null ? " - " + data.locationCode : "";
+            // let area = data.areaCode != null ?
+            //     <Typography variant="body2" className={classes.labelText} noWrap>{"Area: " + data.areaCode + areaLoc}</Typography>
+            //     : null;
+                
+            let dataTreeItems = [{
+                nodeId: 'root',
+                // labelText: data.bsto.code,
+                labelText: <div className={classes.textNowrap}>
+                    <Typography variant="body2" className={classes.labelTextRoot} noWrap>
+                    {data.stos.code}
+                    </Typography>
+                    {/* {warehouse}
+                    {area} */}
+                </div>,
+                treeItems: treeItems
+            }];
+           
+            return <div><AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /></div>;
+        } else {
+            return <div><h4>ไม่พบข้อมูลสินค้า</h4></div>;
+        }
+    });
     //Alert Dialog
     const alertDialogRenderer = (type, message) => {
         setSettingAlert({ type: type, message: message });
@@ -422,17 +715,17 @@ const HandheldReceive = (props) => {
                         </Step>
                     ))}
                 </Stepper>
-                {/* {activeStep === steps.length && (
+                {activeStep === steps.length && (
                     <Paper square elevation={0} className={classes.resetContainer}>
                         <Typography variant="h6" style={{ textDecoration: 'underline', fontWeight: 'bold' }}>Detail of Pallet</Typography>
-                        <RenderTreeViewData data={dataWQ} />
+                        <RenderTreeViewData data={datasto} />
                         <div style={{ textAlign: "end", marginTop: '2px' }}>
                             <AmButton styleType="dark_clear" onClick={handleReset} >
                                 {t("Reset")}
                             </AmButton>
                         </div>
                     </Paper>
-                )} */}
+                )}
             </Paper>
         </>
     )
