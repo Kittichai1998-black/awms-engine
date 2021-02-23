@@ -62,8 +62,16 @@ namespace AMWUtil.Logger
             string _fileName = _fileFullName.Split(new char[] { '\\', '/' }).Last();
 
             string _key = DateTime.Now.Day + "," + _fileName;
-            if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
+            if(AMWLogger._LockFiles == null)
+            {
+                _LockFiles = new Dictionary<string, object>();
                 AMWLogger._LockFiles.Add(_key, new object());
+            }
+            else
+            {
+                if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
+                    AMWLogger._LockFiles.Add(_key, new object());
+            }
 
             object _lock = AMWLogger._LockFiles.First(x => x.Key == _key).Value;
             lock (_lock)
