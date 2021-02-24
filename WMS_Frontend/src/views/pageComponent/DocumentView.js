@@ -354,7 +354,7 @@ const DocumentView = props => {
                 });
 
                 //============================================================================
-                console.log(res.data.sou_bstos)
+                // console.log(res.data.sou_bstos)
                 if (res.data.sou_bstos) {
                     if (res.data.sou_bstos.length > 0) {
                         res.data.sou_bstos.forEach(rowDetail => {
@@ -515,7 +515,7 @@ const DocumentView = props => {
                     });
                 }
                 //============================================================================
-                console.log(dataTableDetailSOU);
+                //console.log(dataTableDetailSOU);
                 setData(dataTable);
                 if (dataTableDetailSOU.length > 0) {
                     setDataDetailSOU(dataTableDetailSOU);
@@ -867,7 +867,8 @@ const DocumentView = props => {
                                 font_style: "bold",
                                 padding_bottom: 5
                             })
-                            let resVal = cols.getStatusText ? eval(cols.getStatusText) : cols.type ? getDataHeader(cols.type, cols.value, cols.values) : dataHeader[cols.values];
+                            let resVal = cols.getStatusText ? eval(cols.getStatusText) : getDataHeader(cols.type, cols.value, cols.values);
+                            //cols.type ? getDataHeader(cols.type, cols.value, cols.values) : dataHeader[cols.values];
                             cellsHead.push({
                                 text: resVal,
                                 font_style: "normal",
@@ -1014,7 +1015,7 @@ const DocumentView = props => {
 
             }
         } catch (err) {
-            // console.log(err)
+            console.log(err)
         }
     }
     return (

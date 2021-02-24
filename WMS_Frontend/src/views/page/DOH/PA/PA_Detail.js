@@ -9,6 +9,8 @@ import HighlightOff from "@material-ui/icons/HighlightOff";
 import AmAuditStatus from '../../../../components/AmAuditStatus';
 import queryString from "query-string";
 import moment from "moment";
+import { AuditStatusVal } from "../../../../components/Models/AuditStatus";
+import _ from 'lodash';
 
 const PA_Detail = props => {
 
@@ -37,7 +39,7 @@ const PA_Detail = props => {
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
-                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
+                { label: "Doc Status", getStatusText: "renderDocumentStatus()", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
@@ -60,9 +62,9 @@ const PA_Detail = props => {
             CellPDF: e => { return e.SKUMaster_Name },
             widthPDF: 40
         },
-        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
+        { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        { Header: "Batch", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
@@ -92,9 +94,9 @@ const PA_Detail = props => {
         { Header: "Pallet", accessor: "rootCode", widthPDF: 10, width: 100, },
         { Header: "Pack Code", accessor: "packCode", widthPDF: 10, width: 150 },
         { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
-        { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
+        { Header: "Order No.", accessor: "diOrderNo", widthPDF: 10 },
         { Header: "Lot", accessor: "diLot", width: 130, widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Batch", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
         //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120 },
         { Header: "Unit", accessor: "packUnitCode", widthPDF: 10, width: 70 },
@@ -143,14 +145,13 @@ const PA_Detail = props => {
         }
     }
     const GetAuditStatus = (value) => {
-        if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
-            return "QUARANTINE"
-        } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
-            return "PASSED"
-        } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
-            return "REJECTED"
-        } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
-            return "HOLD"
+        if(value.diAuditStatus || value.AuditStatus){
+            var _statustxt = _.result(_.find(AuditStatusVal, function (obj) {
+                return obj.value === value.diAuditStatus || obj.value === value.AuditStatus;
+            }), 'label');
+            return _statustxt;
+        }else{
+            return "-";
         }
     };
 

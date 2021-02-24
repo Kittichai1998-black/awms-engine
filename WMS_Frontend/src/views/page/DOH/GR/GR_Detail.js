@@ -34,7 +34,7 @@ const GR_Detail = props => {
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" },
             ],
             [
-                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
+                { label: "Doc Status", getStatusText: "renderDocumentStatus()", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", value: "Remark" }
             ] 
         ];
@@ -209,7 +209,7 @@ const GR_Detail = props => {
                 buttonBack={true}
                 linkBack={"/receive/search"}
                 history={props.history}
-                usePrintPDF={false}
+                usePrintPDF={true}
             />
 
     );
