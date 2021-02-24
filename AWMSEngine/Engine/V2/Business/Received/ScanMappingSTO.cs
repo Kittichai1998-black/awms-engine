@@ -97,7 +97,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         }
                         else
                         {
+
+                            if(mapsto.areaID != null)
+                            {
+                                var curArea = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.ID == mapsto.areaID);
+                                if(curArea.AreaMasterType_ID != AreaMasterTypeID.STO_STAGING)
+                                    throw new AMWException(Logger, AMWExceptionCode.B0001, "ไม่สามารถเพิ่มสินค้าลงพาเลทนี้ได้ เนื่องจากพาเลทอยู่ "+ curArea.Name);
+                            }
                             idBase = mapsto.id.Value;
+
                         }
                         //map packsto
                         reqVO.pstos.ForEach(psto =>

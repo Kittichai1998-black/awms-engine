@@ -142,6 +142,10 @@ namespace ADO.WMSDB
                     res = this.Execute(insupd,
                                     CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) + res;
                 }
+                if (table_name.StartsWith("ams"))
+                {
+                    WMSStaticValue.StaticValueManager.GetInstant().LoadAll();
+                }
             }
             return res;
         }
@@ -481,7 +485,10 @@ namespace ADO.WMSDB
                     CommandType.Text,
                     param,
                     buVO.Logger, buVO.SqlTransaction);
-
+            if (typeof(T).Name.Split('.').Last().StartsWith("ams"))
+            {
+                WMSStaticValue.StaticValueManager.GetInstant().LoadAll();
+            }
             return res;
         }
         
