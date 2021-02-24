@@ -42,7 +42,14 @@ const AuditStatus = [
   { label: "PASSED", value: 1 },
   { label: "REJECTED", value: 2 },
   { label: "NOTPASSED", value: 3 },
-  { label: "HOLD", value: 9 },
+  { label: 'QI', value: 4 },
+  { label: 'ACC', value: 5 },
+  { label: 'ACD', value: 6 },
+  { label: 'ACN', value: 7 },
+  { label: 'ACM', value: 8 },
+  { label: 'HOLD', value: 9 },
+  { label: 'BLOCK', value: 10 },
+  { label: 'UR', value: 11 },
 ]
 const AuditStatus1_2 = AuditStatus.map(function (x) {
   return { ...x, value: x.value.toString() }

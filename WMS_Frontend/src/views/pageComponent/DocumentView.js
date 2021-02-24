@@ -10,7 +10,7 @@ import {
 import SvgIcon from '@material-ui/core/SvgIcon';
 import AmDialogs from '../../components/AmDialogs'
 import Table from "../../components/table/AmTable";
-import AmTable from "../../components/AmTable/AmTableComponent";
+import AmTable from "../../components/AmTable/AmTable";
 import queryString from "query-string";
 import DocumentEventStatus from "../../components/AmStatus";
 // import "bootstrap/dist/css/bootstrap.min.css";
@@ -207,6 +207,8 @@ const DocumentView = props => {
     const [typeDialog, setTypeDialog] = useState("");
     const [openReceive, setOpenReceive] = useState(false);
     const [selection, setSelection] = useState();
+
+
     useEffect(() => {
         getData();
         // console.log(props.optionDocItems);
@@ -220,6 +222,14 @@ const DocumentView = props => {
     useEffect(() => {
         renderDocumentStatusIcon();
     })
+
+    useEffect(() => {
+        if (dataDetailSOU) {
+            setDataDetailSOU(dataDetailSOU)
+        }
+    }, [dataDetailSOU])
+
+
 
     const getData = () => {
         //========================================================================================================
@@ -263,9 +273,17 @@ const DocumentView = props => {
                                     sumQty += y.distoQty;
                                     sumBaseQty += y.distoBaseQty;
                                 }
+                            } else if (props.typeDocNo === 2004) {                              
+                                    if (y.dcDocType_ID === 2004) {
+                                        sumQty += y.distoQty;
+                                        sumBaseQty += y.distoBaseQty;
+                                    }
                             } else if (props.typeDocNo === y.dcDocType_ID) {
-                                sumQty += y.distoQty;
-                                sumBaseQty += y.distoBaseQty;
+                                let intDocID = parseInt(docID);
+                                if (intDocID === y.dcID) {
+                                    sumQty += y.distoQty;
+                                    sumBaseQty += y.distoBaseQty;
+                                }
                             }
                         });
                     }
@@ -293,6 +311,7 @@ const DocumentView = props => {
                     row.locationcode =
                         qryStr.locationcode === "undefined" ? null : qryStr.locationcode;
 
+                  
                     dataTable.push({
                         ...row, _baseqty:
                             typeDoc === "received"
@@ -335,69 +354,124 @@ const DocumentView = props => {
                 });
 
                 //============================================================================
+                // console.log(res.data.sou_bstos)
                 if (res.data.sou_bstos) {
-                    res.data.sou_bstos.forEach(rowDetail => {
-                        rowDetail.eventStatusDoc = res.data.document["eventStatus"];
-                        // var options = ""
-                        // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-                        // rowDetail.options = options;
+                    if (res.data.sou_bstos.length > 0) {
+                        res.data.sou_bstos.forEach(rowDetail => {
+                            rowDetail.eventStatusDoc = res.data.document["eventStatus"];
+                            // var options = ""
+                            // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
+                            // rowDetail.options = options;
 
-                        // === getOption ===
-                        //var qryStr = queryString.parse(rowDetail.options)
-                        //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-                        var qryStr = queryString.parse(rowDetail.Options);
-                        var qryStrDI = queryString.parse(rowDetail.diOptions);
-                        if (optionSouBstos) {
-                            optionSouBstos.forEach(x => {
-                                rowDetail[x.optionName] =
-                                    qryStr[x.optionName] === "undefined"
-                                        ? null
-                                        : qryStr[x.optionName];
-                            });
-                        }
-                        if (props.typeDocNo === 1001 || props.typeDocNo === 1002 || props.typeDocNo === 2004) {
-                            if (rowDetail.dcDocType_ID === props.typeDocNo) {
-                                dataTableDetailSOU.push({
-                                    ...rowDetail
+                            // === getOption ===
+                            //var qryStr = queryString.parse(rowDetail.options)
+                            //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
+                            var qryStr = queryString.parse(rowDetail.Options);
+                            var qryStrDI = queryString.parse(rowDetail.diOptions);
+                            if (optionSouBstos) {
+                                optionSouBstos.forEach(x => {
+                                    rowDetail[x.optionName] =
+                                        qryStr[x.optionName] === "undefined"
+                                            ? null
+                                            : qryStr[x.optionName];
                                 });
                             }
-                        } else {
-                            if (props.typeDocNo === 1011) {
-                                if (rowDetail.dcDocType_ID === 1001) {
-                                    dataTableDetailSOU.push({
-                                        ...rowDetail
-                                    });
-                                }
-                            } else if (props.typeDocNo === 1012) {
-                                if (rowDetail.dcDocType_ID === 1002) {
-                                    dataTableDetailSOU.push({
-                                        ...rowDetail
-                                    });
+                            if (props.typeDocNo === 1001 || props.typeDocNo === 1002 || props.typeDocNo === 2004) {
+                                if (rowDetail.dcDocType_ID === props.typeDocNo) {
+                                    let intDocID = parseInt(docID);
+                                    if (intDocID === rowDetail.dcID) {
+                                        dataTableDetailSOU.push({
+                                            ...rowDetail
+                                        });
+                                    }
                                 }
                             } else {
-                                dataTableDetailSOU.push({
-                                    ...rowDetail,
-                                    remark: qryStrDI.remark != null ? qryStrDI.remark : '',
-                                    _packQty:
-                                        typeDoc === "issued"
-                                            ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                                            : typeDoc === "shipment"
-                                                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                                                : typeDoc === "received"
-                                                    ? rowDetail.packQty
-                                                    : typeDoc === "audit"
-                                                        ? rowDetail.distoQty
-                                                        : null
-                                });
+                                if (props.typeDocNo === 1011) {
+                                    if (rowDetail.dcDocType_ID === 1001) {
 
+                                        dataTableDetailSOU.push({
+                                            ...rowDetail
+                                        });
+                                    }
+                                } else if (props.typeDocNo === 1012) {
+                                    if (rowDetail.dcDocType_ID === 1002) {
+                                        dataTableDetailSOU.push({
+                                            ...rowDetail
+                                        });
+                                    }
+                                } else if (props.typeDocNo === 2004) {                              
+                                    if (rowDetail.dcDocType_ID === 2004) {
+                                        console.log(rowDetail)
+                                        dataTableDetailSOU.push({
+                                            ...rowDetail
+                                        });
+                                    }
+                                } else {
+                                    dataTableDetailSOU.push({
+                                        ...rowDetail,
+                                        remark: qryStrDI.remark != null ? qryStrDI.remark : '',
+                                        _packQty:
+                                            typeDoc === "issued"
+                                                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                                                : typeDoc === "shipment"
+                                                    ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                                                    : typeDoc === "received"
+                                                        ? rowDetail.packQty
+                                                        : typeDoc === "audit"
+                                                            ? rowDetail.distoQty
+                                                            : null
+                                    });
+
+
+                                }
 
                             }
 
-                        }
+                        });
 
-                    });
 
+                    } else {
+                        Axios.get(
+                            window.apipath + "/v2/GetSPSearchAPI?"
+                            + "&docID=" + docID
+                            + "&spname=DOCITEN_LIST_IN_DOC"
+                        ).then(res => {
+                            if (res.data.datas) {
+                                let dt = [];
+                                res.data.datas.forEach((x, i) => {
+                                    var qryStr = queryString.parse(x.diOptions);
+                                    if (props.typeDocNo === 1012) {
+                                        if (x.dcDocType_ID === 1002) {
+                                            dt.push(
+                                                {
+                                                    ...x,
+                                                    rootCode: qryStr.palletcode,
+                                                    remark: qryStr.remark
+                                                }
+                                            )
+                                        }
+                                    } else if (props.typeDocNo === 1011) {
+                                        if (x.dcDocType_ID === 1001) {
+                                            dt.push({
+                                                ...x,
+                                                rootCode: qryStr.palletcode,
+                                                remark: qryStr.remark
+                                            })
+                                        }
+                                    } else {
+                                        dt.push({
+                                            ...x,
+                                            rootCode: qryStr.palletcode,
+                                            remark: qryStr.remark
+                                        })
+                                    }
+                                })
+                                setDataDetailSOU(dt)
+                            }
+                        })
+                    }
                 }
+
                 if (res.data.des_bstos) {
                     res.data.des_bstos.forEach(rowDetail => {
                         rowDetail.eventStatusDoc = res.data.document["eventStatus"];
@@ -441,9 +515,11 @@ const DocumentView = props => {
                     });
                 }
                 //============================================================================
-                // console.log(dataTable);
+                //console.log(dataTableDetailSOU);
                 setData(dataTable);
-                setDataDetailSOU(dataTableDetailSOU);
+                if (dataTableDetailSOU.length > 0) {
+                    setDataDetailSOU(dataTableDetailSOU);
+                }
                 setDataDetailDES(dataTableDetailDES);
             }
         });
@@ -527,10 +603,15 @@ const DocumentView = props => {
         } else if (type === "option") {
             var qryStr = queryString.parse(dataHeader.Options);
             return qryStr[values] === "undefined" ? null : qryStr[values];
-        } else if (value) {
-            return dataHeader[value] + ':' + dataHeader[values];
-        } else {
-            return dataHeader[values];
+        }else{
+            if(value)
+            {
+                let str1 = dataHeader[value] === undefined || dataHeader[value] === null ? "-" : `${dataHeader[value]}`;
+                let str2 = dataHeader[values] === undefined || dataHeader[values] === null ? "" :  ` : ${dataHeader[values]}`;
+                return `${str1}${str2}`
+            }else{
+                return dataHeader[values] === undefined || dataHeader[values] === null ? "-" : dataHeader[values];
+            }
         }
     };
 
@@ -715,7 +796,6 @@ const DocumentView = props => {
         let tabledatas = [];
         let widths = [];
         let hor_align_center = "ALIGN_CENTER";
-
         for (let [key, value] of Object.entries(cols)) {
             if (value.ShowPDF === true || value.ShowPDF === undefined) {
                 let cell = { text: value.Header, hor_align: hor_align_center, font_style: "bold", font_size: 8, border: "BOX", padding: 5 };
@@ -739,6 +819,7 @@ const DocumentView = props => {
                     all_cells.push({ text: valueShow, font_size: 8, border: "BOX" });
                 }
             }
+
             tabledatas.push({ cells: all_cells })
         });
         let res = {
@@ -746,12 +827,13 @@ const DocumentView = props => {
             tabledatas: tabledatas,
             widths: widths
         }
+        console.log(res)
         return res;
     }
+     
     const ExportPDF = async () => {
         try {
             let hor_align_center = "ALIGN_CENTER";
-
             if (dataHeader !== null || dataHeader !== undefined) {
                 let textTitle = "";
                 let txtListSou = "List of Receive";
@@ -768,6 +850,9 @@ const DocumentView = props => {
                 } else if (props.typeDocNo === 2003) {
                     textTitle = "Audit Document Report";
                     txtListSou = "List of Audit";
+                } else if (props.typeDocNo === 2004) {
+                    textTitle = "Counting Document Report";
+                    txtListSou = "List of Counting";
                 }
 
                 //header 
@@ -782,7 +867,8 @@ const DocumentView = props => {
                                 font_style: "bold",
                                 padding_bottom: 5
                             })
-                            let resVal = cols.type ? getDataHeader(cols.type, cols.values) : dataHeader[cols.values];
+                            let resVal = cols.getStatusText ? eval(cols.getStatusText) : getDataHeader(cols.type, cols.value, cols.values);
+                            //cols.type ? getDataHeader(cols.type, cols.value, cols.values) : dataHeader[cols.values];
                             cellsHead.push({
                                 text: resVal,
                                 font_style: "normal",
@@ -818,10 +904,8 @@ const DocumentView = props => {
                     });
 
                 }
-
                 //=== data Detail receive
                 let table2_content = [];
-
                 if (dataDetailSOU && columnsDetailSOU) {
                     table2_content.push({
                         "hor_align": "ALIGN_LEFT",
@@ -931,7 +1015,7 @@ const DocumentView = props => {
 
             }
         } catch (err) {
-            // console.log(err)
+            console.log(err)
         }
     }
     return (
@@ -961,7 +1045,7 @@ const DocumentView = props => {
             <br />
             <div>
                 {
-                    props.CreateputAway === true ?
+                    props.CreateputAway === true && dataHeader.EventStatus != 32 ?
                         <Grid container>
                             <Grid item xs container direction="column">
                             </Grid>
@@ -1002,8 +1086,7 @@ const DocumentView = props => {
                     selection={"checkbox"}
                     selectionData={(data) => {
                         setSelection(data);
-                    }}
-                    dataKey="ID"
+                    }} dataKey="ID"
                     columns={columns}
                     pageSize={100}
                     dataSource={data}
