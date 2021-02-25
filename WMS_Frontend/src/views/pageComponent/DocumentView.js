@@ -430,7 +430,8 @@ const DocumentView = props => {
                         });
 
 
-                    } else {
+                    } 
+                   /* else {
                         Axios.get(
                             window.apipath + "/v2/GetSPSearchAPI?"
                             + "&docID=" + docID
@@ -469,7 +470,7 @@ const DocumentView = props => {
                                 setDataDetailSOU(dt)
                             }
                         })
-                    }
+                    }*/
                 }
 
                 if (res.data.des_bstos) {

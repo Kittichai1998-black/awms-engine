@@ -212,9 +212,9 @@ function Test5(props) {
 
     const wqStatusList = [10, 11, 12, 21, 22, 31, 32, 90];
     const docEventStatusList = [10, 11, 12, 812, 24, 31, 32];
-    const stoStatusList = [10, 11, 12, 13, 14, 17, 18, 99, 98, 97, 96];
+    const stoStatusList = [10, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 31, 32, 33, 34, 35, 36, 37, 38];
     const entityStatus = [0, 1, 2, 3];
-    const adStatusList = [0, 1, 2, 9];
+    const adStatusList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     const [state, setState] = React.useState({
         checkedA: true,
         checkedB: false,
@@ -280,15 +280,15 @@ function Test5(props) {
                     },
                     {
                         "code": "PP00005"
-                    },{
+                    }, {
                         "code": "PP00006"
-                    },{
+                    }, {
                         "code": "PP00007"
-                    },{
+                    }, {
                         "code": "PP00008"
-                    },{
+                    }, {
                         "code": "PP00009"
-                    },{
+                    }, {
                         "code": "PP00010"
                     }
                 ]
@@ -616,6 +616,7 @@ function Test5(props) {
                         return <AmEntityStatus key={idx} statusCode={number} />
                     })
                 }
+                <br />
                 <span>เรียกใช้ผ่าน component  [AmAuditStatus]</span>
                 <br />
                 {
