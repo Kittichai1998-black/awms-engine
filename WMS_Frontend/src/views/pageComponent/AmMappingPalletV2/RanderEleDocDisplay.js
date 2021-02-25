@@ -11,7 +11,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 const LabelH2 = styled.label`
   font-weight: bold;
-  width: 70px;
+  width: 100px;
   paddingleft: 20px;
 `;
 const InputDiv = styled.div`
@@ -50,6 +50,7 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
           {dataDoc.putawayCode}
         </FormInline>
         {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
+          //console.log(x)
           return (
             <Card>
               <CardContent style={{
@@ -64,8 +65,8 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
                     {x.pstoCode}
                   </FormInline>
                   <FormInline style={{ display: "block" }}>
-                    <LabelH2>{"Lot"}</LabelH2>
-                    {x.lot}
+                    <LabelH2>{x.skuTypeID === 5 ? "Vendor Lot" : "Lot"}</LabelH2>
+                    {x.skuTypeID === 5 ? x.ref1 : x.lot}
                   </FormInline>
                   <FormInline style={{ display: "block" }}>
                     <LabelH2>{"Qty"}</LabelH2>{x.addQty} {x.unitTypeCode}

@@ -15,18 +15,18 @@ const ChartJS = (props) => {
         spname: 'DASHBOARD_CHART_RECEIVEISSUE_DAY',
       },
     ],
-    [
-      {
-        type: 'pie',
-        title: "The Statistics of Receiving",
-        spname: 'DASHBOARD_CHART_PIE_RECEIVE',
-      },
-      {
-        type: 'pie',
-        title: "The Statistics of Issue",
-        spname: 'DASHBOARD_CHART_PIE_ISSUE',
-      },
-    ],
+    // [
+    //   {
+    //     type: 'pie',
+    //     title: "The Statistics of Receiving",
+    //     spname: 'DASHBOARD_CHART_PIE_RECEIVE',
+    //   },
+    //   {
+    //     type: 'pie',
+    //     title: "The Statistics of Issue",
+    //     spname: 'DASHBOARD_CHART_PIE_ISSUE',
+    //   },
+    // ],
     [
       {
         type: 'bar',

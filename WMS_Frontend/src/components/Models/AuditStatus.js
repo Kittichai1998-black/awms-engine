@@ -22,4 +22,8 @@ const AuditStatusVal = [
   { label: 'UR', value: 11 },
 ]
 
+// const AuditStatus1_2 = AuditStatus.map(function (x) {
+//   return { ...x, value: x.value.toString() }
+// }).filter(y => { return y.value === '1' || y.value === '2' });
+
 export { AuditStatus, AuditStatusVal }
