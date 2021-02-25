@@ -128,6 +128,7 @@ namespace ProjectGCL.Engine.Document
 
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_QTY_PER_PALLET, line.LINE.qty_per_pallet);
                 optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
+                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY, line.LINE.qty);
 
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(line.LINE.status);
 
@@ -191,7 +192,8 @@ namespace ProjectGCL.Engine.Document
             var grDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(DocGR.ID.Value, this.BuVO);
 
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_QTY_PER_PALLET, line.LINE.qty_per_pallet);
-                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY, line.LINE.qty);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
 
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(line.LINE.status);
 

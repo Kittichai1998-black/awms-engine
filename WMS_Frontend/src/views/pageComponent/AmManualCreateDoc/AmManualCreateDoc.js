@@ -462,7 +462,7 @@ const AmManualCreateDoc = props => {
               </IconButton>
             </Tooltip> : null}
             {groupDocument[x].map((y, yindex) => {
-              //console.log(y)
+              console.log(y)
 
               if (props.doctype === 1011) {
                 return (<span>
@@ -472,23 +472,12 @@ const AmManualCreateDoc = props => {
                     justify="flex-start"
                     alignItems="flex-start"
                   >
+
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet No.: </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{parseInt(queryString.parse(y.Options)["start_pallet"]) + ' - ' + parseInt(queryString.parse(y.Options)["end_pallet"])}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={2} xl={2}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Bagging Order : </label>
+                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Bagging : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label>{y.Ref2}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Customer : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.ForCustomerCode}</label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>SKU : </label>
@@ -500,21 +489,27 @@ const AmManualCreateDoc = props => {
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Qty : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Quantity}</label>
+                      <label>{queryString.parse(y.Options)["qty"]}</label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Qty/pallet : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{queryString.parse(y.Options)["qty_per_pallet"] + ' ' + y.UnitCode}</label>
+                      <label>{y.Quantity}</label>
                     </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Unit : </label>
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      <label>{y.UnitCode}</label>
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Lot : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label>{y.Lot}</label>
                     </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Grade : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
@@ -530,15 +525,22 @@ const AmManualCreateDoc = props => {
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Putaway  : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ backgroundColor: "#ffe57f", margin: "2px" }}  >{y.distoQty === null ? (' - ' + '/' + y.Quantity) : (y.distoQty + '/' + y.Quantity)}</label>
+                      <label style={{ backgroundColor: "#faf60f", margin: "2px" }}  >{y.DistoQuantity === null ? (' - ' + '/' + y.Quantity) : (y.DistoQuantity + '/' + y.Quantity)}</label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Status : </label>
+                      < label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Status : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       {getAuditStatusValue(y.AuditStatus)}
                     </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet No.: </label>
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
+                      <label>{y.BaseCode}</label>
+                    </Grid>
                   </Grid>
+                  <hr style={{ marginTop: "0px" }} />
                 </span>
                 )
               } else {
@@ -669,17 +671,10 @@ const AmManualCreateDoc = props => {
   };
 
   const getAuditStatusValue = Status => {
-    if (Status === 0) {
-      return <AuditStatusIcon style={{ width: "50px" }} key={0} statusCode={0} />
-    } else if (Status === 1) {
-      return <AuditStatusIcon style={{ width: "50px" }} key={1} statusCode={1} />;
-    } else if (Status === 2) {
-      return <AuditStatusIcon style={{ width: "50px" }} key={2} statusCode={2} />;
-    } else if (Status === 9) {
-      return <AuditStatusIcon style={{ width: "50px" }} key={9} statusCode={9} />;
-    } else {
-      return null;
+    if (Status != undefined) {
+      return <AuditStatusIcon style={{ width: "50px" }} key={Status} statusCode={Status} />
     }
+
   }
 
   const clear = () => {
