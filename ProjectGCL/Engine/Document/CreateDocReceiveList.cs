@@ -41,23 +41,13 @@ namespace ProjectGCL.Engine.Document
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            amt_Document document = new amt_Document();
-            var resRecord = new List<Record>();
 
+            var resRecord = new List<Record>();
 
             foreach (var line in reqVO.RECORD)
             {
+                amt_Document document = new amt_Document();
                 var qty_s = this.ValidateQty(this.Logger, line, this.BuVO);
-
-                var customer = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_Customer>(
-                       new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Code",line.LINE.customer, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
-                       }, this.BuVO).FirstOrDefault();
-
-                if (customer == null)
-                    throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี customer นี้ในระบบ");
-
                 var sku = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
                         new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Code",line.LINE.sku, SQLOperatorType.EQUALS),
@@ -86,8 +76,8 @@ namespace ProjectGCL.Engine.Document
                     throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี warehouse นี้ในระบบ");
 
 
-                document = this.CreateDocGR(this.Logger, line, qty_s, warehouse, customer, sku, pack, this.BuVO);
-                this.CreateDocPA(this.Logger, line, qty_s, warehouse, customer, sku, pack, document, this.BuVO);
+                document = this.CreateDocGR(this.Logger, line, qty_s, warehouse, sku, pack, this.BuVO);
+                this.CreateDocPA(this.Logger, line, qty_s, warehouse, sku, pack, document, this.BuVO);
 
                 resRecord.Add(new Record
                 {
@@ -113,32 +103,31 @@ namespace ProjectGCL.Engine.Document
         {
             var totalQtyPallet = line.LINE.qty_per_pallet * line.LINE.List_Pallet.Count();
             var qty_s = new decimal();
-            if (totalQtyPallet > line.LINE.qty)
+            if (line.LINE.qty > totalQtyPallet)
             {
-                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Qty/Pallet เกิน Qty รวม");
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Qty เกิน Qty/Pallet รวม");
             }
             else
             {
-                qty_s = (decimal)(line.LINE.qty - totalQtyPallet);
+                qty_s = (decimal)(totalQtyPallet - line.LINE.qty);
                 if (qty_s > line.LINE.qty)
                 {
                     throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Qty เศษ น้อยกว่า Qty/Pallet");
                 }
+
             }
             return qty_s;
         }
 
 
-        private amt_Document CreateDocGR(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, decimal qty_s, ams_Warehouse warehouse, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, VOCriteria buVO)
+        private amt_Document CreateDocGR(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, decimal qty_s, ams_Warehouse warehouse, ams_SKUMaster sku, ams_PackMaster pack, VOCriteria buVO)
         {
             amt_Document docResultGR = new amt_Document();
             List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
             var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
 
-            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, line.LINE.qty_per_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, line.LINE.start_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, line.LINE.end_pallet);
-
+            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_QTY_PER_PALLET, line.LINE.qty_per_pallet);
+                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
 
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(line.LINE.status);
 
@@ -150,7 +139,7 @@ namespace ProjectGCL.Engine.Document
                 souBranchID = null,
                 souAreaMasterID = null,
                 desBranchID = null,
-                forCustomerCode = StaticValue.Customers.First(x => x.Code == customer.Code).Code,
+                //forCustomerCode = StaticValue.Customers.First(x => x.Code == customer.Code).Code,
                 documentProcessTypeID = DocumentProcessTypeID.FG_TRANSFER_WM,
                 lot = line.LINE.lot,
                 batch = null,
@@ -184,8 +173,8 @@ namespace ProjectGCL.Engine.Document
 
                 });
             }
-            docItemsList[line.LINE.List_Pallet.Count() - 1].quantity = qty_s;
-            docItemsList[line.LINE.List_Pallet.Count() - 1].baseQuantity = qty_s;
+            docItemsList[line.LINE.List_Pallet.Count() - 1].quantity = qty_s == 0 ? line.LINE.qty_per_pallet : (line.LINE.qty_per_pallet - qty_s);
+            docItemsList[line.LINE.List_Pallet.Count() - 1].baseQuantity = qty_s == 0 ? line.LINE.qty_per_pallet : (line.LINE.qty_per_pallet - qty_s);
             docH.receiveItems = docItemsList;
             docResultGR = new CreateGRDocument().Execute(Logger, this.BuVO, docH);
 
@@ -193,7 +182,7 @@ namespace ProjectGCL.Engine.Document
 
         }
 
-        private amt_Document CreateDocPA(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, decimal qty_s, ams_Warehouse warehouse, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, amt_Document DocGR, VOCriteria buVO)
+        private amt_Document CreateDocPA(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, decimal qty_s, ams_Warehouse warehouse, ams_SKUMaster sku, ams_PackMaster pack, amt_Document DocGR, VOCriteria buVO)
         {
             amt_Document docResultPA = new amt_Document();
             List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
@@ -201,9 +190,8 @@ namespace ProjectGCL.Engine.Document
 
             var grDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(DocGR.ID.Value, this.BuVO);
 
-            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, line.LINE.qty_per_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, line.LINE.start_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, line.LINE.end_pallet);
+            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_QTY_PER_PALLET, line.LINE.qty_per_pallet);
+                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
 
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(line.LINE.status);
 
@@ -216,7 +204,7 @@ namespace ProjectGCL.Engine.Document
                 souBranchID = null,
                 souAreaMasterID = null,
                 desBranchID = null,
-                forCustomerCode = StaticValue.Customers.First(x => x.Code == customer.Code).Code,
+                // forCustomerCode = StaticValue.Customers.First(x => x.Code == customer.Code).Code,
                 documentProcessTypeID = DocumentProcessTypeID.FG_TRANSFER_WM,
                 lot = line.LINE.lot,
                 batch = null,
@@ -250,8 +238,8 @@ namespace ProjectGCL.Engine.Document
 
                 });
             }
-            docItemsList[line.LINE.List_Pallet.Count() - 1].quantity = qty_s;
-            docItemsList[line.LINE.List_Pallet.Count() - 1].baseQuantity = qty_s;
+            docItemsList[line.LINE.List_Pallet.Count() - 1].quantity = qty_s == 0 ? line.LINE.qty_per_pallet : (line.LINE.qty_per_pallet - qty_s);
+            docItemsList[line.LINE.List_Pallet.Count() - 1].baseQuantity = qty_s == 0 ? line.LINE.qty_per_pallet : (line.LINE.qty_per_pallet - qty_s);
             docH.receiveItems = docItemsList;
             docResultPA = new CreateGRDocument().Execute(Logger, this.BuVO, docH);
 

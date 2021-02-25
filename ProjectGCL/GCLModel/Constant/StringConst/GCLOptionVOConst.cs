@@ -13,6 +13,6 @@ namespace AMSModel.Constant.StringConst
         public const string OPT_DISCHARGE = "discharge";
         public const string OPT_STAGING = "staging";
         public const string OPT_DOCK = "dock";
-
+        public const string OPT_CHECK_RECIEVE = "check_recieve";
     }
 }
