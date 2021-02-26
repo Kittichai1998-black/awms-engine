@@ -171,7 +171,7 @@ const AmManualCreateDoc = props => {
   const [autoFocus, setAutoFocus] = useState(true)
   const [dialog, setDialog] = useState(false);
   const [last, setLast] = useState("");
-  const [docCode, setDocCode] = useState("");
+  const [docItemID, setDocItemID] = useState();
   //============================================================================
   useEffect(() => {
     if (count > 0) {
@@ -225,24 +225,39 @@ const AmManualCreateDoc = props => {
   const onScan = (datas) => {
     // console.log(datas)
     // console.log(datas.split("|").length)
+    let list = [];
     if (props.doctype === 1011) {
       if (datas && datas.split("|").length === 12) {
-        const _editData = {
+        var start_pallet = parseInt(datas.split("|")[5].trim());
+        var end_pallet = parseInt(datas.split("|")[6].trim());
+        for (var i = start_pallet; i <= end_pallet; i++) {
+          list.push(datas.split("|")[4].trim() + " " + datas.split("|")[2].trim() + " " + i.toString().padStart(4, '0'))
+        }
+
+        //console.log(list)
+        const LINE = {
           doc_wms: datas.split("|")[0].trim(),
           customer: datas.split("|")[1].trim(),
           grade: datas.split("|")[2].trim(),
           sku: datas.split("|")[3].trim(),
           lot: datas.split("|")[4].trim(),
-          start_pallet: +parseInt(datas.split("|")[5].trim()),
-          end_pallet: +parseInt(datas.split("|")[6].trim()),
+          start_pallet: parseInt(datas.split("|")[5].trim()),
+          end_pallet: parseInt(datas.split("|")[6].trim()),
           warehouse: datas.split("|")[7].trim(),
           qty: datas.split("|")[8].trim(),
           unit: datas.split("|")[9].trim(),
           qty_per_pallet: datas.split("|")[10].trim(),
           status: datas.split("|")[11].trim(),
+          List_Pallet: list,
           api_ref: generateRandom(10)
         }
-        Axios.post(window.apipath + "/v2/revieve_order", _editData).then(res => {
+        const _postData = {
+          RECORD: [{
+            LINE
+          }]
+        }
+        //console.log(_postData)
+        Axios.post(window.apipath + "/v2/revieve_order", _postData).then(res => {
           if (res.data._result.status === 1) {
             setDialogState({ type: "success", content: "Success", state: true })
             var elbarcode = document.getElementById('qrcode');
@@ -389,7 +404,7 @@ const AmManualCreateDoc = props => {
   const onHandleUpdate = () => {
     // console.log(docCode)
     let postdata = {
-      documentCode: docCode,
+      docItemID: docItemID,
       lastPallet: last
     };
     Axios.post(window.apipath + "/v2/update_last_pallet", postdata).then(res => {
@@ -432,25 +447,23 @@ const AmManualCreateDoc = props => {
 
       return groupDocumentArr.map((x, index) => {
         //console.log(x)
-        // setDocCode(x)
+        // setDocItemID(x)
         return <Card style={{ width: "100%", marginTop: "10px", padding: "0px", border: "solid", borderWidth: "thin" }}>
           < CardContent style={{ paddingBottom: "0px" }}>
-
-            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "18px" }}>{x}</label>
-
             <AmDocumentStatus statusCode={groupDocument[x][0].EventStatus} />
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{x}</label>
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"Bagging : " + groupDocument[x][0].Ref2 + " | "}</label>
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"SKU : " + groupDocument[x][0].SKUCode + " | "}</label>
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"Grade : " + groupDocument[x][0].Ref1 + " | "}</label>
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"Lot : " + groupDocument[x][0].Lot + " | "}</label>
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{
+              queryString.parse(groupDocument[x][0].Options)["qty"] + " " + groupDocument[x][0].UnitCode
+            }</label>
 
             {props.delete === true ? <Tooltip title="Delete">
               <IconButton size="small" aria-label="info" style={{ marginTop: "5px", float: "right" }}>
                 <DeleteIcon fontSize="small" style={{ color: "red" }}
                   onClick={() => { onHandleDelete(x) }}
-                />
-              </IconButton>
-            </Tooltip> : null}
-            {props.edit === true ? <Tooltip title="Update">
-              <IconButton size="small" aria-label="info" style={{ marginTop: "5px", float: "right" }}>
-                <Edit fontSize="small" style={{ color: "orange" }}
-                  onClick={() => { setDocCode(x); setDialog(true) }}
                 />
               </IconButton>
             </Tooltip> : null}
@@ -462,10 +475,11 @@ const AmManualCreateDoc = props => {
               </IconButton>
             </Tooltip> : null}
             {groupDocument[x].map((y, yindex) => {
-              console.log(y)
+              //console.log(y)
 
               if (props.doctype === 1011) {
                 return (<span>
+
                   < Grid
                     container
                     direction="row"
@@ -473,65 +487,12 @@ const AmManualCreateDoc = props => {
                     alignItems="flex-start"
                   >
 
+                    {/* <AmDocumentStatus style={{ width: "30px" }} labelShort={y.DocitemEventStatus} statusCode={y.DocitemEventStatus} /> */}
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Bagging : </label>
+
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Ref2}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>SKU : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.SKUCode}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Qty : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{queryString.parse(y.Options)["qty"]}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Qty/pallet : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Quantity}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Unit : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.UnitCode}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Lot : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Lot}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Grade : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Ref1}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Warehouse : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.WarehouseCode}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Putaway  : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ backgroundColor: "#faf60f", margin: "2px" }}  >{y.DistoQuantity === null ? (' - ' + '/' + y.Quantity) : (y.DistoQuantity + '/' + y.Quantity)}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      < label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Status : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      {getAuditStatusValue(y.AuditStatus)}
+                      <AmDocumentStatus style={{ width: "30px" }} labelShort={y.DocitemEventStatus} statusCode={y.DocitemEventStatus} />
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet No.: </label>
@@ -539,12 +500,36 @@ const AmManualCreateDoc = props => {
                     <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
                       <label>{y.BaseCode}</label>
                     </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      {/* <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Qty : </label> */}
+
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
+
+                      <label>{y.Quantity + " " + y.UnitCode}</label>
+
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      < label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Status : </label>
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      {getAuditStatusValue(y.AuditStatus)}
+                    </Grid>
+                    {props.edit === true ? <Tooltip title="Update">
+                      <IconButton size="small" aria-label="info" style={{ margin: "0px", float: "right" }}>
+                        <Edit fontSize="small" style={{ color: "orange" }}
+                          onClick={() => { setDocItemID(y.DocumentItemID); setDialog(true) }}
+                        />
+                      </IconButton>
+                    </Tooltip> : null}
                   </Grid>
+
                   <hr style={{ marginTop: "0px" }} />
                 </span>
                 )
               } else {
                 return (<span>
+
                   < Grid
                     container
                     direction="row"
@@ -637,8 +622,8 @@ const AmManualCreateDoc = props => {
       {
         field: "Option",
         type: "input",
-        name: "Last Pallet",
-        placeholder: "Last Pallet",
+        name: "Update Qty",
+        placeholder: "Update Qty",
         required: true
       }
     ];
@@ -650,7 +635,7 @@ const AmManualCreateDoc = props => {
             <div key={key}>
               <FormInline>
                 {" "}
-                <LabelH style={{ width: "100px" }}>{"Last Pallet"} : </LabelH>
+                <LabelH style={{ width: "100px" }}>{"Update Qty"} : </LabelH>
                 <InputDiv>
                   <AmInput
                     id={cols.field}
@@ -682,7 +667,7 @@ const AmManualCreateDoc = props => {
     setAutoFocus(true)
     setqrcode()
     setLast("")
-    setDocCode("")
+    setDocItemID()
   }
 
   return (
@@ -705,7 +690,8 @@ const AmManualCreateDoc = props => {
       <ModalForm
         open={dialog}
         onAccept={(status, rowdata) => onHandleUpdateLastConfirm(status)}
-        titleText={"Last Pallet"}
+        titleText={"Update Qty"}
+        textConfirm="Confirm"
         data={"text"}
         columns={DataGenerateLast()}
       />
