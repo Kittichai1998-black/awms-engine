@@ -6,6 +6,6 @@ namespace AMSModel.Criteria
 {
     public class NullCriteria
     {
-        private NullCriteria() { }
+        public NullCriteria() { }
     }
 }

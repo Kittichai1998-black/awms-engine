@@ -10,7 +10,7 @@ namespace AMSModel.Entity
         public string NameEngine;
         public int ThreadIndex;
         public PlcCommunicationType PlcCommuType;
-        public string LogicalNumber;
+        public string PlcDeviceName;
 
         public string DK_Set_SouLoc;
         public int VW_Set_SouLoc;

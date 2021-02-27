@@ -4,7 +4,7 @@ using AMWUtil.Common;
 using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
 using AWCSEngine.Controller;
-using AWCSEngine.Engine.McAPIEngine;
+using AWCSEngine.Engine.CommonEngine;
 using AWCSEngine.Engine.McWorkEngine;
 using System;
 using System.Collections.Generic;
@@ -15,22 +15,22 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadMcWorkService : IThreadWorker
+    public class ThreadMcWorkEngine : IThreadWorker
     {
-        private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_dalay].Get<int>();
-        private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get<int>();
+        private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_dalay].Get2<int>();
+        private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get2<int>();
 
         private List<Thread> Threads { get; set; }
-        private static ThreadMcWorkService instant;
-        public static ThreadMcWorkService GetInstant()
+        private static ThreadMcWorkEngine instant;
+        public static ThreadMcWorkEngine GetInstant()
         {
-            if (ThreadMcWorkService.instant == null)
+            if (ThreadMcWorkEngine.instant == null)
             {
-                instant = new ThreadMcWorkService();
+                instant = new ThreadMcWorkEngine();
             }
             return instant;
         }
-        private ThreadMcWorkService()
+        private ThreadMcWorkEngine()
         {
             this.Threads = new List<Thread>();
         }

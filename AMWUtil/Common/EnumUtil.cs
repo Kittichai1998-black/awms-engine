@@ -31,7 +31,7 @@ namespace AMWUtil.Common
                 var attr = AttributeUtil.Attribute<EnumDisplayAttribute>(e);
                 if (attr != null)
                 {
-                    viw = ObjectUtil.JsonCast<ObjectView>(attr);
+                    viw = ObjectUtil.Cast2<ObjectView>(attr);
                     viw.Value = e;
                 }
                 else

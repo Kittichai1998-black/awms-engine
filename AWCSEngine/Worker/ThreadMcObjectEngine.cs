@@ -14,7 +14,7 @@ namespace AWCSEngine.Worker
 {
     public class ThreadMcObjectEngine : IThreadWorker
     {
-        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_engine_dalay].Get<int>();
+        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_engine_dalay].Get2<int>();
 
         private List<McThread> McThreads { get; set; }
         private static ThreadMcObjectEngine instant;
@@ -67,7 +67,7 @@ namespace AWCSEngine.Worker
             {
                 mcCore.McEngines.ForEach(mcEng =>
                 {
-                    mcEng.Runtime();
+                    mcEng.Execute(null);
                 });
                 Thread.Sleep(this.DELAY_MS);
             }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AWCSEngine.Common
+namespace AWCSEngine.Util
 {
     public static class LocationUtil
     {

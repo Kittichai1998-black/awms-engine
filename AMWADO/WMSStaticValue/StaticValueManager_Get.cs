@@ -144,7 +144,7 @@ namespace ADO.WMSStaticValue
             var config = this.Configs.FirstOrDefault(x => x.DataKey == code);
             if (config == null)
                 return string.Empty;
-            return config.DataValue.Get<string>();
+            return config.DataValue.Get2<string>();
         }
         public bool IsMatchConfigArray(string code, object value)
         {
