@@ -275,7 +275,7 @@ const AmManualCreateDoc = props => {
       }
     } else {
       if (datas && datas.split("|").length === 10) {
-        const _editData = {
+        const LINE = {
           doc_wms: datas.split("|")[0].trim(),
           customer: datas.split("|")[1].trim(),
           grade: datas.split("|")[2].trim(),
@@ -286,9 +286,15 @@ const AmManualCreateDoc = props => {
           qty: datas.split("|")[7].trim(),
           unit: datas.split("|")[8].trim(),
           status: datas.split("|")[9].trim(),
+          List_Pallet: [],
           api_ref: generateRandom(10)
         }
-        Axios.post(window.apipath + "/v2/issue_order", _editData).then(res => {
+        const _postData = {
+          RECORD: [{
+            LINE
+          }]
+        }
+        Axios.post(window.apipath + "/v2/issue_order", _postData).then(res => {
           if (res.data._result.status === 1) {
             setDialogState({ type: "success", content: "Success", state: true })
             var elbarcode = document.getElementById('qrcode');
@@ -452,12 +458,12 @@ const AmManualCreateDoc = props => {
           < CardContent style={{ paddingBottom: "0px" }}>
             <AmDocumentStatus statusCode={groupDocument[x][0].EventStatus} />
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{x}</label>
-            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"Bagging : " + groupDocument[x][0].Ref2 + " | "}</label>
+            <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{props.doctype === 1011 ? ("Bagging : " + groupDocument[x][0].Ref2 + " | ") : ("Do. : " + groupDocument[x][0].Ref2 + " | ")}</label>
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"SKU : " + groupDocument[x][0].SKUCode + " | "}</label>
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"Grade : " + groupDocument[x][0].Ref1 + " | "}</label>
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{"Lot : " + groupDocument[x][0].Lot + " | "}</label>
             <label style={{ fontWeight: "bold", paddingRight: "5px", fontSize: "15px" }}>{
-              queryString.parse(groupDocument[x][0].Options)["qty"] + " " + groupDocument[x][0].UnitCode
+              props.doctype === 1011 ? (queryString.parse(groupDocument[x][0].Options)["qty"] + " " + groupDocument[x][0].UnitCode) : groupDocument[x][0].Qty
             }</label>
 
             {props.delete === true ? <Tooltip title="Delete">
@@ -537,58 +543,30 @@ const AmManualCreateDoc = props => {
                     alignItems="flex-start"
                   >
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
+                      <AmDocumentStatus style={{ width: "30px" }} labelShort={y.DocitemEventStatus} statusCode={y.DocitemEventStatus} />
+                    </Grid>
+                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet No.: </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label>{y.PalletCode}</label>
                     </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>DO.: </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Ref2}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Customer : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.ForCustomerCode}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>SKU : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.PackName}</label>
-                    </Grid>
+
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Qty : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label>{y.Qty}</label>
                     </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Lot : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Lot}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Grade : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Ref1}</label>
-                    </Grid>
+
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Staging : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label>{y.Ref3}</label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Warehouse : </label>
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label>{y.Sou_Warehouse_Code}</label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Status : </label>
