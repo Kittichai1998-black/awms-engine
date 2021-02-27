@@ -1,5 +1,6 @@
 ﻿using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
@@ -20,7 +21,7 @@ namespace AWCSEngine.Engine.CommonEngine
             public string desLocCode;
         }
 
-        public RegisterMcQueueOutbound(string logref) : base(logref)
+        public RegisterMcQueueOutbound(string logref, VOCriteria buVO) : base(logref,buVO)
         {
         }
 

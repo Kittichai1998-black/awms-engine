@@ -25,7 +25,7 @@ namespace AMWUtil.Exception
         public AMWException(
             ILogger logger,
             AMWExceptionCode code,
-            string[] paramters = null,
+            string[] args = null,
             Dictionary<string,string> messages = null,
             [CallerFilePath]string sourceFile = "",
             [CallerLineNumber]int lineNumber = 0)
@@ -34,15 +34,13 @@ namespace AMWUtil.Exception
                     code.Attribute<AMWExceptionCodeAttribute>().Code + ":" +
                     (messages != null && messages.ContainsKey(code.Attribute<AMWExceptionCodeAttribute>().Code) ?
                         messages[code.Attribute<AMWExceptionCodeAttribute>().Code] : code.Attribute<AMWExceptionCodeAttribute>().DefaultMessage),
-                    paramters ?? new string[] { })
+                    args ?? new string[] { })
                   )
         {
             this.AWMCode = code;
             this.LineNumber = lineNumber;
             this.SourceFile = sourceFile;
-            //StackTrace stackTrace = new StackTrace();
-            //this.ClassName = stackTrace.GetFrame(extendLv).GetMethod().DeclaringType.FullName;
-            //this.MethodName = stackTrace.GetFrame(extendLv).GetMethod().Name;
+
             if (logger != null)
                 logger.LogError(this.Message, sourceFile, lineNumber);
             else
@@ -51,20 +49,41 @@ namespace AMWUtil.Exception
         public AMWException(
             ILogger logger,
             AMWExceptionCode code,
-            string paramters,
+            string arg1,
             Dictionary<string, string> messages = null,
-            [CallerFilePath]string sourceFile = "",
-            [CallerLineNumber]int lineNumber = 0) :
-            this(logger, code, new string[] { paramters }, messages, sourceFile, lineNumber)
+            [CallerFilePath] string sourceFile = "",
+            [CallerLineNumber] int lineNumber = 0) :
+            this(logger, code, new string[] { arg1 }, messages, sourceFile, lineNumber)
+        { }
+        public AMWException(
+            ILogger logger,
+            AMWExceptionCode code,
+            string arg1,
+            string arg2,
+            Dictionary<string, string> messages = null,
+            [CallerFilePath] string sourceFile = "",
+            [CallerLineNumber] int lineNumber = 0) :
+            this(logger, code, new string[] { arg1, arg2 }, messages, sourceFile, lineNumber)
+        { }
+        public AMWException(
+            ILogger logger,
+            AMWExceptionCode code,
+            string arg1,
+            string arg2,
+            string arg3,
+            Dictionary<string, string> messages = null,
+            [CallerFilePath] string sourceFile = "",
+            [CallerLineNumber] int lineNumber = 0) :
+            this(logger, code, new string[] { arg1, arg2, arg3 }, messages, sourceFile, lineNumber)
         { }
 
         public AMWException(
             ILogger logger,
             AMWExceptionCode code,
-            string paramters,
+            string arg1,
             AMWExceptionSourceChild source,
             Dictionary<string, string> messages = null) :
-            this(logger, code, new string[] { paramters }, messages, source.SourceFile,source.LineNumber)
+            this(logger, code, new string[] { arg1 }, messages, source.SourceFile,source.LineNumber)
         { }
 
 

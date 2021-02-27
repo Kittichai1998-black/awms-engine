@@ -17,27 +17,35 @@ namespace AWCSEngine.Engine
         protected string LogRefID { get => this.BuVO.Logger.LogRefID; }
         protected AMWLogger Logger { get => this.BuVO.Logger; }
 
-        public BaseEngine(string logref = null)
+        public BaseEngine(string logref, VOCriteria buVO=null)
         {
-            this.BuVO = new VOCriteria();
+            this.BuVO = buVO ?? new VOCriteria();
             this.BuVO.Logger = AMWLoggerManager.GetLogger("Engine",this.BaseLogName() , logref);
             this.BuVO.Logger.SubServiceName = this.GetType().Name;
             this.BuVO.SqlConnection = ADO.WCSDB.DataADO.GetInstant().CreateConnection();
         }
-
-        public TRes Execute(TReq request)
+        public ResponseCriteria<TRes> Execute(TReq request)
         {
-            TRes res = null;
+            ResponseCriteria<TRes> res = new ResponseCriteria<TRes>();
             try
             {
-                res = this.ExecuteChild(request);
+                res.result = this.ExecuteChild(request);
+                res.status = 1;
+                res.message = "SUCCESS";
+                res.trace = "";
             }
-            catch (AMWException)
+            catch (AMWException ex)
             {
+                res.status = 0;
+                res.message = ex.Message;
+                res.trace = ex.StackTrace;
                 throw;
             }
             catch (Exception ex)
             {
+                res.status = 0;
+                res.message = ex.Message;
+                res.trace = ex.StackTrace;
                 this.Logger.LogError(ex.StackTrace);
                 throw new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
             }

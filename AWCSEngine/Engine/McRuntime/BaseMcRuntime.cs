@@ -13,24 +13,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AWCSEngine.Engine.McObjectEngine
+namespace AWCSEngine.Engine.McRuntime
 {
-    public abstract class BaseMcEngine : BaseEngine<NullCriteria, NullCriteria>, IDisposable
+    public abstract class BaseMcRuntime : BaseEngine<NullCriteria, NullCriteria>, IDisposable
     {
         private act_McObject _McWork_Tmp { get; set; }
-        private Action<BaseMcEngine> _Callback_OnChange { get; set; }
+        private Action<BaseMcRuntime> _Callback_OnChange { get; set; }
         private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
 
-        protected abstract void ExecuteChild_OnRuntime();
-        protected abstract bool ExecuteChild_OnIdle();
-        protected abstract bool ExecuteChild_OnCommand();
-        protected abstract bool ExecuteChild_OnWorking();
-        protected abstract bool ExecuteChild_OnDone();
-        protected abstract bool ExecuteChild_OnError();
+        protected abstract void OnRun();
+        protected abstract bool OnRun_IDLE();
+        protected abstract bool OnRun_COMMAND();
+        protected abstract bool OnRun_WORKING();
+        protected abstract bool OnRun_DONE();
+        protected abstract bool OnRun_ERROR();
         protected IPlcADO PlcADO { get; private set; }
 
         public acs_McMaster McMst { get; private set; }
         public act_McObject McObj { get; private set; }
+        //public act_BaseObject BaseObj { get; private set; }
+
         protected acs_McCommand RunCmd { get; private set; }
         protected List<acs_McCommandAction> RunCmdAction { get; private set; }
         protected List<string> RunCmdParameters { get; private set; }
@@ -39,9 +41,13 @@ namespace AWCSEngine.Engine.McObjectEngine
         //public McObjectStatus McEngineStatus { get; private set; }
         public long ID { get => this.McMst.ID.Value; }
         public string Code { get => this.McMst.Code; }
+        public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
+        public acs_Location Cur_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value); }
+        public acs_Location Sou_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Sou_Location_ID.Value); }
+        public acs_Location Des_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Des_Location_ID.Value); }
         public string MessageLog { get; set; }
         public List<string> DeviceNames { get; set; }
-        public BaseMcEngine(acs_McMaster mcMst, string logref) : base(logref)
+        public BaseMcRuntime(acs_McMaster mcMst, string logref) : base(logref)
         {
             this.McMst = mcMst;
         }
@@ -49,6 +55,22 @@ namespace AWCSEngine.Engine.McObjectEngine
         protected override string BaseLogName()
         {
             return "McObject";
+        }
+
+        private McObjectEventStatus EventStatus_BeforError;
+        public void PostError(string error)
+        {
+            this.MessageLog = error;
+            this.EventStatus_BeforError = this.McObj.EventStatus;
+            this.McObj.EventStatus = McObjectEventStatus.ERROR;
+        }
+        public void ClearERROR_PostIDEL()
+        {
+            this.McObj.EventStatus = McObjectEventStatus.IDEL;
+        }
+        public void ClearERROR_PostTryAgain()
+        {
+            this.McObj.EventStatus = McObjectEventStatus.IDEL;
         }
 
         public void Initial()
@@ -80,14 +102,14 @@ namespace AWCSEngine.Engine.McObjectEngine
             string mcWorkStr = this.McObj.Json();
             this.Logger.LogInfo("McWork > " + mcWorkStr);
             this.Logger.LogInfo("McController.AddMC()");
-            McObjectController.GetInstant().AddMC(this);
+            McRuntimeController.GetInstant().AddMC(this);
 
             this.DeviceNames = new List<string>();
             this.McObj.GetType().GetFields().ToList().ForEach(x => { if (x.Name.StartsWith("DV_")){ this.DeviceNames.Add(x.Name.Substring(3)); } });
         }
 
 
-        public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Action<BaseMcEngine> callback_OnChange)
+        public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Action<BaseMcRuntime> callback_OnChange)
         {
             if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
             {
@@ -106,6 +128,41 @@ namespace AWCSEngine.Engine.McObjectEngine
             }
             return false;
         }
+        public act_BaseObject Push_BaseObj_byLoc(long fromLocID)
+        {
+            var baseObj = BaseObjectADO.GetInstant().GetByLocation(fromLocID, BuVO);
+            if (baseObj == null)
+            {
+                var loc = StaticValueManager.GetInstant().GetLocation(fromLocID);
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_STOinLOC_NOT_FOUND,loc.Code);
+            }
+
+            baseObj.Location_ID = this.McObj.Cur_Location_ID.Value;
+            baseObj.McObject_ID = this.McObj.ID.Value;
+            DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+            return baseObj;
+        }
+        public act_BaseObject Pop_BaseObj_byLoc(int toLocID)
+        {
+            var baseObj = BaseObjectADO.GetInstant().GetByMcObject(this.McMst.ID.Value, BuVO);
+            if (baseObj == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_STOinMC_NOT_FOUND, this.McMst.Code);
+
+            var loc = StaticValueManager.GetInstant().GetLocation(toLocID);
+            var baseObj2 = BaseObjectADO.GetInstant().GetByLocation(toLocID, BuVO);
+            if (baseObj2 != null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_BASEBLOCK_LOCATION, loc.Code);
+            }
+
+            baseObj.Area_ID = loc.Area_ID;
+            baseObj.Location_ID = loc.ID.Value;
+            baseObj.McObject_ID = null;
+            DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+            return baseObj;
+        }
+
+
         public void Execute()
         {
             base.Execute(null);
@@ -116,12 +173,13 @@ namespace AWCSEngine.Engine.McObjectEngine
             {
                 if (this.McObj == null || this.McObj.Status != EntityStatus.ACTIVE) { this.MessageLog = "Offline"; return null; }
 
-
+                //if (this.McObj.EventStatus != McObjectEventStatus.ERROR) return null;
                 this._1_Read_Plc2McObj_OnRun();
                 this._2_ExecuteChild_OnRun();
                 this._3_Write_Cmd2Plc_OnRun();
                 this._4_DBLog_OnRun();
-                this._5_MessageLog_OnRun();
+                if (this.McObj.EventStatus != McObjectEventStatus.ERROR)
+                    this._5_MessageLog_OnRun();
             }
             catch (AMWException ex)
             {
@@ -176,20 +234,20 @@ namespace AWCSEngine.Engine.McObjectEngine
 
         private void _2_ExecuteChild_OnRun()
         {
-            this.ExecuteChild_OnRuntime();
+            this.OnRun();
 
             switch (this.McObj.EventStatus)
             {
                 case McObjectEventStatus.IDEL:
-                    if (this.ExecuteChild_OnIdle()) this.McObj.EventStatus = McObjectEventStatus.COMMAND; break;
+                    if (this.OnRun_IDLE()) this.McObj.EventStatus = McObjectEventStatus.COMMAND; break;
                 case McObjectEventStatus.COMMAND:
-                    if (this.ExecuteChild_OnCommand()) this.McObj.EventStatus = McObjectEventStatus.WORKING; break;
+                    if (this.OnRun_COMMAND()) this.McObj.EventStatus = McObjectEventStatus.WORKING; break;
                 case McObjectEventStatus.WORKING:
-                    if (this.ExecuteChild_OnWorking()) this.McObj.EventStatus = McObjectEventStatus.DONE; break;
+                    if (this.OnRun_WORKING()) this.McObj.EventStatus = McObjectEventStatus.DONE; break;
                 case McObjectEventStatus.DONE:
-                    if (this.ExecuteChild_OnDone()) this.McObj.EventStatus = McObjectEventStatus.ERROR; break;
+                    if (this.OnRun_DONE()) this.McObj.EventStatus = McObjectEventStatus.ERROR; break;
                 case McObjectEventStatus.ERROR:
-                    if (this.ExecuteChild_OnError()) this.McObj.EventStatus = McObjectEventStatus.IDEL; break;
+                    if (this.OnRun_ERROR()) this.McObj.EventStatus = McObjectEventStatus.IDEL; break;
             }
         }
 

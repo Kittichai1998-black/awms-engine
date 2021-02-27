@@ -21,16 +21,16 @@ namespace AMWUtil.DataAccess.Http
             DELETE,
             PATCH
         }
-        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class
+        public static TResponse SendForm<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+            where TResponse : class
         {
-            return SendForm<T>(logger, apiUrl, method, datas, null, authen, retry, timeout);
+            return SendForm<TResponse>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
         
-        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class
+        public static TResponse SendForm<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+            where TResponse : class
         {
-            T result = null;
+            TResponse result = null;
             var values = new Dictionary<string, string>();
             ObjectUtil.FieldKeyValuePairs(datas).ForEach(x =>
             {
@@ -81,7 +81,7 @@ namespace AMWUtil.DataAccess.Http
                         var responseString = response.Result.Content.ReadAsStringAsync();
                         string body = responseString.Result;
                         logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
-                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<TResponse>(body);
 
                         if (outResult != null)
                         {
@@ -100,15 +100,15 @@ namespace AMWUtil.DataAccess.Http
 
             return result;
         }
-        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class
+        public static TResponse SendJson<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+            where TResponse : class
         {
-            return SendJson<T>(logger, apiUrl, method, datas, null, authen, retry, timeout);
+            return SendJson<TResponse>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
-        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class
+        public static TResponse SendJson<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+            where TResponse : class
         {
-            T result = null;
+            TResponse result = null;
             if (logger != null)
                 logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
             do
@@ -196,7 +196,7 @@ namespace AMWUtil.DataAccess.Http
                         string body = streamReader.ReadToEnd();
                         if (logger != null)
                             logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
-                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<TResponse>(body);
                         if (result == null)
                         {
                             throw new System.Exception("API_RESPONSE_DATA is NULL");

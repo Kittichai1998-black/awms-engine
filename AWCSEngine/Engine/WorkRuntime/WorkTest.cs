@@ -5,17 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWCSEngine.Engine.McWorkEngine
+namespace AWCSEngine.Engine.WorkRuntime
 {
-    public class WorkTest : BaseMcWorkEngine
+    public class WorkTest : BaseWorkRuntime
     {
         public WorkTest(string logref) : base(logref)
         {
         }
 
-        protected override NullCriteria ExecuteChild(NullCriteria request)
+
+        protected override void OnRun()
         {
-            return null;
+
+        }
+
+        protected override void OnStart()
+        {
+        }
+
+        protected override void OnStop()
+        {
         }
     }
 }

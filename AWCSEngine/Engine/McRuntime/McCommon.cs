@@ -4,40 +4,40 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWCSEngine.Engine.McObjectEngine
+namespace AWCSEngine.Engine.McRuntime
 {
-    public class McCommon : BaseMcEngine
+    public class McCommon : BaseMcRuntime
     {
         public McCommon(acs_McMaster mcMst, string logref) : base(mcMst, logref)
         {
         }
         
-        protected override void ExecuteChild_OnRuntime()
+        protected override void OnRun()
         {
         }
 
-        protected override bool ExecuteChild_OnIdle()
-        {
-            return false;
-        }
-
-        protected override bool ExecuteChild_OnCommand()
+        protected override bool OnRun_IDLE()
         {
             return false;
         }
 
-        protected override bool ExecuteChild_OnWorking()
+        protected override bool OnRun_COMMAND()
+        {
+            return false;
+        }
+
+        protected override bool OnRun_WORKING()
         {
             //this.McObj.Location_ID = this.McObj.Des_Location_ID;
             return false;
         }
 
-        protected override bool ExecuteChild_OnDone()
+        protected override bool OnRun_DONE()
         {
             return false;
         }
 
-        protected override bool ExecuteChild_OnError()
+        protected override bool OnRun_ERROR()
         {
             return false;
         }

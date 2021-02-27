@@ -13,7 +13,7 @@ namespace AMSModel.Entity
         public long? StoObject_ID;
         public long? Sou_Location_ID;
         public long? Des_Location_ID;
-        public long? Location_ID;
+        public long? Cur_Location_ID;
         public McObjectEventStatus EventStatus;
 
 

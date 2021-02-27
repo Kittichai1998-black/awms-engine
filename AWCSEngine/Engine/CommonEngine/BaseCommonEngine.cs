@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMSModel.Criteria;
+using AMWUtil.Logger;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,6 @@ namespace AWCSEngine.Engine.CommonEngine
         {
             return "Common";
         }
-        public BaseCommonEngine(string logref) : base(logref) { }
+        public BaseCommonEngine(string logref, VOCriteria buVO) : base(logref,buVO) { }
     }
 }

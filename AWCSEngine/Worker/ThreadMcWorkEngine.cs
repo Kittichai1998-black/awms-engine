@@ -5,7 +5,7 @@ using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
 using AWCSEngine.Controller;
 using AWCSEngine.Engine.CommonEngine;
-using AWCSEngine.Engine.McWorkEngine;
+using AWCSEngine.Engine.WorkRuntime;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,11 +51,11 @@ namespace AWCSEngine.Worker
         public void Run(object _arg)
         {
             var works = StaticValueManager.GetInstant().BotService;
-            List<BaseMcWorkEngine> mcWorkEngines = new List<BaseMcWorkEngine>();
+            List<BaseWorkRuntime> mcWorkEngines = new List<BaseWorkRuntime>();
             foreach(var work in works)
             {
                 var ctype = ClassType.GetClassType(work.FullClassName);
-                var exec = (BaseMcWorkEngine)Activator.CreateInstance(ctype);
+                var exec = (BaseWorkRuntime)Activator.CreateInstance(ctype);
                 mcWorkEngines.Add(exec);
             }
             while (true)

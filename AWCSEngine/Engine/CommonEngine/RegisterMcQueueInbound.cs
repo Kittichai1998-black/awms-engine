@@ -18,12 +18,14 @@ namespace AWCSEngine.Engine.CommonEngine
         public class TReq
         {
             public long wqID;
+            public string souAreaCode;
             public string souLocCode;
+            public string desAreaCode;
             public string desLocCode;
             public RegisterBaseObjectCriteria baseObjCri;
         }
 
-        public RegisterMcQueueInbound(string logref) : base(logref)
+        public RegisterMcQueueInbound(string logref, VOCriteria buVO) : base(logref,buVO)
         {
         }
 
@@ -36,7 +38,7 @@ namespace AWCSEngine.Engine.CommonEngine
 
             var souLoc = StaticValueManager.GetInstant().GetLocation(req.souLocCode);
             var desLoc = StaticValueManager.GetInstant().GetLocation(req.desLocCode);
-            new CreateBaseObject(this.LogRefID).Execute(null);
+            new CreateBaseObjectTemp_byQR(this.LogRefID,this.BuVO).Execute(null);
 
             var treeRoute = LocationUtil.GetLocationRouteTree(req.souLocCode, req.desLocCode);
             act_McWork mcQ = new act_McWork()
