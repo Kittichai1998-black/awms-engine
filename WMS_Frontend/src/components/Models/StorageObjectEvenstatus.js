@@ -35,18 +35,10 @@ const StorageObjectEvenStatusAll = [
   { label: "PICKED", value: 34 },
   { label: "CONSOLIDATING", value: 35 },
   { label: "CONSOLIDATED", value: 36 },
+  { label: "COMPLETING", value: 36 },
+  { label: "COMPLETED", value: 36 },
 
 ];
-const AuditStatus = [
-  { label: "QUARANTINE", value: 0 },
-  { label: "PASSED", value: 1 },
-  { label: "REJECTED", value: 2 },
-  { label: "NOTPASSED", value: 3 },
-  { label: "HOLD", value: 9 },
-]
-const AuditStatus1_2 = AuditStatus.map(function (x) {
-  return { ...x, value: x.value.toString() }
-}).filter(y => { return y.value === '1' || y.value === '2' });
-
-export { StorageObjectEvenstatus, StorageObjectEvenstatusTxt, StorageObjectEvenStatusAll, AuditStatus, AuditStatus1_2 }
+ 
+export { StorageObjectEvenstatus, StorageObjectEvenstatusTxt, StorageObjectEvenStatusAll }
 

@@ -29,7 +29,8 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import { FaPallet, FaPercentage } from 'react-icons/fa';
 import AmToolTip from "../../../components/AmToolTip";
-import { StorageObjectEvenStatusAll, AuditStatus } from "../../../components/Models/StorageObjectEvenstatus";
+import { StorageObjectEvenStatusAll } from "../../../components/Models/StorageObjectEvenstatus";
+import { AuditStatus } from "../../../components/Models/AuditStatus";
 
 import EditIcon from '@material-ui/icons/Edit';
 

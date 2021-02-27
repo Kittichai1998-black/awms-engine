@@ -47,4 +47,3 @@ function GenMapstosSelected(postdata, mapstosSelected) {
 }
 
 export { genDataManual, GenMapstosSelected }
-

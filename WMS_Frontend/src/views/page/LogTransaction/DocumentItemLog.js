@@ -18,7 +18,7 @@ import AmLog from "../../pageComponent/AmLog";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmDocumentStatus from "../../../components/AmDocumentStatus";
 import { EntityEventStatusAll } from "../../../components/Models/EntityStatus";
-import { AuditStatus } from "../../../components/Models/StorageObjectEvenstatus";
+import { AuditStatus } from "../../../components/Models/AuditStatus";
 import { DocumentEventStatus } from "../../../components/Models/DocumentEventStatus";
 import AmAuditStatus from "../../../components/AmAuditStatus";
 

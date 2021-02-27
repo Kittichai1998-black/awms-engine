@@ -36,7 +36,7 @@ const DocumentStatus = props => {
     strLabelShort = result[0].labelShort
   }
   return (
-    <div style={{ display: "inline-block" }}>
+    <div style={{ display: "inline-block", paddingRight: "5px" }}>
       <IconStatus
         className={classNames(className, classes.root)}
         styleType={strStatus}

@@ -27,15 +27,12 @@ namespace AWMSEngine.APIService.V2.ASRS
             ScanMappingSTO.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<ScanMappingSTO.TReq>(this.RequestVO);
             var res = new ScanMappingSTO().Execute(this.Logger, this.BuVO, req);
 
-            //this.CommitTransaction();
 
-            //this.BeginTransaction();
             var resConfirmSTO = new ConfirmSTOReceivebyBaseMulti().Execute(this.Logger, this.BuVO,
                 new ConfirmSTOReceivebyBaseMulti.TReq() { bstoID = res.bsto.id });
 
             var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() 
                 { docIDs = resConfirmSTO.docIDs });
-            //{ docIDs = new List<long>() { resConfirmSTO.docID.Value } });
             this.CommitTransaction();
             TRes resSto = new TRes();
             resSto.stos =  StorageObjectADO.GetInstant().Get(res.bsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO);

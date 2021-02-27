@@ -34,8 +34,11 @@ const StorageObjectEventStatus = [
     { status: "PICKED", code: 34, label: 'PICKED', labelShort: 'PK' },
     { status: "CONSOLIDATING", code: 35, label: 'CONSOLIDATING', labelShort: 'CS' },
     { status: "CONSOLIDATED", code: 36, label: 'CONSOLIDATED', labelShort: 'CS' },
+    { status: "COMPLETING", code: 37, label: 'COMPLETING', labelShort: 'CP' },
+    { status: "COMPLETED", code: 38, label: 'COMPLETED', labelShort: 'CP' },
 
 ]
+
 
 const StorageObjectStatus = props => {
     const { statusCode, classes, className, styleType, labelShort, ...other } = props;

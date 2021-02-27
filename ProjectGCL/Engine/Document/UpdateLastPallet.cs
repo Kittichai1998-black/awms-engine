@@ -22,50 +22,48 @@ using AMSModel.Constant.StringConst;
 
 namespace ProjectGCL.Engine.Document
 {
-    public class UpdateLastPallet : BaseEngine<UpdateLastPallet.TReq, amt_Document>
+    public class UpdateLastPallet : BaseEngine<UpdateLastPallet.TReq, amt_DocumentItem>
     {
 
-        public class TReq 
+        public class TReq
         {
-            public string documentCode;
+            public int docItemID;
             public int lastPallet;
         }
 
-        protected override amt_Document ExecuteEngine(TReq reqVO)
+        protected override amt_DocumentItem ExecuteEngine(TReq reqVO)
         {
-            var dataDoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
-                  new SQLConditionCriteria[] {
-                    new SQLConditionCriteria("Code",reqVO.documentCode, SQLOperatorType.EQUALS)
-                  }, this.BuVO).FirstOrDefault();
+            var docitemChild = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(reqVO.docItemID, this.BuVO);
+            var docitemParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(docitemChild.ParentDocumentItem_ID, this.BuVO);
+            var convertBase = ADO.WMSStaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(docitemChild.SKUMaster_ID.Value, reqVO.lastPallet, docitemChild.UnitType_ID.Value);
 
-            var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ID, this.BuVO);
-            var listDocChild = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
-                                new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("ParentDocument_ID",docParent.ID, SQLOperatorType.EQUALS),
-                                }, this.BuVO);
-
-            var optionsDoc = AMWUtil.Common.ObjectUtil.QryStrSetValue(dataDoc.Options, GCLOptionVOConst.OPT_LAST_PALLET, reqVO.lastPallet);
-           
-            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(dataDoc.ID.Value, this.BuVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_DocumentItem>(docitemChild.ID.Value, this.BuVO,
                 new KeyValuePair<string, object>[]
                 {
-                   new KeyValuePair<string, object>("Options", optionsDoc),
+                    new KeyValuePair<string, object>("Quantity",reqVO.lastPallet),
+                    new KeyValuePair<string, object>("BaseQuantity",convertBase.newQty)
                 });
 
-            listDocChild.ForEach(x =>
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_DocumentItem>(docitemParent.ID.Value, this.BuVO,
+               new KeyValuePair<string, object>[]
+               {
+                    new KeyValuePair<string, object>("Quantity",reqVO.lastPallet),
+                    new KeyValuePair<string, object>("BaseQuantity",convertBase.newQty)
+               });
+
+            var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(docitemChild.Document_ID, this.BuVO);
+            if (distos != null || distos.Count != 0)
             {
-                var optionsDocChild = AMWUtil.Common.ObjectUtil.QryStrSetValue(x.Options, GCLOptionVOConst.OPT_LAST_PALLET, reqVO.lastPallet);
-
-                ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
-                    new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("Options",optionsDocChild)
-                    });
-            });
-
-            return dataDoc;
+                distos.ForEach(disto =>
+                {
+                    disto.Quantity = reqVO.lastPallet;
+                    disto.BaseQuantity = convertBase.newQty;
+                    ADO.WMSDB.DistoADO.GetInstant().Insert(disto, this.BuVO);
+                });
+             }
+            return docitemChild;
 
         }
-       
+
     }
 }

@@ -210,6 +210,26 @@ const styles = theme => ({
         border: '2px solid #08c249',
         color: '#2f353a',
     },
+    BLOCK: {
+        background: '#212121',
+        border: '2px solid #212121',
+        color: '#fff',
+    },
+    QI: {
+        background: '#faf60f',
+        border: '2px solid #faf60f',
+        color: '#2f353a',
+    },
+    UR: {
+        background: '#FF5733',
+        border: '2px solid #FF5733',
+        color: '#fff',
+    },
+    BLOCK: {
+        background: '#212121',
+        border: '2px solid #212121',
+        color: '#fff',
+    },
 });
 
 function IconStatus(props) {
