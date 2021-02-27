@@ -10,8 +10,8 @@ namespace AWCSEngine.Worker
 {
     public class ThreadWakeUp : IThreadWorker
     {
-        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_wakeup_delay].Get<int>();
-        private int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_wakeup_count].Get<int>();
+        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_wakeup_delay].Get2<int>();
+        private int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_wakeup_count].Get2<int>();
         
         private static object lockWait=new object();
         private static ThreadWakeUp instant;
@@ -59,7 +59,7 @@ namespace AWCSEngine.Worker
                 lock (lockWait)
                 {
                     ThreadMcObjectEngine.GetInstant().WakeUpAll();
-                    ThreadMcWorkService.GetInstant().WakeUpAll();
+                    ThreadMcWorkEngine.GetInstant().WakeUpAll();
                     ThreadAPIFileService.GetInstant().WakeUpAll();
                     this.WakeUpAll();
                     Thread.Sleep(this.DELAY_MS);

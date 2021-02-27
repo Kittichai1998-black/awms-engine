@@ -16,11 +16,11 @@ namespace AWCSEngine.Worker.Model
         private Thread _McThread { get; set; }
 
         public int Index { get; private set; }
-        public List<BaseMcObjectEngine> McEngines { get; private set; }
+        public List<BaseMcEngine> McEngines { get; private set; }
         public McThread(int index)
         {
             this.Index = index;
-            this.McEngines = new List<BaseMcObjectEngine>();
+            this.McEngines = new List<BaseMcEngine>();
         }
         public void WeekUpMcThread(ParameterizedThreadStart runMethod)
         {
@@ -32,8 +32,8 @@ namespace AWCSEngine.Worker.Model
         }
         public void AddMc(acs_McMaster mcMst)
         {
-            Type type = ClassType.GetClassType(typeof(BaseMcObjectEngine).Namespace + "." + mcMst.NameEngine);
-            var mcEngine = (BaseMcObjectEngine)Activator.CreateInstance(type, new object[] { mcMst });
+            Type type = ClassType.GetClassType(typeof(BaseMcEngine).Namespace + "." + mcMst.NameEngine);
+            var mcEngine = (BaseMcEngine)Activator.CreateInstance(type, new object[] { mcMst });
             McEngines.Add(mcEngine);
             mcEngine.Initial();
         }

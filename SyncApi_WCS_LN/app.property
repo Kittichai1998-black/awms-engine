@@ -11,7 +11,7 @@ post2wms.StoreLogin.sp_res = SP_RES_StoreinUpdate
 
 post2wms.StoreinUpdate.api_url = 
 post2wms.StoreinUpdate.sp_req = 
-post2wms.StoreinUpdate.sp_res =
+post2wms.StoreinUpdate.sp_res = 
 
 post2wms.StoreoutUpdate.api_url = 
 post2wms.StoreoutUpdate.sp_req = 
@@ -40,7 +40,7 @@ post2wms.Storemovement.sp_res =
 #################################
 
 
-controller.api_names = StoreItems,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
+controller.api_names = ;.,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
 
 controller.StoreItems.sp_exec = 
 controller.Storein.sp_exec = 

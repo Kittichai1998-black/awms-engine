@@ -59,7 +59,9 @@ namespace AMWUtil.Exception
         V0_BASE_DUPLICATE,
         [AMWExceptionCodeAttribute("V0114", DefaultMessage = "Format ผิดพลาด {0}")]
         V0_FORMAT_FAIL,
-
+        [AMWExceptionCodeAttribute("V0114", DefaultMessage = "ไม่พบ Plc Communication ประเภท {0}")]
+        V0_PLC_COMMUTYPE_NOT_FOUND,
+        
 
         /// <summary>Data Input Not Found : {0}</summary>
         [AMWExceptionCodeAttribute("V1001", DefaultMessage = "{0}")]

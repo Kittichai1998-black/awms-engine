@@ -143,7 +143,7 @@ namespace AWMSEngine.Engine.V2.Business
             }
 
            
-            doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
+            doc.documentItems = AMWUtil.Common.ObjectUtil.Cast2<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
             if (reqVO.getMapSto && doc.documentItems.Count != 0)

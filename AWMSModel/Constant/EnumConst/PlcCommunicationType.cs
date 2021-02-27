@@ -10,7 +10,7 @@ namespace AMSModel.Constant.EnumConst
         TEST = 0,
         [AMWUtil.Common.EnumValue(ValueString = "ADO.WCSPLC.PlcMxADO")]
         MX = 1,
-        [AMWUtil.Common.EnumValue(ValueString = "ADO.WCSPLC.PlcKepwareADO")]
-        KEPWARE = 2
+        [AMWUtil.Common.EnumValue(ValueString = "ADO.WCSPLC.PlcKepwareV6ADO")]
+        KEPWARE_6 = 6
     }
 }

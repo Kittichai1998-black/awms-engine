@@ -20,7 +20,7 @@ namespace AMWUtil.Exception
             try
             {
 
-                this._LineNumber = st.Substring(st.LastIndexOf(' ')).Trim().Get<int>();
+                this._LineNumber = st.Substring(st.LastIndexOf(' ')).Trim().Get2<int>();
             }
             catch
             {

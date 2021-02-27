@@ -16,13 +16,27 @@ using AMWUtil.Exception;
 
 namespace AWCSEngine.Engine.McWorkEngine
 {
-    public abstract class BaseMcWorkEngine : IDisposable
+    public abstract class BaseMcWorkEngine : BaseEngine<NullCriteria, NullCriteria>, IDisposable
     {
-        public abstract void Execute();
+        protected McObjectController McController;
+        public BaseMcWorkEngine(string logref) : base(logref)
+        {
+            this.McController = McObjectController.GetInstant();
+        }
+
+        protected override string BaseLogName()
+        {
+            return "McWork";
+        }
+
+        public void Execute()
+        {
+            base.Execute(null);
+        }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

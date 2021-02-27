@@ -42,7 +42,6 @@ namespace AMWUtil.Logger
             }
         }
 
-
         public AMWLogger(string fileName, string serviceName, bool isLogging = true)
         {
             this.LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
@@ -50,28 +49,41 @@ namespace AMWUtil.Logger
             this.FileFullName = fileName;
             this.IsLogging = isLogging;
             this.LogDateTime = DateTime.Now;
-            
+
+            if (AMWLogger._LockFiles == null)
+                _LockFiles = new Dictionary<string, object>();
         }
 
+        public AMWLogger(string fileName, string serviceName, string LogRefID, bool isLogging = true)
+        {
+            this.LogRefID = !string.IsNullOrEmpty(LogRefID)? LogRefID: AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
+            this.ServiceName = serviceName;
+            this.FileFullName = fileName;
+            this.IsLogging = isLogging;
+            this.LogDateTime = DateTime.Now;
 
+            if (AMWLogger._LockFiles == null)
+                _LockFiles = new Dictionary<string, object>();
+        }
+
+        private int _day = -1;
+        private string _fileFullName;
+        private string _fileName;
         public void LogWrite(string logLV, string message, string sourceFile, int lineNumber)
         {
             if (!this.IsLogging)
                 return;
-            string _fileFullName = this.FileFullName.Replace("{Date}", DateTime.Now.ToString("yyyyMMdd"));
-            string _fileName = _fileFullName.Split(new char[] { '\\', '/' }).Last();
+
+            if (_day != DateTime.Now.Day)
+            {
+                _fileFullName = this.FileFullName.Replace("{Date}", DateTime.Now.ToString("yyyyMMdd"));
+                _fileName = _fileFullName.Split(new char[] { '\\', '/' }).Last();
+            }
 
             string _key = DateTime.Now.Day + "," + _fileName;
-            if(AMWLogger._LockFiles == null)
-            {
-                _LockFiles = new Dictionary<string, object>();
+
+            if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
                 AMWLogger._LockFiles.Add(_key, new object());
-            }
-            else
-            {
-                if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
-                    AMWLogger._LockFiles.Add(_key, new object());
-            }
 
             object _lock = AMWLogger._LockFiles.First(x => x.Key == _key).Value;
             lock (_lock)
