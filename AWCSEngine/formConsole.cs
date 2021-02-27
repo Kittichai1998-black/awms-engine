@@ -31,7 +31,7 @@ namespace AWCSEngine
                 if (this.IsHandleCreated)
                     this.lisDisplayEngine.Invoke((MethodInvoker)(() => {
                         this.lisDisplayEngine.Items.Clear();
-                        this.lisDisplayEngine.Items.AddRange(McObjectController.GetInstant().ListMessageLog());
+                        this.lisDisplayEngine.Items.AddRange(McRuntimeController.GetInstant().ListMessageLog());
                     }));
 
                 Thread.Sleep(500);
@@ -69,14 +69,15 @@ namespace AWCSEngine
                             else if(kv.Length == 2)
                                 parameters.Add(kv[0], kv[1]);
                         }
-                        Controller.McObjectController.GetInstant().PostCommand(
+                        McRuntimeController.GetInstant().PostCommand(
                             comm[0],
-                            AMWUtil.Common.EnumUtil.GetValueEnum<McCommandType>(comm[1]),
+                            (McCommandType)int.Parse(comm[1]),
                             parameters,
                             (x) => {
                                 var msg = comm[0] + " " + comm[1] + " > " + x.McObj.EventStatus.ToString();
                                 this.lisDisplayCommand.Items.Insert(0, msg);
                             });
+                        this.txtCommand.Text = comm[0] + " ";
                     }
                     catch (Exception ex)
                     {
