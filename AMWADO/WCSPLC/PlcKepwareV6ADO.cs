@@ -54,27 +54,29 @@ namespace ADO.WCSPLC
                     if (f.GetValue(mst) == null ||
                         !string.IsNullOrEmpty(f.GetValue(mst).ToString()))
                     {
-                        _OPCItemIDs.Add(this.PlcDeviceName + "." + f.Name.Substring(3));
+                        string name = this.PlcDeviceName + "." + mst.Code + "-" + f.Name.Substring(3);
+                        name = name.ToUpper();
+                        _OPCItemIDs.Add(name);
                     }
                 }
             }
+            this.OPC_ItemIndexs = new Dictionary<string, int>();
+            this.OPC_ItemIDs = Array.CreateInstance(typeof(string), _OPCItemIDs.Count + 1);
+            this.OPC_ServerHandles = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
+            this.OPC_ItemServerErrors = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
+            this.OPC_ClientHandles = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
+            this.OPC_RequestedDataTypes = Array.CreateInstance(typeof(Int16), _OPCItemIDs.Count + 1);
+            this.OPC_AccessPaths = Array.CreateInstance(typeof(string), _OPCItemIDs.Count + 1);
+            this.OPC_WriteItems = Array.CreateInstance(typeof(object), _OPCItemIDs.Count + 1);
 
-            OPC_ItemIDs = Array.CreateInstance(typeof(string), _OPCItemIDs.Count + 1);
-            OPC_ServerHandles = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
-            OPC_ItemServerErrors = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
-            OPC_ClientHandles = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
-            OPC_RequestedDataTypes = Array.CreateInstance(typeof(Int16), _OPCItemIDs.Count + 1);
-            OPC_AccessPaths = Array.CreateInstance(typeof(string), _OPCItemIDs.Count + 1);
-            OPC_WriteItems = Array.CreateInstance(typeof(object), _OPCItemIDs.Count + 1);
-
-            for (int index = 1; index < _OPCItemIDs.Count; index++)
+            for (int index = 0; index < _OPCItemIDs.Count; index++)
             {
-                this.OPC_ItemIndexs.Add(_OPCItemIDs[index], index);
-                OPC_ItemIDs.SetValue(_OPCItemIDs[index], index);
-                OPC_ClientHandles.SetValue(index, index);
+                this.OPC_ItemIndexs.Add(_OPCItemIDs[index].ToUpper(), index + 1);
+                this.OPC_ItemIDs.SetValue(_OPCItemIDs[index].ToUpper(), index + 1);
+                this.OPC_ClientHandles.SetValue(index + 1, index + 1);
             }
 
-            ConGroup.OPCItems.AddItems(OPC_ItemIDs.Length, ref OPC_ItemIDs, ref OPC_ClientHandles, out OPC_ServerHandles, out OPC_ItemServerErrors, OPC_RequestedDataTypes, OPC_AccessPaths);
+            ConGroup.OPCItems.AddItems(OPC_ItemIDs.Length-1, ref OPC_ItemIDs, ref OPC_ClientHandles, out OPC_ServerHandles, out OPC_ItemServerErrors, OPC_RequestedDataTypes, OPC_AccessPaths);
 
         }
         private void ConnGroups_DataChange(int TransactionID, int NumItems, ref Array ClientHandles, ref Array ItemValues, ref Array Qualities, ref Array TimeStamps)
@@ -88,14 +90,15 @@ namespace ADO.WCSPLC
         }
         public override T GetDevice<T>(string key)
         {
-            int itemIndex = this.OPC_ItemIndexs[this.PlcDeviceName + "." + key];
-            return this.OPC_WriteItems.GetValue(itemIndex) != null ? (T)this.OPC_WriteItems.GetValue(itemIndex) : default(T);
+            int itemIndex = this.OPC_ItemIndexs[this.PlcDeviceName + "." + key.ToUpper()];
+            var res = this.OPC_WriteItems.GetValue(itemIndex) != null ? (T)this.OPC_WriteItems.GetValue(itemIndex) : default(T);
+            return res;
         }
         
 
         public override void SetDevice<T>(string key, T val)
         {
-            string key2 = this.PlcDeviceName + "." + key;
+            string key2 = this.PlcDeviceName + "." + key.ToUpper();
             if (!this.OPC_ItemIndexs.ContainsKey(key2)) return;
             int deviceIndex = this.OPC_ItemIndexs[key2];
             this.OPC_WriteItems.SetValue(val, deviceIndex);

@@ -2,6 +2,7 @@
 using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria;
+using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.DataAccess.Http;
 using AWCSEngine.Engine.McRuntime;
@@ -23,6 +24,7 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         protected override void OnRun()
         {
+            
             this.OnRun_W08();
         }
 
@@ -39,21 +41,39 @@ namespace AWCSEngine.Engine.WorkRuntime
                         this.Logger, StaticValueManager.GetInstant().GetConfigValue("wms.api_url.register_wq"),
                         RESTFulAccess.HttpMethod.POST,
                         data_req);
-                    if(dr._result.status == 1){
+                    if (dr._result.status == 1)
+                    {
                         WorkQueueCriteria res = ObjectUtil.Cast2<WorkQueueCriteria>(dr);
                         new CommonEngine.RegisterMcQueueInbound(this.LogRefID, this.BuVO)
                             .Execute(new CommonEngine.RegisterMcQueueInbound.TReq()
-                        {
-                            wqID = res.queueID.Value,
-                            souLocCode =res.souLocationCode,
-                            desLocCode=res.desLocationCode
-                        });
+                            {
+                                wqID = res.queueID.Value,
+                                //souLocCode = res.souLocationCode,
+                                //desLocCode = res.desLocationCode
+                            });
                     }
                     else
                     {
                         mcGate_RC8_2.PostError("WMS : " + dr._result.message);
                     }
 
+                }
+                else if(baseObj != null && baseObj.EventStatus == BaseObjectEventStatus.IDLE)
+                {
+
+                    var mcSRM_11 = McController.GetMcRuntime("SRM11");
+                    mcSRM_11.PostCommand(McCommandType.MC_STOMOVE_SOU_DES,
+                        new ListKeyValue<string, object>()
+                            .Add("sou", mcGate_RC8_2.Cur_Location.Code)
+                            .Add("des", "001002003"),
+                            (status) => {
+                                if (status.EventStatus == McObjectEventStatus.DONE)
+                                {
+                                    baseObj.Location_ID = 111;
+                                    DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+                                }
+                            }
+                        );
                 }
             }
         }

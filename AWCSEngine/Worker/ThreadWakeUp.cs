@@ -58,9 +58,9 @@ namespace AWCSEngine.Worker
             {
                 lock (lockWait)
                 {
-                    ThreadMcObjectEngine.GetInstant().WakeUpAll();
-                    ThreadMcWorkEngine.GetInstant().WakeUpAll();
-                    ThreadAPIFileService.GetInstant().WakeUpAll();
+                    ThreadMcRuntime.GetInstant().WakeUpAll();
+                    ThreadWorkRuntime.GetInstant().WakeUpAll();
+                    ThreadAPIFileRuntime.GetInstant().WakeUpAll();
                     this.WakeUpAll();
                     Thread.Sleep(this.DELAY_MS);
                 }

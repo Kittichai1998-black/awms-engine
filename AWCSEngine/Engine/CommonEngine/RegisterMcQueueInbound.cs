@@ -18,10 +18,10 @@ namespace AWCSEngine.Engine.CommonEngine
         public class TReq
         {
             public long wqID;
-            public string souAreaCode;
-            public string souLocCode;
-            public string desAreaCode;
-            public string desLocCode;
+            public long souAreaID;
+            public List<long> souLocIDs;
+            public long desAreaID;
+            public List<long> desLocIDs;
             public RegisterBaseObjectCriteria baseObjCri;
         }
 
@@ -36,11 +36,10 @@ namespace AWCSEngine.Engine.CommonEngine
             if (baseObj != null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_BASE_DUPLICATE, baseObjC.Code);
 
-            var souLoc = StaticValueManager.GetInstant().GetLocation(req.souLocCode);
-            var desLoc = StaticValueManager.GetInstant().GetLocation(req.desLocCode);
+
             new CreateBaseObjectTemp_byQR(this.LogRefID,this.BuVO).Execute(null);
 
-            var treeRoute = LocationUtil.GetLocationRouteTree(req.souLocCode, req.desLocCode);
+            /*var treeRoute = LocationUtil.GetLocationRouteTree(req.souAreaID,req.souLocIDs,req.desAreaID, req.desLocIDs);
             act_McWork mcQ = new act_McWork()
             {
                 ID = null,
@@ -54,9 +53,10 @@ namespace AWCSEngine.Engine.CommonEngine
                 BaseObject_ID = baseObj.ID.Value,
                 Status = EntityStatus.INACTIVE,
                 TreeRoute = treeRoute.Json()
-            };
-            mcQ.ID = DataADO.GetInstant().Insert<act_McWork>(mcQ, this.BuVO);
-            return mcQ;
+            };*/
+            //mcQ.ID = DataADO.GetInstant().Insert<act_McWork>(mcQ, this.BuVO);
+            //return mcQ;
+            return null;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public class McCommon : BaseMcRuntime
     {
-        public McCommon(acs_McMaster mcMst, string logref) : base(mcMst, logref)
+        public McCommon(acs_McMaster mcMst) : base(mcMst)
         {
         }
         

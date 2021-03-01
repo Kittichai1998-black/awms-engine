@@ -124,6 +124,7 @@ namespace AMWUtil.Common
         }
         public static T Get2<T>(this object o)
         {
+            if (o == null) return default(T);
             return o.ToString().Get2<T>();
         }
         public static T? Get2Try<T>(this object o)

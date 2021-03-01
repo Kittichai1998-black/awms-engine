@@ -15,22 +15,22 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadMcWorkEngine : IThreadWorker
+    public class ThreadWorkRuntime : IThreadWorker
     {
         private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_dalay].Get2<int>();
         private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get2<int>();
 
         private List<Thread> Threads { get; set; }
-        private static ThreadMcWorkEngine instant;
-        public static ThreadMcWorkEngine GetInstant()
+        private static ThreadWorkRuntime instant;
+        public static ThreadWorkRuntime GetInstant()
         {
-            if (ThreadMcWorkEngine.instant == null)
+            if (ThreadWorkRuntime.instant == null)
             {
-                instant = new ThreadMcWorkEngine();
+                instant = new ThreadWorkRuntime();
             }
             return instant;
         }
-        private ThreadMcWorkEngine()
+        private ThreadWorkRuntime()
         {
             this.Threads = new List<Thread>();
         }

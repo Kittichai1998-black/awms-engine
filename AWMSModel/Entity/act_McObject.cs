@@ -17,15 +17,15 @@ namespace AMSModel.Entity
         public McObjectEventStatus EventStatus;
 
 
-        public short DV_Set_Comm;
-        public short DV_Con_Comm;
-        public short DV_Pre_Comm;
+        public int DV_Set_Comm;
+        public int DV_Con_Comm;
+        public int DV_Pre_Comm;
 
-        public short DV_Pre_Status;
+        public int DV_Pre_Status;
 
-        public short DV_Set_Unit;
-        public short DV_Con_Unit;
-        public short DV_Pre_Unit;
+        public int DV_Set_Unit;
+        public int DV_Con_Unit;
+        public int DV_Pre_Unit;
 
         public float DV_Pre_WeiKG;
 

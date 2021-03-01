@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,10 +7,12 @@ namespace AMWUtil.Model
 {
     public class TreeNode<T> : ITreeObject
     {
+        public string NodeID { get; set; }
         public T Value { get; set; }
         public List<TreeNode<T>> Childs { get; set; }
         public TreeNode()
         {
+            this.NodeID = ObjectUtil.GenUniqID();
             this.Childs = new List<TreeNode<T>>();
         }
         public TreeNode(T value)

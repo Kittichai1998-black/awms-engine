@@ -37,10 +37,10 @@ namespace AWCSEngine
             // 
             // txtCommand
             // 
-            this.txtCommand.Location = new System.Drawing.Point(1063, 932);
+            this.txtCommand.Location = new System.Drawing.Point(6, 932);
             this.txtCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCommand.Name = "txtCommand";
-            this.txtCommand.Size = new System.Drawing.Size(508, 31);
+            this.txtCommand.Size = new System.Drawing.Size(1565, 31);
             this.txtCommand.TabIndex = 0;
             this.txtCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCommand_KeyDown);
             // 
@@ -51,7 +51,7 @@ namespace AWCSEngine
             this.lisDisplayEngine.Location = new System.Drawing.Point(6, 0);
             this.lisDisplayEngine.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEngine.Name = "lisDisplayEngine";
-            this.lisDisplayEngine.Size = new System.Drawing.Size(1051, 979);
+            this.lisDisplayEngine.Size = new System.Drawing.Size(1565, 579);
             this.lisDisplayEngine.TabIndex = 1;
             // 
             // wkDisplay
@@ -63,10 +63,10 @@ namespace AWCSEngine
             // 
             this.lisDisplayCommand.FormattingEnabled = true;
             this.lisDisplayCommand.ItemHeight = 25;
-            this.lisDisplayCommand.Location = new System.Drawing.Point(1063, 0);
+            this.lisDisplayCommand.Location = new System.Drawing.Point(6, 575);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.Size = new System.Drawing.Size(508, 929);
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1565, 354);
             this.lisDisplayCommand.TabIndex = 2;
             // 
             // formConsole
@@ -81,6 +81,7 @@ namespace AWCSEngine
             this.Name = "formConsole";
             this.Text = "formAdminConsole";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.formAdminConsole_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.formConsole_FormClosed);
             this.Load += new System.EventHandler(this.formAdminConsole_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

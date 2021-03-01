@@ -86,5 +86,10 @@ namespace AWCSEngine
                 }
             }
         }
+
+        private void formConsole_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }
