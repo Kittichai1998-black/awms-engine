@@ -32,6 +32,12 @@ namespace AMSModel.Entity
         public string DV_Pre_BarPallet;
         public string DV_Pre_BarProd;
 
+        public string DV_Set_PalletID;
+        public string DV_Con_PalletID;
+        public string DV_Pre_PalletID;
+        public float DV_Set_Weigh;
+        public float DV_Con_Weigh;
+        public float DV_Pre_Weigh;
 
         public string DV_Set_SouLoc;
         public string DV_Con_SouLoc;
