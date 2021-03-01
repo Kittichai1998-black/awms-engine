@@ -32,7 +32,7 @@ namespace SyncApi_WCS_LN.Controller
             string api_name2 = ConfigADO.Post2wmsConfigs[ConfigString.KEY_APICONTROLLER_APINAMES].Split(",").FirstOrDefault(x => x.ToLower() == api_name.ToLower());
             if (string.IsNullOrEmpty(api_name2))
                 return this.NotFound();
-            string sp_exec = ConfigADO.Post2wmsConfigs[string.Format( ConfigString.KEY_APICONTROLLER_SP_EXEC,api_name2)];
+            string sp_exec = ConfigADO.Post2wmsConfigs[string.Format( ConfigString.KEY_APICONTROLLER_SP_EXEC,api_name2).ToLower()];
             var res = DataADO.GetInstant().Query<dynamic>(sp_exec, logger, datas);
             return res;
 
