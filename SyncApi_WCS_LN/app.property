@@ -1,4 +1,5 @@
-﻿database.connection_string = Server=awms.automotionworks.com,3002;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE_V2;Max Pool Size=400;Connect Timeout=600;
+﻿#database.connection_string = Server=awms.automotionworks.com,3002;Uid=sa;PASSWORD=@mwte@mp@55;database=AMWES-PTTOR;Max Pool Size=400;Connect Timeout=600;
+database.connection_string = Server=localhost\SQLEXPRESS01;Uid=saa1;PASSWORD=123456;database=AMWES-PTTOR;Max Pool Size=400;Connect Timeout=600;
 
 #######################################
 
@@ -6,35 +7,35 @@ post2wms.api_names = StoreLogin,StoreinUpdate,StoreoutUpdate,SelectpickUpdate,Se
 post2wms.thread_sleep = 300
 
 post2wms.StoreLogin.api_url = https://localhost/api/test1
-post2wms.StoreLogin.sp_req = SP_REQ_StoreLogin
-post2wms.StoreLogin.sp_res = SP_RES_StoreinUpdate
+post2wms.StoreLogin.sp_req =  or.ssp_StoreLogin
+post2wms.StoreLogin.sp_res = 
 
-post2wms.StoreinUpdate.api_url = 
-post2wms.StoreinUpdate.sp_req = 
+post2wms.StoreinUpdate.api_url = https://localhost/api/Storein
+post2wms.StoreinUpdate.sp_req = or.ssp_StoreinUpdate
 post2wms.StoreinUpdate.sp_res =
 
-post2wms.StoreoutUpdate.api_url = 
-post2wms.StoreoutUpdate.sp_req = 
+post2wms.StoreoutUpdate.api_url = https://localhost/api/Storeout
+post2wms.StoreoutUpdate.sp_req = or.ssp_StoreoutUpdate
 post2wms.StoreoutUpdate.sp_res =
 
-post2wms.SelectpickUpdate.api_url = 
-post2wms.SelectpickUpdate.sp_req = 
+post2wms.SelectpickUpdate.api_url = https://localhost/api/Selectpick
+post2wms.SelectpickUpdate.sp_req = or.ssp_SelectpickUpdate
 post2wms.SelectpickUpdate.sp_res =
 
-post2wms.SelectreturnUpdate.api_url = 
-post2wms.SelectreturnUpdate.sp_req = 
+post2wms.SelectreturnUpdate.api_url = https://localhost/api/Selectreturn
+post2wms.SelectreturnUpdate.sp_req = or.ssp_SelectreturnUpdate
 post2wms.SelectreturnUpdate.sp_res =
 
-post2wms.ConsoloadUpdate.api_url = 
-post2wms.ConsoloadUpdate.sp_req = 
+post2wms.ConsoloadUpdate.api_url = https://localhost/api/Consoload
+post2wms.ConsoloadUpdate.sp_req = or.ssp_ConsoloadUpdate
 post2wms.ConsoloadUpdate.sp_res =
 
-post2wms.StoreauditUpdate.api_url = 
-post2wms.StoreauditUpdate.sp_req = 
+post2wms.StoreauditUpdate.api_url = https://localhost/api/Storeaudit
+post2wms.StoreauditUpdate.sp_req = or.ssp_SelectauditUpdate
 post2wms.StoreauditUpdate.sp_res =
 
-post2wms.Storemovement.api_url = 
-post2wms.Storemovement.sp_req = 
+post2wms.Storemovement.api_url = https://localhost/api/Storemovement
+post2wms.Storemovement.sp_req = or.ssp_Storemovement
 post2wms.Storemovement.sp_res =
 
 #################################
@@ -42,14 +43,14 @@ post2wms.Storemovement.sp_res =
 
 controller.api_names = StoreItems,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
 
-controller.StoreItems.sp_exec = 
-controller.Storein.sp_exec = 
-controller.Storeout.sp_exec = 
-controller.Selectpick.sp_exec = 
-controller.Selectreturn.sp_exec = 
-controller.Consoload.sp_exec = 
-controller.Storeaudit.sp_exec = 
-controller.Sorttag.sp_exec = 
-controller.StartSorter.sp_exec = 
-controller.ClearBufferAGV.sp_exec = 
-controller.StoreInventory.sp_exec = 
+controller.StoreItems.sp_exec = or.ssp_StoreItems
+controller.Storein.sp_exec = or.ssp_Storein
+controller.Storeout.sp_exec = or.ssp_Storeout
+controller.Selectpick.sp_exec = or.ssp_Selectpick
+controller.Selectreturn.sp_exec = or.ssp_Selectreturn
+controller.Consoload.sp_exec = or.ssp_Consoload
+controller.Storeaudit.sp_exec = or.ssp_Storeaudit
+controller.Sorttag.sp_exec = or.ssp_Sorttag
+controller.StartSorter.sp_exec = or.ssp_StartSorter
+controller.ClearBufferAGV.sp_exec = or.ssp_clearBufferagv
+controller.StoreInventory.sp_exec = or.ssp_StoreInventory

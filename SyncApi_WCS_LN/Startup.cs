@@ -40,8 +40,8 @@ namespace SyncApi_WCS_LN
                         ConfigADO.Post2wmsConfigs.Add(k.ToLower(), v);
                 }
             }
-
-            services.AddHostedService<WorkerSetup>();
+            services.AddControllers();
+            //services.AddHostedService<WorkerSetup>();
 
         }
 
@@ -56,12 +56,9 @@ namespace SyncApi_WCS_LN
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoint =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoint.MapControllers();
             });
         }
     }

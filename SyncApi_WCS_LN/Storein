@@ -1,0 +1,5 @@
+15:12:50.032 [B2H2SZ90] [DEB] Storein/BaseDatabaseAccess.cs(75) > [QUERY] [12086.9343ms] rows= | or.ssp_Storein; 
+15:17:34.519 [B2H30390] [DEB] Storein/BaseDatabaseAccess.cs(75) > [QUERY] [41096.4337ms] rows= | or.ssp_Storein; 
+15:40:52.760 [B2H42V10] [DEB] Storein/BaseDatabaseAccess.cs(75) > [QUERY] [1787.1351ms] rows= | or.ssp_Storein; 
+15:49:22.596 [B2H4H210] [DEB] Storein/BaseDatabaseAccess.cs(75) > [QUERY] [875.8131ms] rows= | or.ssp_Storein; 
+15:52:35.618 [B2H4MZ20] [DEB] Storein/BaseDatabaseAccess.cs(75) > [QUERY] [1784.1797ms] rows= | or.ssp_Storein; 
