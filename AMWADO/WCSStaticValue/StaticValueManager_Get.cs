@@ -27,7 +27,7 @@ namespace ADO.WCSStaticValue
         public acs_McCommand GetMcCommand(long mcMstID, McCommandType cmdType)
         {
             var mccm = this.McCommandMcMasters.FindAll(x => x.McMaster_ID == mcMstID);
-            return this.McCommands.FirstOrDefault(x => x.McCommandType == cmdType && mccm.Any(y => y.McMaster_ID == x.ID));
+            return this.McCommands.FirstOrDefault(x => x.McCommandType == cmdType && mccm.Any(y => y.McCommand_ID == x.ID));
         }
         public List<acs_McCommand> ListMcCommand(long mcMstID)
         {

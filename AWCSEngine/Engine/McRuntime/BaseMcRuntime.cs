@@ -285,7 +285,7 @@ namespace AWCSEngine.Engine.McRuntime
                             string val = x2.Value;
                             string deviceKey = this.McMst.Get2<string>("DK_" + name);
 
-                            var t_deviceVal = this.McObj.Get2("DV_" + name).GetType();
+                            var t_deviceVal = this.McObj.GetType().GetField("DV_" + name).FieldType;
                             if (t_deviceVal == typeof(string))
                             {
                                 var valWord = this.McMst.Get2<int>("DW_" + name);
@@ -361,7 +361,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
             {
                 string name = x.Name;
-                if (name.StartsWith("DK_") && x.GetValue(this.McMst) != null && !string.IsNullOrEmpty( x.GetValue(this.McMst).ToString()))
+                if ((name.StartsWith("DK_Set") || name.StartsWith("DK_Pre")) && x.GetValue(this.McMst) != null && !string.IsNullOrEmpty( x.GetValue(this.McMst).ToString()))
                 {
                     this.MessageLog += name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)) + " | ";
                 }

@@ -73,10 +73,7 @@ namespace AWCSEngine
                             comm[0],
                             (McCommandType)int.Parse(comm[1]),
                             parameters,
-                            (x) => {
-                                var msg = comm[0] + " " + comm[1] + " > " + x.McObj.EventStatus.ToString();
-                                this.lisDisplayCommand.Items.Insert(0, msg);
-                            });
+                            null);
                         this.txtCommand.Text = comm[0] + " ";
                     }
                     catch (Exception ex)

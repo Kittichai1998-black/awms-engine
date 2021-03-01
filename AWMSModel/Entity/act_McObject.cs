@@ -35,19 +35,19 @@ namespace AMSModel.Entity
         public string DV_Set_PalletID;
         public string DV_Con_PalletID;
         public string DV_Pre_PalletID;
-        public float DV_Set_Weigh;
-        public float DV_Con_Weigh;
-        public float DV_Pre_Weigh;
+        public int DV_Set_Weigh;
+        public int DV_Con_Weigh;
+        public int DV_Pre_Weigh;
 
-        public string DV_Set_SouLoc;
-        public string DV_Con_SouLoc;
-        public string DV_Pre_SouLoc;
-        public string DV_Set_DesLoc;
-        public string DV_Con_DesLoc;
-        public string DV_Pre_DesLoc;
-        public string DV_Set_CurLoc;
-        public string DV_Con_CurLoc;
-        public string DV_Pre_CurLoc;
+        public int DV_Set_SouLoc;
+        public int DV_Con_SouLoc;
+        public int DV_Pre_SouLoc;
+        public int DV_Set_DesLoc;
+        public int DV_Con_DesLoc;
+        public int DV_Pre_DesLoc;
+        public int DV_Set_CurLoc;
+        public int DV_Con_CurLoc;
+        public int DV_Pre_CurLoc;
 
     }
 }
