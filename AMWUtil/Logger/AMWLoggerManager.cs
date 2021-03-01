@@ -53,9 +53,13 @@ namespace AMWUtil.Logger
         ///
         public static AMWLogger GetLogger(string serviceName)
         {
-            return GetLogger(Guid.NewGuid().ToString(), serviceName);
+            return GetLogger(Guid.NewGuid().ToString(), serviceName, string.Empty);
         }
         public static AMWLogger GetLogger(string logName, string serviceName, bool isLogging = true)
+        {
+            return GetLogger(logName, serviceName, string.Empty);
+        }
+        public static AMWLogger GetLogger(string logName, string serviceName, string logref, bool isLogging = true)
         {
             AMWLoggerManager logManager = AMWLoggerManager.GetInstant();
             lock (logManager)
@@ -86,7 +90,7 @@ namespace AMWUtil.Logger
 
                 AMWLogger.ClearLockFiles();
                 string fileName = logManager.LogUri + logManager.LogFile;
-                AMWLogger logger = new AMWLogger(fileName, serviceName, isLogging);
+                AMWLogger logger = new AMWLogger(fileName, serviceName, logref, isLogging);
                 return logger;
 
             }

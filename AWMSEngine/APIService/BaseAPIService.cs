@@ -110,7 +110,7 @@ namespace AWMSEngine.APIService
                 //------GET token || apikey
                 if (request != null)
                 {
-                    getKey = ObjectUtil.JsonCast<TGetKey>(request);
+                    getKey = ObjectUtil.Cast2<TGetKey>(request);
                     this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
                 }
 

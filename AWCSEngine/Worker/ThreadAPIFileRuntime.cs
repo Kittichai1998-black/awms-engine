@@ -13,20 +13,20 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadAPIFileService : IThreadWorker
+    public class ThreadAPIFileRuntime : IThreadWorker
     {
-        private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_api_dalay].Get<int>();
-        private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get<int>();
+        private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_api_dalay].Get2<int>();
+        private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get2<int>();
         
       
         //private AMWLogger Logger { get; set; }
         private List<Thread> Threads { get; set; }
-        private static ThreadAPIFileService instant;
-        public static ThreadAPIFileService GetInstant()
+        private static ThreadAPIFileRuntime instant;
+        public static ThreadAPIFileRuntime GetInstant()
         {
-            if (ThreadAPIFileService.instant == null)
+            if (ThreadAPIFileRuntime.instant == null)
             {
-                instant = new ThreadAPIFileService();
+                instant = new ThreadAPIFileRuntime();
             }
             return instant;
         }
@@ -75,7 +75,7 @@ namespace AWCSEngine.Worker
 
                             ///EXEC
                             dynamic in_json = in_txt.Json<dynamic>();
-                            var out_json = new ApiController().Execute(api.ID.Value, in_json, logger);
+                            var out_json = CommonController.GetInstant().Execute(api.ID.Value, in_json, logger.LogRefID);
 
                             ///WRITE
                             string out_txt = ObjectUtil.Json(out_json);

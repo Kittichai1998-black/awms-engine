@@ -12,21 +12,21 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadMcObjectEngine : IThreadWorker
+    public class ThreadMcRuntime : IThreadWorker
     {
-        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_engine_dalay].Get<int>();
+        private int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_engine_dalay].Get2<int>();
 
         private List<McThread> McThreads { get; set; }
-        private static ThreadMcObjectEngine instant;
-        public static ThreadMcObjectEngine GetInstant()
+        private static ThreadMcRuntime instant;
+        public static ThreadMcRuntime GetInstant()
         {
-            if (ThreadMcObjectEngine.instant == null)
+            if (ThreadMcRuntime.instant == null)
             {
-                instant = new ThreadMcObjectEngine();
+                instant = new ThreadMcRuntime();
             }
             return instant;
         }
-        private ThreadMcObjectEngine()
+        private ThreadMcRuntime()
         {
             this.McThreads = new List<McThread>();
         }
@@ -67,7 +67,7 @@ namespace AWCSEngine.Worker
             {
                 mcCore.McEngines.ForEach(mcEng =>
                 {
-                    mcEng.Runtime();
+                    mcEng.Execute(null);
                 });
                 Thread.Sleep(this.DELAY_MS);
             }

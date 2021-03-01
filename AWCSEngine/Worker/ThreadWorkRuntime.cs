@@ -4,8 +4,8 @@ using AMWUtil.Common;
 using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
 using AWCSEngine.Controller;
-using AWCSEngine.Engine.McAPIEngine;
-using AWCSEngine.Engine.McWorkEngine;
+using AWCSEngine.Engine.CommonEngine;
+using AWCSEngine.Engine.WorkRuntime;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,22 +15,22 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadMcWorkService : IThreadWorker
+    public class ThreadWorkRuntime : IThreadWorker
     {
-        private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_dalay].Get<int>();
-        private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get<int>();
+        private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_dalay].Get2<int>();
+        private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get2<int>();
 
         private List<Thread> Threads { get; set; }
-        private static ThreadMcWorkService instant;
-        public static ThreadMcWorkService GetInstant()
+        private static ThreadWorkRuntime instant;
+        public static ThreadWorkRuntime GetInstant()
         {
-            if (ThreadMcWorkService.instant == null)
+            if (ThreadWorkRuntime.instant == null)
             {
-                instant = new ThreadMcWorkService();
+                instant = new ThreadWorkRuntime();
             }
             return instant;
         }
-        private ThreadMcWorkService()
+        private ThreadWorkRuntime()
         {
             this.Threads = new List<Thread>();
         }
@@ -51,11 +51,11 @@ namespace AWCSEngine.Worker
         public void Run(object _arg)
         {
             var works = StaticValueManager.GetInstant().BotService;
-            List<BaseMcWorkEngine> mcWorkEngines = new List<BaseMcWorkEngine>();
+            List<BaseWorkRuntime> mcWorkEngines = new List<BaseWorkRuntime>();
             foreach(var work in works)
             {
                 var ctype = ClassType.GetClassType(work.FullClassName);
-                var exec = (BaseMcWorkEngine)Activator.CreateInstance(ctype);
+                var exec = (BaseWorkRuntime)Activator.CreateInstance(ctype);
                 mcWorkEngines.Add(exec);
             }
             while (true)

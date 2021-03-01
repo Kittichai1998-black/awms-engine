@@ -6,7 +6,8 @@ namespace AMSModel.Constant.EnumConst
 {
     public enum BaseObjectEventStatus
     {
-        IDEL = 10,
+        TEMP = 90,
+        IDLE = 10,
         MOVE = 12
     }
 }

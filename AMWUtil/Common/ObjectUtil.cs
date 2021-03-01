@@ -110,28 +110,29 @@ namespace AMWUtil.Common
             return t;
         }
 
-        public static void Set(this object o, string name, object? value)
+        public static void Set2(this object o, string field_name, object value)
         {
-            o.GetType().GetField(name).SetValue(o, value);
+            o.GetType().GetField(field_name).SetValue(o, value);
         }
-        public static object Get(this object o, string name)
+        public static object Get2(this object o, string field_name)
         {
-            return o.GetType().GetField(name).GetValue(o);
+            return o.GetType().GetField(field_name).GetValue(o);
         }
-        public static T Get<T>(this object o, string name)
+        public static T Get2<T>(this object o, string name)
         {
-            return o.GetType().GetField(name).GetValue(o).Get<T>();
+            return o.GetType().GetField(name).GetValue(o).Get2<T>();
         }
-        public static T Get<T>(this object o)
+        public static T Get2<T>(this object o)
         {
-            return o.ToString().Get<T>();
+            if (o == null) return default(T);
+            return o.ToString().Get2<T>();
         }
-        public static T? GetTry<T>(this object o)
+        public static T? Get2Try<T>(this object o)
             where T : struct
         {
-            return o.ToString().GetTry<T>();
+            return o.ToString().Get2Try<T>();
         }
-        public static T Get<T>(this string s)
+        public static T Get2<T>(this string s)
         {
             if (typeof(T) == typeof(string)) return (T)(object)s;
             if (typeof(T) == typeof(bool)) return (T)(object)bool.Parse(s);
@@ -145,7 +146,7 @@ namespace AMWUtil.Common
             {
                 if(s.Contains("\\") || s.Contains("-"))
                 {
-                    return (T)(object)s.JsonCast<DateTime>();
+                    return (T)(object)s.Cast2<DateTime>();
                 }
                 else
                 {
@@ -156,27 +157,27 @@ namespace AMWUtil.Common
 
             throw new System.Exception("Type " + typeof(T) + " Not Support.");
         }
-        public static T? GetTry<T>(this string s)
+        public static T? Get2Try<T>(this string s)
             where T : struct
         {
             try
             {
-                return s.Get<T>();
+                return s.Get2<T>();
             }
             catch
             {
                 return null;
             }
         }
-        public static T[] Get<T>(this string[] s)
+        public static T[] Get2<T>(this string[] s)
             where T : struct
         {
-            return s.Select(x => x.Get<T>()).ToArray();
+            return s.Select(x => x.Get2<T>()).ToArray();
         }
-        public static T?[] GetTry<T>(this string[] s)
+        public static T?[] Get2Try<T>(this string[] s)
             where T : struct
         {
-            return s.Select(x => x.GetTry<T>()).ToArray();
+            return s.Select(x => x.Get2Try<T>()).ToArray();
         }
 
         public static string RegexReplate(this string input, string pattern, string replacement)
@@ -185,7 +186,7 @@ namespace AMWUtil.Common
         }
 
 
-        public static TDes JsonCast<TDes>(this object data)
+        public static TDes Cast2<TDes>(this object data)
         {
             return data.Json().Json<TDes>();
         }

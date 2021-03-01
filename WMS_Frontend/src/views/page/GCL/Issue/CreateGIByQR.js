@@ -61,9 +61,15 @@ const CreateGIByQR = (props) => {
         { Header: "Unit Type", accessor: "unit", width: 100, sortable: true },
     ];
     const AuditStatus = [
-        { label: 'QUARANTINE', value: '0' },
-        { label: 'PASSED', value: '1' },
+        { label: 'QI', value: '4' },
+        { label: 'ACC', value: '5' },
+        { label: 'ACD', value: '6' },
+        { label: 'ACN', value: '7' },
+        { label: 'ACM', value: '8' },
         { label: 'HOLD', value: '9' },
+        { label: 'BLOCK', value: '10' },
+        { label: 'UR', value: '11' },
+
     ];
 
     const columnEdit = [

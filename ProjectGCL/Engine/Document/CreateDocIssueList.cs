@@ -43,19 +43,34 @@ namespace ProjectGCL.Engine.Document
         {
             public List<RootStoProcess> confirmResult;
             public List<amt_Document> docGRCrossDocks;
+            public decimal qty_s;
+            public ams_AreaMaster staging;
+            public string warehouse;
+        }
+        public class ListDoc
+        {
+            public decimal docID;
+            public decimal qty_s;
+            public string warehouse;
+            public ams_AreaMaster staging;
+
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var resRecord = new List<Record>();
+            var listDocProcess = new List<ListDoc>();
+
             amt_Document documentPK = new amt_Document();
+            ResConfirmResult dataProcessQ = new ResConfirmResult();
+            ResConfirmResult dataProcessResultQ = new ResConfirmResult();
+            ResConfirmResult dataProcessQ_s = new ResConfirmResult();
             foreach (var line in reqVO.RECORD)
             {
                 amt_Document document = new amt_Document();
-                
-                ResConfirmResult dataProcessQ = new ResConfirmResult();
+                var staging = new ams_AreaMaster();
                 string[] stagingwords = line.LINE.staging.Split(",-,-");
-                string[] docwords = line.LINE.Dock_no.Split(",-,-");
-                var staging = this.genStaging(this.Logger, stagingwords[0], this.BuVO);
+                string[] docwords = line.LINE.Dock_no == null? stagingwords : line.LINE.Dock_no.Split(",-,-");
+                staging = this.genStaging(this.Logger, stagingwords[0], this.BuVO);
 
                 var sku = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
                    new SQLConditionCriteria[] {
@@ -91,11 +106,20 @@ namespace ProjectGCL.Engine.Document
                                     new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                    }, this.BuVO).FirstOrDefault();
 
-             
+
 
                 document = this.CreateDocGI(this.Logger, line, warehouse, staging, area, sku, pack, docwords[0], this.BuVO);
                 documentPK = this.CreateDocPK(this.Logger, line, warehouse, staging, area, sku, pack, document, docwords[0], this.BuVO);
-                //dataProcessQ = this.AutoProcess(documentPK, true, staging, reqVO, this.BuVO);
+                //dataProcessQ = this.AutoProcess(documentPK, true, staging, line, this.BuVO);
+
+                listDocProcess.Add(new ListDoc
+                {
+                    docID = documentPK.ID.Value,
+                    qty_s = dataProcessQ.qty_s,
+                    staging = dataProcessQ.staging,
+                    warehouse = line.LINE.warehouse
+
+                });
 
                 resRecord.Add(new Record
                 {
@@ -103,9 +127,22 @@ namespace ProjectGCL.Engine.Document
                     doc_wms = line.LINE.doc_wms,
                     doc_wcs = document.Code,
                     Date_time = line.LINE.Date_time
-                  
+
                 });
             }
+
+
+            //if (listDocProcess.Sum(y => y.qty_s) != 0)
+            //{
+            //    dataProcessQ_s = this.AutoProcessConfirm_s(listDocProcess, this.BuVO);
+            //    dataProcessResultQ = this.AutoProcessConfirm(listDocProcess, this.BuVO);
+            //}
+            //else
+            //{
+            //    dataProcessResultQ = this.AutoProcessConfirm(listDocProcess, this.BuVO);
+            //}
+
+
 
             var res = new TRes()
             {
@@ -238,6 +275,348 @@ namespace ProjectGCL.Engine.Document
 
             return docResultPK;
 
+        }
+
+        private ResConfirmResult AutoProcess(amt_Document Document, bool pickfull, ams_AreaMaster staging, AMWRequestCreateGIDocList.RECORD_LIST line, VOCriteria buVO)
+        {
+            //var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(Document.ID.Value, this.BuVO);
+            var qty_s = new decimal();
+            ResConfirmResult res = new ResConfirmResult();
+            var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
+
+            var docItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Document_ID",Document.ID.Value, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
+                }, buVO).FirstOrDefault();
+
+            var conditionsProcess = new List<SPInSTOProcessQueueCriteria.ConditionProcess>()
+                { new SPInSTOProcessQueueCriteria.ConditionProcess()
+                    {
+                        baseQty= docItem.BaseQuantity,
+                        batch = null,
+                        lot = docItem.Lot,
+                        orderNo = null,
+                        options = null
+                    }
+                 };
+            var eventStatusesProcess = new List<StorageObjectEventStatus>()
+            {
+                StorageObjectEventStatus.PACK_RECEIVED
+            };
+            var auditStatusesProcess = new List<AuditStatus>()
+            {
+                AuditStatus.QI
+            };
+            var OrderByProcess = new List<SPInSTOProcessQueueCriteria.OrderByProcess>() {
+                new SPInSTOProcessQueueCriteria.OrderByProcess()
+                {
+                     fieldName ="psto.createtime",
+                     orderByType = 0
+                }
+
+            };
+
+            var dataProcessWQ = new List<ProcessQueueCriteria>()
+                 { new ProcessQueueCriteria()
+                     {
+
+                        docID = docItem.Document_ID,
+                        docItemID = docItem.ID.Value,
+                        locationCode = null,
+                        baseCode = null,
+                        skuCode = docItem.Code,
+                        priority = 2,
+                        useShelfLifeDate = false,
+                        useExpireDate = false,
+                        useIncubateDate = false ,
+                        useFullPick = pickfull,
+                        conditions = conditionsProcess,
+                        eventStatuses = eventStatusesProcess,
+                        auditStatuses = auditStatusesProcess,
+                        orderBys = OrderByProcess,
+                        baseQty = docItem.BaseQuantity,
+
+                        //percentRandom = 100
+                     }
+
+                 };
+
+
+            var wq = new ASRSProcessQueue.TReq()
+            {
+                desASRSWarehouseCode = StaticValue.Warehouses.First(x => x.Code == line.LINE.warehouse).Code,
+                desASRSAreaCode = StaticValue.AreaMasters.First(x => x.Code == staging.Code).Code,
+                desASRSLocationCode = null,
+                processQueues = dataProcessWQ,
+                lockNotExistsRandom = false,
+            };
+
+            var processQ = new AWMSEngine.Engine.V2.Business.WorkQueue.ASRSProcessQueue();
+            var resProcess = processQ.Execute(this.Logger, this.BuVO, wq);
+
+            resProcess.processResults.ForEach(x =>
+            {
+                x.processResultItems.ForEach(resItems =>
+                {
+                    var xxx = resItems.pickStos.Sum(x => x.pickQty);
+                    if (resItems.pickStos.Count == 0)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + line.LINE.sku + " ในคลัง");
+
+                    if (resItems.pickStos.Sum(x => x.pickQty) < line.LINE.qty)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สินค้า " + line.LINE.sku + " มีไม่พอสำหรับการเบิก");
+
+                    resItems.pickStos.ForEach(y =>
+                    {
+                        if (y.pickQty == 0)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + line.LINE.sku + " ในคลัง");
+
+                        qty_s = (docItem.Quantity.Value - y.pickQty);
+                    });
+
+                });
+            });
+
+            res.qty_s = qty_s;
+            res.staging = staging;
+            res.warehouse = line.LINE.warehouse;
+            return res;
+        }
+
+        private ResConfirmResult AutoProcessConfirm_s(List<ListDoc> listdocument, VOCriteria buVO)
+        {
+            ResConfirmResult res = new ResConfirmResult();
+            var dataProcessWQ = new List<ProcessQueueCriteria>();
+            var sku = "";
+            foreach (var doc in listdocument)
+            {
+
+                var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
+
+                var docItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                    new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Document_ID",doc.docID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
+                    }, buVO).FirstOrDefault();
+
+                var convertBase = ADO.WMSStaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(docItem.Code, doc.qty_s, docItem.UnitType_ID.Value);
+
+                sku = docItem.Code;
+                var conditionsProcess = new List<SPInSTOProcessQueueCriteria.ConditionProcess>()
+                { new SPInSTOProcessQueueCriteria.ConditionProcess()
+                    {
+                        baseQty= convertBase.newQty,
+                        batch = null,
+                        lot = docItem.Lot,
+                        orderNo = null,
+                        options = null
+                    }
+                 };
+                var eventStatusesProcess = new List<StorageObjectEventStatus>()
+                {
+                    StorageObjectEventStatus.PACK_RECEIVED
+                };
+                var auditStatusesProcess = new List<AuditStatus>()
+                {
+                    AuditStatus.QI
+                };
+                var OrderByProcess = new List<SPInSTOProcessQueueCriteria.OrderByProcess>() {
+                    new SPInSTOProcessQueueCriteria.OrderByProcess()
+                    {
+                         fieldName ="psto.createtime",
+                         orderByType = 0
+                    }
+                };
+
+                dataProcessWQ.Add(new ProcessQueueCriteria()
+                {
+                    docID = docItem.Document_ID,
+                    docItemID = docItem.ID.Value,
+                    locationCode = null,
+                    baseCode = null,
+                    skuCode = docItem.Code,
+                    priority = 2,
+                    useShelfLifeDate = false,
+                    useExpireDate = false,
+                    useIncubateDate = false,
+                    useFullPick = true,
+                    conditions = conditionsProcess,
+                    eventStatuses = eventStatusesProcess,
+                    auditStatuses = auditStatusesProcess,
+                    orderBys = OrderByProcess,
+                    baseQty = convertBase.newQty
+                    //percentRandom = 100
+                });
+
+            }
+
+
+
+            var wq = new ASRSProcessQueue.TReq()
+            {
+                desASRSWarehouseCode = StaticValue.Warehouses.First(x => x.Code == listdocument[0].warehouse).Code,
+                desASRSAreaCode = StaticValue.AreaMasters.First(x => x.Code == listdocument[0].staging.Code).Code,
+                desASRSLocationCode = null,
+                processQueues = dataProcessWQ,
+                lockNotExistsRandom = false,
+            };
+
+            var processQ = new AWMSEngine.Engine.V2.Business.WorkQueue.ASRSProcessQueue();
+            var resProcess = processQ.Execute(this.Logger, this.BuVO, wq);
+
+            resProcess.processResults.ForEach(x =>
+            {
+                x.processResultItems.ForEach(resItems =>
+                {
+                    if (resItems.pickStos.Count == 0)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + sku + " ในคลัง");
+
+
+                    resItems.pickStos.ForEach(y =>
+                    {
+                        if (y.pickQty == 0)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + sku + " ในคลัง");
+
+                    });
+
+
+                });
+            });
+
+            var dataConfirmprocess = new ASRSConfirmProcessQueue.TReq()
+            {
+                isSetQtyAfterDoneWQ = false,
+                desASRSAreaCode = resProcess.desASRSAreaCode,
+                desASRSLocationCode = resProcess.desASRSLocationCode,
+                desASRSWarehouseCode = resProcess.desASRSWarehouseCode,
+                processResults = resProcess.processResults
+            };
+
+
+
+            var confirmprocess = new AWMSEngine.Engine.V2.Business.WorkQueue.ASRSConfirmProcessQueue();
+            var resConfirmprocess = confirmprocess.Execute(this.Logger, this.BuVO, dataConfirmprocess);
+
+            res.confirmResult = resConfirmprocess.confirmResult;
+
+
+            return res;
+        }
+
+        private ResConfirmResult AutoProcessConfirm(List<ListDoc> listdocument, VOCriteria buVO)
+        {
+            ResConfirmResult res = new ResConfirmResult();
+
+            var sku = "";
+            foreach (var doc in listdocument)
+            {
+
+                var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
+
+                var docItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                    new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Document_ID",doc.docID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
+                    }, buVO).FirstOrDefault();
+
+                var convertBase = ADO.WMSStaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(docItem.Code, (docItem.Quantity.Value-doc.qty_s), docItem.UnitType_ID.Value);
+
+                sku = docItem.Code;
+                var conditionsProcess = new List<SPInSTOProcessQueueCriteria.ConditionProcess>()
+                { new SPInSTOProcessQueueCriteria.ConditionProcess()
+                    {
+                        baseQty= convertBase.newQty,
+                        batch = null,
+                        lot = docItem.Lot,
+                        orderNo = null,
+                        options = null
+                    }
+                 };
+                var eventStatusesProcess = new List<StorageObjectEventStatus>()
+                {
+                    StorageObjectEventStatus.PACK_RECEIVED
+                };
+                var auditStatusesProcess = new List<AuditStatus>()
+                {
+                    AuditStatus.QI
+                };
+                var OrderByProcess = new List<SPInSTOProcessQueueCriteria.OrderByProcess>() {
+                    new SPInSTOProcessQueueCriteria.OrderByProcess()
+                    {
+                         fieldName ="psto.createtime",
+                         orderByType = 0
+                    }
+                };
+
+                var dataProcessWQ = new List<ProcessQueueCriteria>()
+                 { new ProcessQueueCriteria()
+                     {
+                    docID = docItem.Document_ID,
+                    docItemID = docItem.ID.Value,
+                    locationCode = null,
+                    baseCode = null,
+                    skuCode = docItem.Code,
+                    priority = 2,
+                    useShelfLifeDate = false,
+                    useExpireDate = false,
+                    useIncubateDate = false,
+                    useFullPick = true,
+                    conditions = conditionsProcess,
+                    eventStatuses = eventStatusesProcess,
+                    auditStatuses = auditStatusesProcess,
+                    orderBys = OrderByProcess,
+                    baseQty = convertBase.newQty
+                     //percentRandom = 100
+                 } };
+                var wq = new ASRSProcessQueue.TReq()
+                {
+                    desASRSWarehouseCode = StaticValue.Warehouses.First(x => x.Code == doc.warehouse).Code,
+                    desASRSAreaCode = StaticValue.AreaMasters.First(x => x.Code == doc.staging.Code).Code,
+                    desASRSLocationCode = null,
+                    processQueues = dataProcessWQ,
+                    lockNotExistsRandom = false,
+                };
+
+                var processQ = new AWMSEngine.Engine.V2.Business.WorkQueue.ASRSProcessQueue();
+                var resProcess = processQ.Execute(this.Logger, this.BuVO, wq);
+
+                resProcess.processResults.ForEach(x =>
+                {
+                    x.processResultItems.ForEach(resItems =>
+                    {
+                        if (resItems.pickStos.Count == 0)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + sku + " ในคลัง");
+
+
+                        resItems.pickStos.ForEach(y =>
+                        {
+                            if (y.pickQty == 0)
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + sku + " ในคลัง");
+
+                        });
+
+
+                    });
+                });
+
+                var dataConfirmprocess = new ASRSConfirmProcessQueue.TReq()
+                {
+                    isSetQtyAfterDoneWQ = false,
+                    desASRSAreaCode = resProcess.desASRSAreaCode,
+                    desASRSLocationCode = resProcess.desASRSLocationCode,
+                    desASRSWarehouseCode = resProcess.desASRSWarehouseCode,
+                    processResults = resProcess.processResults
+                };
+
+
+
+                var confirmprocess = new AWMSEngine.Engine.V2.Business.WorkQueue.ASRSConfirmProcessQueue();
+                var resConfirmprocess = confirmprocess.Execute(this.Logger, this.BuVO, dataConfirmprocess);
+
+                res.confirmResult = resConfirmprocess.confirmResult;
+            }
+
+            return res;
         }
         private ams_AreaMaster genStaging(AMWLogger logger, string stagingwords, VOCriteria buVO)
         {

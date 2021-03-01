@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AWCSEngine.Worker;
 using AMSModel.Constant.StringConst;
-using AWCSEngine.Common;
+using AWCSEngine.Util;
 
 namespace AWCSEngine
 {
@@ -27,14 +27,16 @@ namespace AWCSEngine
                 appProperty[PropertyConst.APP_KEY_LOG_FILENAME]);
 
 
-            ThreadMcObjectEngine.GetInstant().Initial();
+            ThreadMcRuntime.GetInstant().Initial();
+            ThreadWorkRuntime.GetInstant().Initial();
+            ThreadAPIFileRuntime.GetInstant().Initial();
             ThreadWakeUp.GetInitial().Initial();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            LocationUtil.GetLocationRouteTree("G01", "001001001");
+            //LocationUtil.GetLocationRouteTree("G01", "001001001");
             Application.Run(new formConsole());
         }
     }

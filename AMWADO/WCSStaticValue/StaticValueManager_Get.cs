@@ -54,11 +54,11 @@ namespace ADO.WCSStaticValue
         {
             return this.APIFiles.FirstOrDefault(x => x.Code == code);
         }
-        public acs_BotService GetBotService(long id)
+        public acs_WorkService GetBotService(long id)
         {
             return this.BotService.FirstOrDefault(x => x.ID == id);
         }
-        public acs_BotService GetBotService(string code)
+        public acs_WorkService GetBotService(string code)
         {
             return this.BotService.FirstOrDefault(x => x.Code == code);
         }

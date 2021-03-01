@@ -52,7 +52,7 @@ namespace AWMSEngine.Engine.V2.General
             var locations = ADO.WMSDB.AreaADO.GetInstant()
                 .CountItemInLocation(wmId, amId, reqVO.locationCode, reqVO.gate, reqVO.bank, reqVO.bay, reqVO.level, this.BuVO)
                 .Select(x => {
-                    var v = ObjectUtil.JsonCast<TRes.EmptyLocation>(x);
+                    var v = ObjectUtil.Cast2<TRes.EmptyLocation>(x);
                     v.isEmpty = v.countProducts == 0;
                     return v;
                 })

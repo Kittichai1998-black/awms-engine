@@ -14,67 +14,6 @@ namespace ADO.WCSPLC
             this.datas = new Dictionary<string, object>();
         }
 
-        public override double GetDevicelDouble(string key)
-        {
-            return datas.ContainsKey(key) ? datas[key].Get<double>() : 0;
-        }
-
-        public override float GetDevicelFloat(string key)
-        {
-            return datas.ContainsKey(key) ? datas[key].Get<float>() : 0;
-        }
-
-        public override int GetDevicelInt(string key)
-        {
-            return datas.ContainsKey(key) ? datas[key].Get<int>() : 0;
-        }
-
-        public override long GetDevicelLong(string key)
-        {
-            return datas.ContainsKey(key) ? datas[key].Get<long>() : 0;
-        }
-
-        public override short GetDevicelShot(string key)
-        {
-            if (datas.ContainsKey(key))
-                return datas[key].Get<short>();
-            return 0;
-        }
-
-        public override string GetDevicelString(string key, int length)
-        {
-            return datas.ContainsKey(key) ? datas[key].Get<string>() : "";
-        }
-
-        public override void SetDevicelString(string key, string value, int length)
-        {
-            datas.Add(key, value);
-        }
-
-        public override void SetDevicelShot(string key, short value)
-        {
-            datas.Add(key, value);
-        }
-
-        public override void SetDevicelInt(string key, int value)
-        {
-            datas.Add(key, value);
-        }
-
-        public override void SetDevicelLong(string key, long value)
-        {
-            datas.Add(key, value);
-        }
-
-        public override void SetDevicelFloat(string key, float value)
-        {
-            datas.Add(key, value);
-        }
-
-        public override void SetDevicelDouble(string key, double value)
-        {
-            datas.Add(key, value);
-        }
 
         public override void Open()
         {
@@ -83,6 +22,32 @@ namespace ADO.WCSPLC
         public override void Close()
         {
 
+        }
+
+        public override T1 GetDevice<T1>(string key)
+        {
+            return this.datas.ContainsKey(key) ? (T1)this.datas[key] : default(T1);
+        }
+
+        public override string GetDeviceString(string key, int length)
+        {
+            return this.datas.ContainsKey(key) ? (string)this.datas[key] : default(string);
+        }
+
+        public override void SetDevice<T1>(string key, T1 val)
+        {
+            if (this.datas.ContainsKey(key))
+                this.datas[key] = val;
+            else
+                this.datas.Add(key, val);
+        }
+
+        public override void SetDeviceString(string key, string val, int length)
+        {
+            if (this.datas.ContainsKey(key))
+                this.datas[key] = val;
+            else
+                this.datas.Add(key, val);
         }
     }
 }
