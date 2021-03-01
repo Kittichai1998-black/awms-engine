@@ -9,7 +9,7 @@ namespace AMSModel.Entity
     {
         public long Area_ID;
         public long Location_ID;
-        //public long? McObject_ID;
+        public long? McObject_ID;
         public string Code;
         public string Model;
         public string SkuCode;

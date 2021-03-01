@@ -72,7 +72,7 @@ namespace AWCSEngine
             {
                 g.FillRectangle(Brushes.Red, new Rectangle(mcPos.DrawPosX, mcPos.DrawPosY, PropertySimulation.block_w, PropertySimulation.block_h));
                 g.FillRectangle(
-                    this.McObjects.Any(x=>x.Location_ID == mcPos.ID)?
+                    this.McObjects.Any(x=>x.Cur_Location_ID == mcPos.ID)?
                         Brushes.DarkBlue:Brushes.Black, 
                     new Rectangle(
                         mcPos.DrawPosX + PropertySimulation.block_border,
@@ -162,7 +162,7 @@ namespace AWCSEngine
                 {
                     string txtObj = "";//mcObj.Code + " : " + mcObj.Status;
                     string txtWQ = "";//mcObj.Code + " : " + mcObj.Status;
-                    var mcPos = this.McPositions.Find(x => x.ID == mcObj.Location_ID);
+                    var mcPos = this.McPositions.Find(x => x.ID == mcObj.Cur_Location_ID);
                     g.DrawLine(pen,
                         new Point(mcPos.DrawPosX + (PropertySimulation.block_w + PropertySimulation.block_border * 2), mcPos.DrawPosY + (PropertySimulation.block_h + PropertySimulation.block_border * 2)),
                         new Point(mcPos.DrawPosX + (PropertySimulation.block_w), mcPos.DrawPosY + (PropertySimulation.block_h)));

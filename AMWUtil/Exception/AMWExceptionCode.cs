@@ -59,6 +59,25 @@ namespace AMWUtil.Exception
         V0_BASE_DUPLICATE,
         [AMWExceptionCodeAttribute("V0114", DefaultMessage = "Format ผิดพลาด {0}")]
         V0_FORMAT_FAIL,
+        [AMWExceptionCodeAttribute("V0115", DefaultMessage = "ไม่พบ Plc Communication ประเภท {0}")]
+        V0_PLC_COMMUTYPE_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0116", DefaultMessage = "ไม่พบ Machine {0}")]
+        V0_MC_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0117", DefaultMessage = "QR Code เป็นค่าว่าง/null")]
+        V0_QR_IS_NULL,
+        [AMWExceptionCodeAttribute("V0118", DefaultMessage = "เครื่องจักร รหัส[{0}] สถานะ[{1}] ไม่พร้อมรับคำสั่ง")]
+        V0_MC_NOT_STATUS_STANBY,
+        [AMWExceptionCodeAttribute("V0119", DefaultMessage = "ไม่พบสินค้าใน Location[{0}]")]
+        V0_STOinLOC_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0120", DefaultMessage = "ไม่พบสินค้าใน MC[{0}]")]
+        V0_STOinMC_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0121", DefaultMessage = "พาเลทขวางปลายทาง {0}")]
+        V0_BASEBLOCK_LOCATION,
+        [AMWExceptionCodeAttribute("V0122", DefaultMessage = "ไม่ตรงเงื่อนไขการรับเข้า")]
+        V0_INBOUND_CONDITION_FAIL,
+
+
+
 
 
         /// <summary>Data Input Not Found : {0}</summary>
@@ -104,6 +123,8 @@ namespace AMWUtil.Exception
         /// <summary>DB Update Fail : {0}</summary>
         [AMWExceptionCodeAttribute("S0005", DefaultMessage = "DB Update Fail : {0}")]
         S0005,
+        [AMWExceptionCodeAttribute("S0006", DefaultMessage = "API Timeout")]
+        S0_API_TIMEOUT,
 
 
         /// <summary>Username หรือ Password ไม่ถูกต้อง</summary>

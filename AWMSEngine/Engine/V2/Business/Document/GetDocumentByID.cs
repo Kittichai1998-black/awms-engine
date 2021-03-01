@@ -172,7 +172,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 dicitem.Quantity_Genarate = dicitem.PackMaster_Volume;
             }
 
-            doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
+            doc.documentItems = AMWUtil.Common.ObjectUtil.Cast2<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
             if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1001, 1002, 2003, 2004) && doc.documentItems.Count != 0)

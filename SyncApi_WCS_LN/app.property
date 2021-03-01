@@ -41,7 +41,7 @@ post2wms.Storemovement.sp_res =
 #################################
 
 
-controller.api_names = StoreItems,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
+controller.api_names = ;.,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
 
 controller.StoreItems.sp_exec = or.ssp_StoreItems
 controller.Storein.sp_exec = or.ssp_Storein

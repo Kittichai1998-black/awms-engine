@@ -199,7 +199,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList(),
                             forCustomerID = doc.For_Customer_ID,
                             desCustomerID = doc.Des_Customer_ID,
-                            packUnitID = docItem.UnitType_ID
+                            //packUnitID = docItem.UnitType_ID
                         };
                         var _pickStosProcess = ADO.WMSDB.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
                         this.ValidateWCS(_pickStosProcess, reqVO);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AWCSEngine.Worker;
 using AMSModel.Constant.StringConst;
-using AWCSEngine.Common;
+using AWCSEngine.Util;
 
 namespace AWCSEngine
 {

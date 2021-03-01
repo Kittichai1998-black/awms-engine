@@ -9,4 +9,10 @@
     <ProjectReference Include="..\AWMSModel\AMSModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Interop.OPCAutomation">
+      <HintPath>C:\Users\AMW618040\Desktop\SyncOPC\SyncOPC\bin\Debug\Interop.OPCAutomation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

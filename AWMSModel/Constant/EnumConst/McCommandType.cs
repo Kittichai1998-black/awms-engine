@@ -13,7 +13,8 @@ namespace AMSModel.Constant.EnumConst
         MC_MOVE_STANBY = 13,
 
         MC_STOMOVE_SOU_DES = 21,
-        MC_STOMOVE_AUTO = 22,
+        MC_STOMOVE_RECEIVE = 22,
+        MC_STOMOVE_ISSUE = 23,
 
         MC_SHUTDOWN_HOME = 32,
     }

@@ -7,11 +7,14 @@ namespace AMSModel.Entity
 {
     public class act_McObject : BaseEntityCreateModify
     {
-        public McCommandType Command;
+        public string CommandTypeName;
+        public long? Command_ID;
+        public int? CommandAction_Seq;
         public long? StoObject_ID;
         public long? Sou_Location_ID;
         public long? Des_Location_ID;
-        public long? Location_ID;
+        public long? Cur_Location_ID;
+        public McObjectEventStatus EventStatus;
 
 
         public short DV_Set_Comm;
@@ -39,7 +42,6 @@ namespace AMSModel.Entity
         public string DV_Set_CurLoc;
         public string DV_Con_CurLoc;
         public string DV_Pre_CurLoc;
-        public McObjectEventStatus EventStatus;
 
     }
 }

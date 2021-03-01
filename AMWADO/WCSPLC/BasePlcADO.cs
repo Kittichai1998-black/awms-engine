@@ -16,39 +16,29 @@ namespace ADO.WCSPLC
         {
         }
 
-        public static T GetInstant(string logicalNum)
+        public static T GetInstant(string plcDeviceName)
         {
             if (instants == null)
             {
                 instants = new Dictionary<string, T>();
             }
-            string dirKey = typeof(T).Name + "_" + logicalNum;
+            string dirKey = typeof(T).Name + "_" + plcDeviceName;
             if (!instants.ContainsKey(dirKey))
             {
                 T newInst = (T)Activator.CreateInstance(typeof(T), new object[] { });
-                newInst.LogicalNum = logicalNum;
+                newInst.PlcDeviceName = plcDeviceName;
                 newInst.Open();
                 instants.Add(dirKey, newInst);
             }
             return instants[dirKey];
         }
 
-        public string LogicalNum { get; private set; }
+        public string PlcDeviceName { get; private set; }
         public abstract void Open();
         public abstract void Close();
-        public abstract string GetDevicelString(string key, int length);
-        public abstract short GetDevicelShot(string key);
-        public abstract int GetDevicelInt(string key);
-        public abstract long GetDevicelLong(string key);
-        public abstract float GetDevicelFloat(string key);
-        public abstract double GetDevicelDouble(string key);
-
-        public abstract void SetDevicelString(string key, string value, int length);
-        public abstract void SetDevicelShot(string key, short value);
-        public abstract void SetDevicelInt(string key, int value);
-        public abstract void SetDevicelLong(string key, long value);
-        public abstract void SetDevicelFloat(string key, float value);
-        public abstract void SetDevicelDouble(string key, double value);
-
+        public abstract T1 GetDevice<T1>(string key);
+        public abstract string GetDeviceString(string key, int length);
+        public abstract void SetDevice<T1>(string key, T1 val);
+        public abstract void SetDeviceString(string key, string val, int length);
     }
 }

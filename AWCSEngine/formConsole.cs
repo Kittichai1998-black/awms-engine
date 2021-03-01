@@ -1,4 +1,5 @@
 ﻿using AMSModel.Constant.EnumConst;
+using AMWUtil.Common;
 using AWCSEngine.Controller;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace AWCSEngine
                 if (this.IsHandleCreated)
                     this.lisDisplayEngine.Invoke((MethodInvoker)(() => {
                         this.lisDisplayEngine.Items.Clear();
-                        this.lisDisplayEngine.Items.AddRange(McController.GetInstant().ListMessageLog());
+                        this.lisDisplayEngine.Items.AddRange(McRuntimeController.GetInstant().ListMessageLog());
                     }));
 
                 Thread.Sleep(500);
@@ -59,11 +60,24 @@ namespace AWCSEngine
                 {
                     try
                     {
-                        Controller.McController.GetInstant().Command(
+                        ListKeyValue<string, object> parameters = new ListKeyValue<string, object>();
+                        for (int i = 2; i < comm.Length; i++)
+                        {
+                            string[] kv = comm[i].Split('=', 2);
+                            if (kv.Length == 1)
+                                parameters.Add((i - 2).ToString(), kv[0]);
+                            else if(kv.Length == 2)
+                                parameters.Add(kv[0], kv[1]);
+                        }
+                        McRuntimeController.GetInstant().PostCommand(
                             comm[0],
-                            AMWUtil.Common.EnumUtil.GetValueEnum<McCommandType>(comm[1]),
-                            comm.Length >= 3 ? comm[2] : string.Empty,
-                            comm.Length >= 4 ? comm[3] : string.Empty);
+                            (McCommandType)int.Parse(comm[1]),
+                            parameters,
+                            (x) => {
+                                var msg = comm[0] + " " + comm[1] + " > " + x.McObj.EventStatus.ToString();
+                                this.lisDisplayCommand.Items.Insert(0, msg);
+                            });
+                        this.txtCommand.Text = comm[0] + " ";
                     }
                     catch (Exception ex)
                     {
