@@ -38,7 +38,7 @@ namespace AWMSEngine.WorkerService.MonitorWorker
             var al = ADO.WMSStaticValue.StaticValueManager.GetInstant().AreaMasters.FindAll(x => x.Warehouse_ID == wh.ID && x.AreaMasterType_ID == AreaMasterTypeID.MC_GATE);
             //var al = ADO.WMSStaticValue.StaticValueManager.GetInstant().AreaMasters.FindAll(x => x.Warehouse_ID == wh.ID );
             var stos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] { 
-                new SQLConditionCriteria("AreaMaster_ID",string.Join(",",al.Select(x=>x.Warehouse_ID).ToArray()),SQLOperatorType.IN),
+                new SQLConditionCriteria("AreaMaster_ID",string.Join(",",al.Select(x=>x.ID).ToArray()),SQLOperatorType.IN),
                 new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
 
             },buVO ).ToList();
