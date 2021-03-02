@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWCSEngine.Engine.APIFileEngine
+namespace AWCSEngine.Engine.APIFileRuntime
 {
     public abstract class BaseAPIFileEngine<TReq, TRes> : BaseEngine<TReq, TRes>
         where TRes : class, new()

@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="Interop.OPCAutomation">
-      <HintPath>C:\Users\AMW618040\Desktop\SyncOPC\SyncOPC\bin\Debug\Interop.OPCAutomation.dll</HintPath>
+      <HintPath>..\AWCSEngine\dll\Interop.OPCAutomation.dll</HintPath>
     </Reference>
   </ItemGroup>
 

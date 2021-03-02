@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace AWCSEngine.Worker
 {
-    public class ThreadAPIFileService : IThreadWorker
+    public class ThreadAPIFileRuntime : IThreadWorker
     {
         private readonly int DELAY_MS = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_api_dalay].Get2<int>();
         private readonly int THREAD_COUNT = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_wk_bot_count].Get2<int>();
@@ -21,12 +21,12 @@ namespace AWCSEngine.Worker
       
         //private AMWLogger Logger { get; set; }
         private List<Thread> Threads { get; set; }
-        private static ThreadAPIFileService instant;
-        public static ThreadAPIFileService GetInstant()
+        private static ThreadAPIFileRuntime instant;
+        public static ThreadAPIFileRuntime GetInstant()
         {
-            if (ThreadAPIFileService.instant == null)
+            if (ThreadAPIFileRuntime.instant == null)
             {
-                instant = new ThreadAPIFileService();
+                instant = new ThreadAPIFileRuntime();
             }
             return instant;
         }

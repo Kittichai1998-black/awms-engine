@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWCSEngine.Engine.APIFileEngine
+namespace AWCSEngine.Engine.APIFileRuntime
 {
     public class PostQRtoReceiveGate : BaseAPIFileEngine<PostQRtoReceiveGate.TReq, PostQRtoReceiveGate.TRes>
     {
@@ -54,7 +54,7 @@ namespace AWCSEngine.Engine.APIFileEngine
             new CreateBaseObjectTemp_byQR(this.LogRefID, this.BuVO).Execute(new CreateBaseObjectTemp_byQR.TReq()
             {
                 McObject_ID = mcGate.ID,
-                LabelData = req.GateCode
+                LabelData = req.QR
             });
 
             return true;

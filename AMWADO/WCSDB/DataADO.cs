@@ -324,7 +324,7 @@ namespace ADO.WCSDB
                     commTxt,
                     CommandType.Text,
                     param,
-                    buVO.Logger, buVO.SqlTransaction)
+                    buVO == null ? null : buVO.Logger, buVO == null ? null : buVO.SqlTransaction)
                     .ToList();
             return res;
         }

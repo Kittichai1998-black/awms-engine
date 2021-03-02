@@ -5,6 +5,7 @@ using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
+using AMWUtil.Model;
 using AWCSEngine.Util;
 using System;
 using System.Collections.Generic;
@@ -30,12 +31,12 @@ namespace AWCSEngine.Engine.CommonEngine
             var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByCode(req.baseCode, this.BuVO);
             if (baseObj == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND, req.baseCode);
-            if (baseObj.EventStatus == BaseObjectEventStatus.IDEL)
+            if (baseObj.EventStatus == BaseObjectEventStatus.IDLE)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_PALLET_STATUS_CANT_ISSUE, new string[] { req.baseCode, baseObj.EventStatus.ToString() });
 
             var souLoc = StaticValueManager.GetInstant().GetLocation(baseObj.Location_ID);
             var desLoc = StaticValueManager.GetInstant().GetLocation(req.desLocCode);
-            var treeRoute = LocationUtil.GetLocationRouteTree(baseObj.Location_ID, desLoc.ID.Value);
+            TreeNode<long> treeRoute = null;// LocationUtil.GetLocationRouteTree(baseObj.Location_ID, desLoc.ID.Value);
             if (treeRoute == null)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_ROUTE_NOT_FOUND, new string[] { souLoc.Code, desLoc.Code });

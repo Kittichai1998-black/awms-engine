@@ -42,9 +42,9 @@ namespace ADO.WCSStaticValue
         {
             return this._APIFiles = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_APIFileService>("status", 1, buVO ?? new VOCriteria());
         }
-        public List<acs_BotService> LoadBotService(VOCriteria buVO = null)
+        public List<acs_WorkService> LoadBotService(VOCriteria buVO = null)
         {
-            return this._BotService = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_BotService>("status", 1, buVO ?? new VOCriteria());
+            return this._BotService = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_WorkService>("status", 1, buVO ?? new VOCriteria());
         }
 
 

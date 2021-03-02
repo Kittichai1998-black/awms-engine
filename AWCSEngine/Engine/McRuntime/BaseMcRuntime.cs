@@ -34,7 +34,7 @@ namespace AWCSEngine.Engine.McRuntime
         //public act_BaseObject BaseObj { get; private set; }
 
         protected acs_McCommand RunCmd { get; private set; }
-        protected List<acs_McCommandAction> RunCmdAction { get; private set; }
+        protected List<acs_McCommandAction> RunCmdActions { get; private set; }
         protected List<string> RunCmdParameters { get; private set; }
 
 
@@ -47,7 +47,7 @@ namespace AWCSEngine.Engine.McRuntime
         public acs_Location Des_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Des_Location_ID.Value); }
         public string MessageLog { get; set; }
         public List<string> DeviceNames { get; set; }
-        public BaseMcRuntime(acs_McMaster mcMst, string logref) : base(logref)
+        public BaseMcRuntime(acs_McMaster mcMst) : base(ObjectUtil.GenUniqID())
         {
             this.McMst = mcMst;
         }
@@ -78,12 +78,14 @@ namespace AWCSEngine.Engine.McRuntime
             this.Logger.LogInfo("########### BEGIN MACHINE ###########");
             try
             {
-                this.PlcADO = (IPlcADO)ClassType
-                    .GetClassType(this.McMst.PlcCommuType.Attribute<EnumValueAttribute>().ValueString)
-                    .GetMethod("GetInstant")
-                    .Invoke(null, new object[] { this.McMst.PlcDeviceName });
-                
-                this.PlcADO.Open();
+                if (this.McMst.PlcCommuType == PlcCommunicationType.TEST)
+                    this.PlcADO = ADO.WCSPLC.PlcTestADO.GetInstant(this.McMst.PlcDeviceName);
+                else if (this.McMst.PlcCommuType == PlcCommunicationType.MX)
+                    this.PlcADO = ADO.WCSPLC.PlcMxADO.GetInstant(this.McMst.PlcDeviceName);
+                else if (this.McMst.PlcCommuType == PlcCommunicationType.KEPWARE_6)
+                    this.PlcADO = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant(this.McMst.PlcDeviceName);
+
+                //this.PlcADO.Open();
                 this.Logger.LogInfo("PlcADO Open "+ this.PlcADO.GetType().FullName);
             }
             catch (Exception)
@@ -115,7 +117,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 this.Logger.LogInfo("[CMD] > " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
                 this.RunCmd = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm);
-                this.RunCmdAction = StaticValueManager.GetInstant().ListMcCommandAction(this.RunCmd.ID.Value);
+                this.RunCmdActions = StaticValueManager.GetInstant().ListMcCommandAction(this.RunCmd.ID.Value);
                 this.RunCmdParameters = parameters.Items.Select(x => x.Key + "=" + x.Value).ToList();
 
                 this.McObj.CommandTypeName = comm.ToString();
@@ -211,23 +213,27 @@ namespace AWCSEngine.Engine.McRuntime
 
             this.DeviceNames.ForEach(name =>
             {
-                var deviceKey = t_McMst.GetField("DK_" + name).GetValue(McMst).ToString();
-                var t_deviceVal = t_McObj.GetField("DV_" + name).GetValue(McObj).GetType(); 
-                if (t_deviceVal == typeof(string))
+                string deviceKey = (String)t_McMst.GetField("DK_" + name).GetValue(McMst);
+                if (string.IsNullOrEmpty(deviceKey)) 
+                    return;
+
+                deviceKey = deviceKey.ToUpper();
+                object deviceVal =  t_McObj.GetField("DV_" + name).GetValue(McObj); 
+                if (deviceVal is string)
                 {
                     var valWord = t_McMst.GetField("DW_" + name).GetValue(McMst).Get2<int>();
-                    t_McObj.GetField(name).SetValue(McObj, this.PlcADO.GetDeviceString(deviceKey, valWord));
+                    t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDeviceString(deviceKey, valWord));
                 }
-                else if (t_deviceVal == typeof(short))
-                    t_McObj.GetField(name).SetValue(McObj, this.PlcADO.GetDevice<short>(deviceKey));
-                else if (t_deviceVal == typeof(int))
-                    t_McObj.GetField(name).SetValue(McObj, this.PlcADO.GetDevice<int>(deviceKey));
-                else if (t_deviceVal == typeof(long))
-                    t_McObj.GetField(name).SetValue(McObj, this.PlcADO.GetDevice<long>(deviceKey));
-                else if (t_deviceVal == typeof(float))
-                    t_McObj.GetField(name).SetValue(McObj, this.PlcADO.GetDevice<float>(deviceKey));
-                else if (t_deviceVal == typeof(double))
-                    t_McObj.GetField(name).SetValue(McObj, this.PlcADO.GetDevice<double>(deviceKey));
+                else if (deviceVal is short)
+                    t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<short>(deviceKey));
+                else if (deviceVal is int)
+                    t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<int>(deviceKey));
+                else if (deviceVal is long)
+                    t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<long>(deviceKey));
+                else if (deviceVal is float)
+                    t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<float>(deviceKey));
+                else if (deviceVal is double)
+                    t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<double>(deviceKey));
             });
 
         }
@@ -257,11 +263,11 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 var tMcMst = this.McMst.GetType();
                 var tMcObj = this.McObj.GetType();
-                var seq = this.RunCmdAction.Min(x => x.Seq);
+                var seq = this.RunCmdActions.Min(x => x.Seq);
                 this.McObj.CommandAction_Seq = seq;
 
                 bool isNext = false;
-                foreach (var act in this.RunCmdAction.Where(x => x.Seq == seq))
+                foreach (var act in this.RunCmdActions.Where(x => x.Seq == seq))
                 {
                     var act_conditions = act.DKV_Condition.QryStrToKeyValues();
                     if (act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value))
@@ -279,7 +285,7 @@ namespace AWCSEngine.Engine.McRuntime
                             string val = x2.Value;
                             string deviceKey = this.McMst.Get2<string>("DK_" + name);
 
-                            var t_deviceVal = this.McObj.Get2("DV_" + name).GetType();
+                            var t_deviceVal = this.McObj.GetType().GetField("DV_" + name).FieldType;
                             if (t_deviceVal == typeof(string))
                             {
                                 var valWord = this.McMst.Get2<int>("DW_" + name);
@@ -306,15 +312,15 @@ namespace AWCSEngine.Engine.McRuntime
 
                 if (isNext)
                 {
-                    this.RunCmdAction.RemoveAll(x => x.Seq == seq);
+                    this.RunCmdActions.RemoveAll(x => x.Seq == seq);
                     if (this.McObj.EventStatus == McObjectEventStatus.COMMAND)
                     {
                         this.McObj.EventStatus = McObjectEventStatus.WORKING;
                     }
-                    if(this.RunCmdAction.Count == 0)
+                    if(this.RunCmdActions.Count == 0)
                     {
                         this.RunCmd = null;
-                        this.RunCmdAction = null;
+                        this.RunCmdActions = null;
                         this.McObj.EventStatus = McObjectEventStatus.DONE;
                         this.Logger.LogInfo("[" + this.McObj.EventStatus + "]");
                     }
@@ -352,12 +358,12 @@ namespace AWCSEngine.Engine.McRuntime
             if (error != "") { this.MessageLog = error; return; }
 
             this.MessageLog = string.Empty;
-            this.McObj.GetType().GetFields().ToList().ForEach(x =>
+            this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
             {
                 string name = x.Name;
-                if (name.StartsWith("DV_"))
+                if ((name.StartsWith("DK_Set") || name.StartsWith("DK_Pre")) && x.GetValue(this.McMst) != null && !string.IsNullOrEmpty( x.GetValue(this.McMst).ToString()))
                 {
-                    this.MessageLog += name.Substring(3) + "=" + x.GetValue(this.McObj) + " | ";
+                    this.MessageLog += name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)) + " | ";
                 }
             });
         }
