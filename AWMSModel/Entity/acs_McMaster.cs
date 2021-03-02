@@ -96,9 +96,6 @@ namespace AMSModel.Entity
         public string DK_Pre_Status;
         public int DW_Pre_Status;
 
-        public string DK_Pre_WeiKG;
-        public int DW_Pre_WeiKG;
-
         public string DK_Pre_Unit;
         public int DW_Pre_Unit;
 
