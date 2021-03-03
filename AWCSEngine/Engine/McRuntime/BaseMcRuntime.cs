@@ -270,7 +270,7 @@ namespace AWCSEngine.Engine.McRuntime
                 foreach (var act in this.RunCmdActions.Where(x => x.Seq == seq))
                 {
                     var act_conditions = act.DKV_Condition.QryStrToKeyValues();
-                    if (act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value))
+                    if (act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value.Trim()))
                     {
                         string _act_sets = act.DKV_Set;
                         for (int i = 0; i < this.RunCmdParameters.Count; i++)

@@ -201,6 +201,22 @@ namespace ADO.WCSDB
                 null,
                 buVO).FirstOrDefault();
         }
+
+
+        public List<T> SelectByActive<T>(VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                "Status",EntityStatus.ACTIVE,
+                buVO);
+        }
+        public List<T> SelectBy<T>(ListKeyValue<string,object> keyValues, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                keyValues.ToArray(),
+                buVO);
+        }
         public List<T> SelectBy<T>(string field, object value, VOCriteria buVO)
              where T : IEntityModel
         {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
-namespace AWCSEngine.Engine.WorkRuntime.PlcCheckConnectionRuntime
+namespace AWCSEngine.Engine.WorkRuntime
 {
     public class PlcCheckConnectionRuntime : BaseWorkRuntime
     {
@@ -16,8 +17,8 @@ namespace AWCSEngine.Engine.WorkRuntime.PlcCheckConnectionRuntime
 
         protected override void OnRun()
         {
-            int icheck = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").GetDevice<int>("CONN_READ");
-            ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").GetDevice<int>("CONN_WRITE");
+            short icheck = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").GetDevice<short>("CCONN_READ");
+            ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").SetDevice<short>("CCONN_WRITE",icheck);
         }
 
         protected override void OnStop()

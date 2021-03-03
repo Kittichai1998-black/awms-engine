@@ -6,10 +6,19 @@ namespace AMWUtil.Common
 {
     public class ListKeyValue<TKey,TVal>
     {
+        public static ListKeyValue<TKey, TVal> Create(TKey key, TVal val)
+        {
+            var res = new ListKeyValue<TKey,TVal>(key, val);
+            return res;
+        }
         public List<KeyValuePair<TKey, TVal>> Items { get; set; }
         public ListKeyValue()
         {
             this.Items = new List<KeyValuePair<TKey, TVal>>();
+        }
+        public KeyValuePair<TKey, TVal>[] ToArray()
+        {
+            return this.Items.ToArray();
         }
         public ListKeyValue(TKey key, TVal val) : this()
         {

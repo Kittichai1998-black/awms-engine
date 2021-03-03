@@ -37,7 +37,7 @@ namespace AWCSEngine
             // 
             // txtCommand
             // 
-            this.txtCommand.Location = new System.Drawing.Point(6, 932);
+            this.txtCommand.Location = new System.Drawing.Point(6, 832);
             this.txtCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCommand.Name = "txtCommand";
             this.txtCommand.Size = new System.Drawing.Size(1565, 31);
@@ -66,7 +66,7 @@ namespace AWCSEngine
             this.lisDisplayCommand.Location = new System.Drawing.Point(6, 575);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.Size = new System.Drawing.Size(1565, 354);
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1565, 254);
             this.lisDisplayCommand.TabIndex = 2;
             // 
             // formConsole

@@ -104,14 +104,14 @@ namespace AMWUtil.Common
             List<KeyValuePair<string, int>> res = new List<KeyValuePair<string, int>>();
             foreach (T e in list)
             {
-                DisplayAttribute attr = AttributeUtil.Attribute<DisplayAttribute>(e);
-                string key = EnumUtil.GetDisplayName<T>(e);
-                if (string.IsNullOrWhiteSpace(key)) continue;
+                //DisplayAttribute attr = AttributeUtil.Attribute<DisplayAttribute>(e);
+                string key = e.ToString();//EnumUtil.GetDisplayName<T>(e);
                 int val = (int)Enum.Parse(typeof(T), e.ToString());
-                displayAttr.Add(new KeyValuePair<int, KeyValuePair<string, int>>(attr.Order,
-                    new KeyValuePair<string, int>(key, val)));
+                res.Add(new KeyValuePair<string, int>(key, val));
+                //displayAttr.Add(new KeyValuePair<int, KeyValuePair<string, int>>(attr.Order,
+                //    new KeyValuePair<string, int>(key, val)));
             }
-            res = Enumerable.ToList(displayAttr.OrderBy((KeyValuePair<int, KeyValuePair<string, int>> x) => x.Key).Select((KeyValuePair<int, KeyValuePair<string, int>> x) => x.Value));
+            //res = Enumerable.ToList(displayAttr.OrderBy((KeyValuePair<int, KeyValuePair<string, int>> x) => x.Key).Select((KeyValuePair<int, KeyValuePair<string, int>> x) => x.Value));
             return res;
         }
         public static string GetValueString<T>(this T enumVal)
