@@ -79,7 +79,8 @@ const routes = [
   { path: "/issue/manualcreate", name: "GRI HH", compoment: CreateGIByQR, exact: true },
 
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
-  { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
+    { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
+    { path: "/setting/registsht", name: "PK Search", compoment: RegistShuttle, exact: true },
 ];
 
 export default routes;

@@ -29,8 +29,8 @@ namespace ADO.WCSStaticValue
         public List<acs_LocationRoute> LocationRoutes { get => this._LocationRoutes ?? this.LoadLocationRoute(); }
         private List<acs_APIFileService> _APIFiles;
         public List<acs_APIFileService> APIFiles { get => this._APIFiles ?? this.LoadAPIFileService(); }
-        private List<acs_WorkService> _BotService;
-        public List<acs_WorkService> BotService { get => this._BotService ?? this.LoadBotService(); }
+        private List<acs_WorkService> _WorkServices;
+        public List<acs_WorkService> WorkServices { get => this._WorkServices ?? this.LoadWorkService(); }
 
         private static StaticValueManager instant;
 

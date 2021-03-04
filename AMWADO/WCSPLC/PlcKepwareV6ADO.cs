@@ -60,6 +60,10 @@ namespace ADO.WCSPLC
                     }
                 }
             }
+
+            _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_READ");
+            _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_WRITE");
+
             this.OPC_ItemIndexs = new Dictionary<string, int>();
             this.OPC_ItemIDs = Array.CreateInstance(typeof(string), _OPCItemIDs.Count + 1);
             this.OPC_ServerHandles = Array.CreateInstance(typeof(Int32), _OPCItemIDs.Count + 1);
@@ -81,7 +85,7 @@ namespace ADO.WCSPLC
         }
         private void ConnGroups_DataChange(int TransactionID, int NumItems, ref Array ClientHandles, ref Array ItemValues, ref Array Qualities, ref Array TimeStamps)
         {
-            for(int i = 1; i < NumItems; i++)
+            for(int i = 1; i <= NumItems; i++)
             {
                 int index = (int)ClientHandles.GetValue(i);
                 object val = ItemValues.GetValue(i);
@@ -90,15 +94,16 @@ namespace ADO.WCSPLC
         }
         public override T GetDevice<T>(string key)
         {
-            T res;
+            object res;
+            int itemIndex;
             try
             {
-                int itemIndex = this.OPC_ItemIndexs[this.PlcDeviceName + "." + key];
-                res = this.OPC_WriteItems.GetValue(itemIndex) != null ? (T)this.OPC_WriteItems.GetValue(itemIndex) : default(T);
-
-                return res;
+                itemIndex = this.OPC_ItemIndexs[this.PlcDeviceName + "." + key];
+                res = this.OPC_WriteItems.GetValue(itemIndex);
+                if (res == null) return default(T);
+                return res.Get2<T>();
             }
-            catch
+            catch(Exception ex)
             {
                 throw;
             };
@@ -110,8 +115,13 @@ namespace ADO.WCSPLC
             string key2 = this.PlcDeviceName + "." + key;
             if (!this.OPC_ItemIndexs.ContainsKey(key2)) return;
             int deviceIndex = this.OPC_ItemIndexs[key2];
-            this.OPC_WriteItems.SetValue(val, deviceIndex);
-            this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length-1, this.OPC_ServerHandles, this.OPC_WriteItems, out this.OPC_ItemServerErrors);
+            Array _OPC_WriteItems = Array.CreateInstance(typeof(object), this.OPC_WriteItems.Length);
+            _OPC_WriteItems.SetValue(val, deviceIndex);
+            if(key.EndsWith("CCONN_WRITE"))
+                this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length-1, ref this.OPC_ServerHandles, ref _OPC_WriteItems, out this.OPC_ItemServerErrors);
+            else 
+                this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length - 1, ref this.OPC_ServerHandles, ref _OPC_WriteItems, out this.OPC_ItemServerErrors);
+
         }
      
         public override void Close()

@@ -63,7 +63,8 @@
     "reactstrap": "^7.1.0",
     "read-excel-file": "^4.0.3",
     "styled-components": "^4.4.0",
-    "use-http": "^0.2.8"
+    "use-http": "^0.2.8",
+    "write-json-file": "^4.3.0"
   },
   "scripts": {
     "start": "set HTTPS=false&&react-scripts start",

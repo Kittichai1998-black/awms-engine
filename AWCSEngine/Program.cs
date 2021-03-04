@@ -37,7 +37,7 @@ namespace AWCSEngine
             Application.SetCompatibleTextRenderingDefault(false);
 
             //LocationUtil.GetLocationRouteTree("G01", "001001001");
-            Application.Run(new formConsole());
+            Application.Run(new formConfigCommand());
         }
     }
 }

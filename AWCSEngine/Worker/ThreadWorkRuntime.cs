@@ -50,12 +50,12 @@ namespace AWCSEngine.Worker
         private static object _lock_run = new object();
         public void Run(object _arg)
         {
-            var works = StaticValueManager.GetInstant().BotService;
+            var works = StaticValueManager.GetInstant().WorkServices;
             List<BaseWorkRuntime> mcWorkEngines = new List<BaseWorkRuntime>();
             foreach(var work in works)
             {
                 var ctype = ClassType.GetClassType(work.FullClassName);
-                var exec = (BaseWorkRuntime)Activator.CreateInstance(ctype);
+                var exec = (BaseWorkRuntime)Activator.CreateInstance(ctype, new object[] { ObjectUtil.GenUniqID() });
                 mcWorkEngines.Add(exec);
             }
             while (true)
