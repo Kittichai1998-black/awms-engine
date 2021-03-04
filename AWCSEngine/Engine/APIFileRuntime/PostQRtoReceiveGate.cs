@@ -15,7 +15,8 @@ namespace AWCSEngine.Engine.APIFileRuntime
         public class TReq
         {
             public string GateCode;
-            public string QR;
+            public List<string> QR;
+            public string Location;
         }
         public class TRes
         {
@@ -29,8 +30,8 @@ namespace AWCSEngine.Engine.APIFileRuntime
 
         protected override TRes ExecuteChild(TReq req)
         {
-            if (string.IsNullOrWhiteSpace(req.QR))
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_QR_IS_NULL, req.QR);
+            if (req.QR.Count == 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_QR_IS_NULL);
 
             var mcGate = McRuntimeController.GetInstant().GetMcRuntime(req.GateCode);
             if (mcGate == null)
@@ -45,7 +46,7 @@ namespace AWCSEngine.Engine.APIFileRuntime
             else if (Inbound_W02(req, mcGate)) ;
             else { throw new AMWException(this.Logger, AMWExceptionCode.V0_INBOUND_CONDITION_FAIL); }
 
-            return new TRes() { GateCode = req.GateCode, QR = req.QR };
+            return new TRes() { GateCode = req.GateCode, QR = string.Join(",", req.QR) };
         }
 
         private bool InboundGate_W08(TReq req, BaseMcRuntime mcGate)
@@ -54,7 +55,8 @@ namespace AWCSEngine.Engine.APIFileRuntime
             new CreateBaseObjectTemp_byQR(this.LogRefID, this.BuVO).Execute(new CreateBaseObjectTemp_byQR.TReq()
             {
                 McObject_ID = mcGate.ID,
-                LabelData = req.QR
+                LabelData = string.Join(",", req.QR)
+                
             });
 
             return true;
