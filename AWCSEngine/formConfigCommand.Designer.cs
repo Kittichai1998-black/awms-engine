@@ -149,7 +149,7 @@ namespace AWCSEngine
             this.ddlMcMsts.Name = "ddlMcMsts";
             this.ddlMcMsts.Size = new System.Drawing.Size(408, 33);
             this.ddlMcMsts.TabIndex = 17;
-            this.ddlMcMsts.SelectedIndexChanged += new System.EventHandler(this.ddlMcMsts_SelectedIndexChanged);
+            this.ddlMcMsts.SelectedIndexChanged += new System.EventHandler(this.treeCMDMaps_Load);
             // 
             // btnAddMcMap
             // 
