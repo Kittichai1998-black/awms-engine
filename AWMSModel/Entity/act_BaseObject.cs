@@ -18,6 +18,7 @@ namespace AMSModel.Entity
         public string SkuUnit;
         public decimal WeiKG;
         public string LabelData;
+        public string Options;
         public BaseObjectEventStatus EventStatus;
     }
 }
