@@ -100,7 +100,6 @@ namespace AMWUtil.Common
         {
             if (!typeof(T).IsEnum) throw new System.Exception("Not Type Enum.");
             List<T> list = Enum.GetValues(typeof(T)).Cast<T>().ToList<T>();
-            List<KeyValuePair<int, KeyValuePair<string, int>>> displayAttr = new List<KeyValuePair<int, KeyValuePair<string, int>>>();
             List<KeyValuePair<string, int>> res = new List<KeyValuePair<string, int>>();
             foreach (T e in list)
             {

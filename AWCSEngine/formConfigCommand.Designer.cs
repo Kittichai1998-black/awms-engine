@@ -30,13 +30,14 @@ namespace AWCSEngine
         private void InitializeComponent()
         {
             this.treeCMDs = new System.Windows.Forms.TreeView();
-            this.ddlCmdTypes = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnTreeCmdActC = new System.Windows.Forms.Button();
+            this.btnTreeCmdActE = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.ddlMcMsts = new System.Windows.Forms.ComboBox();
+            this.btnTreeCmdMapC = new System.Windows.Forms.Button();
+            this.btnTreeCmdMapE = new System.Windows.Forms.Button();
             this.treeCMDMaps = new System.Windows.Forms.TreeView();
+            this.ddlMcMsts = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
@@ -45,81 +46,94 @@ namespace AWCSEngine
             // 
             // treeCMDs
             // 
-            this.treeCMDs.Location = new System.Drawing.Point(6, 63);
+            this.treeCMDs.Location = new System.Drawing.Point(6, 30);
             this.treeCMDs.Name = "treeCMDs";
-            this.treeCMDs.Size = new System.Drawing.Size(535, 542);
+            this.treeCMDs.Size = new System.Drawing.Size(1127, 575);
             this.treeCMDs.TabIndex = 15;
-            // 
-            // ddlCmdTypes
-            // 
-            this.ddlCmdTypes.FormattingEnabled = true;
-            this.ddlCmdTypes.Location = new System.Drawing.Point(61, 24);
-            this.ddlCmdTypes.Name = "ddlCmdTypes";
-            this.ddlCmdTypes.Size = new System.Drawing.Size(480, 33);
-            this.ddlCmdTypes.TabIndex = 1;
-            this.ddlCmdTypes.SelectedIndexChanged += new System.EventHandler(this.ddlCmdTypes_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 27);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 25);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Type";
+            this.treeCMDs.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeCMDs_KeyDown);
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.ddlCmdTypes);
+            this.groupBox1.Controls.Add(this.btnTreeCmdActC);
+            this.groupBox1.Controls.Add(this.btnTreeCmdActE);
             this.groupBox1.Controls.Add(this.treeCMDs);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(547, 611);
+            this.groupBox1.Size = new System.Drawing.Size(1139, 611);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Command Actions";
+            this.groupBox1.Text = "Command / Actions";
+            // 
+            // btnTreeCmdActC
+            // 
+            this.btnTreeCmdActC.Location = new System.Drawing.Point(994, 571);
+            this.btnTreeCmdActC.Name = "btnTreeCmdActC";
+            this.btnTreeCmdActC.Size = new System.Drawing.Size(46, 34);
+            this.btnTreeCmdActC.TabIndex = 22;
+            this.btnTreeCmdActC.Text = "+";
+            this.btnTreeCmdActC.UseVisualStyleBackColor = true;
+            this.btnTreeCmdActC.Click += new System.EventHandler(this.btnTreeCmdActC_Click);
+            // 
+            // btnTreeCmdActE
+            // 
+            this.btnTreeCmdActE.Location = new System.Drawing.Point(1046, 571);
+            this.btnTreeCmdActE.Name = "btnTreeCmdActE";
+            this.btnTreeCmdActE.Size = new System.Drawing.Size(46, 34);
+            this.btnTreeCmdActE.TabIndex = 21;
+            this.btnTreeCmdActE.Text = "-";
+            this.btnTreeCmdActE.UseVisualStyleBackColor = true;
+            this.btnTreeCmdActE.Click += new System.EventHandler(this.btnTreeCmdActEC_Click);
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnTreeCmdMapC);
+            this.groupBox2.Controls.Add(this.btnTreeCmdMapE);
             this.groupBox2.Controls.Add(this.treeCMDMaps);
-            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.ddlMcMsts);
-            this.groupBox2.Location = new System.Drawing.Point(633, 12);
+            this.groupBox2.Location = new System.Drawing.Point(1225, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(547, 611);
+            this.groupBox2.Size = new System.Drawing.Size(420, 611);
             this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Command Mappings";
+            this.groupBox2.Text = "Machine Command";
             // 
-            // label2
+            // btnTreeCmdMapC
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 27);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(36, 25);
-            this.label2.TabIndex = 16;
-            this.label2.Text = "Mc";
+            this.btnTreeCmdMapC.Location = new System.Drawing.Point(274, 571);
+            this.btnTreeCmdMapC.Name = "btnTreeCmdMapC";
+            this.btnTreeCmdMapC.Size = new System.Drawing.Size(46, 34);
+            this.btnTreeCmdMapC.TabIndex = 24;
+            this.btnTreeCmdMapC.Text = "+";
+            this.btnTreeCmdMapC.UseVisualStyleBackColor = true;
             // 
-            // ddlMcMsts
+            // btnTreeCmdMapE
             // 
-            this.ddlMcMsts.FormattingEnabled = true;
-            this.ddlMcMsts.Location = new System.Drawing.Point(56, 24);
-            this.ddlMcMsts.Name = "ddlMcMsts";
-            this.ddlMcMsts.Size = new System.Drawing.Size(480, 33);
-            this.ddlMcMsts.TabIndex = 17;
-            this.ddlMcMsts.SelectedIndexChanged += new System.EventHandler(this.ddlMcMsts_SelectedIndexChanged);
+            this.btnTreeCmdMapE.Location = new System.Drawing.Point(326, 571);
+            this.btnTreeCmdMapE.Name = "btnTreeCmdMapE";
+            this.btnTreeCmdMapE.Size = new System.Drawing.Size(46, 34);
+            this.btnTreeCmdMapE.TabIndex = 23;
+            this.btnTreeCmdMapE.Text = "-";
+            this.btnTreeCmdMapE.UseVisualStyleBackColor = true;
             // 
             // treeCMDMaps
             // 
             this.treeCMDMaps.Location = new System.Drawing.Point(6, 63);
             this.treeCMDMaps.Name = "treeCMDMaps";
-            this.treeCMDMaps.Size = new System.Drawing.Size(535, 542);
+            this.treeCMDMaps.Size = new System.Drawing.Size(408, 542);
             this.treeCMDMaps.TabIndex = 16;
+            // 
+            // ddlMcMsts
+            // 
+            this.ddlMcMsts.FormattingEnabled = true;
+            this.ddlMcMsts.Location = new System.Drawing.Point(6, 24);
+            this.ddlMcMsts.Name = "ddlMcMsts";
+            this.ddlMcMsts.Size = new System.Drawing.Size(408, 33);
+            this.ddlMcMsts.TabIndex = 17;
+            this.ddlMcMsts.SelectedIndexChanged += new System.EventHandler(this.ddlMcMsts_SelectedIndexChanged);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(565, 297);
+            this.button1.Location = new System.Drawing.Point(1157, 275);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(62, 34);
             this.button1.TabIndex = 20;
@@ -128,7 +142,7 @@ namespace AWCSEngine
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(565, 337);
+            this.button2.Location = new System.Drawing.Point(1157, 315);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(62, 34);
             this.button2.TabIndex = 21;
@@ -139,7 +153,7 @@ namespace AWCSEngine
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1198, 632);
+            this.ClientSize = new System.Drawing.Size(1657, 632);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox2);
@@ -148,9 +162,7 @@ namespace AWCSEngine
             this.Text = "formConfigCommand";
             this.Load += new System.EventHandler(this.formConfigCommand_Load);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -158,14 +170,15 @@ namespace AWCSEngine
         #endregion
 
         private System.Windows.Forms.TreeView treeCMDs;
-        private System.Windows.Forms.ComboBox ddlCmdTypes;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TreeView treeCMDMaps;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox ddlMcMsts;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnTreeCmdActE;
+        private System.Windows.Forms.Button btnTreeCmdActC;
+        private System.Windows.Forms.Button btnTreeCmdMapC;
+        private System.Windows.Forms.Button btnTreeCmdMapE;
     }
 }
