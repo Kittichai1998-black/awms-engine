@@ -115,7 +115,7 @@ namespace AWCSEngine
                 var tv = (TreeView)sender;
                 if (tv.SelectedNode.Text.StartsWith("Cmd."))
                 {
-                    if (InputBox("Update Command Code", "acs_Command.Code", ref inpTxt) == DialogResult.OK)
+                    if (InputBox("Update Command Code", "acs_McCommand.Code", ref inpTxt) == DialogResult.OK)
                     {
                         int inpID = tv.SelectedNode.Text.Split(":")[0].Split(".")[1].Trim().Get2<int>();
                         //ADO.WCSDB.DataADO.GetInstant().UpdateByID<acs_McCommand>()
