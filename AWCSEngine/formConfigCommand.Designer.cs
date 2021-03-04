@@ -29,7 +29,10 @@ namespace AWCSEngine
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formConfigCommand));
             this.treeCMDs = new System.Windows.Forms.TreeView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnTreeCmdActC = new System.Windows.Forms.Button();
             this.btnTreeCmdActE = new System.Windows.Forms.Button();
@@ -38,19 +41,33 @@ namespace AWCSEngine
             this.btnTreeCmdMapE = new System.Windows.Forms.Button();
             this.treeCMDMaps = new System.Windows.Forms.TreeView();
             this.ddlMcMsts = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnAddMcMap = new System.Windows.Forms.Button();
+            this.btnRemoveMcMap = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeCMDs
             // 
-            this.treeCMDs.Location = new System.Drawing.Point(6, 30);
+            this.treeCMDs.ImageIndex = 3;
+            this.treeCMDs.ImageList = this.imageList1;
+            this.treeCMDs.Location = new System.Drawing.Point(6, 62);
             this.treeCMDs.Name = "treeCMDs";
-            this.treeCMDs.Size = new System.Drawing.Size(1127, 575);
+            this.treeCMDs.SelectedImageIndex = 0;
+            this.treeCMDs.Size = new System.Drawing.Size(1127, 543);
             this.treeCMDs.TabIndex = 15;
+            this.treeCMDs.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeCMDs_AfterSelect);
             this.treeCMDs.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeCMDs_KeyDown);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "cmd-1.png");
+            this.imageList1.Images.SetKeyName(1, "action-2x.png");
+            this.imageList1.Images.SetKeyName(2, "file.png");
+            this.imageList1.Images.SetKeyName(3, "add-4.png");
             // 
             // groupBox1
             // 
@@ -66,7 +83,7 @@ namespace AWCSEngine
             // 
             // btnTreeCmdActC
             // 
-            this.btnTreeCmdActC.Location = new System.Drawing.Point(994, 571);
+            this.btnTreeCmdActC.Location = new System.Drawing.Point(1035, 22);
             this.btnTreeCmdActC.Name = "btnTreeCmdActC";
             this.btnTreeCmdActC.Size = new System.Drawing.Size(46, 34);
             this.btnTreeCmdActC.TabIndex = 22;
@@ -76,7 +93,7 @@ namespace AWCSEngine
             // 
             // btnTreeCmdActE
             // 
-            this.btnTreeCmdActE.Location = new System.Drawing.Point(1046, 571);
+            this.btnTreeCmdActE.Location = new System.Drawing.Point(1087, 22);
             this.btnTreeCmdActE.Name = "btnTreeCmdActE";
             this.btnTreeCmdActE.Size = new System.Drawing.Size(46, 34);
             this.btnTreeCmdActE.TabIndex = 21;
@@ -92,14 +109,14 @@ namespace AWCSEngine
             this.groupBox2.Controls.Add(this.ddlMcMsts);
             this.groupBox2.Location = new System.Drawing.Point(1225, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(420, 611);
+            this.groupBox2.Size = new System.Drawing.Size(586, 611);
             this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Machine Command";
             // 
             // btnTreeCmdMapC
             // 
-            this.btnTreeCmdMapC.Location = new System.Drawing.Point(274, 571);
+            this.btnTreeCmdMapC.Location = new System.Drawing.Point(482, 22);
             this.btnTreeCmdMapC.Name = "btnTreeCmdMapC";
             this.btnTreeCmdMapC.Size = new System.Drawing.Size(46, 34);
             this.btnTreeCmdMapC.TabIndex = 24;
@@ -108,7 +125,7 @@ namespace AWCSEngine
             // 
             // btnTreeCmdMapE
             // 
-            this.btnTreeCmdMapE.Location = new System.Drawing.Point(326, 571);
+            this.btnTreeCmdMapE.Location = new System.Drawing.Point(534, 22);
             this.btnTreeCmdMapE.Name = "btnTreeCmdMapE";
             this.btnTreeCmdMapE.Size = new System.Drawing.Size(46, 34);
             this.btnTreeCmdMapE.TabIndex = 23;
@@ -117,9 +134,12 @@ namespace AWCSEngine
             // 
             // treeCMDMaps
             // 
+            this.treeCMDMaps.ImageIndex = 0;
+            this.treeCMDMaps.ImageList = this.imageList1;
             this.treeCMDMaps.Location = new System.Drawing.Point(6, 63);
             this.treeCMDMaps.Name = "treeCMDMaps";
-            this.treeCMDMaps.Size = new System.Drawing.Size(408, 542);
+            this.treeCMDMaps.SelectedImageIndex = 0;
+            this.treeCMDMaps.Size = new System.Drawing.Size(574, 542);
             this.treeCMDMaps.TabIndex = 16;
             // 
             // ddlMcMsts
@@ -131,31 +151,33 @@ namespace AWCSEngine
             this.ddlMcMsts.TabIndex = 17;
             this.ddlMcMsts.SelectedIndexChanged += new System.EventHandler(this.ddlMcMsts_SelectedIndexChanged);
             // 
-            // button1
+            // btnAddMcMap
             // 
-            this.button1.Location = new System.Drawing.Point(1157, 275);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(62, 34);
-            this.button1.TabIndex = 20;
-            this.button1.Text = ">>";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnAddMcMap.Location = new System.Drawing.Point(1157, 275);
+            this.btnAddMcMap.Name = "btnAddMcMap";
+            this.btnAddMcMap.Size = new System.Drawing.Size(62, 34);
+            this.btnAddMcMap.TabIndex = 20;
+            this.btnAddMcMap.Text = ">>";
+            this.btnAddMcMap.UseVisualStyleBackColor = true;
+            this.btnAddMcMap.Click += new System.EventHandler(this.btnAddMcMap_Click);
             // 
-            // button2
+            // btnRemoveMcMap
             // 
-            this.button2.Location = new System.Drawing.Point(1157, 315);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(62, 34);
-            this.button2.TabIndex = 21;
-            this.button2.Text = "<<";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnRemoveMcMap.Location = new System.Drawing.Point(1157, 315);
+            this.btnRemoveMcMap.Name = "btnRemoveMcMap";
+            this.btnRemoveMcMap.Size = new System.Drawing.Size(62, 34);
+            this.btnRemoveMcMap.TabIndex = 21;
+            this.btnRemoveMcMap.Text = "<<";
+            this.btnRemoveMcMap.UseVisualStyleBackColor = true;
+            this.btnRemoveMcMap.Click += new System.EventHandler(this.btnRemoveMcMap_Click);
             // 
             // formConfigCommand
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1657, 632);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(1823, 632);
+            this.Controls.Add(this.btnRemoveMcMap);
+            this.Controls.Add(this.btnAddMcMap);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "formConfigCommand";
@@ -174,11 +196,12 @@ namespace AWCSEngine
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TreeView treeCMDMaps;
         private System.Windows.Forms.ComboBox ddlMcMsts;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnAddMcMap;
+        private System.Windows.Forms.Button btnRemoveMcMap;
         private System.Windows.Forms.Button btnTreeCmdActE;
         private System.Windows.Forms.Button btnTreeCmdActC;
         private System.Windows.Forms.Button btnTreeCmdMapC;
         private System.Windows.Forms.Button btnTreeCmdMapE;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }

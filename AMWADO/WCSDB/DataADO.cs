@@ -203,7 +203,7 @@ namespace ADO.WCSDB
         }
 
 
-        public List<T> SelectByActive<T>(VOCriteria buVO)
+        public List<T> ListByActive<T>(VOCriteria buVO)
              where T : IEntityModel
         {
             return SelectBy<T>(
@@ -360,6 +360,16 @@ namespace ADO.WCSDB
 
             return comm;
         }
+        public long? UpdateByID<T>(int id, ListKeyValue<string, object> values, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return UpdateByID<T>((long)id, buVO, values.ToArray());
+        }
+        public long? UpdateByID<T>(long id, ListKeyValue<string, object> values, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return UpdateByID<T>(id, buVO, values.ToArray());
+        }
         public long? UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {
@@ -416,7 +426,7 @@ namespace ADO.WCSDB
             if (typeof(BaseEntityCreateModify).IsAssignableFrom(typeof(T)))
             {
                 commSets += ",ModifyBy=@actionBy,ModifyTime=getdate()";
-                param.Add("actionBy", buVO.ActionBy);
+                param.Add("actionBy", buVO == null ? 0 : buVO.ActionBy);
             }
 
             string commWhere = string.Empty;
@@ -445,7 +455,7 @@ namespace ADO.WCSDB
                         typeof(T).Name.Split('.').Last(), commSets, commWhere),
                     CommandType.Text,
                     param,
-                    buVO.Logger, buVO.SqlTransaction);
+                    buVO == null ? null : buVO.Logger, buVO == null ? null : buVO.SqlTransaction);
             return res;
         }
 
@@ -454,6 +464,12 @@ namespace ADO.WCSDB
         {
             var d = AMWUtil.Common.ObjectUtil.ObjectToKeyValue<T>(data);
             return Insert<T>(d.ToArray(),buVO);
+        }
+
+        public long? Insert<T>(ListKeyValue<string, object> values, VOCriteria buVO)
+         where T : IEntityModel
+        {
+            return Insert<T>(values.ToArray(), buVO);
         }
         public long? Insert<T>(KeyValuePair<string, object>[] values, VOCriteria buVO)
          where T : IEntityModel
@@ -491,7 +507,7 @@ namespace ADO.WCSDB
             {
                 commFields += ",CreateBy,CreateTime";
                 commVals += ",@actionBy,getdate()";
-                param.Add("actionBy", buVO.ActionBy);
+                param.Add("actionBy", buVO == null ? 0 : buVO.ActionBy);
             }
 
             var commTxt =
@@ -501,7 +517,7 @@ namespace ADO.WCSDB
                     commTxt,
                     CommandType.Text,
                     param,
-                    buVO.Logger, buVO.SqlTransaction);
+                    buVO == null ? null : buVO.Logger, buVO == null ? null : buVO.SqlTransaction);
 
             return res;
         }
