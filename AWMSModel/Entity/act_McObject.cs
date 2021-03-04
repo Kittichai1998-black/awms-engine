@@ -35,7 +35,7 @@ namespace AMSModel.Entity
         public int DV_Con_Hand;
         public int DV_Con_DesLoc;
         public int DV_Con_Unit;
-        public int DV_Con_PalletID;
+        public string DV_Con_PalletID;
         public int DV_Con_Weigh;
         public int DV_Con_Comm;
         public int DV_Con_CurLoc;

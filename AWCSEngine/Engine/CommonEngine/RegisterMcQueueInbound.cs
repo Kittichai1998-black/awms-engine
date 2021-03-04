@@ -37,8 +37,8 @@ namespace AWCSEngine.Engine.CommonEngine
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_BASE_DUPLICATE, baseObjC.Code);
 
 
-            new CreateBaseObjectTemp_byQR(this.LogRefID,this.BuVO).Execute(null);
-
+            //new CreateBaseObjectTemp_byQR(this.LogRefID,this.BuVO).Execute(null);
+            //LocationUtil.GetLocationRouteTree()
             /*var treeRoute = LocationUtil.GetLocationRouteTree(req.souAreaID,req.souLocIDs,req.desAreaID, req.desLocIDs);
             act_McWork mcQ = new act_McWork()
             {

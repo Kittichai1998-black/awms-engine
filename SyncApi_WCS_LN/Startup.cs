@@ -41,7 +41,7 @@ namespace SyncApi_WCS_LN
                 }
             }
             services.AddControllers();
-            //services.AddHostedService<WorkerSetup>();
+            services.AddHostedService<WorkerSetup>();
 
         }
 

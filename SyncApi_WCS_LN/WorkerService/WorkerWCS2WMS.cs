@@ -44,15 +44,17 @@ namespace SyncApi_WCS_LN.WorkerService
             {
                 try
                 {
-                    var posts = DataADO.GetInstant().Query<dynamic>(this.SP_Request, this.Logger);
+                    var posts = DataADO.GetInstant().Query<dynamic>(this.SP_Request, this.Logger).ToList().Select(x => (IDictionary<string, object>)x).ToList(); 
+
                     if(posts != null && posts.Count() > 0)
                     {
                         foreach(var post in posts)
                         {
-                            string listID = (string)post.ListID;
+                            string listID = (string)post.Values.ToString();
                             TResutl data_result = new TResutl() { ListID = listID, Status = 0 };
                             try
                             {
+                                
                                 var res = RESTFulAccess.SendForm<dynamic>(this.Logger, this.APIUrl, RESTFulAccess.HttpMethod.POST, post);
                                 data_result.Status = 1;
                             }
