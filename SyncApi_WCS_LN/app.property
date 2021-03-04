@@ -3,45 +3,18 @@ database.connection_string = Server=localhost\SQLEXPRESS01;Uid=saa1;PASSWORD=123
 
 #######################################
 
-post2wms.api_names = StoreLogin,StoreinUpdate,StoreoutUpdate,SelectpickUpdate,SelectreturnUpdate,ConsoloadUpdate,StoreauditUpdate,Storemovement
+post2wms.api_names = StoreinUpdate
 post2wms.thread_sleep = 300
 
-post2wms.StoreLogin.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/test1
-post2wms.StoreLogin.sp_req =  or.ssp_StoreLogin
-post2wms.StoreLogin.sp_res = 
-
-post2wms.StoreinUpdate.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/Storein
+post2wms.StoreinUpdate.api_url = https://localhost:44391/api/Stotest
 post2wms.StoreinUpdate.sp_req = or.ssp_StoreinUpdate
 post2wms.StoreinUpdate.sp_res =
 
-post2wms.StoreoutUpdate.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/Storeout
-post2wms.StoreoutUpdate.sp_req = or.ssp_StoreoutUpdate
-post2wms.StoreoutUpdate.sp_res =
-
-post2wms.SelectpickUpdate.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/Selectpick
-post2wms.SelectpickUpdate.sp_req = or.ssp_SelectpickUpdate
-post2wms.SelectpickUpdate.sp_res =
-
-post2wms.SelectreturnUpdate.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/electreturn
-post2wms.SelectreturnUpdate.sp_req = or.ssp_SelectreturnUpdate
-post2wms.SelectreturnUpdate.sp_res =
-
-post2wms.ConsoloadUpdate.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/Consoload
-post2wms.ConsoloadUpdate.sp_req = or.ssp_ConsoloadUpdate
-post2wms.ConsoloadUpdate.sp_res =
-
-post2wms.StoreauditUpdate.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/Storeaudit
-post2wms.StoreauditUpdate.sp_req = or.ssp_SelectauditUpdate
-post2wms.StoreauditUpdate.sp_res =
-
-post2wms.Storemovement.api_url = https://or-ldcweb-p01.pttor.com/inforwcs/api/Storemovement
-post2wms.Storemovement.sp_req = or.ssp_Storemovement
-post2wms.Storemovement.sp_res =
 
 #################################
 
 
-controller.api_names = Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
+controller.api_names = StoreItems,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory,Stotest
 
 controller.StoreItems.sp_exec = or.ssp_StoreItems
 controller.Storein.sp_exec = or.ssp_Storein
@@ -54,3 +27,4 @@ controller.Sorttag.sp_exec = or.ssp_Sorttag
 controller.StartSorter.sp_exec = or.ssp_StartSorter
 controller.ClearBufferAGV.sp_exec = or.ssp_clearBufferagv
 controller.StoreInventory.sp_exec = or.ssp_StoreInventory
+controller.Stotest.sp_exec = or.ssp_test
