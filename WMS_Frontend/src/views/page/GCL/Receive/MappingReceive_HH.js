@@ -544,9 +544,9 @@ const MappingReceive_HH = (props) => {
 
         let datas = {}
         datas = {
-            "warehouseCode" : warehouseCode,
-            "locationCode" : gateCode,
-            "barcode_pstos": barcode_pstos 
+            //"warehouseCode" : warehouseCode,
+            "GateCode" : gateCode,
+            "QR": barcode_pstos 
         }
 
         Axios.post(window.apipath + '/v2/checkregist_wc', barCode).then((res) => {

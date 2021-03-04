@@ -95,6 +95,21 @@ namespace AMWUtil.Common
             List<T> list = Enum.GetValues(typeof(T)).Cast<T>().ToList<T>();
             return list;
         }
+        public static List<KeyValuePair<string, int>> ListAttDisplayValuesInt<T>()
+            where T : struct, IComparable, IFormattable, IConvertible
+        {
+            if (!typeof(T).IsEnum) throw new System.Exception("Not Type Enum.");
+            List<T> list = Enum.GetValues(typeof(T)).Cast<T>().ToList<T>();
+            List<KeyValuePair<string, int>> res = new List<KeyValuePair<string, int>>();
+            foreach (T e in list)
+            {
+                DisplayAttribute attr = AttributeUtil.Attribute<DisplayAttribute>(e);
+                string key = EnumUtil.GetDisplayName<T>(e);
+                int val = (int)Enum.Parse(typeof(T), e.ToString());
+                res.Add(new KeyValuePair<string, int>(key, val));
+            }
+            return res;
+        }
         public static List<KeyValuePair<string, int>> ListKeyValuesInt<T>()
             where T : struct, IComparable, IFormattable, IConvertible
         {

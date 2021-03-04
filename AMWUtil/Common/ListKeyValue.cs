@@ -6,7 +6,7 @@ namespace AMWUtil.Common
 {
     public class ListKeyValue<TKey,TVal>
     {
-        public static ListKeyValue<TKey, TVal> Create(TKey key, TVal val)
+        public static ListKeyValue<TKey, TVal> New(TKey key, TVal val)
         {
             var res = new ListKeyValue<TKey,TVal>(key, val);
             return res;

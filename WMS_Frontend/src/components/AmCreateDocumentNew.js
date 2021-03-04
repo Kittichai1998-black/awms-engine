@@ -830,7 +830,8 @@ const AmCreateDocument = (props) => {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
-                        } else { }
+                        } else {
+                        }
                     }}
                 />
             )

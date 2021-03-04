@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class acs_McCommandMcMaster : BaseEntitySTD
+    public class acs_McCommandMcMaster : BaseEntityID
     {
         public long McCommand_ID;
         public long McMaster_ID;
