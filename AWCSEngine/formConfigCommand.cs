@@ -45,7 +45,8 @@ namespace AWCSEngine
         private void treeCMDs_Load(object sender, EventArgs e)
         {
             this.treeCMDs.Nodes.Clear();
-            EnumUtil.ListKeyValuesInt<McCommandType>()
+            var enumList = EnumUtil.ListAttDisplayValuesInt<McCommandType>();
+            enumList
                 .OrderBy(x => x.Value)
                 .ToList()
                 .ForEach(cmd_gb =>

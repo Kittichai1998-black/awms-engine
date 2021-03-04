@@ -62,7 +62,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                 {
 
                     var mcSRM_11 = McController.GetMcRuntime("SRM11");
-                    mcSRM_11.PostCommand(McCommandType.MC_STOMOVE_SOU_DES,
+                    mcSRM_11.PostCommand(McCommandType.CM_21,
                         new ListKeyValue<string, object>()
                             .Add("sou", mcGate_RC8_2.Cur_Location.Code)
                             .Add("des", "001002003"),

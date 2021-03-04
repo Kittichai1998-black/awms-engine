@@ -1,118 +1,119 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace AMSModel.Constant.EnumConst
 {
     public enum McCommandType
     {
-        SHU-MC_START_HOME = 40,
-        MC_MOVE_DES2 = 11,
-        MC_MOVE_HOME = 12,
-        MC_MOVE_STANBY = 13,
-        SRM-MC_STOMOVE_SOUDES = 21,
-        MC_SHUTDOWN_HOME = 92,
-        SRM-MC_STOISSUE_SOUDES = 23,
-        SHU-MC_CHART_HOME = 69,
-        SRM-MC_SURWAY_HOME = 50,
-        PU-MC_STOREJECT_SOUDES = 54,
-        SRM-MC_STORECIVE_SOUDES = 22,
-        SHU-MC_STORECIVE_SOUDES = 62,
-        SHU-MC_STOISSUE_SOUDES = 63,
-        PS-MC_STOISSUE_SOUDES = 43,
-        RC-MC_STORECIVE_SOUDES = 32,
-        PU-MC_STOISUUE_SOUDES = 53,
-        SRM-MC_START_HOME = 201,
-        SRM-MC_BACK_HOME = 202,
-        SRM-MC_WORKING_WORK = 203,
-        SRM-MC_FINISH_WORK = 206,
-        SRM-MC_CANCLE_WORK = 207,
-        SRM-MC_RESET_SYS = 208,
-        SRM-MC_CANCLE_ALARM = 209,
-        SRM-MC_STOMOVE_SOU = 210,
-        SRM-MC_START_NOPALLET = 211,
-        SRM-MC_BACK_HOMEOUT = 212,
-        SRM-MC_START_CHECKWEI = 213,
-        SRM-MC_HOMEIN_NOTCHECK = 214,
-        SRM-MC_HOMEOUT_NOTCHECK = 215,
-        SRM-MC_STOPRECIVE_PALLETLOC = 240,
-        SRM-MC_STOPISSUE_PALLETLOC = 241,
-        SRM-MC_STOP_PALLETID = 242,
-        SRM-MC_STOP_ALARMIN = 250,
-        SRM-MC_STOP_ALARMOUT = 251,
-        SRM-MC_STOP_DOORIN = 252,
-        SRM-MC_STOP_DOOROUT = 253,
-        SRM-MC_STOP_REQUE = 254,
-        SRM-MC_STOP_STARTQUE = 255,
-        SRM-MC_CONPALLET_STA = 270,
-        SRM-MC_OPEN_SENSOR = 280,
-        SRM-MC_CLOSE_SENSOR = 281,
-        SRM-MC_STOP_WORK = 290,
-        SRM-MC_CON_WORK = 299,
-        SHU-MC_START_HOME = 601,
-        SHU-MC_BACKHOME_IN = 602,
-        SHU-MC_STO_WORKING = 603,
-        SHU-MC_STO_SWITCH = 604,
-        SHU-MC_STOREAD_PALLET = 605,
-        SHU-MC_STOEND_WORK = 606,
-        SHU-MC_STOCANCLE_WORK = 607,
-        SHU-MC_STO_RESET = 608,
-        SHU-MC_STOCANCLE_ALARM = 609,
-        SHU-MC_STOMOVE_SOULOC = 610,
-        SHU-MC_START_NOTBAR = 611,
-        SHU-MC_BACKHOME_OUT = 612,
-        SHU-MC_START_CHECKWEI = 613,
-        SHU-MC_BACKHOME_INOFF = 614,
-        SHU-MC_BACKHOME_OUTOFF = 615,
-        SHU-MC_STOPRECIVE_PALLETLOC = 640,
-        SHU-MC_STOPISSUE_PALLETLOC = 641,
-        SHU-MC_STOPPALLETID_LOC = 642,
-        SHU-MC_STOPALARM_IN = 650,
-        SHU-MC_STOPALARM_OUT = 651,
-        SHU-MC_STOPALARM_INDOOR = 652,
-        SHU-MC_STOPALARM_OUTDOOR = 653,
-        SHU-MC_STORECIVE_ROW = 654,
-        SHU-MC_STORECIVE_IN = 655,
-        SHU-MC_STORECIVE_OUT = 656,
-        SHU-MC_STOISSUE_IN = 657,
-        SHU-MC_STOISSUE_OUT = 658,
-        SHU-MC_STOCON_SHTOUT = 660,
-        SHU-MC_STOSTAND_IN = 662,
-        SHU-MC_STOMOVE_PALLETIN = 663,
-        SHU-MC_STOMOVE_PALLETOUT = 664,
-        SHU-MC_STOSTAND_OUT = 672,
-        SHU-MC_OPEN_SENSOR = 680,
-        SHU-MC_CLOSE_SENSOR = 681,
-        SHU-MC_STOP_SHT = 690,
-        SHU-MC_CON-FINISH = 699,
-        CONY-MC_START_RECIVE = 701,
-        CONY-MC_START_ISSUE = 702,
-        CONY-MC_WORK_WORK = 703,
-        CONY-MC_STOP_WORK = 704,
-        CONY-MC_CLOSE_GATE = 705,
-        CONY-MC_OPEN_GATE = 706,
-        CONY-MC_CANCLE_WORK = 707,
-        CONY-MC_RESET_INVOT = 708,
-        CONY-MC_DISCON_COMP = 709,
-        CONY-MC_EJECT_BAR = 710,
-        CONY-MC_EJECT_RECIVE = 711,
-        CONY-MC_EJECT_WEI = 712,
-        CONY-MC_EJECT_ARE = 713,
-        CONY-MC_EJECT_COMP = 714,
-        CONY-MC_FEDTO_RGV = 720,
-        CONY-MC_FEDTO_LIFT = 721,
-        CONY-MC_PALLET_START = 740,
-        CONY-MC_SETRECIVE_MODE = 760,
-        CONY-MC_SETISSUE_MODE = 761,
-        CONY-MC_BAR_NOTCOR = 7116,
-        CONY-MC_COMM_NOTCOR = 7117,
-        CONY-MC_COMM_EMP = 7118,
-        CONY-MC_NOT_DATABAR = 7719,
-        CONY-MC_OUT_PALLETSTART = 7720,
-        CONY-MC_OUT_PALLETUP = 7140,
-        CONY-MC_NOTCORREC_PALLETBAR = 7156,
-        CONY-MC_NOTCORREC_PALLETBAR = 788,
-        CONY-MC_CON_FINISH = 799,
+        [DisplayAttribute(Name = "CM_1")]
+        CM_1,
+        [DisplayAttribute(Name = "CM_2")]
+        CM_2,
+        [DisplayAttribute(Name = "CM_3")]
+        CM_3,
+        [DisplayAttribute(Name = "CM_4")]
+        CM_4,
+        [DisplayAttribute(Name = "CM_5")]
+        CM_5,
+        [DisplayAttribute(Name = "CM_6")]
+        CM_6,
+        [DisplayAttribute(Name = "CM_7")]
+        CM_7,
+        [DisplayAttribute(Name = "CM_8")]
+        CM_8,
+        [DisplayAttribute(Name = "CM_9")]
+        CM_9,
+        [DisplayAttribute(Name = "CM_10")]
+        CM_10,
+        [DisplayAttribute(Name = "CM_11")]
+        CM_11,
+        [DisplayAttribute(Name = "CM_12")]
+        CM_12,
+        [DisplayAttribute(Name = "CM_13")]
+        CM_13,
+        [DisplayAttribute(Name = "CM_14")]
+        CM_14,
+        [DisplayAttribute(Name = "CM_15")]
+        CM_15,
+        [DisplayAttribute(Name = "CM_20")]
+        CM_20,
+        [DisplayAttribute(Name = "CM_21")]
+        CM_21,
+        [DisplayAttribute(Name = "CM_22")]
+        CM_22,
+        [DisplayAttribute(Name = "CM_23")]
+        CM_23,
+        [DisplayAttribute(Name = "CM_32")]
+        CM_32,
+        [DisplayAttribute(Name = "CM_40")]
+        CM_40,
+        [DisplayAttribute(Name = "CM_41")]
+        CM_41,
+        [DisplayAttribute(Name = "CM_42")]
+        CM_42,
+        [DisplayAttribute(Name = "CM_43")]
+        CM_43,
+        [DisplayAttribute(Name = "CM_50")]
+        CM_50,
+        [DisplayAttribute(Name = "CM_51")]
+        CM_51,
+        [DisplayAttribute(Name = "CM_52")]
+        CM_52,
+        [DisplayAttribute(Name = "CM_53")]
+        CM_53,
+        [DisplayAttribute(Name = "CM_54")]
+        CM_54,
+        [DisplayAttribute(Name = "CM_55")]
+        CM_55,
+        [DisplayAttribute(Name = "CM_56")]
+        CM_56,
+        [DisplayAttribute(Name = "CM_57")]
+        CM_57,
+        [DisplayAttribute(Name = "CM_58")]
+        CM_58,
+        [DisplayAttribute(Name = "CM_60")]
+        CM_60,
+        [DisplayAttribute(Name = "CM_61")]
+        CM_61,
+        [DisplayAttribute(Name = "CM_62")]
+        CM_62,
+        [DisplayAttribute(Name = "CM_63")]
+        CM_63,
+        [DisplayAttribute(Name = "CM_64")]
+        CM_64,
+        [DisplayAttribute(Name = "CM_69")]
+        CM_69,
+        [DisplayAttribute(Name = "CM_70")]
+        CM_70,
+        [DisplayAttribute(Name = "CM_72")]
+        CM_72,
+        [DisplayAttribute(Name = "CM_80")]
+        CM_80,
+        [DisplayAttribute(Name = "CM_81")]
+        CM_81,
+        [DisplayAttribute(Name = "CM_88")]
+        CM_88,
+        [DisplayAttribute(Name = "CM_90")]
+        CM_90,
+        [DisplayAttribute(Name = "CM_99")]
+        CM_99,
+        [DisplayAttribute(Name = "CM_116")]
+        CM_116,
+        [DisplayAttribute(Name = "CM_117")]
+        CM_117,
+        [DisplayAttribute(Name = "CM_118")]
+        CM_118,
+        [DisplayAttribute(Name = "CM_140")]
+        CM_140,
+        [DisplayAttribute(Name = "CM_156")]
+        CM_156,
+        [DisplayAttribute(Name = "CM_719")]
+        CM_719,
+        [DisplayAttribute(Name = "CM_720")]
+        CM_720,
+
 
     }
 }
