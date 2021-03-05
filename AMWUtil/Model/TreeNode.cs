@@ -17,6 +17,7 @@ namespace AMWUtil.Model
         }
         public TreeNode(T value)
         {
+            this.NodeID = ObjectUtil.GenUniqID();
             this.Childs = new List<TreeNode<T>>();
             this.Value = value;
         }
@@ -27,6 +28,39 @@ namespace AMWUtil.Model
         public void Add(TreeNode<T> value)
         {
             this.Childs.Add(value);
+        }
+        public TreeNode<T> GetChild(string NodeID)
+        {
+            foreach (var c in this.Childs)
+            {
+                if (c.NodeID == NodeID)
+                {
+                    return c;
+                }
+                else
+                {
+                    var res = c.GetChild(NodeID);
+                    if (res != null) return res;
+                }
+            }
+            return null;
+        }
+        public List<TreeNode<T>> GetChild(T Value)
+        {
+            var res = new List<TreeNode<T>>();
+            GetChild(Value, res);
+            return res;
+        }
+        private void GetChild(T Value, List<TreeNode<T>> res)
+        {
+            foreach (var c in this.Childs)
+            {
+                if (c.Value.Equals(Value))
+                {
+                    res.Add(c);
+                }
+                c.GetChild(Value, res);
+            }
         }
 
     }
