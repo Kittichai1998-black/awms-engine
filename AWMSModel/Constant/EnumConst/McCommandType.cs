@@ -53,7 +53,7 @@ namespace AMSModel.Constant.EnumConst
         CM_41,
         [DisplayAttribute(Name = "หยุดทำงาน Pallet ID. ไม่ตรงกับ Conveyor")]
         CM_42,      
-        [DisplayAttribute(Name = "หยุดทำงานมีการกด EM.SW. ด้านหน้า,)]
+        [DisplayAttribute(Name = "หยุดทำงานมีการกด EM.SW. ด้านหน้า,")]
         CM_50,
         [DisplayAttribute(Name = "หยุดทำงานมีการกด EM.SW. ด้านหลัง")]
         CM_51,
