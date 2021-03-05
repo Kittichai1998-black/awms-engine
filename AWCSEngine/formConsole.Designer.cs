@@ -33,11 +33,12 @@ namespace AWCSEngine
             this.lisDisplayEngine = new System.Windows.Forms.ListBox();
             this.wkDisplay = new System.ComponentModel.BackgroundWorker();
             this.lisDisplayCommand = new System.Windows.Forms.ListBox();
+            this.btnHotCmd = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtCommand
             // 
-            this.txtCommand.Location = new System.Drawing.Point(6, 832);
+            this.txtCommand.Location = new System.Drawing.Point(6, 557);
             this.txtCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCommand.Name = "txtCommand";
             this.txtCommand.Size = new System.Drawing.Size(1565, 31);
@@ -46,12 +47,14 @@ namespace AWCSEngine
             // 
             // lisDisplayEngine
             // 
+            this.lisDisplayEngine.BackColor = System.Drawing.SystemColors.InfoText;
+            this.lisDisplayEngine.ForeColor = System.Drawing.SystemColors.Window;
             this.lisDisplayEngine.FormattingEnabled = true;
             this.lisDisplayEngine.ItemHeight = 25;
             this.lisDisplayEngine.Location = new System.Drawing.Point(6, 0);
             this.lisDisplayEngine.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEngine.Name = "lisDisplayEngine";
-            this.lisDisplayEngine.Size = new System.Drawing.Size(1565, 579);
+            this.lisDisplayEngine.Size = new System.Drawing.Size(1565, 379);
             this.lisDisplayEngine.TabIndex = 1;
             // 
             // wkDisplay
@@ -61,19 +64,32 @@ namespace AWCSEngine
             // 
             // lisDisplayCommand
             // 
+            this.lisDisplayCommand.BackColor = System.Drawing.SystemColors.InfoText;
+            this.lisDisplayCommand.ForeColor = System.Drawing.SystemColors.Window;
             this.lisDisplayCommand.FormattingEnabled = true;
             this.lisDisplayCommand.ItemHeight = 25;
-            this.lisDisplayCommand.Location = new System.Drawing.Point(6, 575);
+            this.lisDisplayCommand.Location = new System.Drawing.Point(6, 379);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.Size = new System.Drawing.Size(1565, 254);
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1565, 179);
             this.lisDisplayCommand.TabIndex = 2;
+            // 
+            // btnHotCmd
+            // 
+            this.btnHotCmd.Location = new System.Drawing.Point(1459, 557);
+            this.btnHotCmd.Name = "btnHotCmd";
+            this.btnHotCmd.Size = new System.Drawing.Size(112, 34);
+            this.btnHotCmd.TabIndex = 3;
+            this.btnHotCmd.Text = "Hot Cmd";
+            this.btnHotCmd.UseVisualStyleBackColor = true;
+            this.btnHotCmd.Click += new System.EventHandler(this.btnHotCmd_Click);
             // 
             // formConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1574, 972);
+            this.ClientSize = new System.Drawing.Size(1574, 594);
+            this.Controls.Add(this.btnHotCmd);
             this.Controls.Add(this.lisDisplayCommand);
             this.Controls.Add(this.lisDisplayEngine);
             this.Controls.Add(this.txtCommand);
@@ -93,5 +109,6 @@ namespace AWCSEngine
         private System.Windows.Forms.ListBox lisDisplayEngine;
         private System.ComponentModel.BackgroundWorker wkDisplay;
         private System.Windows.Forms.ListBox lisDisplayCommand;
+        private System.Windows.Forms.Button btnHotCmd;
     }
 }

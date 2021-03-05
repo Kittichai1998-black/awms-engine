@@ -48,7 +48,7 @@ namespace AMWUtil.Common
                 }
                 num = num / 36;
             }
-            return res + (new String('0', space - res.Length > 0 ? space - res.Length : 0));
+            return (new String('0', space - res.Length > 0 ? space - res.Length : 0)) + res;
         }
 
         public static bool CompareFields<T>(this T model1,T model2)

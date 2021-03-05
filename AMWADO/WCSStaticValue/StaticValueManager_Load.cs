@@ -30,6 +30,10 @@ namespace ADO.WCSStaticValue
         {
             return this._McCommandRegistrys = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McCommandAction>("status", 1, buVO ?? new VOCriteria());
         }
+        public List<acs_Area> LoadArea(VOCriteria buVO = null)
+        {
+            return this._Areas = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_Area>("status", 1, buVO ?? new VOCriteria());
+        }
         public List<acs_Location> LoadLocation(VOCriteria buVO = null)
         {
             return this._Locations = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_Location>("status", 1, buVO ?? new VOCriteria());

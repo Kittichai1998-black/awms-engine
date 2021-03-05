@@ -11,6 +11,14 @@ namespace AWCSEngine.Util
     public static class LocationUtil
     {
         public static TreeNode<long> GetLocationRouteTree
+            (string souLocCode, string desAreaCode, List<string> desLocCodes)
+        {
+            long souLocID = StaticValueManager.GetInstant().GetLocation(souLocCode).ID.Value;
+            long? desAreaID = string.IsNullOrEmpty(desAreaCode) ? null : StaticValueManager.GetInstant().GetArea(desAreaCode).ID;
+            List<long> desLocIDs = desLocCodes == null ? null : StaticValueManager.GetInstant().GetLocations(desLocCodes).Select(x => x.ID.Value).ToList();
+            return GetLocationRouteTree(souLocID, desAreaID, desLocIDs);
+        }
+        public static TreeNode<long> GetLocationRouteTree
             (long souLocID, long? desAreaID, List<long> desLocIDs)
         {
             List<acs_Location> _desLocs = null;

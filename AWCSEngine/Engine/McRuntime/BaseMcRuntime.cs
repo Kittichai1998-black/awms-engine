@@ -33,9 +33,9 @@ namespace AWCSEngine.Engine.McRuntime
         public act_McObject McObj { get; private set; }
         //public act_BaseObject BaseObj { get; private set; }
 
-        protected acs_McCommand RunCmd { get; private set; }
-        protected List<acs_McCommandAction> RunCmdActions { get; private set; }
-        protected List<string> RunCmdParameters { get; private set; }
+        public acs_McCommand RunCmd { get; private set; }
+        public List<acs_McCommandAction> RunCmdActions { get; private set; }
+        public List<string> RunCmdParameters { get; private set; }
 
 
         //public McObjectStatus McEngineStatus { get; private set; }

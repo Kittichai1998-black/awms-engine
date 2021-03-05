@@ -38,6 +38,14 @@ namespace ADO.WCSStaticValue
         {
             return this.McCommandRegistrys.FindAll(x => x.McCommand_ID == cmdID);
         }
+        public acs_Area GetArea(long id)
+        {
+            return this.Areas.FirstOrDefault(x => x.ID == id);
+        }
+        public acs_Area GetArea(string code)
+        {
+            return this.Areas.FirstOrDefault(x => x.Code == code);
+        }
         public acs_Location GetLocation(long id)
         {
             return this.Locations.FirstOrDefault(x => x.ID == id);
@@ -45,6 +53,10 @@ namespace ADO.WCSStaticValue
         public acs_Location GetLocation(string code)
         {
             return this.Locations.FirstOrDefault(x => x.Code == code);
+        }
+        public List<acs_Location> GetLocations(List<string> codes)
+        {
+            return this.Locations.FindAll(x => codes.Contains(x.Code));
         }
         public acs_APIFileService GetAPIFile(long id)
         {
