@@ -5,7 +5,7 @@ namespace AMSModel.Entity
 {
     public class acs_Location : BaseEntitySTD
     {
-        public int Area_ID;
+        public long Area_ID;
         public string GroupName;
         public McLocationGroupType GroupType;
         public int McBuffer;

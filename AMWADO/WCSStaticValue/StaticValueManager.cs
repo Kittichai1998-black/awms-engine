@@ -23,6 +23,8 @@ namespace ADO.WCSStaticValue
         public List<acs_McCommandAction> McCommandRegistrys { get => this._McCommandRegistrys ?? this.LoadMcCommandRegistry(); }
         private List<acs_McMaster> _McMasters;
         public List<acs_McMaster> McMasters { get => this._McMasters ?? this.LoadMcMaster(); }
+        private List<acs_Warehouse> _Warehouses;
+        public List<acs_Warehouse> Warehouses { get => this._Warehouses ?? this.LoadWarehouse(); }
         private List<acs_Area> _Areas;
         public List<acs_Area> Areas { get => this._Areas ?? this.LoadArea(); }
         private List<acs_Location> _Locations;

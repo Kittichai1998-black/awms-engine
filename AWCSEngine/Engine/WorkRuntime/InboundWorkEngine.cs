@@ -95,7 +95,6 @@ namespace AWCSEngine.Engine.WorkRuntime
                 }
                 else if (baseObj != null && baseObj.EventStatus == BaseObjectEventStatus.IDLE)
                 {
-
                     var mcSRM_11 = McController.GetMcRuntime("SRM11");
                     mcSRM_11.PostCommand(McCommandType.CM_21,
                         new ListKeyValue<string, object>()
@@ -112,6 +111,8 @@ namespace AWCSEngine.Engine.WorkRuntime
                         );
                 }
             }
+     
+        
         }
 
         protected override void OnStop()

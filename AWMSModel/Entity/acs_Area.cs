@@ -5,7 +5,7 @@ namespace AMSModel.Entity
 {
     public class acs_Area : BaseEntitySTD
     {
-        public int Warehouse_ID;
+        public long Warehouse_ID;
         public AreaMasterGroupType GroupType;
     }
 }

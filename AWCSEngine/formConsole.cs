@@ -4,6 +4,7 @@ using AMSModel.Constant.EnumConst;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AWCSEngine.Controller;
+using AWCSEngine.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -135,11 +136,22 @@ namespace AWCSEngine
 
             }
         }
-
+        private void CommandCallTestCase(string caseNo)
+        {
+            switch (caseNo)
+            {
+               // case "1":CommandCallFunction($"/mcwork new {new Random().Next(0,9999999):0000000000} 002048002");
+                default:return;
+            }
+        }
         private void CommandCallFunction(string _comm) {
             string[] comm = _comm.Trim().Split(" ");
-            
-            if(comm[0].ToLower().Equals("/baseobj"))
+
+            if (comm[0].ToLower().Equals("/test"))
+            {
+                CommandCallTestCase(_comm);
+            }
+            else if(comm[0].ToLower().Equals("/baseobj"))
             {
                 if (comm[1].ToLower().Equals("new"))
                 {
@@ -179,18 +191,27 @@ namespace AWCSEngine
                     string desLocCode = comm[3];
                     var baseObj = BaseObjectADO.GetInstant().GetByCode(baseCode, null);
                     var desLoc = StaticValueManager.GetInstant().GetLocation(desLocCode);
+                    var curArea = StaticValueManager.GetInstant().GetArea(baseObj.Area_ID);
+                    var treeRouting = LocationUtil.GetLocationRouteTree(baseObj.Location_ID, desLoc.Area_ID, desLoc.ID);
                     DataADO.GetInstant().Insert<act_McWork>(new act_McWork()
                     {
-                        Status = EntityStatus.INACTIVE,
-                        WMS_WorkQueue_ID=-1,
-                        Area_ID = baseObj.Area_ID,
-                        Location_ID = baseObj.Location_ID,
+                        Priority = PriorityType.NORMAL,
+                        SeqGroup = 0,
+                        SeqItem = 0,
+                        BaseObject_ID = baseObj.ID.Value,
+                        WMS_WorkQueue_ID = null,
+                        Cur_Warehouse_ID = curArea.Warehouse_ID,
+                        Cur_Area_ID = baseObj.Area_ID,
+                        Cur_Location_ID = baseObj.Location_ID,
                         Sou_Area_ID = baseObj.Area_ID,
                         Sou_Location_ID = baseObj.Location_ID,
                         Des_Area_ID = desLoc.Area_ID,
                         Des_Location_ID = desLoc.ID.Value,
-                        BaseObject_ID = baseObj.ID.Value,
-                        TreeRoute = ""
+                        StartTime = DateTime.Now,
+                        ActualTime = DateTime.Now,
+                        EndTime = null,
+                        TreeRoute = treeRouting.Json(),
+                        Status = EntityStatus.ACTIVE
                     }, null);
 
                 }
