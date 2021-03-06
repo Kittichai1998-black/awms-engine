@@ -32,7 +32,11 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         private void OnRun_W08()
         {
-            var mcGate_RC8_2 = McController.GetMcRuntime("RC8-2");
+
+        }
+        private void OnRun_W08_del()
+        {
+            /*var mcGate_RC8_2 = McController.GetMcRuntime("RC8-2");
             if (mcGate_RC8_2.McObj.DV_Pre_Status == 4)
             {
                 var baseObj = BaseObjectADO.GetInstant().GetByMcObject(mcGate_RC8_2.ID, this.BuVO);
@@ -110,7 +114,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                             }
                         );
                 }
-            }
+            }*/
      
         
         }
