@@ -50,8 +50,8 @@ namespace AWCSEngine.Engine.CommonEngine
                 Sou_Location_ID = souLoc.ID.Value,
                 Des_Area_ID = desLoc.Area_ID,
                 Des_Location_ID = desLoc.ID.Value,
-                Area_ID = baseObj.Area_ID,
-                Location_ID = baseObj.Location_ID,
+                Cur_Area_ID = baseObj.Area_ID,
+                Cur_Location_ID = baseObj.Location_ID,
                 TreeRoute = treeRoute.Json(),
                 WMS_WorkQueue_ID = req.wqID,
             };

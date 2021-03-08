@@ -29,6 +29,10 @@ namespace AWCSEngine.Controller
             return this.McObjectList.Select(x => x.Code + " > " + x.MessageLog).ToArray();
         }
 
+        public BaseMcRuntime GetMcRuntimeByLocation(long curLocID)
+        {
+            return this.McObjectList.FirstOrDefault(x => x.McObj.Cur_Location_ID == curLocID);
+        }
         public BaseMcRuntime GetMcRuntimeByLocation(string curLocCode)
         {
             var curLoc = StaticValueManager.GetInstant().GetLocation(curLocCode);
@@ -38,9 +42,18 @@ namespace AWCSEngine.Controller
         {
             return this.McObjectList.FirstOrDefault(x => x.Code == mcCode);
         }
+        public BaseMcRuntime GetMcRuntimeByLocation(int locID)
+        {
+            return this.McObjectList.FirstOrDefault(x => x.Cur_Location.ID == locID);
+        }
         public BaseMcRuntime GetMcRuntime(long mcID)
         {
             return this.McObjectList.FirstOrDefault(x => x.ID == mcID);
+        }
+        public List<BaseMcRuntime> ListMcRuntimeByWarehouse(string whCode)
+        {
+            var wh = StaticValueManager.GetInstant().GetWarehouse(whCode);
+            return this.McObjectList.FindAll(x => x.Cur_Area.Warehouse_ID == wh.ID.Value);
         }
 
         public void PostCommand(string mcCode, McCommandType command, ListKeyValue<string,object> parameters, Action<BaseMcRuntime> callback_OnChange)

@@ -17,7 +17,7 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public abstract class BaseMcRuntime : BaseEngine<NullCriteria, NullCriteria>, IDisposable
     {
-        private act_McObject _McWork_Tmp { get; set; }
+        private act_McObject _McObj_TMP { get; set; }
         private Action<BaseMcRuntime> _Callback_OnChange { get; set; }
         private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
 
@@ -31,6 +31,7 @@ namespace AWCSEngine.Engine.McRuntime
 
         public acs_McMaster McMst { get; private set; }
         public act_McObject McObj { get; private set; }
+        public act_McWork McWork { get; private set; }
         //public act_BaseObject BaseObj { get; private set; }
 
         public acs_McCommand RunCmd { get; private set; }
@@ -42,6 +43,7 @@ namespace AWCSEngine.Engine.McRuntime
         public long ID { get => this.McMst.ID.Value; }
         public string Code { get => this.McMst.Code; }
         public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
+        public acs_Area Cur_Area { get => StaticValueManager.GetInstant().GetArea(this.Cur_Location.Area_ID); }
         public acs_Location Cur_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value); }
         public acs_Location Sou_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Sou_Location_ID.Value); }
         public acs_Location Des_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Des_Location_ID.Value); }
@@ -96,13 +98,13 @@ namespace AWCSEngine.Engine.McRuntime
             }
 
 
-            this.McObj = McWorkADO.GetInstant().GetByMstID(this.McMst.ID.Value, this.BuVO);
-            this._McWork_Tmp = this.McObj.Clone();
+            this.McObj = McObjectADO.GetInstant().GetByMstID(this.McMst.ID.Value, this.BuVO);
+            this._McObj_TMP = this.McObj.Clone();
             this.McObj.EventStatus = McObjectEventStatus.IDEL;
             string mcMstStr = this.McMst.Json();
             this.Logger.LogInfo("McMst > " + mcMstStr);
-            string mcWorkStr = this.McObj.Json();
-            this.Logger.LogInfo("McWork > " + mcWorkStr);
+            string mcObjStr = this.McObj.Json();
+            this.Logger.LogInfo("McObj > " + mcObjStr);
             this.Logger.LogInfo("McController.AddMC()");
             McRuntimeController.GetInstant().AddMC(this);
 
@@ -126,10 +128,14 @@ namespace AWCSEngine.Engine.McRuntime
 
                 this._Callback_OnChange = callback_OnChange;
 
-                return true;
             }
-            return false;
+            return true;
         }
+        public void SetMcWork(act_McWork mcWork)
+        {
+            this.McWork = mcWork;
+        }
+
         public act_BaseObject Push_BaseObj_byLoc(long fromLocID)
         {
             var baseObj = BaseObjectADO.GetInstant().GetByLocation(fromLocID, BuVO);
@@ -340,11 +346,11 @@ namespace AWCSEngine.Engine.McRuntime
         {
             try
             {
-                if (this.McObj.CompareFields(_McWork_Tmp))
+                if (this.McObj.CompareFields(_McObj_TMP))
                 {
                     DataADO.GetInstant().UpdateBy<act_McObject>(this.McObj, this.BuVO);
                     this.McObj = DataADO.GetInstant().SelectByID<act_McObject>(this.McObj.ID.Value, this.BuVO);
-                    this._McWork_Tmp = this.McObj.Clone();
+                    this._McObj_TMP = this.McObj.Clone();
                 }
             }
             catch (Exception ex)
@@ -372,8 +378,8 @@ namespace AWCSEngine.Engine.McRuntime
         {
             string mcMstStr = this.McMst.Json();
             this.Logger.LogInfo("McMst > " + mcMstStr);
-            string mcWorkStr = this.McObj.Json();
-            this.Logger.LogInfo("McWork > " + mcWorkStr);
+            string mcObjStr = this.McObj.Json();
+            this.Logger.LogInfo("McObj > " + mcObjStr);
             this._4_DBLog_OnRun();
             this.PlcADO.Close();
             this.Logger.LogInfo("PlcADO.Close()");

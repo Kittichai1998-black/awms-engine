@@ -46,6 +46,14 @@ namespace ADO.WCSStaticValue
         {
             return this.Areas.FirstOrDefault(x => x.Code == code);
         }
+        public acs_Warehouse GeWarehouse(long id)
+        {
+            return this.Warehouses.FirstOrDefault(x => x.ID == id);
+        }
+        public acs_Warehouse GetWarehouse(string code)
+        {
+            return this.Warehouses.FirstOrDefault(x => x.Code == code);
+        }
         public acs_Location GetLocation(long id)
         {
             return this.Locations.FirstOrDefault(x => x.ID == id);
