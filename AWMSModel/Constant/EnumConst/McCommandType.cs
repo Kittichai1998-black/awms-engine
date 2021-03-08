@@ -71,6 +71,8 @@ namespace AMSModel.Constant.EnumConst
         CM_57 = 57,
         [DisplayAttribute(Name = "SHU_เบิกพาเลทไปยังฝั่ง ด้านหลัง")]
         CM_58 = 58,
+        [DisplayAttribute(Name = "SHU_นับจำนวนพาเลทใน Row")]
+        CM_59 = 59,
         [DisplayAttribute(Name = "CONY_กำหนดเป็นโหมดเก็บสินค้า,SHU_ยืนยันยก Shuttle Pallet ออกจากชั้นวางสินค้า")]
         CM_60 = 60,
         [DisplayAttribute(Name = "CONY_กำหนดเป็นโหมดเบิกสินค้า")]
