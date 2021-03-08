@@ -26,6 +26,7 @@ namespace AWCSEngine.Controller
 
         public string[] ListMessageLog()
         {
+            if (this.McObjectList == null) return new string[] { };
             return this.McObjectList.Select(x => x.Code + " > " + x.MessageLog).ToArray();
         }
 
@@ -37,6 +38,10 @@ namespace AWCSEngine.Controller
         {
             var curLoc = StaticValueManager.GetInstant().GetLocation(curLocCode);
             return this.McObjectList.FirstOrDefault(x => x.McObj.Cur_Location_ID == curLoc.ID);
+        }
+        public List<BaseMcRuntime> GetMcRuntimeByArea(long areaID)
+        {
+            return this.McObjectList.Where(x => x.Cur_Area.ID == areaID).ToList();
         }
         public BaseMcRuntime GetMcRuntime(string mcCode)
         {

@@ -8,10 +8,9 @@ namespace ADO.WCSPLC
 {
     public class PlcTestADO : BasePlcADO<PlcTestADO>
     {
-        private Dictionary<string, object> datas;
+        private Dictionary<string, object> datas = new Dictionary<string, object>();
         private void IPlcADO()
         {
-            this.datas = new Dictionary<string, object>();
         }
 
 

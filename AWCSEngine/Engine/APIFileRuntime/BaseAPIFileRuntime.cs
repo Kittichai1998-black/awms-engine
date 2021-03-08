@@ -5,15 +5,13 @@ using System.Text;
 
 namespace AWCSEngine.Engine.APIFileRuntime
 {
-    public abstract class BaseAPIFileEngine<TReq, TRes> : BaseEngine<TReq, TRes>
-        where TRes : class, new()
+    public abstract class BaseAPIFileRuntime : BaseEngine<dynamic, dynamic>
     {
-
         protected override string BaseLogName()
         {
             return "APIFile";
         }
-        public BaseAPIFileEngine(string logref) : base(logref) { }
+        public BaseAPIFileRuntime(string logref) : base(logref) { }
 
 
     }

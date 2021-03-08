@@ -31,7 +31,8 @@ namespace AWCSEngine.Engine.McRuntime
 
         public acs_McMaster McMst { get; private set; }
         public act_McObject McObj { get; private set; }
-        public act_McWork McWork { get; private set; }
+        public act_McWork McWork4Work { get; private set; }
+        public act_McWork McWork4Receive { get; private set; }
         //public act_BaseObject BaseObj { get; private set; }
 
         public acs_McCommand RunCmd { get; private set; }
@@ -40,7 +41,7 @@ namespace AWCSEngine.Engine.McRuntime
 
 
         //public McObjectStatus McEngineStatus { get; private set; }
-        public long ID { get => this.McMst.ID.Value; }
+        public long ID { get => this.McObj.ID.Value; }
         public string Code { get => this.McMst.Code; }
         public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
         public acs_Area Cur_Area { get => StaticValueManager.GetInstant().GetArea(this.Cur_Location.Area_ID); }
@@ -97,7 +98,8 @@ namespace AWCSEngine.Engine.McRuntime
                 throw;
             }
 
-
+            this.McWork4Work = McWorkADO.GetInstant().GetByCurMcObject(this.McMst.ID.Value, this.BuVO);
+            this.McWork4Receive = McWorkADO.GetInstant().GetByDesMcObject(this.McMst.ID.Value, this.BuVO);
             this.McObj = McObjectADO.GetInstant().GetByMstID(this.McMst.ID.Value, this.BuVO);
             this._McObj_TMP = this.McObj.Clone();
             this.McObj.EventStatus = McObjectEventStatus.IDEL;
@@ -112,7 +114,10 @@ namespace AWCSEngine.Engine.McRuntime
             this.McObj.GetType().GetFields().ToList().ForEach(x => { if (x.Name.StartsWith("DV_")){ this.DeviceNames.Add(x.Name.Substring(3)); } });
         }
 
-
+        public bool PostCommand(McCommandType comm, Action<BaseMcRuntime> callback_OnChange)
+        {
+            return this.PostCommand(comm, new ListKeyValue<string,object>(), callback_OnChange);
+        }
         public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Action<BaseMcRuntime> callback_OnChange)
         {
             if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
@@ -131,10 +136,94 @@ namespace AWCSEngine.Engine.McRuntime
             }
             return true;
         }
-        public void SetMcWork(act_McWork mcWork)
+        public void McWork_WorkedToReceive_NextMC(long toMcID)
         {
-            this.McWork = mcWork;
+            var nextMc = McRuntimeController.GetInstant().GetMcRuntime(toMcID);
+            nextMc.McWork4Receive = this.McWork4Work;
+
+            this.McWork4Work.Des_McObject_ID = toMcID;
+            this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+            this.McWork4Work.ActualTime = DateTime.Now;
+
+            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
         }
+        public act_McWork McWork_ReceiveToWorking()
+        {
+            
+            var fromMc = McRuntimeController.GetInstant().GetMcRuntime(this.McWork4Receive.Cur_McObject_ID.Value);
+            if (this.McWork4Work == null && fromMc.McWork4Work.Des_McObject_ID != this.ID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_CANT_WORKACTION, "McWork_ReceiveToWorking");
+            this.McWork4Work = fromMc.McWork4Work;
+            fromMc.McWork4Work = null;
+            this.McWork4Receive = null;
+            this.McWork4Work.Cur_McObject_ID = this.ID;
+            this.McWork4Work.Des_McObject_ID = null;
+            this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
+            this.McWork4Work.ActualTime = DateTime.Now;
+            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
+            return this.McWork4Work;
+        }
+        public void McWork_WorkingToWorked()
+        {
+            if (this.McWork4Work == null || this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED)
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_CANT_WORKACTION, "McWork_WorkingToWorked");
+
+            this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+            this.McWork4Work.ActualTime = DateTime.Now;
+            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
+        }
+        public void McWork_WorkedToDone()
+        {
+            if (this.McWork4Work != null &&
+                this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED &&
+                this.McWork4Work.Cur_Location_ID == (this.McWork4Work.Des_Location_ID ?? this.McWork4Work.Cur_Location_ID) &&
+                this.McWork4Work.Cur_Area_ID == this.McWork4Work.Des_Area_ID)
+            {
+                this.McWork4Work.EventStatus = McWorkEventStatus.DONE_QUEUE;
+                this.McWork4Work.Status = EntityStatus.DONE;
+                this.McWork4Work.EndTime = DateTime.Now;
+                this.McWork4Work.ActualTime = DateTime.Now;
+                DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
+                this.McWork4Work = null;
+            }
+            else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_CANT_WORKACTION, "McWork_Done");
+            }
+        }
+        /*public void McWork_SetStandMc(long mcID)
+        {
+            this.McWork.Next_McObject_ID = mcID;
+            this.McWork.ActualTime = DateTime.Now;
+            this.McWork.EventStatus = McWorkEventStatus.ACTIVE_NEXT;
+            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork, this.BuVO);
+        }
+        public void McWork_SetNextMc(long mcID)
+        {
+            this.McWork.Next_McObject_ID = mcID;
+            this.McWork.ActualTime = DateTime.Now;
+            this.McWork.EventStatus = McWorkEventStatus.ACTIVE_NEXT;
+            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork, this.BuVO);
+        }
+        public void McWork_Next()
+        {
+            if (this.McWork.EventStatus != McWorkEventStatus.ACTIVE_NEXT)
+                throw new AMWException(this.Logger, AMWExceptionCode.V0_SET_STATUS_FAIL);
+            this.McWork.Cur_McObject_ID = this.McWork.Next_McObject_ID;
+            this.McWork.Next_McObject_ID = null;
+            this.McWork.EventStatus = McWorkEventStatus.ACTIVE_STAND;
+
+            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork, this.BuVO);
+        }
+        private bool McWork_Clear()
+        {
+            if(this.McWork.Cur_McObject_ID != null)
+            {
+                this.McWork.Cur_McObject_ID = null;
+                return true;
+            }
+            return false;
+        }*/
 
         public act_BaseObject Push_BaseObj_byLoc(long fromLocID)
         {
@@ -276,8 +365,11 @@ namespace AWCSEngine.Engine.McRuntime
                 foreach (var act in this.RunCmdActions.Where(x => x.Seq == seq))
                 {
                     var act_conditions = act.DKV_Condition.QryStrToKeyValues();
-                    if (act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value.Trim()))
+                    if (act_conditions.Count() == 0 || act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value.Trim()))
                     {
+                        this.McObj.CommandAction_ID = act.ID;
+                        this.McObj.CommandAction_Condition = act.DKV_Condition;
+                        this.McObj.CommandAction_Set = act.DKV_Set;
                         string _act_sets = act.DKV_Set;
                         for (int i = 0; i < this.RunCmdParameters.Count; i++)
                         {
@@ -346,11 +438,26 @@ namespace AWCSEngine.Engine.McRuntime
         {
             try
             {
-                if (this.McObj.CompareFields(_McObj_TMP))
+                if (false && !this.McObj.CompareFields(_McObj_TMP,"CreateBy","CreateTime","ModifyBy","ModifyTime"))
                 {
+                    var souLoc = this.StaticValue.GetLocation(this.McObj.DV_Pre_SouLoc.ToString("000000000"));
+                    this.McObj.Sou_Location_ID = souLoc == null ? null : souLoc.ID;
+                    var desLoc = this.StaticValue.GetLocation(this.McObj.DV_Pre_DesLoc.ToString("000000000"));
+                    this.McObj.Des_Location_ID = desLoc == null ? null : desLoc.ID;
+                    var curLoc = this.StaticValue.GetLocation(this.McObj.DV_Pre_CurLoc.ToString("000000000"));
+                    this.McObj.Cur_Location_ID = curLoc == null ? null : curLoc.ID;
+
                     DataADO.GetInstant().UpdateBy<act_McObject>(this.McObj, this.BuVO);
-                    this.McObj = DataADO.GetInstant().SelectByID<act_McObject>(this.McObj.ID.Value, this.BuVO);
+                    //this.McObj = DataADO.GetInstant().SelectByID<act_McObject>(this.McObj.ID.Value, this.BuVO);
                     this._McObj_TMP = this.McObj.Clone();
+                }
+                if(this.McWork4Work != null &&
+                    this.McObj.Cur_Location_ID != this.McWork4Work.Cur_Location_ID)
+                {
+                    this.McWork4Work.Cur_Location_ID = this.McObj.Cur_Location_ID.Value;
+                    this.McWork4Work.Cur_Warehouse_ID = this.McWork4Work.Cur_Warehouse_ID;
+                    this.McWork4Work.Cur_Area_ID = this.McWork4Work.Cur_Area_ID;
+                    DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
                 }
             }
             catch (Exception ex)

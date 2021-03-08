@@ -75,6 +75,10 @@ namespace AMWUtil.Exception
         V0_BASEBLOCK_LOCATION,
         [AMWExceptionCodeAttribute("V0122", DefaultMessage = "ไม่ตรงเงื่อนไขการรับเข้า")]
         V0_INBOUND_CONDITION_FAIL,
+        [AMWExceptionCodeAttribute("V0123", DefaultMessage = "ตั้งค่าสถานะไม่ถูกต้อง")]
+        V0_SET_STATUS_FAIL,
+        [AMWExceptionCodeAttribute("V0124", DefaultMessage = "การรรับงานต่อไม่ถูกต้อง ไม่สามารถทำคำสั่ง '{0}' ได้")]
+        V0_MC_CANT_WORKACTION,
 
 
 

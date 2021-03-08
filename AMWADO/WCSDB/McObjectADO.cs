@@ -15,7 +15,15 @@ namespace ADO.WCSDB
         {
             return DataADO.GetInstant().SelectBy<act_McObject>(
                 new ListKeyValue<string, object>().Add("McMaster_ID", mstID).Add("Status", EntityStatus.ACTIVE).Items.ToArray()
-                , BuVO).First();
+                , BuVO).FirstOrDefault();
+        }
+        public act_McObject GetByMstCode(string mstCode, VOCriteria BuVO)
+        {
+            var mcMst = WCSStaticValue.StaticValueManager.GetInstant().GetMcMaster(mstCode);
+            return DataADO.GetInstant().SelectBy<act_McObject>(
+                new ListKeyValue<string, object>().Add("McMaster_ID", mcMst.ID.Value)
+                .Add("Status", EntityStatus.ACTIVE).Items.ToArray()
+                , BuVO).FirstOrDefault();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace AMWUtil.Model
         {
             this.Childs.Add(value);
         }
-        public TreeNode<T> GetChild(string NodeID)
+        public TreeNode<T> GetChildByNodeID(string NodeID)
         {
             foreach (var c in this.Childs)
             {
@@ -39,13 +39,13 @@ namespace AMWUtil.Model
                 }
                 else
                 {
-                    var res = c.GetChild(NodeID);
+                    var res = c.GetChildByNodeID(NodeID);
                     if (res != null) return res;
                 }
             }
             return null;
         }
-        public List<TreeNode<T>> GetChild(T Value)
+        public List<TreeNode<T>> GetChildsByValue(T Value)
         {
             var res = new List<TreeNode<T>>();
             GetChild(Value, res);

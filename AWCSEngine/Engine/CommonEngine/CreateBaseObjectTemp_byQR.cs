@@ -7,6 +7,7 @@ using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWCSEngine.Engine.CommonEngine;
+using AWCSEngine.Engine.McRuntime;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,20 +27,23 @@ namespace AWCSEngine.Engine.CommonEngine
 
         protected override act_BaseObject ExecuteChild(CreateBaseObjectTemp_byQR.TReq req)
         {
-            var mcRun = Controller.McRuntimeController.GetInstant().GetMcRuntime(req.McObject_ID);
+            BaseMcRuntime mcRun = Controller.McRuntimeController.GetInstant().GetMcRuntime(req.McObject_ID);
             act_BaseObject baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByMcObject(req.McObject_ID, this.BuVO);
             if (baseObj != null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_BASE_DUPLICATE, mcRun.Code);
             string baseCode;
             do
             {
-                baseCode = (DataADO.GetInstant().NextNum("base_no", false, this.BuVO) % (10 ^ 10)).ToString();
-            } while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>("", this.BuVO) == null);
+                baseCode = (DataADO.GetInstant().NextNum("base_no", false, this.BuVO) % (Math.Pow( 10,10))).ToString();
+            } while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>(baseCode, this.BuVO) != null);
             
             baseObj = new act_BaseObject()
             {
                 ID = null,
                 Code = baseCode,
+                McObject_ID = mcRun.ID,
+                Location_ID = mcRun.Cur_Location.ID.Value,
+                Area_ID = mcRun.Cur_Location.Area_ID,
                 LabelData = req.LabelData,
                 EventStatus = BaseObjectEventStatus.TEMP,
                 Status = EntityStatus.ACTIVE
