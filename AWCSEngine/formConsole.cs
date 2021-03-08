@@ -84,9 +84,7 @@ namespace AWCSEngine
                             (McCommandType)int.Parse(comm[1]),
                             parameters,
                             (x)=> {
-                                SetText(x.Code + " > " + x.EventStatus + " > Cmd:" + 
-                                    (int)x.RunCmd.McCommandType + " | Codition:" + 
-                                    x.RunCmdActions.Select(y => y.Seq + "." + y.DKV_Condition).First());
+                                SetText(x.Code + " > " + x.EventStatus);
 
                                 void SetText(string txt) {
                                     if (this.IsHandleCreated)
