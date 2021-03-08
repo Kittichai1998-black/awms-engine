@@ -145,7 +145,7 @@ namespace AWCSEngine
                         inpVal0 = tv.SelectedNode.Text.Split(":")[1].Split(">>")[0].Trim();
                         inpVal1 = tv.SelectedNode.Text.Split(":")[1].Split(">>")[1].Trim();
                         inpVal2 = tv.SelectedNode.Text.Split(":")[1].Split(">>")[2].Trim();
-                        if (InputBox2("Update McCommandAction", "Seq", "DK_Condition", "DK_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
+                        if (InputBox2("Update McCommandAction", "Seq", "DKV_Condition", "DKV_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
                         {
                             inpID = tv.SelectedNode.Text.Split(":")[0].Split(".")[1].Trim().Get2<long>();
                             ADO.WCSDB.DataADO.GetInstant()
@@ -153,8 +153,8 @@ namespace AWCSEngine
                                 inpID,
                                 ListKeyValue<string, object>
                                     .New("Seq", inpVal0.Get2<int>())
-                                    .Add("DK_Condition", inpVal1)
-                                    .Add("DK_Set", inpVal2),
+                                    .Add("DKV_Condition", inpVal1)
+                                    .Add("DKV_Set", inpVal2),
                                 null);
                             tv.SelectedNode.Text = $"Act.{inpID} : {inpVal0} >> {inpVal1} >> {inpVal2}";
                             this.CmdActs = DataADO.GetInstant().ListByActive<acs_McCommandAction>(null);
@@ -186,15 +186,15 @@ namespace AWCSEngine
 
                     else if (tv.SelectedNode.Text.StartsWith("<<Add Action>>"))//ADD
                     {
-                        if (InputBox2("Insert McCommandAction", "Seq", "DK_Condition", "DK_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
+                        if (InputBox2("Insert McCommandAction", "Seq", "DKV_Condition", "DKV_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
                         {
                             long parentInpID = tv.SelectedNode.Parent.Text.Split(":")[0].Split(".")[1].Trim().Get2<long>();
                             inpID = ADO.WCSDB.DataADO.GetInstant()
-                                .Insert<acs_McCommand>(
+                                .Insert<acs_McCommandAction>(
                                 ListKeyValue<string, object>
                                     .New("Seq", inpVal0.Get2<int>())
-                                    .Add("DV_Condition", inpVal1)
-                                    .Add("DV_Set", inpVal2)
+                                    .Add("DKV_Condition", inpVal1)
+                                    .Add("DKV_Set", inpVal2)
                                     .Add("McCommand_ID", parentInpID)
                                     .Add("Status", EntityStatus.ACTIVE),
                                 null).Value;
@@ -202,7 +202,6 @@ namespace AWCSEngine
                             tv.SelectedNode.ImageIndex = 2;
                             tv.SelectedNode.SelectedImageIndex = 2;
                             var newNode = new TreeNode("<<Add Action>>", 3, 3);
-                            tv.SelectedNode.Parent.Nodes.Add(newNode);
                             tv.SelectedNode.Parent.Nodes.Add(newNode);
                             this.CmdActs = DataADO.GetInstant().ListByActive<acs_McCommandAction>(null);
                         }
@@ -257,7 +256,7 @@ namespace AWCSEngine
             }
             catch (Exception ex)
             {
-                MessageBox.Show("ERROR", ex.Message + "\n---------------------------\n" + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show( ex.Message + "\n---------------------------\n" + ex.StackTrace, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
