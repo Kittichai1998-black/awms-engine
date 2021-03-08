@@ -52,6 +52,10 @@ namespace AMSModel.Entity
         public string DV_Pre_PalletID;
         public int DV_Pre_Weigh;
         public int DV_Pre_Zone;
+        public string DV_Pre_RowLevel;
+        public string DV_Pre_PalletCount;
+        public string DV_Pre_ShtDi;
+ 
 
     }
 }
