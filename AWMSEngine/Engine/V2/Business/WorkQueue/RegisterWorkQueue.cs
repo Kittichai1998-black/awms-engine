@@ -15,6 +15,7 @@ using AMSModel.Constant.StringConst;
 using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Business.Received;
+using Newtonsoft.Json;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -40,6 +41,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public amt_DocumentItem docItem;
             public DocumentProcessTypeID processID;
             public long? parentDocID;
+        }
+        public class LocationList
+        {
+            public int bank;
+            public int level;
+            public int qty;
+            public int receive = 0;
         }
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
@@ -95,15 +103,44 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
 
                 var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
+              
                 docIDs.ForEach(x =>
                 {
+                   
                     var docPA = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(x, BuVO);
+                    //add options rev
+                    var location = AMWUtil.Common.ObjectUtil.QryStrGetValue(docPA.Options, OptionVOConst.OPT_LOCATION);
+                    if (location != null)
+                        {                 
+                            var loc_json = JsonConvert.DeserializeObject<LocationList>(location);
+                                loc_json.receive = loc_json.receive + 1;
+                            var loc_string = JsonConvert.SerializeObject(loc_json);
+                            var opt_loc_doc = AMWUtil.Common.ObjectUtil.QryStrSetValue(docPA.Options, OptionVOConst.OPT_LOCATION, loc_string.ToString());
+                    
+                            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docPA.ID.Value, this.BuVO,
+                                new KeyValuePair<string, object>[] {
+                                    new KeyValuePair<string, object>("Options", opt_loc_doc)
+                                });
+                        }
                     if (docPA.DocumentItems.Any(item => item.EventStatus == DocumentEventStatus.WORKING))
                     {
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKING, this.BuVO);
 
                         var getGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docPA.ParentDocument_ID.Value, this.BuVO);
+                        //add options rev
+                        if (location != null)
+                        {
+                            var loc_json = JsonConvert.DeserializeObject<LocationList>(location);
+                            loc_json.receive = loc_json.receive + 1;
+                            var loc_string = JsonConvert.SerializeObject(loc_json);
+                            var opt_loc_doc = AMWUtil.Common.ObjectUtil.QryStrSetValue(docPA.Options, OptionVOConst.OPT_LOCATION, loc_string.ToString());
 
+                            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(getGR.ID.Value, this.BuVO,
+                              new KeyValuePair<string, object>[] {
+                                new KeyValuePair<string, object>("Options", opt_loc_doc)
+                              });
+                        }
+                        
                         docPA.DocumentItems.ForEach(item => {
                             if (item.EventStatus == DocumentEventStatus.WORKING)
                             {
@@ -302,7 +339,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             throw new AMWException(Logger, AMWExceptionCode.V2001, "Document Item Not Found");
                         }
                         else
-                        {
+                        {  
+
                             docItemLists.ForEach(di =>
                             {
                                 docItems.Add(ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));

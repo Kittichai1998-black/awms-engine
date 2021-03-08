@@ -17,6 +17,8 @@ using AMSModel.Constant.StringConst;
 using AWMSEngine.Engine.V2.Business.Document;
 using GCLModel.Criteria;
 using AWMSEngine.Engine.V2.Business.Received;
+using Newtonsoft.Json;
+
 
 namespace ProjectGCL.Engine.Document
 {
@@ -39,6 +41,14 @@ namespace ProjectGCL.Engine.Document
             public DateTime Date_time;
         }
 
+        public class LocationList
+        {
+            public int bank;
+            public int level;
+            public int qty;
+            public int receive = 0;
+        }
+
         protected override TRes ExecuteEngine(TReq reqVO)
         {
 
@@ -46,7 +56,9 @@ namespace ProjectGCL.Engine.Document
 
             foreach (var line in reqVO.RECORD)
             {
+
                 amt_Document document = new amt_Document();
+                amt_Document documentChild = new amt_Document();
                 var qty_s = this.ValidateQty(this.Logger, line, this.BuVO);
                 var sku = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
                         new SQLConditionCriteria[] {
@@ -81,9 +93,9 @@ namespace ProjectGCL.Engine.Document
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
-                document = this.CreateDocGR(this.Logger, line, qty_s, warehouse,customer, sku, pack, this.BuVO);
-                this.CreateDocPA(this.Logger, line, qty_s, warehouse, customer, sku, pack, document, this.BuVO);
-
+                document = this.CreateDocGR(this.Logger, line, qty_s, warehouse, customer, sku, pack, this.BuVO);
+                documentChild = this.CreateDocPA(this.Logger, line, qty_s, warehouse, customer, sku, pack, document, this.BuVO);
+                this.GenerateLocation(this.Logger, line, documentChild, this.BuVO);
                 resRecord.Add(new Record
                 {
                     api_ref = line.LINE.api_ref,
@@ -125,17 +137,17 @@ namespace ProjectGCL.Engine.Document
         }
 
 
-        private amt_Document CreateDocGR(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, decimal qty_s, ams_Warehouse warehouse,ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, VOCriteria buVO)
+        private amt_Document CreateDocGR(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, decimal qty_s, ams_Warehouse warehouse, ams_Customer customer, ams_SKUMaster sku, ams_PackMaster pack, VOCriteria buVO)
         {
             amt_Document docResultGR = new amt_Document();
             List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
             var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
 
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_QTY_PER_PALLET, line.LINE.qty_per_pallet);
-                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
-                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY, line.LINE.qty);
-                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, line.LINE.start_pallet);
-                optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, line.LINE.end_pallet);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_CHECK_RECIEVE, line.LINE.Check_recieve);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY, line.LINE.qty);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, line.LINE.start_pallet);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, line.LINE.end_pallet);
 
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(line.LINE.status);
 
@@ -215,7 +227,7 @@ namespace ProjectGCL.Engine.Document
                 souBranchID = null,
                 souAreaMasterID = null,
                 desBranchID = null,
-                forCustomerCode = customer == null?null:StaticValue.Customers.First(x => x.Code == customer.Code).Code,
+                forCustomerCode = customer == null ? null : StaticValue.Customers.First(x => x.Code == customer.Code).Code,
                 documentProcessTypeID = DocumentProcessTypeID.FG_TRANSFER_WM,
                 lot = line.LINE.lot,
                 batch = null,
@@ -257,5 +269,133 @@ namespace ProjectGCL.Engine.Document
             return docResultPA;
 
         }
+
+        private void GenerateLocation(AMWLogger logger, AMWRequestCreateGRDocList.RECORD_LIST line, amt_Document documentChild, VOCriteria buVO)
+        {
+            List<LocationList> location_options = new List<LocationList>();
+            List<amv_CheckLocationSto> grouploc = new List<amv_CheckLocationSto>();
+            List<LocationList> location_optionsxx = new List<LocationList>();
+            var mxBank = 52;
+            var mxlevel = 3;
+            var mxpallet = 41;
+            var doc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                        new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("EventStatus","10,11", SQLOperatorType.IN),
+                            new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
+                        }, this.BuVO);
+
+
+            if (doc.Count > 0)
+            {
+
+                foreach (var d in doc)
+                {
+                    var location = AMWUtil.Common.ObjectUtil.QryStrGetValue(d.Options, OptionVOConst.OPT_LOCATION);
+                    if (!string.IsNullOrWhiteSpace(location))
+                    {
+                        //location_options.AddRange(JsonConvert.DeserializeObject<List<LocationList>>(location));
+                        var x = JsonConvert.DeserializeObject<LocationList>(location);
+                        location_optionsxx.Add(x);
+                        location_options.AddRange(location_optionsxx);
+                    }
+                }
+
+                if (location_options.Count() != 0)
+                {
+                    grouploc = location_options.GroupBy(x => new { x.bank, x.level }).Select(
+                       y => new amv_CheckLocationSto()
+                       {
+                           Bank = y.Key.bank,
+                           Lv = y.Key.level,
+                           BaseCode = y.ToList().Sum(z => z.qty),
+                           Lot = y.ToList().Count()
+
+                       }).ToList();
+                }
+            }
+
+
+            var location_in_sto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_CheckLocationSto>(
+                        new SQLConditionCriteria[] { }, this.BuVO);
+
+            grouploc.AddRange(location_in_sto);
+
+            grouploc.GroupBy(x => new { x.Bank, x.Lv }).Select(
+                y => new amv_CheckLocationSto()
+                {
+                    Bank = y.Key.Bank,
+                    Lv = y.Key.Lv,
+                    BaseCode = y.ToList().Sum(z => z.BaseCode),
+                    Lot = y.ToList().Count()
+
+                }).ToList();
+
+            var listLo = new List<LocationList>();
+
+            var allDocQty = line.LINE.List_Pallet.Count();
+
+            for (var i = 1; i <= mxBank; i++)
+            {
+                for (var j = 1; j <= mxlevel; j++)
+                {
+                    var findEmpty = grouploc.Find(x => x.Bank == i && x.Lv == j);
+                    if (findEmpty == null)
+                    {
+                        listLo.Add(new LocationList() { bank = i, level = j, qty = mxpallet, receive = 0 });
+                        allDocQty = mxpallet - allDocQty;
+
+                        if (allDocQty == 0)
+                            break;
+                    }
+                    else
+                    {
+                        var findEmptyV2 = grouploc.Find(x => x.Bank == i && x.Lv == j && x.BaseCode < mxpallet && x.Lot <= 2);
+                        if (findEmptyV2 != null)
+                        {
+                            listLo.Add(new LocationList() { bank = i, level = j, qty = (mxpallet - (int)findEmptyV2.BaseCode), receive = 0 });
+                            allDocQty = mxpallet - allDocQty;
+
+                            if (allDocQty == 0)
+                                break;
+                        }
+                    }
+
+                };
+                if (allDocQty == 0)
+                    break;
+            };
+            var _listLo = listLo.FindAll(x => x.receive != x.qty);
+            var loc = _listLo.OrderByDescending(x=>x.bank).ToArray().FirstOrDefault();
+            var xx = JsonConvert.SerializeObject(loc);
+            var opt_loc = AMWUtil.Common.ObjectUtil.QryStrSetValue(documentChild.Options, OptionVOConst.OPT_LOCATION, xx.ToString());
+            var listItemChilds = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Document_ID",documentChild.ID.Value, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS),
+                }, this.BuVO);
+
+
+            var listItemParent = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Document_ID",documentChild.ParentDocument_ID.Value, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS),
+                }, this.BuVO);
+
+
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(documentChild.ParentDocument_ID.Value, buVO,
+                new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_loc)
+                });
+
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(documentChild.ID.Value, buVO,
+                 new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_loc)
+                 });
+
+
+
+        }
+
     }
 }
