@@ -28,7 +28,7 @@ import IconButton from "@material-ui/core/IconButton";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import LabelT from '../../../../components/AmLabelMultiLanguage'
-import { apicall} from "../../../../components/function/CoreFunction";
+import { apicall } from "../../../../components/function/CoreFunction";
 
 const Axios = new apicall();
 
@@ -208,7 +208,7 @@ const styles = theme => ({
 
 
 
-const AreaMasterLocationQuerys = ()=> {
+const AreaMasterLocationQuerys = () => {
     return {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "AreaLocationMaster",
@@ -246,17 +246,17 @@ const MappingReceive_HH = (props) => {
     useEffect(() => {
         if (warehouseID != 0) {
             getareaLocQuery(warehouseID)
-    }
+        }
     }, [warehouseID])
 
 
     useEffect(() => {
         if (gateCode) {
-            getStepContent()           
+            getStepContent()
         }
     }, [gateCode])
 
- 
+
 
 
     const getareaLocQuery = (IDwarehouse) => {
@@ -295,8 +295,8 @@ const MappingReceive_HH = (props) => {
             if (valueInput.locationCode) { locationCode = gateCode; }
         }
         return [
-            { label: t("Select Gate"), value: locationCode,idrow : 1 },
-            { label: t('Scan Barcode Product'), value: null, idrow: 2},
+            { label: t("Select Gate"), value: locationCode, idrow: 1 },
+            { label: t('Scan Barcode Product'), value: null, idrow: 2 },
             { label: t('Confirm Receive Pallet'), value: null, idrow: 3 },
         ];
     };
@@ -330,12 +330,12 @@ const MappingReceive_HH = (props) => {
     };
 
     const getStepContent = (step, row) => {
-   
+
         switch (step) {
             case 0:
                 var valueGate;
                 if (row.idrow && row.idrow === 1) {
-                      valueGate = row.value
+                    valueGate = row.value
                 }
 
 
@@ -346,7 +346,7 @@ const MappingReceive_HH = (props) => {
                         placeholder={'Select Gate'}
                         autoFocus={true}
                         style={{ width: "100%" }}
-                        defaultValue={valueGate ?  valueGate :'' }
+                        defaultValue={valueGate ? valueGate : ''}
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, "locationCode")}
                         onKeyPress={(value, obj, element, event) => {
                             if (event.key === "Enter") {
@@ -363,7 +363,7 @@ const MappingReceive_HH = (props) => {
                     >
                         <SearchIcon
                             fontSize="small"
-                         onClick={() => { OpenFindGate() }}
+                            onClick={() => { OpenFindGate() }}
                         />
                     </IconButton>
                 </div>
@@ -375,20 +375,20 @@ const MappingReceive_HH = (props) => {
                         <labelHead>Document No. : </labelHead>
                         <labelText>{dataDoc.docCode}</labelText>
                     </FormInline>
-                    <FormInline>
-                        <labelHead>Gade :</labelHead>
-                        <labelText>{dataDoc.gade}</labelText>
-                    </FormInline>
-                    <FormInline>
-                        <labelHead>Lot : </labelHead>
-                        <labelText>{dataDoc.lot}</labelText>
-                    </FormInline>
-                    <FormInline>
-                        <labelHead>Start Pallet : </labelHead>
-                        <labelText>{dataDoc.start_pallet}</labelText>
-                    </FormInline>
-                    <FormInline>
-                        <labelHead>End Pallet : </labelHead>
+                        <FormInline>
+                            <labelHead>Gade :</labelHead>
+                            <labelText>{dataDoc.gade}</labelText>
+                        </FormInline>
+                        <FormInline>
+                            <labelHead>Lot : </labelHead>
+                            <labelText>{dataDoc.lot}</labelText>
+                        </FormInline>
+                        <FormInline>
+                            <labelHead>Start Pallet : </labelHead>
+                            <labelText>{dataDoc.start_pallet}</labelText>
+                        </FormInline>
+                        <FormInline>
+                            <labelHead>End Pallet : </labelHead>
                             <labelText>{dataDoc.end_pallet}</labelText>
                         </FormInline></div> : null}
                 </div></>;
@@ -399,15 +399,15 @@ const MappingReceive_HH = (props) => {
     }
 
     const OpenFindGate = () => {
-       setdialogGate(true)
+        setdialogGate(true)
 
     }
 
- const RenderAddBarCode = React.memo(({ data }) => {
+    const RenderAddBarCode = React.memo(({ data }) => {
         return <div>
             {data.map((x, i) => {
                 return (
-                  
+
                     <div style={{ display: "flex" }}>
                         <AmInput
                             id={"barcode" + i.toString()}
@@ -428,7 +428,7 @@ const MappingReceive_HH = (props) => {
                                 />
                             </IconButton>
                         }
-                        {data.length - 1 === i && i < 1 ? 
+                        {data.length - 1 === i && i < 1 ?
                             <IconButton size="small" >
                                 <AddCircleIcon
                                     fontSize="small"
@@ -453,19 +453,19 @@ const MappingReceive_HH = (props) => {
             }
         }
         if (index === 1) {
-            if(inputList.length > 0){
+            if (inputList.length > 0) {
                 // const listBarcode = inputList.find(obj => { return obj.barcode !== ""}).barcode;
                 var listBarcode = []
-                inputList.map((x,i)=>{
-                    if((x.barcode !== undefined || x.barcode !== null) && x.barcode.length > 0){
+                inputList.map((x, i) => {
+                    if ((x.barcode !== undefined || x.barcode !== null) && x.barcode.length > 0) {
                         listBarcode.push(x.barcode);
                     }
                 });
-                 
-                if(listBarcode.length > 0){
+
+                if (listBarcode.length > 0) {
                     CheckBarcodeMappingDocument(listBarcode);
-                }else{
-                     alertDialogRenderer("warning", t("Please Scan Barcode Product."))
+                } else {
+                    alertDialogRenderer("warning", t("Please Scan Barcode Product."))
                 }
             }
         }
@@ -482,7 +482,7 @@ const MappingReceive_HH = (props) => {
                 ele.value = gateCode;
 
         }
-       
+
 
     }
 
@@ -512,7 +512,7 @@ const MappingReceive_HH = (props) => {
                 "qrCode1": listBarcode[0] ? listBarcode[0] : "null",
                 "qrCode2": listBarcode[1] ? listBarcode[1] : "null"
             }
- 
+
         })
         qrCode.push(qrCodes)
         barCode['qrCodes'] = qrCode
@@ -526,7 +526,7 @@ const MappingReceive_HH = (props) => {
                 setOpenAlert(true);
                 setdataDoc();
             }
-        });   
+        });
 
     }
 
@@ -535,29 +535,35 @@ const MappingReceive_HH = (props) => {
         alertDialogRenderer("success", t("Sucess"))
         let barcode_pstos = [];
         let bars = barCodeDoc['qrCodes'][0]
-        if (bars.qrCode1 && bars.qrCode2) {
+        console.log(bars)
+        console.log(barCodeDoc)
+        if (bars.qrCode1 !== "null" && bars.qrCode2 !== "null") {
             barcode_pstos.push(bars.qrCode1)
             barcode_pstos.push(bars.qrCode2)
-        } else if (bars.qrCode){
+        } else if (bars.qrCode !== "null") {
             barcode_pstos.push(bars.qrCode1)
         }
 
         let datas = {}
         datas = {
             //"warehouseCode" : warehouseCode,
-            "GateCode" : gateCode,
-            "QR": barcode_pstos 
+            "GateCode": gateCode,
+            "QR": barcode_pstos,
+            "DocID": dataDoc !== undefined ? dataDoc.docId : null
         }
-
-        Axios.post(window.apipath + '/v2/checkregist_wc', barCode).then((res) => {
+        console.log(barcode_pstos)
+        console.log(dataDoc)
+        console.log(datas)
+        Axios.post(window.apipath + '/v2/write_file_post_wcs', datas).then((res) => {
             if (res.data._result.status === 1) {
                 //setdataDoc(res.data);
+                setSettingAlert({ type: "success", content: "Success", state: true })
             } else {
-                setSettingAlert({ type: 'warning', message: res.data._result.message });
+                setSettingAlert({ type: "error", content: res.data._result.message, state: true })
                 //setOpenAlert(true);
                 //setdataDoc();
             }
-        }); 
+        });
 
 
     }
@@ -583,20 +589,20 @@ const MappingReceive_HH = (props) => {
                         <InputDiv>
                             <AmDropdown
                                 //required={required}
-                                id={'WarehouseID'}                            
+                                id={'WarehouseID'}
                                 placeholder={"Select"}
-                                fieldDataKey={'ID'}//¿ÔÅì´´Column ·ÕèµÃ§¡Ñºtable ã¹db 
-                                fieldLabel={["Code"]} 
-                                labelPattern=" : " 
-                                width={ 200} 
-                                ddlMinWidth={ 200} //¡ÓË¹´¤ÇÒÁ¡ÇéÒ§¢Í§¡ÅèÍ§ dropdown
-                                // valueData={valueText[idddl]} //¤èÒ value ·ÕèàÅ×Í¡
+                                fieldDataKey={'ID'}//ï¿½ï¿½ï¿½ì´´Column ï¿½ï¿½ï¿½Ã§ï¿½Ñºtable ï¿½db 
+                                fieldLabel={["Code"]}
+                                labelPattern=" : "
+                                width={200}
+                                ddlMinWidth={200} //ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò§ï¿½Í§ï¿½ï¿½ï¿½Í§ dropdown
+                                // valueData={valueText[idddl]} //ï¿½ï¿½ï¿½ value ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¡
                                 queryApi={WarehouseMasterQuery}
                                 // data={dataUnit}
                                 returnDefaultValue={true}
                                 defaultValue={1}
                                 onChange={(value, dataObject, fieldDataKey) => onChangeEditor(value, dataObject, fieldDataKey)}
-                                ddlType={"search"} //ÃÙ»áºº Dropdown 
+                                ddlType={"search"} //ï¿½Ù»áºº Dropdown 
                             />
                         </InputDiv>
                     </FormInline>
@@ -607,18 +613,18 @@ const MappingReceive_HH = (props) => {
                                 //required={required}
                                 id={'AreaLocCode'}
                                 placeholder={"Select"}
-                                fieldDataKey={'Code'}//¿ÔÅì´´Column ·ÕèµÃ§¡Ñºtable ã¹db 
+                                fieldDataKey={'Code'}//ï¿½ï¿½ï¿½ì´´Column ï¿½ï¿½ï¿½Ã§ï¿½Ñºtable ï¿½db 
                                 fieldLabel={["Code"]}
                                 labelPattern=" : "
                                 width={200}
-                                ddlMinWidth={200} //¡ÓË¹´¤ÇÒÁ¡ÇéÒ§¢Í§¡ÅèÍ§ dropdown
-                                // valueData={valueText[idddl]} //¤èÒ value ·ÕèàÅ×Í¡
+                                ddlMinWidth={200} //ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò§ï¿½Í§ï¿½ï¿½ï¿½Í§ dropdown
+                                // valueData={valueText[idddl]} //ï¿½ï¿½ï¿½ value ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¡
                                 queryApi={areaMasterLoc}
                                 // data={dataUnit}
                                 //returnDefaultValue={true}
                                 //defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                                 onChange={(value, dataObject, fieldDataKey) => onChangeEditor(value, dataObject, fieldDataKey)}
-                                ddlType={"search"} //ÃÙ»áºº Dropdown 
+                                ddlType={"search"} //ï¿½Ù»áºº Dropdown 
                             />
                         </InputDiv>
                     </FormInline>
@@ -632,22 +638,22 @@ const MappingReceive_HH = (props) => {
             if (fieldDataKey === 'WarehouseID') {
                 setwarehouseID(value)
                 setwarehouseCode(dataObject.Code)
-            } else if (fieldDataKey === 'AreaLocCode') {              
+            } else if (fieldDataKey === 'AreaLocCode') {
                 setgateCode(value)
                 setgateID(dataObject.ID)
             }
         }
-    
-   }
+
+    }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
-        if (status) {           
+        if (status) {
             setdialogGate(false)
             let ele = document.getElementById("locationCode");
             if (ele)
                 ele.value = gateCode;
 
-               valueInput['locationCode'] = gateCode;
+            valueInput['locationCode'] = gateCode;
 
         } else {
             valueInput["locationCode"] = ''
@@ -666,7 +672,7 @@ const MappingReceive_HH = (props) => {
             return null;
         }
     }
- 
+
 
     function FindGateDialog(open, data, onConfirmSelect, onClose) {
         if (open && data) {
@@ -675,7 +681,7 @@ const MappingReceive_HH = (props) => {
         }
     }
     const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
-   
+
 
 
     return (
@@ -698,7 +704,7 @@ const MappingReceive_HH = (props) => {
                     className={classes.stepperContainer}>
 
                     {steps.map((row, index) => (
-                        
+
                         <Step key={row.label}>
                             <StepLabel>
                                 <Typography variant="h6">{t(row.label)}{row.value ? " : " : ""}
@@ -706,7 +712,7 @@ const MappingReceive_HH = (props) => {
                                 </Typography>
                             </StepLabel>
                             <StepContent>
-                                {getStepContent(index,row)}
+                                {getStepContent(index, row)}
                                 <div className={classes.actionsContainer}>
                                     <div>
                                         <AmButton

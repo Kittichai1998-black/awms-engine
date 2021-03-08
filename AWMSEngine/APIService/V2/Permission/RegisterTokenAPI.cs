@@ -20,7 +20,7 @@ namespace AWMSEngine.APIService.V2.Permission
 
         protected override dynamic ExecuteEngineManual()
         {
-            new RegisterTokenRequestValidate().Execute(this.Logger, this.BuVO, null);
+            //new RegisterTokenRequestValidate().Execute(this.Logger, this.BuVO, null);
 
             var res1 = new RegisterToken().Execute(this.Logger, this.BuVO,
                 new RegisterToken.TReqModel()

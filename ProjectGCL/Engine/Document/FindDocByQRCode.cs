@@ -107,10 +107,12 @@ namespace ProjectGCL.Engine.Document
                     {
                         var docItembygade = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
                          new SQLConditionCriteria("ref1",string.Join(',',qrModel1.gade), SQLOperatorType.IN),
+                         new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                       }, this.BuVO);
 
                         var docItembylot = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("lot",string.Join(',',qrModel1.lot), SQLOperatorType.IN),
+                        new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                       }, this.BuVO);
 
                         docItembygade.ForEach(docI =>
@@ -170,10 +172,12 @@ namespace ProjectGCL.Engine.Document
 
                     var docItembygade = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
                          new SQLConditionCriteria("ref1",string.Join(',',qrModel1.gade), SQLOperatorType.IN),
+                         new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                       }, this.BuVO);
 
                     var docItembylot = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("lot",string.Join(',',qrModel1.lot), SQLOperatorType.IN),
+                        new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                      }, this.BuVO);
 
 
@@ -192,11 +196,10 @@ namespace ProjectGCL.Engine.Document
 
                             if (docI.Options != null && docTypeIDs == 1011)
                             {
-
-                                var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(doc.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                var startPallet = Int32.Parse(docoption.startPallet);
-                                var endPallet = Int32.Parse(docoption.endPallet);
-                                var noPallet = Int32.Parse(qrModel1.pallet);
+                                //var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(doc.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
+                                //var startPallet = Int32.Parse(docoption.startPallet);
+                                //var endPallet = Int32.Parse(docoption.endPallet);
+                                //var noPallet = Int32.Parse(qrModel1.pallet);
 
                                 var datasdocumentPA = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
                                 new SQLConditionCriteria("ParentDocument_ID",string.Join(',',docI.Document_ID), SQLOperatorType.IN),
@@ -205,18 +208,18 @@ namespace ProjectGCL.Engine.Document
 
                                 datasdocumentPA.ForEach(pa =>
                                 {
-                                    if (noPallet < endPallet)
-                                    {
-                                        res.start_pallet = docoption.startPallet;
-                                        res.end_pallet = docoption.endPallet;
+
+                                        //res.start_pallet = docoption.startPallet;
+                                        //res.end_pallet = docoption.endPallet;
+                                        //res.docId = doc.ID;
+                                        //res.putawayCode = pa.Code;
+                                        //res.putawayID = pa.ID.Value;
+                                        res.start_pallet = null;
+                                        res.end_pallet = null;
                                         res.docId = doc.ID;
                                         res.putawayCode = pa.Code;
                                         res.putawayID = pa.ID.Value;
-                                    }
-                                    else
-                                    {
-                                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
-                                    }
+                                   
                                 });
                              
                             }
@@ -227,7 +230,7 @@ namespace ProjectGCL.Engine.Document
                 }
             }
 
-            if (res.docId != 0)
+            if (res.docId != null)
             {
 
                 var datadocument = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
@@ -296,6 +299,10 @@ namespace ProjectGCL.Engine.Document
 
                 });
 
+            }
+            else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document not Found");
             }
 
 
