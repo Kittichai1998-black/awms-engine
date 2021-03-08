@@ -216,5 +216,14 @@ namespace AWCSEngine
             }
         
         }
+
+        private void menuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if(e.ClickedItem.Text == "Config Command")
+            {
+                formConfigCommand fm = new formConfigCommand();
+                fm.Show();
+            }
+        }
     }
 }

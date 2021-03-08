@@ -24,6 +24,10 @@ namespace ADO.WCSStaticValue
         {
             return this.McMasters.FirstOrDefault(x => x.Code == code);
         }
+        public acs_McCommand GetMcCommand(long mcComID)
+        {
+            return this.McCommands.FindAll(x => x.ID == mcComID).FirstOrDefault();
+        }
         public acs_McCommand GetMcCommand(long mcMstID, McCommandType cmdType)
         {
             var mccm = this.McCommandMcMasters.FindAll(x => x.McMaster_ID == mcMstID);
@@ -74,7 +78,7 @@ namespace ADO.WCSStaticValue
         {
             return this.APIFiles.FirstOrDefault(x => x.Code == code);
         }
-        public acs_WorkService GetBotService(long id)
+        public acs_WorkService GetWorkService(long id)
         {
             return this.WorkServices.FirstOrDefault(x => x.ID == id);
         }

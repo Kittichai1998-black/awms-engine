@@ -104,5 +104,8 @@ namespace AMSModel.Entity
 
         public string DK_Pre_Weigh;
         public int DW_Pre_Weigh;
+
+        public string DK_Pre_Zone;
+        public string DW_Pre_Zone;
     }
 }

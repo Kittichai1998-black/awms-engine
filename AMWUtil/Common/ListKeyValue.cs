@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AMWUtil.Common
@@ -19,6 +20,12 @@ namespace AMWUtil.Common
         public KeyValuePair<TKey, TVal>[] ToArray()
         {
             return this.Items.ToArray();
+        }
+        public string ToQryStr()
+        {
+            var vals = this.Items.Select(x => new KeyValuePair<string, string>(
+                     x.Key.Get2<string>(), x.Value.Get2<string>())).ToArray();
+            return ObjectUtil.ListKeyToQryStr(vals);
         }
         public ListKeyValue(TKey key, TVal val) : this()
         {

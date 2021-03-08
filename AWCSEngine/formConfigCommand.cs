@@ -153,8 +153,8 @@ namespace AWCSEngine
                                 inpID,
                                 ListKeyValue<string, object>
                                     .New("Seq", inpVal0.Get2<int>())
-                                    .Add("DK_Condition", inpVal1)
-                                    .Add("DK_Set", inpVal2),
+                                    .Add("DKV_Condition", inpVal1)
+                                    .Add("DKV_Set", inpVal2),
                                 null);
                             tv.SelectedNode.Text = $"Act.{inpID} : {inpVal0} >> {inpVal1} >> {inpVal2}";
                             this.CmdActs = DataADO.GetInstant().ListByActive<acs_McCommandAction>(null);
@@ -190,11 +190,11 @@ namespace AWCSEngine
                         {
                             long parentInpID = tv.SelectedNode.Parent.Text.Split(":")[0].Split(".")[1].Trim().Get2<long>();
                             inpID = ADO.WCSDB.DataADO.GetInstant()
-                                .Insert<acs_McCommand>(
+                                .Insert<acs_McCommandAction>(
                                 ListKeyValue<string, object>
                                     .New("Seq", inpVal0.Get2<int>())
-                                    .Add("DV_Condition", inpVal1)
-                                    .Add("DV_Set", inpVal2)
+                                    .Add("DKV_Condition", inpVal1)
+                                    .Add("DKV_Set", inpVal2)
                                     .Add("McCommand_ID", parentInpID)
                                     .Add("Status", EntityStatus.ACTIVE),
                                 null).Value;
@@ -202,7 +202,6 @@ namespace AWCSEngine
                             tv.SelectedNode.ImageIndex = 2;
                             tv.SelectedNode.SelectedImageIndex = 2;
                             var newNode = new TreeNode("<<Add Action>>", 3, 3);
-                            tv.SelectedNode.Parent.Nodes.Add(newNode);
                             tv.SelectedNode.Parent.Nodes.Add(newNode);
                             this.CmdActs = DataADO.GetInstant().ListByActive<acs_McCommandAction>(null);
                         }
@@ -257,7 +256,7 @@ namespace AWCSEngine
             }
             catch (Exception ex)
             {
-                MessageBox.Show("ERROR", ex.Message + "\n---------------------------\n" + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show( ex.Message + "\n---------------------------\n" + ex.StackTrace, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -333,23 +332,23 @@ namespace AWCSEngine
             label0.Location = new Point(5, 5);
             label0.AutoSize = true;
             textBox0.Location = new Point(5, 35);
-            textBox0.Width = 880;
+            textBox0.Width = 1180;
             label1.Location = new Point(5, 65);
             label1.AutoSize = true;
             textBox1.Location = new Point(5, 95);
-            textBox1.Width = 880;
+            textBox1.Width = 1180;
             label2.Location = new Point(5, 125);
             label2.AutoSize = true;
             textBox2.Location = new Point(5, 155);
-            textBox2.Width = 880;
+            textBox2.Width = 1180;
             buttonOk.Location = new Point(15, 195);
             buttonOk.AutoSize = true;
             buttonCancel.Location = new Point(100, 195);
             buttonCancel.AutoSize = true;
 
-            form.ClientSize = new Size(950, 247);
+            form.ClientSize = new Size(1250, 247);
             form.Controls.AddRange(new Control[] {label0,textBox0, label1, textBox1,label2, textBox2, buttonOk, buttonCancel });
-            form.ClientSize = new Size(Math.Max(700, label1.Right + 10), form.ClientSize.Height);
+            form.ClientSize = new Size(Math.Max(1000, label1.Right + 10), form.ClientSize.Height);
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             form.StartPosition = FormStartPosition.CenterScreen;
             form.MinimizeBox = false;
