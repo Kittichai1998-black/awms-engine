@@ -1,5 +1,5 @@
-﻿database.mssql.connection.wms = Server=10.56.13.76;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=AMS_GCL;Max Pool Size=400;Connect Timeout=600;
-database.mssql.connection.wcs = Server=10.56.13.76;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=ACS_ENGINE;Max Pool Size=400;Connect Timeout=600;
+﻿database.mssql.connection.wms = Server=10.56.2.76;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=AMS_GCL;Max Pool Size=400;Connect Timeout=600;
+database.mssql.connection.wcs = Server=10.56.2.76;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=ACS_ENGINE;Max Pool Size=400;Connect Timeout=600;
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {LogName}.{Date}.log

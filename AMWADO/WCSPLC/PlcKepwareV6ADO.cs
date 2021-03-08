@@ -41,22 +41,27 @@ namespace ADO.WCSPLC
             OPC_ConnGroups.OPCItems.DefaultIsActive = true;
 
 
-            var mst = ADO.WCSDB.DataADO.GetInstant()
-                .SelectBy<acs_McMaster>("PlcDeviceName", this.PlcDeviceName, null)
-                .First();
+            var mstList = ADO.WCSDB.DataADO.GetInstant()
+                .SelectBy<acs_McMaster>(
+                ListKeyValue<string,object>
+                    .New("PlcDeviceName", this.PlcDeviceName)
+                    .Add("Status",EntityStatus.ACTIVE), null).ToList();
 
             var _OPCItemIDs = new List<string>(); 
             var fs = typeof(acs_McMaster).GetFields();
-            foreach (var f in fs)
+            foreach(var mst in mstList)
             {
-                if (f.Name.StartsWith("DK_"))
+                foreach (var f in fs)
                 {
-                    if (f.GetValue(mst) != null &&
-                        !string.IsNullOrEmpty(f.GetValue(mst).ToString()))
+                    if (f.Name.StartsWith("DK_"))
                     {
-                        string name = this.PlcDeviceName + "." + f.GetValue(mst);
-                        //name = name.ToUpper();
-                        _OPCItemIDs.Add(name);
+                        if (f.GetValue(mst) != null &&
+                            !string.IsNullOrEmpty(f.GetValue(mst).ToString()))
+                        {
+                            string name = this.PlcDeviceName + "." + f.GetValue(mst);
+                            //name = name.ToUpper();
+                            _OPCItemIDs.Add(name);
+                        }
                     }
                 }
             }
@@ -80,7 +85,13 @@ namespace ADO.WCSPLC
                 this.OPC_ClientHandles.SetValue(index+1, index + 1);
             }
 
-            OPC_ConnGroups.OPCItems.AddItems(OPC_ItemIDs.Length-1, ref OPC_ItemIDs, ref OPC_ClientHandles, out OPC_ServerHandles, out OPC_ItemServerErrors, OPC_RequestedDataTypes, OPC_AccessPaths);
+            OPC_ConnGroups.OPCItems.AddItems(OPC_ItemIDs.Length-1, 
+                ref OPC_ItemIDs,
+                ref OPC_ClientHandles, 
+                out OPC_ServerHandles, 
+                out OPC_ItemServerErrors,
+                OPC_RequestedDataTypes,
+                OPC_AccessPaths);
 
         }
         private void ConnGroups_DataChange(int TransactionID, int NumItems, ref Array ClientHandles, ref Array ItemValues, ref Array Qualities, ref Array TimeStamps)
@@ -108,22 +119,26 @@ namespace ADO.WCSPLC
                 throw;
             };
         }
-        
 
+        public object _lock_set = new object();
         public override void SetDevice<T>(string key, T val)
         {
-            string key2 = this.PlcDeviceName + "." + key;
-            if (!this.OPC_ItemIndexs.ContainsKey(key2)) return;
-            int deviceIndex = this.OPC_ItemIndexs[key2];
-            Array _OPC_WriteItems = Array.CreateInstance(typeof(object), this.OPC_WriteItems.Length);
-            _OPC_WriteItems.SetValue(val, deviceIndex);
-            if(key.EndsWith("CCONN_WRITE"))
-                this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length-1, ref this.OPC_ServerHandles, ref _OPC_WriteItems, out this.OPC_ItemServerErrors);
-            else 
-                this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length - 1, ref this.OPC_ServerHandles, ref _OPC_WriteItems, out this.OPC_ItemServerErrors);
+            lock (_lock_set)
+            {
 
+                string key2 = this.PlcDeviceName + "." + key;
+                if (!this.OPC_ItemIndexs.ContainsKey(key2)) return;
+                int deviceIndex = this.OPC_ItemIndexs[key2];
+                Array _OPC_WriteItems = Array.CreateInstance(typeof(object), this.OPC_WriteItems.Length);
+                _OPC_WriteItems.SetValue(val, deviceIndex);
+                if (key.EndsWith("CCONN_WRITE"))
+                    this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length - 1, ref this.OPC_ServerHandles, ref _OPC_WriteItems, out this.OPC_ItemServerErrors);
+                else
+                    this.OPC_ConnGroups.SyncWrite(this.OPC_ItemIDs.Length - 1, ref this.OPC_ServerHandles, ref _OPC_WriteItems, out this.OPC_ItemServerErrors);
+
+            }
         }
-     
+
         public override void Close()
         {
             this.OPC_ConnOPCServer.Disconnect();

@@ -27,12 +27,74 @@ namespace AWCSEngine.Engine.WorkRuntime
         protected override void OnRun()
         {
 
-            this.OnRun_W08();
+            this.OnRun_W08_Test();
         }
 
-        private void OnRun_W08()
+        private void OnRun_W08_Test()
         {
-
+            return;
+            var mcRC8_2 = McController.GetMcRuntime("RC8-2");
+            var mcSRM11 = McController.GetMcRuntime("SRM11");
+            var mcSHU19 = McController.GetMcRuntime("SHU#19");
+            if (mcRC8_2.McObj.DV_Pre_Status == 98)//ยืนยัน CV-PD รับพาเลทเข้า
+            {
+                var mcWork = McWorkADO.GetInstant().GetByCurLocation(mcRC8_2.Cur_Location.ID.Value,this.BuVO);
+                var bObj = BaseObjectADO.GetInstant().GetByID(mcWork.BaseObject_ID,this.BuVO);
+                if (mcWork != null)
+                {
+                    mcRC8_2.PostCommand(McCommandType.CM_1,
+                        ListKeyValue<string, object>
+                        .New("Set_PalletID", bObj.Code),
+                        (mc) => { });
+                }
+            }
+            else if(mcRC8_2.McObj.DV_Pre_Status == 4)//รอ SRM รับพาเลทเข้า
+            {
+                var mcWork = McWorkADO.GetInstant().GetByCurLocation(mcRC8_2.Cur_Location.ID.Value, this.BuVO);
+                if (mcSRM11.McObj.DV_Pre_Status == 90)
+                {
+                    if (mcSHU19.Cur_Location.Code.Substring(3, 6) !=
+                        this.StaticValue.GetLocation(mcWork.Des_Location_ID.Value).Code.Substring(3, 6))
+                    //ถ้า Bay นั้น ไม่มี Pallet Shuttle ให้ย้ายพาเลท Shuttle ก่อน
+                    {
+                        if (mcSHU19.McObj.DV_Pre_Status == 90)
+                        {
+                            if (mcSHU19.Cur_Location.GetBay() == 2)//พาเลท shuttle มาถึงปลายทาง zone in ให้ปิดการทำงาน
+                            {
+                                mcSHU19.PostCommand(McCommandType.CM_60, (mc) => { });
+                            }
+                            else//สั่ง พาเลท shuttle มาถึงปลายทาง zone in
+                            {
+                                mcSHU19.PostCommand(McCommandType.CM_62, (mc) => {
+                                    if (mc.EventStatus == McObjectEventStatus.DONE)
+                                    {
+                                    }
+                                });
+                            }
+                        }
+                        else if (mcSHU19.McObj.DV_Pre_Status == 82)//พาเลท shuttle หยุดทำงาน พร้อม ย้าย
+                        {
+                            mcSRM11.PostCommand(McCommandType.CM_1,
+                                ListKeyValue<string, object>
+                                .New("Set_SouLoc", "")
+                                .Add("Set_DesLoc", "")
+                                .Add("Set_Unit", "3")
+                                .Add("Set_PalletID", ""),
+                                (mc) => { });
+                        }
+                    }
+                    else
+                    {
+                        mcSRM11.PostCommand(McCommandType.CM_1,
+                            ListKeyValue<string, object>
+                            .New("Set_SouLoc", "")
+                            .Add("Set_DesLoc", "")
+                            .Add("Set_Unit", "1")
+                            .Add("Set_PalletID", ""),
+                            (mc) => { });
+                    }
+                }
+            }
         }
         private void OnRun_W08_del()
         {

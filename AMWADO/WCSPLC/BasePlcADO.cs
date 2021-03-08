@@ -16,21 +16,26 @@ namespace ADO.WCSPLC
         {
         }
 
+        public static object _lock = new object();
         public static T GetInstant(string plcDeviceName)
         {
-            if (instants == null)
+            lock (_lock)
             {
-                instants = new Dictionary<string, T>();
+
+                if (instants == null)
+                {
+                    instants = new Dictionary<string, T>();
+                }
+                string dirKey = typeof(T).Name + "_" + plcDeviceName;
+                if (!instants.ContainsKey(dirKey))
+                {
+                    T newInst = (T)Activator.CreateInstance(typeof(T), new object[] { });
+                    newInst.PlcDeviceName = plcDeviceName;
+                    newInst.Open();
+                    instants.Add(dirKey, newInst);
+                }
+                return instants[dirKey];
             }
-            string dirKey = typeof(T).Name + "_" + plcDeviceName;
-            if (!instants.ContainsKey(dirKey))
-            {
-                T newInst = (T)Activator.CreateInstance(typeof(T), new object[] { });
-                newInst.PlcDeviceName = plcDeviceName;
-                newInst.Open();
-                instants.Add(dirKey, newInst);
-            }
-            return instants[dirKey];
         }
 
         public string PlcDeviceName { get; private set; }

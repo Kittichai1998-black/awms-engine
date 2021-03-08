@@ -17,8 +17,8 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         protected override void OnRun()
         {
-            short icheck = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").GetDevice<short>("CCONN_READ");
-            ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").SetDevice<short>("CCONN_WRITE",icheck);
+            int icheck = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").GetDevice<int>("CCONN_READ");
+            ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").SetDevice<int>("CCONN_WRITE",icheck);
         }
 
         protected override void OnStop()
