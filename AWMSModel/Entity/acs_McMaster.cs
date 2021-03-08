@@ -117,6 +117,9 @@ namespace AMSModel.Entity
         public string DK_Pre_PalletCount;
         public string DW_Pre_PalletCount;
 
+        public string DK_Pre_ShtDi;
+        public string DW_Pre_ShtDi;
+
     }
 
 }
