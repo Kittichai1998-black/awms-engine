@@ -51,7 +51,7 @@ namespace AMSModel.Entity
         public int DV_Pre_Unit;
         public string DV_Pre_PalletID;
         public int DV_Pre_Weigh;
-        public int DV_Pre_Row;
         public int DV_Pre_Zone;
+
     }
 }

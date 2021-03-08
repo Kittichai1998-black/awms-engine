@@ -105,9 +105,12 @@ namespace AMSModel.Constant.EnumConst
         CM_118 = 118,
         [DisplayAttribute(Name = "CONY_รับทราบ มีการยกพาเลทออก")]
         CM_140 = 140,
+        [DisplayAttribute(Name = "SRM_SURWAY")]
+        CM_150 = 150,
+        [DisplayAttribute(Name = "SRM_MOVE_SOUDES")]
+        CM_151 = 151,
         [DisplayAttribute(Name = "CONY_รับทราบ Barcode ไม่ตรงกับคิวงาน")]
         CM_156 = 156,
-
 
     }
 }

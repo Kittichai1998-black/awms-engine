@@ -145,7 +145,7 @@ namespace AWCSEngine
                         inpVal0 = tv.SelectedNode.Text.Split(":")[1].Split(">>")[0].Trim();
                         inpVal1 = tv.SelectedNode.Text.Split(":")[1].Split(">>")[1].Trim();
                         inpVal2 = tv.SelectedNode.Text.Split(":")[1].Split(">>")[2].Trim();
-                        if (InputBox2("Update McCommandAction", "Seq", "DK_Condition", "DK_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
+                        if (InputBox2("Update McCommandAction", "Seq", "DKV_Condition", "DKV_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
                         {
                             inpID = tv.SelectedNode.Text.Split(":")[0].Split(".")[1].Trim().Get2<long>();
                             ADO.WCSDB.DataADO.GetInstant()
@@ -186,7 +186,7 @@ namespace AWCSEngine
 
                     else if (tv.SelectedNode.Text.StartsWith("<<Add Action>>"))//ADD
                     {
-                        if (InputBox2("Insert McCommandAction", "Seq", "DK_Condition", "DK_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
+                        if (InputBox2("Insert McCommandAction", "Seq", "DKV_Condition", "DKV_Set", ref inpVal0, ref inpVal1, ref inpVal2) == DialogResult.OK)
                         {
                             long parentInpID = tv.SelectedNode.Parent.Text.Split(":")[0].Split(".")[1].Trim().Get2<long>();
                             inpID = ADO.WCSDB.DataADO.GetInstant()

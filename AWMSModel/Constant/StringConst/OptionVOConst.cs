@@ -81,5 +81,6 @@ namespace AMSModel.Constant.StringConst
         public const string OPT_LAST_PALLET = "last_pallet";
 
         public const string OPT_DES_LOCATION = "des_location";
+       
     }
 }
