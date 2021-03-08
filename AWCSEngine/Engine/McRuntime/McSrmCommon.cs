@@ -38,6 +38,7 @@ namespace AWCSEngine.Engine.McRuntime
                     });
                     if(shuInNextLoc != null)
                     {
+                        //shuInNextLoc.McObj.DV_Pre_ShtDi
                         shuInNextLoc.PostCommand(McCommandType.CM_1,
                             ListKeyValue<string, object>
                             .New("Set_SouLoc", string.Format("{0}{1:000}",nextLoc.GetBay(), nextLoc.GetLv()).Get2<int>())
