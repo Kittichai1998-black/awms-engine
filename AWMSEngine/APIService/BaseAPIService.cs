@@ -19,6 +19,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading;
 
+
 namespace AWMSEngine.APIService
 {
     public abstract class BaseAPIService
@@ -39,6 +40,7 @@ namespace AWMSEngine.APIService
             this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
+
         }
         public BaseAPIService()
         {
@@ -79,7 +81,7 @@ namespace AWMSEngine.APIService
                 return new object();
             string keyLock = token + "/" + apiServiceID;
             TLock _lock = lockRequests.FirstOrDefault(x => x.KeyLock == keyLock);
-            if(_lock == null)
+            if (_lock == null)
             {
                 _lock = new TLock() { KeyLock = keyLock, Owner = this.GetHashCode() };
                 lockRequests.Add(_lock);
@@ -95,7 +97,7 @@ namespace AWMSEngine.APIService
         {
             lockRequests.RemoveAll(x => x.Owner == this.GetHashCode());
         }
-    
+
         public dynamic Execute(dynamic request, int retryCountdown = 1)
         {
             dynamic response = null;
@@ -111,7 +113,12 @@ namespace AWMSEngine.APIService
                 if (request != null)
                 {
                     getKey = ObjectUtil.Cast2<TGetKey>(request);
+                    if (this.ControllerAPI.Request.Headers.ContainsKey("token") && !string.IsNullOrWhiteSpace(this.ControllerAPI.Request.Headers["token"].ToString()))
+                        getKey.token = this.ControllerAPI.Request.Headers["token"].ToString();
+
+
                     this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
+                    this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 }
 
                 //-------CREATE FILE LOGGING & Decode TOKEN,APIKEY
@@ -140,10 +147,10 @@ namespace AWMSEngine.APIService
                         this.Logger = AMWLoggerManager.GetLogger(apiKeyInfo.APIKey, this.GetType().Name, apiKeyInfo.IsLogging);
                 }
 
-                if(tokenInfo == null && apiKeyInfo == null)
+                if (tokenInfo == null && apiKeyInfo == null)
                 {
                     this.Logger = AMWLoggerManager.GetLogger("(no_key)", this.GetType().Name);
-                    if(this.IsAuthenAuthorize)
+                    if (this.IsAuthenAuthorize)
                         throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
                 this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.DataADO.GetInstant().CreateConnection());
@@ -156,7 +163,6 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("token=" + getKey.apikey);
                 string _request_str = ObjectUtil.Json(request);
                 this.Logger.LogInfo("request=" + _request_str);
-                this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
                 this.BuVO.Set(BusinessVOConst.KEY_TOKEN, getKey.token);
                 this.BuVO.Set(BusinessVOConst.KEY_APIKEY, getKey.apikey);
@@ -259,16 +265,21 @@ namespace AWMSEngine.APIService
                         string _code = result.code;
                         string _message = result.message;
                         string _stacktrace = result.stacktrace;
-                        Logger.LogInfo("[BEGIN] ----Insert FinalDBLog----");
-                        this.FinalDBLog.sendAPIEvents.ForEach(x =>
+                      
+                        if (this.FinalDBLog != null)
                         {
-                            ADO.WMSDB.LogingADO.GetInstant().PutAPIPostBackEvent(x, this.BuVO);
-                        });
-                        this.FinalDBLog.documentOptionMessages.ForEach(x =>
-                        {
-                            ADO.WMSDB.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
-                        });
-                        if(dbLogID != 0)
+                            Logger.LogInfo("[BEGIN] ----Insert FinalDBLog----");
+                            this.FinalDBLog.sendAPIEvents.ForEach(x =>
+                            {
+                                ADO.WMSDB.LogingADO.GetInstant().PutAPIPostBackEvent(x, this.BuVO);
+                            });
+
+                            this.FinalDBLog.documentOptionMessages.ForEach(x =>
+                            {
+                                ADO.WMSDB.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
+                            });
+                        }
+                        if (dbLogID != 0)
                             ADO.WMSDB.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
 
                         Logger.LogInfo("[END] ----Insert FinalDBLog----");
@@ -289,6 +300,7 @@ namespace AWMSEngine.APIService
 
             }
 
+           
             if ((int)response._result.status == -1)
             {
                 this.Logger.LogFatal("############## RETRY_DEADLOCK_TRANSACTION ##############");
@@ -306,7 +318,7 @@ namespace AWMSEngine.APIService
         //}
 
 
-        protected void VerifyPermission(TokenCriteria tokenInfo,ams_APIKey apiKeyInfo)
+        protected void VerifyPermission(TokenCriteria tokenInfo, ams_APIKey apiKeyInfo)
         {
             //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);

@@ -56,6 +56,8 @@ namespace ProjectGCL.Engine.Document
 
             foreach (var line in reqVO.RECORD)
             {
+                if(line.LINE.List_Pallet.Count() == 0)
+                    throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่ได้ส่ง เลข Pallet มา");
 
                 amt_Document document = new amt_Document();
                 amt_Document documentChild = new amt_Document();
