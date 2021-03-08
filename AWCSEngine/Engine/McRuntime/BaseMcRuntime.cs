@@ -116,11 +116,22 @@ namespace AWCSEngine.Engine.McRuntime
 
         public bool PostCommand(McCommandType comm, Action<BaseMcRuntime> callback_OnChange)
         {
-            return this.PostCommand(comm, new ListKeyValue<string,object>(), callback_OnChange);
+            return this.PostCommand(comm, new ListKeyValue<string, object>(), callback_OnChange);
+        }
+        public bool PostCommand(McCommandType comm,
+            int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
+            Action<BaseMcRuntime> callback_OnChange)
+        {
+            return this.PostCommand(comm, ListKeyValue<string, object>
+                            .New("Set_SouLoc", Set_SouLoc)
+                            .Add("Set_DesLoc", Set_DesLoc)
+                            .Add("Set_Unit", Set_Unit)
+                            .Add("Set_PalletID", Set_PalletID)
+                            .Add("Set_Weigth", Set_Weigh), callback_OnChange);
         }
         public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Action<BaseMcRuntime> callback_OnChange)
         {
-            if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
+            //if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
             {
                 this.Logger.LogInfo("[CMD] > " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
                 this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;

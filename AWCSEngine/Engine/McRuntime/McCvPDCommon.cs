@@ -16,23 +16,20 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            if (this.McWork4Work == null) return;
-
-            var baseObj = BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID,this.BuVO);
-            if (this.Cur_Location.ID == this.McWork4Work.Cur_Location_ID)
+            if (this.McWork4Work != null)
             {
-                if(this.McObj.DV_Pre_Status == 98)
+                var baseObj = BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
+                if (this.Cur_Location.ID == this.McWork4Work.Cur_Location_ID)
                 {
-                    this.PostCommand(McCommandType.CM_1,
-                        ListKeyValue<string,object>
-                        .New("Set_PalletID", baseObj.Code)
-                        , null);
-
-                }
-                else if (this.McObj.DV_Pre_Status == 4 && 
-                    this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
-                {
-                    this.McWork_WorkingToWorked();
+                    if (this.McObj.DV_Pre_Status == 98)
+                    {
+                        this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, null);
+                    }
+                    else if (this.McObj.DV_Pre_Status == 4 &&
+                        this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
+                    {
+                        this.McWork_WorkingToWorked();
+                    }
                 }
             }
         }

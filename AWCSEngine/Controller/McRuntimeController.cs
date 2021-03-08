@@ -34,6 +34,13 @@ namespace AWCSEngine.Controller
         {
             return this.McObjectList.FirstOrDefault(x => x.McObj.Cur_Location_ID == curLocID);
         }
+        public List<BaseMcRuntime> ListMcRuntimeByLocation(int? bank,int? bay,int? lv)
+        {
+            return this.McObjectList.FindAll(x =>
+            (!bank.HasValue || x.Cur_Location.GetBank() == bank.Value) &&
+            (!bay.HasValue || x.Cur_Location.GetBay() == bay.Value) &&
+            (!lv.HasValue || x.Cur_Location.GetLv() == lv.Value) );
+        }
         public BaseMcRuntime GetMcRuntimeByLocation(string curLocCode)
         {
             var curLoc = StaticValueManager.GetInstant().GetLocation(curLocCode);

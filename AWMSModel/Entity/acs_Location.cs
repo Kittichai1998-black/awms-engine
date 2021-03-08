@@ -11,5 +11,8 @@ namespace AMSModel.Entity
         public int McBuffer;
         public int DrawPosX;
         public int DrawPosY;
+        public string Info1;
+        public string Info2;
+        public string Info3;
     }
 }
