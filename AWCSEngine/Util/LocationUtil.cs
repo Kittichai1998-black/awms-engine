@@ -11,6 +11,27 @@ namespace AWCSEngine.Util
     public static class LocationUtil
     {
         public static TreeNode<long> GetLocationRouteTree
+            (string souLocCode, string desAreaCode, List<string> desLocCodes)
+        {
+            long souLocID = StaticValueManager.GetInstant().GetLocation(souLocCode).ID.Value;
+            long? desAreaID = string.IsNullOrEmpty(desAreaCode) ? null : StaticValueManager.GetInstant().GetArea(desAreaCode).ID;
+            List<long> desLocIDs = desLocCodes == null ? null : StaticValueManager.GetInstant().GetLocations(desLocCodes).Select(x => x.ID.Value).ToList();
+            return GetLocationRouteTree(souLocID, desAreaID, desLocIDs);
+        }
+        public static TreeNode<long> GetLocationRouteTree
+            (string souLocCode, string desAreaCode, string desLocCode)
+        {
+            long souLocID = StaticValueManager.GetInstant().GetLocation(souLocCode).ID.Value;
+            long? desAreaID = string.IsNullOrEmpty(desAreaCode) ? null : StaticValueManager.GetInstant().GetArea(desAreaCode).ID;
+            long? desLocID = string.IsNullOrEmpty( desLocCode) ? null : StaticValueManager.GetInstant().GetLocation(desLocCode).ID;
+            return GetLocationRouteTree(souLocID, desAreaID, desLocID);
+        }
+        public static TreeNode<long> GetLocationRouteTree
+            (long souLocID, long? desAreaID, long? desLocID)
+        {
+            return GetLocationRouteTree(souLocID, desAreaID, !desLocID.HasValue ? null : new List<long> { desLocID.Value });
+        }
+        public static TreeNode<long> GetLocationRouteTree
             (long souLocID, long? desAreaID, List<long> desLocIDs)
         {
             List<acs_Location> _desLocs = null;

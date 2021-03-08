@@ -1,4 +1,5 @@
-﻿using AMSModel.Criteria;
+﻿using ADO.WCSStaticValue;
+using AMSModel.Criteria;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 using System;
@@ -16,7 +17,7 @@ namespace AWCSEngine.Engine
         protected VOCriteria BuVO { get; private set; }
         protected string LogRefID { get => this.BuVO.Logger.LogRefID; }
         protected AMWLogger Logger { get => this.BuVO.Logger; }
-
+        protected StaticValueManager StaticValue { get => StaticValueManager.GetInstant(); }  
         public BaseEngine(string logref, VOCriteria buVO=null)
         {
             this.BuVO = buVO ?? new VOCriteria();

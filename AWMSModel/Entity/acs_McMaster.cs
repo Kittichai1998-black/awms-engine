@@ -11,6 +11,9 @@ namespace AMSModel.Entity
         public int ThreadIndex;
         public PlcCommunicationType PlcCommuType;
         public string PlcDeviceName;
+       
+        public string Code;
+        public string Name;
 
         public string DK_Set_SouLoc;
         public int DW_Set_SouLoc;
@@ -104,5 +107,8 @@ namespace AMSModel.Entity
 
         public string DK_Pre_Weigh;
         public int DW_Pre_Weigh;
+
+        public string DK_Pre_Zone;
+        public int DW_Pre_Zone;
     }
 }

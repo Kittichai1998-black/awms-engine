@@ -48,19 +48,21 @@ namespace AMWUtil.Common
                 }
                 num = num / 36;
             }
-            return res + (new String('0', space - res.Length > 0 ? space - res.Length : 0));
+            return (new String('0', space - res.Length > 0 ? space - res.Length : 0)) + res;
         }
 
-        public static bool CompareFields<T>(this T model1,T model2)
+        public static bool CompareFields<T>(this T model1,T model2,params string[] notFieldNames)
         {
             foreach (var f1 in model1.GetType().GetFields())
             {
-                if (f1.GetValue(model1) != f1.GetValue(model2))
+                if (notFieldNames != null && notFieldNames.Contains(f1.Name)) continue;
+                if (!object.Equals(f1.GetValue(model1), f1.GetValue(model2)))
                     return false;
             }
             foreach (var f1 in model1.GetType().GetProperties())
             {
-                if (f1.GetValue(model1) != f1.GetValue(model2))
+                if (notFieldNames != null && notFieldNames.Contains(f1.Name)) continue;
+                if (!object.Equals(f1.GetValue(model1), f1.GetValue(model2)))
                     return false;
             }
             return true;

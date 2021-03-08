@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class acs_McCommandAction : BaseEntityID
+    public class acs_McCommandAction : BaseEntityCreateModify
     {
         public long McCommand_ID;
         public int Seq;

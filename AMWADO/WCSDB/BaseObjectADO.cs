@@ -10,13 +10,23 @@ namespace ADO.WCSDB
 {
     public class BaseObjectADO : BaseWCSDB<BaseObjectADO>
     {
+        public act_BaseObject GetByID(long id, VOCriteria BuVO)
+        {
+            var baseObj = ADO.WCSDB.DataADO.GetInstant()
+                .SelectBy<act_BaseObject>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("ID", id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                }, BuVO).FirstOrDefault();
+            return baseObj;
+        }
         public act_BaseObject GetByCode(string code, VOCriteria BuVO)
         {
             var baseObj = ADO.WCSDB.DataADO.GetInstant()
                 .SelectBy<act_BaseObject>(
                 new SQLConditionCriteria[] {
                     new SQLConditionCriteria("Code", code, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, BuVO).FirstOrDefault();
             return baseObj;
         }

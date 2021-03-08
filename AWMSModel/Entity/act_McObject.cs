@@ -1,4 +1,5 @@
 ﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,10 @@ namespace AMSModel.Entity
         public string CommandTypeName;
         public long? Command_ID;
         public int? CommandAction_Seq;
-        public long? StoObject_ID;
+        public long? CommandAction_ID;
+        public string CommandAction_Condition;
+        public string CommandAction_Set;
+        public long? BaseObject_ID;
         public long? Sou_Location_ID;
         public long? Des_Location_ID;
         public long? Cur_Location_ID;
@@ -50,6 +54,7 @@ namespace AMSModel.Entity
         public int DV_Pre_Unit;
         public string DV_Pre_PalletID;
         public int DV_Pre_Weigh;
+        public int DV_Pre_Zone;
 
     }
 }

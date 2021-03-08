@@ -2,6 +2,8 @@
 using ADO.WCSStaticValue;
 using AMWUtil.Common;
 using AMWUtil.Logger;
+using AWCSEngine.Engine;
+using AWCSEngine.Engine.APIFileRuntime;
 using AWCSEngine.Engine.CommonEngine;
 using System;
 using System.Collections.Generic;
@@ -22,7 +24,9 @@ namespace AWCSEngine.Controller
         {
             var api = StaticValueManager.GetInstant().GetAPIFile(api_id);
             var ctype = ClassType.GetClassType(api.FullClassName);
-            var exec = (BaseCommonEngine<dynamic,dynamic>)Activator.CreateInstance(ctype,new object[] { logref });
+
+            var _exec = Activator.CreateInstance(ctype,new object[] { logref });
+            var exec = (BaseAPIFileRuntime)_exec;
             return exec.Execute(request);
         }
     }

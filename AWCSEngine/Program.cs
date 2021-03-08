@@ -36,8 +36,11 @@ namespace AWCSEngine
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //LocationUtil.GetLocationRouteTree("G01", "001001001");
+            //string souLoc = "001049001";
+            //string desLoc = "003050001";
+            //var routeTree = LocationUtil.GetLocationRouteTree(souLoc, null, new List<string>() { desLoc });
             Application.Run(new formConfigCommand());
+            //Application.Run(new formConsole());
         }
     }
 }

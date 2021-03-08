@@ -1,11 +1,16 @@
-﻿using AMSModel.Constant.EnumConst;
+﻿using ADO.WCSDB;
+using ADO.WCSStaticValue;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Entity;
 using AMWUtil.Common;
 using AWCSEngine.Controller;
+using AWCSEngine.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -50,6 +55,11 @@ namespace AWCSEngine
         {
             if(e.KeyCode == Keys.Enter)
             {
+                if (this.txtCommand.Text.StartsWith("/"))
+                {
+                    CommandCallFunction(this.txtCommand.Text);
+                    return;
+                }
                 this.lisDisplayCommand.Items.Insert(0, "COMMAND > " + this.txtCommand.Text);
                 string[] comm = this.txtCommand.Text.Split(' ');
                 if (comm.Length < 2)
@@ -73,7 +83,19 @@ namespace AWCSEngine
                             comm[0],
                             (McCommandType)int.Parse(comm[1]),
                             parameters,
-                            null);
+                            (x)=> {
+                                SetText(x.Code + " > " + x.EventStatus);
+
+                                void SetText(string txt) {
+                                    if (this.IsHandleCreated)
+                                        this.lisDisplayEngine.Invoke((MethodInvoker)(() =>
+                                        {
+                                            this.lisDisplayCommand.Items.Add(txt);
+                                        }));
+                                    else
+                                        SetText(txt);
+                                }
+                            });
                         this.txtCommand.Text = comm[0] + " ";
                     }
                     catch (Exception ex)
@@ -87,6 +109,112 @@ namespace AWCSEngine
         private void formConsole_FormClosed(object sender, FormClosedEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void btnHotCmd_Click(object sender, EventArgs e)
+        {
+            Form form = new Form();
+            ListBox lisBox = new ListBox();
+
+            form.Text = "Hot Key";
+            lisBox.Items.Add("เก็บ,เบิก | SRM11 21 2048002 2041001 1 PL00001000 1000");
+
+
+            form.ClientSize = new Size(950, 247);
+            form.Controls.AddRange(new Control[] { lisBox});
+            form.ClientSize = new Size(Math.Max(700, lisBox.Right + 10), form.ClientSize.Height);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+
+            DialogResult dialogResult = form.ShowDialog();
+            if(dialogResult == DialogResult.OK)
+            {
+
+            }
+        }
+        private void CommandCallTestCase(string caseNo)
+        {
+            switch (caseNo)
+            {
+               // case "1":CommandCallFunction($"/mcwork new {new Random().Next(0,9999999):0000000000} 002048002");
+                default:return;
+            }
+        }
+        private void CommandCallFunction(string _comm) {
+            string[] comm = _comm.Trim().Split(" ");
+
+            if (comm[0].ToLower().Equals("/test"))
+            {
+                CommandCallTestCase(_comm);
+            }
+            else if(comm[0].ToLower().Equals("/baseobj"))
+            {
+                if (comm[1].ToLower().Equals("new"))
+                {
+                    string baseCode = comm[2];
+                    string locCode = comm[3];
+                    string evtStatus = comm.Length < 5 ? "idle" : comm[4];
+
+                    var loc = StaticValueManager.GetInstant().GetLocation(locCode);
+                    var mc = DataADO.GetInstant().SelectBy<act_McObject>("Cur_Location_ID", loc.ID.Value, null).FirstOrDefault();
+                    
+                    ADO.WCSDB.DataADO.GetInstant().Insert<act_BaseObject>(new act_BaseObject()
+                    {
+                        Code = baseCode,
+                        Area_ID = loc.Area_ID,
+                        Location_ID= loc.ID.Value,
+                        LabelData = null,
+                        Model = null,
+                        McObject_ID = mc.ID,
+                        SkuCode = "TEST01",
+                        SkuName = "TEST01",
+                        SkuQty = 1000,
+                        SkuUnit = "kg",
+                        WeiKG = 1000,
+                        Status = EntityStatus.ACTIVE,
+                        Options = null,
+                        EventStatus = evtStatus.ToLower() == "idle"? BaseObjectEventStatus.IDLE:
+                                        evtStatus.ToLower() == "move"? BaseObjectEventStatus.MOVE:
+                                         BaseObjectEventStatus.TEMP
+                    }, null);
+                }
+            }
+            else if (comm[0].ToLower().Equals("/mcwork"))
+            {
+                if (comm[1].ToLower().Equals("new"))
+                {
+                    string baseCode = comm[2];
+                    string desLocCode = comm[3];
+                    var baseObj = BaseObjectADO.GetInstant().GetByCode(baseCode, null);
+                    var desLoc = StaticValueManager.GetInstant().GetLocation(desLocCode);
+                    var curArea = StaticValueManager.GetInstant().GetArea(baseObj.Area_ID);
+                    var treeRouting = LocationUtil.GetLocationRouteTree(baseObj.Location_ID, desLoc.Area_ID, desLoc.ID);
+                    DataADO.GetInstant().Insert<act_McWork>(new act_McWork()
+                    {
+                        Priority = PriorityType.NORMAL,
+                        SeqGroup = 0,
+                        SeqItem = 0,
+                        BaseObject_ID = baseObj.ID.Value,
+                        WMS_WorkQueue_ID = null,
+                        Cur_Warehouse_ID = curArea.Warehouse_ID,
+                        Cur_Area_ID = baseObj.Area_ID,
+                        Cur_Location_ID = baseObj.Location_ID,
+                        Sou_Area_ID = baseObj.Area_ID,
+                        Sou_Location_ID = baseObj.Location_ID,
+                        Des_Area_ID = desLoc.Area_ID,
+                        Des_Location_ID = desLoc.ID.Value,
+                        StartTime = DateTime.Now,
+                        ActualTime = DateTime.Now,
+                        EndTime = null,
+                        TreeRoute = treeRouting.Json(),
+                        Status = EntityStatus.ACTIVE
+                    }, null);
+
+                }
+            }
+        
         }
     }
 }
