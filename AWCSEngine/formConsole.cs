@@ -60,11 +60,11 @@ namespace AWCSEngine
                     CommandCallFunction(this.txtCommand.Text);
                     return;
                 }
-                this.lisDisplayCommand.Items.Insert(0, "COMMAND > " + this.txtCommand.Text);
+                this.lisDisplayCommand.Items.Add( "COMMAND > " + this.txtCommand.Text);
                 string[] comm = this.txtCommand.Text.Split(' ');
                 if (comm.Length < 2)
                 {
-                    this.lisDisplayCommand.Items.Insert(0, "ERROR > รูปแบบคำสั่งไม่ถูกต้อง [machine] [command] [location1] [location2]");
+                    this.lisDisplayCommand.Items.Add( "ERROR > รูปแบบคำสั่งไม่ถูกต้อง [machine] [command] [location1] [location2]");
                 }
                 else
                 {
@@ -83,24 +83,13 @@ namespace AWCSEngine
                             comm[0],
                             (McCommandType)int.Parse(comm[1]),
                             parameters,
-                            (x)=> {
-                                SetText(x.Code + " > " + x.EventStatus);
-
-                                void SetText(string txt) {
-                                    if (this.IsHandleCreated)
-                                        this.lisDisplayEngine.Invoke((MethodInvoker)(() =>
-                                        {
-                                            this.lisDisplayCommand.Items.Add(txt);
-                                        }));
-                                    else
-                                        SetText(txt);
-                                }
-                            });
+                            null
+                            );
                         this.txtCommand.Text = comm[0] + " ";
                     }
                     catch (Exception ex)
                     {
-                        this.lisDisplayCommand.Items.Insert(0, "ERROR > " + ex.Message);
+                        this.lisDisplayCommand.Items.Add ("ERROR > " + ex.Message);
                     }
                 }
             }

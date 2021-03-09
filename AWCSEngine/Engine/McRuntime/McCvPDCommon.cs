@@ -18,17 +18,21 @@ namespace AWCSEngine.Engine.McRuntime
         {
             if (this.McWork4Receive != null)
             {
-                    if (this.McObj.DV_Pre_Status == 98)
-                    {
-                        var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
-                        var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
-                        this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, 
-                            (mc)=>
+                if (this.McObj.DV_Pre_Status == 98)
+                {
+                    var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
+                    var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
+                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500,
+                        (mc) =>
+                        {
+                            if (mc.EventStatus == McObjectEventStatus.COMMAND_WRITING)
                             {
-                                if (mc.EventStatus == McObjectEventStatus.WORKING)
-                                    this.McWork_1_ReceiveToWorking();
-                            });
-                    }
+                                this.McWork_1_ReceiveToWorking();
+                                return LoopResult.Break;
+                            }
+                            return LoopResult.Continue;
+                        });
+                }
             }
             else if (this.McWork4Work != null)
             {
@@ -39,29 +43,12 @@ namespace AWCSEngine.Engine.McRuntime
             }
         }
 
-        protected override bool OnRun_COMMAND()
+        protected override void OnStart()
         {
-            return false;
+        }
+        protected override void OnEnd()
+        {
         }
 
-        protected override bool OnRun_DONE()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_ERROR()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_IDLE()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_WORKING()
-        {
-            return false;
-        }
     }
 }

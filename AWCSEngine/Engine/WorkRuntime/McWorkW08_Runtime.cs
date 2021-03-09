@@ -75,12 +75,12 @@ namespace AWCSEngine.Engine.WorkRuntime
                             _mcShuFree.PostCommand(McCommandType.CM_62,//SHU กลับ Stanby หน้า
                                 (_mcShuFree_90) =>
                                 {
-                                    while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return true;
+                                    while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
 
                                     _mcShuFree_90.PostCommand(McCommandType.CM_60,
                                         (_mcShuFree_82) =>//ปิดเครื่อง SHU เพื่อย้าย
                                             {
-                                                if (_mcShuFree_82.McObj.DV_Pre_Status != 82) return true;
+                                                if (_mcShuFree_82.McObj.DV_Pre_Status != 82) return LoopResult.Continue;
 
                                                 var _srm_souLocCode = _mcShuFree_82.Cur_Location.Code.Get2<int>() % 1000000;
                                                 _srm_souLocCode += 2000000;
@@ -90,22 +90,22 @@ namespace AWCSEngine.Engine.WorkRuntime
                                                     _srm_souLocCode, _srm_desLocCode, 3, "0000000000", 1000,
                                                     (_mcSrmOut_90) =>//SRM ย้าย SHU
                                                     {
-                                                        while (_mcSrmOut_90.McObj.DV_Pre_Status != 90) return true;
+                                                        while (_mcSrmOut_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
                                                         _mcShuFree_82.PostCommand(McCommandType.CM_1,
                                                                 ListKeyValue<string, object>
                                                                 .New("Set_SouLoc", _srm_desLocCode % 1000000)
                                                                 .Add("Set_ShtDi", 1),
                                                                 (_mcShuFree_90) =>//เปิด SHU
                                                                     {
-                                                                        while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return true;
+                                                                        while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
                                                                         _mcGateIn.McWork_0_WorkedToReceive_NextMC(_mcSrmOut_90.ID);
-                                                                        return false;
+                                                                        return LoopResult.Break;
                                                                 });
-                                                        return false;
+                                                        return LoopResult.Break;
                                                     });
-                                                return false;
+                                                return LoopResult.Break;
                                         });
-                                    return false;//end _mcShuFree_90
+                                    return LoopResult.Break;//end _mcShuFree_90
                                 });
                         }
                     }
@@ -114,9 +114,9 @@ namespace AWCSEngine.Engine.WorkRuntime
                         _mcShuInRow.PostCommand(McCommandType.CM_2,
                         (_mcShuFree_90) =>//SHU กลับ Home
                         {
-                            if (_mcShuFree_90.McObj.DV_Pre_Status != 90) return true;
+                            if (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
                                 _mcGateIn.McWork_0_WorkedToReceive_NextMC(this.McSrmOut.ID);
-                            return false;
+                            return LoopResult.Break;
                         });
                     }
                 }

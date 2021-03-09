@@ -15,31 +15,11 @@ namespace AWCSEngine.Engine.McRuntime
         protected override void OnRun()
         {
         }
-
-        protected override bool OnRun_IDLE()
+        protected override void OnStart()
         {
-            return false;
         }
-
-        protected override bool OnRun_COMMAND()
+        protected override void OnEnd()
         {
-            return false;
-        }
-
-        protected override bool OnRun_WORKING()
-        {
-            //this.McObj.Location_ID = this.McObj.Des_Location_ID;
-            return false;
-        }
-
-        protected override bool OnRun_DONE()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_ERROR()
-        {
-            return false;
         }
 
     }

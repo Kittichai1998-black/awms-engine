@@ -69,7 +69,7 @@ namespace AWCSEngine.Controller
             return this.McObjectList.FindAll(x => x.Cur_Area.Warehouse_ID == wh.ID.Value);
         }
 
-        public void PostCommand(string mcCode, McCommandType command, ListKeyValue<string,object> parameters, Action<BaseMcRuntime> callback_OnChange)
+        public void PostCommand(string mcCode, McCommandType command, ListKeyValue<string,object> parameters, Func<BaseMcRuntime,LoopResult> callback_OnChange)
         {
             this.GetMcRuntime(mcCode).PostCommand(command, parameters, callback_OnChange);
         }

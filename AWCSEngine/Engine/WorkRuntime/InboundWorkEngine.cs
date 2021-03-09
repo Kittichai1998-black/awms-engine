@@ -45,7 +45,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                     mcRC8_2.PostCommand(McCommandType.CM_1,
                         ListKeyValue<string, object>
                         .New("Set_PalletID", bObj.Code),
-                        (mc) => { });
+                        null);
                 }
             }
             else if(mcRC8_2.McObj.DV_Pre_Status == 4)//รอ SRM รับพาเลทเข้า
@@ -61,15 +61,11 @@ namespace AWCSEngine.Engine.WorkRuntime
                         {
                             if (mcSHU19.Cur_Location.GetBay() == 2)//พาเลท shuttle มาถึงปลายทาง zone in ให้ปิดการทำงาน
                             {
-                                mcSHU19.PostCommand(McCommandType.CM_60, (mc) => { });
+                                mcSHU19.PostCommand(McCommandType.CM_60, null);
                             }
                             else//สั่ง พาเลท shuttle มาถึงปลายทาง zone in
                             {
-                                mcSHU19.PostCommand(McCommandType.CM_62, (mc) => {
-                                    if (mc.EventStatus == McObjectEventStatus.DONE)
-                                    {
-                                    }
-                                });
+                                mcSHU19.PostCommand(McCommandType.CM_62, null);
                             }
                         }
                         else if (mcSHU19.McObj.DV_Pre_Status == 82)//พาเลท shuttle หยุดทำงาน พร้อม ย้าย
@@ -80,7 +76,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                                 .Add("Set_DesLoc", "")
                                 .Add("Set_Unit", "3")
                                 .Add("Set_PalletID", ""),
-                                (mc) => { });
+                                null);
                         }
                     }
                     else
@@ -91,7 +87,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                             .Add("Set_DesLoc", "")
                             .Add("Set_Unit", "1")
                             .Add("Set_PalletID", ""),
-                            (mc) => { });
+                            null);
                     }
                 }
             }

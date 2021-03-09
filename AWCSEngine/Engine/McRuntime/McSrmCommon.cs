@@ -15,6 +15,10 @@ namespace AWCSEngine.Engine.McRuntime
         {
         }
 
+        protected override void OnEnd()
+        {
+        }
+
         protected override void OnRun()
         {
             if (this.McWork4Receive != null)
@@ -28,36 +32,27 @@ namespace AWCSEngine.Engine.McRuntime
                     this.PostCommand(McCommandType.CM_1, souLoc.Code.Get2<int>(), nextLoc.Code.Get2<int>(), 1, baseObj.Code, 1500,
                         (mc) =>
                         {
-                            if (mc.EventStatus == McObjectEventStatus.WORKING)
+                            if (mc.EventStatus == McObjectEventStatus.COMMAND_WRITING)
+                            {
                                 mc.McWork_1_ReceiveToWorking();
+                                return LoopResult.Break;
+                            }
+                            return LoopResult.Continue;
                         });
+                }
+            }
+            else if(this.McWork4Work != null)
+            {
+                if(this.McObj.DV_Pre_Status == 90)
+                {
+                    if (this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
+                        this.McWork_2_WorkingToWorked();
                 }
             }
         }
 
-        protected override bool OnRun_COMMAND()
+        protected override void OnStart()
         {
-            return false;
-        }
-
-        protected override bool OnRun_DONE()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_ERROR()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_IDLE()
-        {
-            return false;
-        }
-
-        protected override bool OnRun_WORKING()
-        {
-            return false;
         }
     }
 }
