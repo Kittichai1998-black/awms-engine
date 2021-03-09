@@ -55,7 +55,7 @@ namespace ProjectGCL.Engine.WorkQueue
             //res.datas = new List<TRes.DocData>();
             if (reqVO.qr != null)
             {
-                var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "{gade}_{lot}_{pallet}");
+                var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "{gade} {lot} {pallet}");
 
                 if (qrModel == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
@@ -130,9 +130,12 @@ namespace ProjectGCL.Engine.WorkQueue
                                     if (item.Options != null && docTypeIDs == 1001)
                                     {
 
-                                        var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(item.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                        var startPallet = Int32.Parse(docoption.startPallet);
-                                        var endPallet = Int32.Parse(docoption.endPallet);
+                                        var startPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(item.Options, GCLOptionVOConst.OPT_START_PALLET);
+                                        var endPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(item.Options, GCLOptionVOConst.OPT_END_PALLET);
+
+                                        //var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
+                                        var startPallet = Int32.Parse(startPalletOp);
+                                        var endPallet = Int32.Parse(endPalletOp);
                                         var noPallet = Int32.Parse(qrModel.pallet);
 
                                         if (noPallet < endPallet)

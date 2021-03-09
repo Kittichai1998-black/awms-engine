@@ -535,8 +535,7 @@ const MappingReceive_HH = (props) => {
         alertDialogRenderer("success", t("Sucess"))
         let barcode_pstos = [];
         let bars = barCodeDoc['qrCodes'][0]
-        console.log(bars)
-        console.log(barCodeDoc)
+
         if (bars.qrCode1 !== "null" && bars.qrCode2 !== "null") {
             barcode_pstos.push(bars.qrCode1)
             barcode_pstos.push(bars.qrCode2)
@@ -738,7 +737,7 @@ const MappingReceive_HH = (props) => {
                 </Stepper>
                 {activeStep === steps.length && (
                     <Paper square elevation={0} className={classes.resetContainer}>
-                        <Typography>All steps completed - you&apos;re finished</Typography>
+                        <Typography></Typography>
                         <AmButton styleType="dark_clear" onClick={handleReset} className={classes.button}>
                             {t('Reset')}
                         </AmButton>
