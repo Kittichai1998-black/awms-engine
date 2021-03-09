@@ -11,20 +11,13 @@ namespace ADO.WCSDB
 {
     public class McWorkADO : BaseWCSDB<McWorkADO>
     {
-        public List<act_McWork> ListInactive_inWarehouse(string whCode, VOCriteria buVO)
-        {
-            var wh = WCSStaticValue.StaticValueManager.GetInstant().GetWarehouse(whCode);
-            return DataADO.GetInstant().SelectBy<act_McWork>(
-                ListKeyValue<string, object>
-                    .New("Status", EntityStatus.INACTIVE)
-                    .Add("Cur_Warehouse_ID", wh.ID.Value), buVO);
-        }
-        public List<act_McWork> ListActive_inWarehouse(string whCode, VOCriteria buVO)
+        public List<act_McWork> ListWorked_inWarehouse(string whCode, VOCriteria buVO)
         {
             var wh =WCSStaticValue.StaticValueManager.GetInstant().GetWarehouse(whCode);
             return DataADO.GetInstant().SelectBy<act_McWork>(
                 ListKeyValue<string, object>
                     .New("Status", EntityStatus.ACTIVE)
+                    .Add("EventStatus", McWorkEventStatus.ACTIVE_WORKED)
                     .Add("Cur_Warehouse_ID", wh.ID.Value), buVO);
         }
         public act_McWork GetByBaseObj(long baseObjID, VOCriteria buVO)

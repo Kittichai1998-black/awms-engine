@@ -9,6 +9,7 @@ namespace AMSModel.Constant.EnumConst
         IN_QUEUE = 10,
         ACTIVE_WORKING = 11,
         ACTIVE_WORKED = 12,
+        ACTIVE_KEEP = 13,
         DONE_QUEUE = 32,
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AWCSEngine.Engine.McRuntime
 {
@@ -20,38 +21,16 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj.DV_Pre_Status == 90)
                 {
-                    BaseMcRuntime shuInNextLoc = null;
-                    acs_Location nextLoc = null;
-                    this.McWork4Receive.GetCur_TreeRoute().ForEach(x =>
-                    {
-                        x.Childs.ForEach(nextLocID =>
+                    var nextLocID = this.McWork4Receive.GetCur_TreeRoute().First().Value;
+                    var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
+                    var nextLoc = this.StaticValue.GetLocation(nextLocID);
+                    var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
+                    this.PostCommand(McCommandType.CM_1, souLoc.Code.Get2<int>(), nextLoc.Code.Get2<int>(), 1, baseObj.Code, 1500,
+                        (mc) =>
                         {
-                            var _nextLoc = this.StaticValue.GetLocation(nextLocID.Value);
-                            var shuInNextLocTmps = Controller.McRuntimeController.GetInstant().ListMcRuntimeByLocation(null, nextLoc.GetBay(), nextLoc.GetLv());
-                            shuInNextLoc = shuInNextLocTmps.FirstOrDefault(x => x.Code.StartsWith("SHU#"));
-                            if (shuInNextLoc != null)
-                            {
-                                nextLoc = _nextLoc;
-                                return;
-                            }
+                            if (mc.EventStatus == McObjectEventStatus.WORKING)
+                                mc.McWork_1_ReceiveToWorking();
                         });
-                    });
-                    if(shuInNextLoc != null)
-                    {
-                        //shuInNextLoc.McObj.DV_Pre_ShtDi
-                        shuInNextLoc.PostCommand(McCommandType.CM_1,
-                            ListKeyValue<string, object>
-                            .New("Set_SouLoc", string.Format("{0}{1:000}",nextLoc.GetBay(), nextLoc.GetLv()).Get2<int>())
-                            .Add("Set_ShtDi", 1)//1 ด้านIN/ 2 ด้านOut
-                            , 
-                            (mc) =>
-                            {
-                                if(mc.EventStatus == McObjectEventStatus.IDEL)
-                                {
-                                }
-                            });
-                    }
-                    //this.PostCommand(McCommandType.CM_1,0,0,1,
                 }
             }
         }

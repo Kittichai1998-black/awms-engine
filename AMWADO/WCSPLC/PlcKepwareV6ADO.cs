@@ -66,8 +66,11 @@ namespace ADO.WCSPLC
                 }
             }
 
-            _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_READ");
-            _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_WRITE");
+            if (!this.PlcDeviceName.StartsWith("SHU"))
+            {
+                _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_READ");
+                _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_WRITE");
+            }
 
             this.OPC_ItemIndexs = new Dictionary<string, int>();
             this.OPC_ItemIDs = Array.CreateInstance(typeof(string), _OPCItemIDs.Count + 1);

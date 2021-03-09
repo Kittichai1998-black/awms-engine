@@ -34,12 +34,13 @@ namespace AWCSEngine.Controller
         {
             return this.McObjectList.FirstOrDefault(x => x.McObj.Cur_Location_ID == curLocID);
         }
-        public List<BaseMcRuntime> ListMcRuntimeByLocation(int? bank,int? bay,int? lv)
+        public List<BaseMcRuntime> ListMcRuntimeByLocation(long whID,int? bank,int? bay,int? lv)
         {
-            return this.McObjectList.FindAll(x =>
+            return this.McObjectList.Where(x =>
+            x.Cur_Area.Warehouse_ID == whID &&
             (!bank.HasValue || x.Cur_Location.GetBank() == bank.Value) &&
             (!bay.HasValue || x.Cur_Location.GetBay() == bay.Value) &&
-            (!lv.HasValue || x.Cur_Location.GetLv() == lv.Value) );
+            (!lv.HasValue || x.Cur_Location.GetLv() == lv.Value) ).ToList();
         }
         public BaseMcRuntime GetMcRuntimeByLocation(string curLocCode)
         {

@@ -15,11 +15,11 @@ using System.Text.RegularExpressions;
 
 namespace AWCSEngine.Engine.McRuntime
 {
-    public abstract class BaseMcRuntime : BaseEngine<NullCriteria, NullCriteria>, IDisposable
+    public abstract partial class BaseMcRuntime : BaseEngine<NullCriteria, NullCriteria>, IDisposable
     {
         private act_McObject _McObj_TMP { get; set; }
-        private Action<BaseMcRuntime> _Callback_OnChange { get; set; }
-        private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
+        private Func<BaseMcRuntime, bool> _Callback_OnChange { get; set; }
+        //private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
 
         protected abstract void OnRun();
         protected abstract bool OnRun_IDLE();
@@ -100,6 +100,11 @@ namespace AWCSEngine.Engine.McRuntime
 
             this.McWork4Work = McWorkADO.GetInstant().GetByCurMcObject(this.McMst.ID.Value, this.BuVO);
             this.McWork4Receive = McWorkADO.GetInstant().GetByDesMcObject(this.McMst.ID.Value, this.BuVO);
+            if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_KEEP)
+            {
+                this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+                DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
+            }
             this.McObj = McObjectADO.GetInstant().GetByMstID(this.McMst.ID.Value, this.BuVO);
             this._McObj_TMP = this.McObj.Clone();
             this.McObj.EventStatus = McObjectEventStatus.IDEL;
@@ -114,13 +119,13 @@ namespace AWCSEngine.Engine.McRuntime
             this.McObj.GetType().GetFields().ToList().ForEach(x => { if (x.Name.StartsWith("DV_")){ this.DeviceNames.Add(x.Name.Substring(3)); } });
         }
 
-        public bool PostCommand(McCommandType comm, Action<BaseMcRuntime> callback_OnChange)
+        public bool PostCommand(McCommandType comm, Func<BaseMcRuntime, bool> callback_OnChange)
         {
             return this.PostCommand(comm, new ListKeyValue<string, object>(), callback_OnChange);
         }
         public bool PostCommand(McCommandType comm,
             int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
-            Action<BaseMcRuntime> callback_OnChange)
+            Func<BaseMcRuntime, bool> callback_OnChange)
         {
             return this.PostCommand(comm, ListKeyValue<string, object>
                             .New("Set_SouLoc", Set_SouLoc)
@@ -129,7 +134,7 @@ namespace AWCSEngine.Engine.McRuntime
                             .Add("Set_PalletID", Set_PalletID)
                             .Add("Set_Weigth", Set_Weigh), callback_OnChange);
         }
-        public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Action<BaseMcRuntime> callback_OnChange)
+        public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Func<BaseMcRuntime,bool> callback_OnChange)
         {
             //if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
             {
@@ -143,129 +148,6 @@ namespace AWCSEngine.Engine.McRuntime
 
             }
             return true;
-        }
-        public void McWork_WorkedToReceive_NextMC(long toMcID)
-        {
-            var nextMc = McRuntimeController.GetInstant().GetMcRuntime(toMcID);
-            nextMc.McWork4Receive = this.McWork4Work;
-
-            this.McWork4Work.Des_McObject_ID = toMcID;
-            this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
-            this.McWork4Work.ActualTime = DateTime.Now;
-
-            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
-        }
-        public act_McWork McWork_ReceiveToWorking()
-        {
-            
-            var fromMc = McRuntimeController.GetInstant().GetMcRuntime(this.McWork4Receive.Cur_McObject_ID.Value);
-            if (this.McWork4Work == null && fromMc.McWork4Work.Des_McObject_ID != this.ID)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_CANT_WORKACTION, "McWork_ReceiveToWorking");
-            this.McWork4Work = fromMc.McWork4Work;
-            fromMc.McWork4Work = null;
-            this.McWork4Receive = null;
-            this.McWork4Work.Cur_McObject_ID = this.ID;
-            this.McWork4Work.Des_McObject_ID = null;
-            this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
-            this.McWork4Work.ActualTime = DateTime.Now;
-            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
-            return this.McWork4Work;
-        }
-        public void McWork_WorkingToWorked()
-        {
-            if (this.McWork4Work == null || this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_CANT_WORKACTION, "McWork_WorkingToWorked");
-
-            this.McObj.Cur_Location_ID = 0;
-            this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
-            this.McWork4Work.ActualTime = DateTime.Now;
-            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
-        }
-        public void McWork_WorkedToDone()
-        {
-            if (this.McWork4Work != null &&
-                this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED &&
-                this.McWork4Work.Cur_Location_ID == (this.McWork4Work.Des_Location_ID ?? this.McWork4Work.Cur_Location_ID) &&
-                this.McWork4Work.Cur_Area_ID == this.McWork4Work.Des_Area_ID)
-            {
-                this.McWork4Work.EventStatus = McWorkEventStatus.DONE_QUEUE;
-                this.McWork4Work.Status = EntityStatus.DONE;
-                this.McWork4Work.EndTime = DateTime.Now;
-                this.McWork4Work.ActualTime = DateTime.Now;
-                DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
-                this.McWork4Work = null;
-            }
-            else
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_CANT_WORKACTION, "McWork_Done");
-            }
-        }
-        /*public void McWork_SetStandMc(long mcID)
-        {
-            this.McWork.Next_McObject_ID = mcID;
-            this.McWork.ActualTime = DateTime.Now;
-            this.McWork.EventStatus = McWorkEventStatus.ACTIVE_NEXT;
-            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork, this.BuVO);
-        }
-        public void McWork_SetNextMc(long mcID)
-        {
-            this.McWork.Next_McObject_ID = mcID;
-            this.McWork.ActualTime = DateTime.Now;
-            this.McWork.EventStatus = McWorkEventStatus.ACTIVE_NEXT;
-            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork, this.BuVO);
-        }
-        public void McWork_Next()
-        {
-            if (this.McWork.EventStatus != McWorkEventStatus.ACTIVE_NEXT)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_SET_STATUS_FAIL);
-            this.McWork.Cur_McObject_ID = this.McWork.Next_McObject_ID;
-            this.McWork.Next_McObject_ID = null;
-            this.McWork.EventStatus = McWorkEventStatus.ACTIVE_STAND;
-
-            DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork, this.BuVO);
-        }
-        private bool McWork_Clear()
-        {
-            if(this.McWork.Cur_McObject_ID != null)
-            {
-                this.McWork.Cur_McObject_ID = null;
-                return true;
-            }
-            return false;
-        }*/
-
-        public act_BaseObject Push_BaseObj_byLoc(long fromLocID)
-        {
-            var baseObj = BaseObjectADO.GetInstant().GetByLocation(fromLocID, BuVO);
-            if (baseObj == null)
-            {
-                var loc = StaticValueManager.GetInstant().GetLocation(fromLocID);
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_STOinLOC_NOT_FOUND,loc.Code);
-            }
-
-            baseObj.Location_ID = this.McObj.Cur_Location_ID.Value;
-            baseObj.McObject_ID = this.McObj.ID.Value;
-            DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
-            return baseObj;
-        }
-        public act_BaseObject Pop_BaseObj_byLoc(int toLocID)
-        {
-            var baseObj = BaseObjectADO.GetInstant().GetByMcObject(this.McMst.ID.Value, BuVO);
-            if (baseObj == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_STOinMC_NOT_FOUND, this.McMst.Code);
-
-            var loc = StaticValueManager.GetInstant().GetLocation(toLocID);
-            var baseObj2 = BaseObjectADO.GetInstant().GetByLocation(toLocID, BuVO);
-            if (baseObj2 != null)
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_BASEBLOCK_LOCATION, loc.Code);
-            }
-
-            baseObj.Area_ID = loc.Area_ID;
-            baseObj.Location_ID = loc.ID.Value;
-            baseObj.McObject_ID = null;
-            DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
-            return baseObj;
         }
 
 
@@ -298,11 +180,9 @@ namespace AWCSEngine.Engine.McRuntime
             }
             finally
             {
-                if(this._McObjectEventStatus_Tmp != this.McObj.EventStatus)
+                if (this._Callback_OnChange != null)
                 {
-                    this._McObjectEventStatus_Tmp = this.McObj.EventStatus;
-                    if (this._Callback_OnChange != null)
-                        this._Callback_OnChange(this);
+                    this._Callback_OnChange(this);
                 }
             }
 
@@ -481,7 +361,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void _5_MessageLog_OnRun(string error = "")
         {
             //if (error != "") { this.MessageLog = error; return; }
-
+            
             this.MessageLog = $"({this.EventStatus.ToString().Substring(0,4)} {(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}) > ";
             this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
             {
@@ -491,6 +371,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.MessageLog += name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)) + " | ";
                 }
             });
+            this.MessageLog += "\n:::::::" + error;
         }
 
         public void Dispose()

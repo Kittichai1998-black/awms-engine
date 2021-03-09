@@ -1,11 +1,13 @@
 ﻿using ADO.WCSDB;
 using AMSModel.Constant.EnumConst;
 using AMSModel.Entity;
+using AMWUtil.Common;
 using AWCSEngine.Engine.McRuntime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AWCSEngine.Engine.WorkRuntime
 {
@@ -34,50 +36,95 @@ namespace AWCSEngine.Engine.WorkRuntime
 
             this.McSrmIn = McController.GetMcRuntime("SRM11");
 
-            this.McShus = null;
+            this.McShus = new List<BaseMcRuntime>();
+            this.McShus.Add(McController.GetMcRuntime("SHU#11"));
 
             this.McSrmOut = null;
 
             this.McCVGOut = null;
 
-
+            this.McAll = new List<BaseMcRuntime>();
             this.McAll.AddRange(McGateManualIn);
             this.McAll.AddRange(McGateAutoIn);
             this.McAll.Add(McSrmIn);
+            this.McAll.AddRange(McShus);
         }
 
         protected override void OnRun()
         {
-
+            this.Inbound_OnRun();
         }
 
         private void Inbound_OnRun()
         {
-            return;
-            var mcWorkInactives = McWorkADO.GetInstant().ListInactive_inWarehouse("W8", this.BuVO);
-
-            this.McAll.ForEach(mc =>
+            var mcWork_Workeds = McWorkADO.GetInstant().ListWorked_inWarehouse("W8", this.BuVO);
+            var wh8 = this.StaticValue.GetWarehouse("W8");
+            mcWork_Workeds.ForEach(work =>
             {
-                if(mc.McWork4Work != null &&
-                    mc.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED)
+                var _mcGateIn = this.McGateManualIn.FirstOrDefault(x => x.McWork4Work != null && x.McWork4Work.ID == work.ID);
+                if (_mcGateIn != null)//รับเข้า Gate INBOUND
                 {
-                    var nextLocIds = mc.McWork4Work.GetChild_TreeRoute().Select(x => x.Value);
-                    BaseMcRuntime mcNext = this.McAll.FirstOrDefault(x => x.McWork4Work == null && nextLocIds.Contains(x.Cur_Location.ID.Value));
-                    if(mcNext != null)
+                    var workDesLoc = this.StaticValue.GetLocation(work.Des_Location_ID.Value);
+                    var _mcShuInRow = McController.ListMcRuntimeByLocation(wh8.ID.Value, null, workDesLoc.GetBay(), workDesLoc.GetLv()).FirstOrDefault();
+                    if (_mcShuInRow == null)//ไม่พบ Shuttle บนแถว
                     {
-                        mcNext.McWork_WorkedToReceive_NextMC(mc.ID);
+                        var _mcShuFree = this.McShus.FirstOrDefault(x => x.McWork4Receive == null && x.McWork4Work == null);
+                        if (_mcShuFree != null)//มี SHU ที่สามารถย้ายได้
+                        {
+                            _mcGateIn.McWork_3_WorkedToKeep();
+                            _mcShuFree.PostCommand(McCommandType.CM_62,//SHU กลับ Stanby หน้า
+                                (_mcShuFree_90) =>
+                                {
+                                    while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return true;
+
+                                    _mcShuFree_90.PostCommand(McCommandType.CM_60,
+                                        (_mcShuFree_82) =>//ปิดเครื่อง SHU เพื่อย้าย
+                                            {
+                                                if (_mcShuFree_82.McObj.DV_Pre_Status != 82) return true;
+
+                                                var _srm_souLocCode = _mcShuFree_82.Cur_Location.Code.Get2<int>() % 1000000;
+                                                _srm_souLocCode += 2000000;
+                                                var _srm_desLocCode = workDesLoc.Code.Get2<int>() % 1000000;
+                                                _srm_desLocCode += 2000000;
+                                                this.McSrmOut.PostCommand(McCommandType.CM_1,
+                                                    _srm_souLocCode, _srm_desLocCode, 3, "0000000000", 1000,
+                                                    (_mcSrmOut_90) =>//SRM ย้าย SHU
+                                                    {
+                                                        while (_mcSrmOut_90.McObj.DV_Pre_Status != 90) return true;
+                                                        _mcShuFree_82.PostCommand(McCommandType.CM_1,
+                                                                ListKeyValue<string, object>
+                                                                .New("Set_SouLoc", _srm_desLocCode % 1000000)
+                                                                .Add("Set_ShtDi", 1),
+                                                                (_mcShuFree_90) =>//เปิด SHU
+                                                                    {
+                                                                        while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return true;
+                                                                        _mcGateIn.McWork_0_WorkedToReceive_NextMC(_mcSrmOut_90.ID);
+                                                                        return false;
+                                                                });
+                                                        return false;
+                                                    });
+                                                return false;
+                                        });
+                                    return false;//end _mcShuFree_90
+                                });
+                        }
                     }
-                    else
+                    else if (_mcShuInRow != null)//พบ shuttle ในแถว
                     {
-                        ///////สำหรับ Mc Location ไม่ตรง ต้องหา Mc ที่อยู่ Area เดียวกันมารับ
+                        _mcShuInRow.PostCommand(McCommandType.CM_2,
+                        (_mcShuFree_90) =>//SHU กลับ Home
+                        {
+                            if (_mcShuFree_90.McObj.DV_Pre_Status != 90) return true;
+                                _mcGateIn.McWork_0_WorkedToReceive_NextMC(this.McSrmOut.ID);
+                            return false;
+                        });
                     }
-                } 
+                }
             });
         }
 
         protected override void OnStop()
         {
-
         }
     }
 }

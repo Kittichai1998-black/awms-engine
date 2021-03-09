@@ -183,14 +183,33 @@ namespace AWCSEngine
             }
             else if (comm[0].ToLower().Equals("/mcwork"))
             {
-                if (comm[1].ToLower().Equals("new"))
+                if (comm[1].ToLower().Equals("all"))
                 {
                     string baseCode = comm[2];
-                    string desLocCode = comm[3];
+                    string mcCode = comm[3];
+                    string desCode = comm[4];
+                    var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(mcCode);
+
+                    ADO.WCSDB.DataADO.GetInstant().Insert<act_BaseObject>(new act_BaseObject()
+                    {
+                        Code = baseCode,
+                        Area_ID = mc.Cur_Area.ID.Value,
+                        Location_ID = mc.Cur_Location.ID.Value,
+                        LabelData = null,
+                        Model = null,
+                        McObject_ID = mc.ID,
+                        SkuCode = "TEST01",
+                        SkuName = "TEST01",
+                        SkuQty = 1000,
+                        SkuUnit = "kg",
+                        WeiKG = 1000,
+                        Status = EntityStatus.ACTIVE,
+                        Options = null,
+                        EventStatus = BaseObjectEventStatus.IDLE
+                    }, null);
                     var baseObj = BaseObjectADO.GetInstant().GetByCode(baseCode, null);
-                    var desLoc = StaticValueManager.GetInstant().GetLocation(desLocCode);
-                    var curArea = StaticValueManager.GetInstant().GetArea(baseObj.Area_ID);
-                    var treeRouting = LocationUtil.GetLocationRouteTree(baseObj.Location_ID, desLoc.Area_ID, desLoc.ID);
+                    var desLoc = StaticValueManager.GetInstant().GetLocation(desCode);
+                    //var treeRouting = LocationUtil.GetLocationRouteTree(mc.Cur_Location.ID.Value, desLoc.Area_ID, desLoc.ID);
                     DataADO.GetInstant().Insert<act_McWork>(new act_McWork()
                     {
                         Priority = PriorityType.NORMAL,
@@ -198,20 +217,25 @@ namespace AWCSEngine
                         SeqItem = 0,
                         BaseObject_ID = baseObj.ID.Value,
                         WMS_WorkQueue_ID = null,
-                        Cur_Warehouse_ID = curArea.Warehouse_ID,
-                        Cur_Area_ID = baseObj.Area_ID,
-                        Cur_Location_ID = baseObj.Location_ID,
-                        Sou_Area_ID = baseObj.Area_ID,
-                        Sou_Location_ID = baseObj.Location_ID,
+                        Cur_McObject_ID = mc.ID,
+                        Des_McObject_ID = null,
+                        Cur_Warehouse_ID = mc.Cur_Area.Warehouse_ID,
+                        Cur_Area_ID = mc.Cur_Area.ID.Value,
+                        Cur_Location_ID = mc.Cur_Location.ID.Value,
+                        Sou_Area_ID = mc.Cur_Area.ID.Value,
+                        Sou_Location_ID = mc.Cur_Location.ID.Value,
                         Des_Area_ID = desLoc.Area_ID,
                         Des_Location_ID = desLoc.ID.Value,
                         StartTime = DateTime.Now,
                         ActualTime = DateTime.Now,
                         EndTime = null,
-                        TreeRoute = treeRouting.Json(),
+                        TreeRoute = "",//treeRouting.Json(),
+                        EventStatus = McWorkEventStatus.ACTIVE_WORKING,
                         Status = EntityStatus.ACTIVE
                     }, null);
 
+
+                    mc.McWork_0_Reload();
                 }
             }
         

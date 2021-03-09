@@ -16,8 +16,8 @@ namespace AMSModel.Entity
         [Display(Name = "รายละเอียด", Order = 3)]
         public string Description;
 
-        public int GetBank() { return Code.Substring(0, 3).Get2<int>(); }
-        public int GetBay() { return Code.Substring(3, 3).Get2<int>(); }
-        public int GetLv() { return Code.Substring(6, 3).Get2<int>(); }
+        public int GetBank() { return Code.Length < 3 ? 0 : Code.Substring(0, 3).Get2<int>(); }
+        public int GetBay() { return Code.Length < 6 ? 0 : Code.Substring(3, 3).Get2<int>(); }
+        public int GetLv() { return Code.Length < 9 ? 0 : Code.Substring(6, 3).Get2<int>(); }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AWCSEngine.Engine.McRuntime
@@ -13,10 +14,13 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            if(this.McObj.DV_Pre_Zone == 1)
+            if (this.McObj.DV_Pre_Zone != 0)
             {
-                var oldLoc = StaticValue.GetLocation(this.Cur_Location.ID.Value);
-                this.McObj.Cur_Location_ID = 0;
+                string rowLv = this.McObj.DV_Pre_RowLevel.ToString("000000");
+                var curLoc = this.StaticValue.ListLocationByWarehouse(this.Cur_Area.Warehouse_ID)
+                    .FirstOrDefault(x => x.Code.EndsWith(rowLv) && x.Info1.ToLower() == "zone_" + this.McObj.DV_Pre_Zone);
+                if (curLoc != null)
+                    this.McObj.Cur_Location_ID = curLoc.ID.Value;
             }
         }
 

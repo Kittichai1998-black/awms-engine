@@ -16,20 +16,25 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            if (this.McWork4Work != null)
+            if (this.McWork4Receive != null)
             {
-                var baseObj = BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
-                if (this.Cur_Location.ID == this.McWork4Work.Cur_Location_ID)
-                {
                     if (this.McObj.DV_Pre_Status == 98)
                     {
-                        this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, null);
+                        var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
+                        var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
+                        this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, 
+                            (mc)=>
+                            {
+                                if (mc.EventStatus == McObjectEventStatus.WORKING)
+                                    this.McWork_1_ReceiveToWorking();
+                            });
                     }
-                    else if (this.McObj.DV_Pre_Status == 4 &&
-                        this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
-                    {
-                        this.McWork_WorkingToWorked();
-                    }
+            }
+            else if (this.McWork4Work != null)
+            {
+                if (this.McObj.DV_Pre_Status == 4 && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
+                {
+                    this.McWork_2_WorkingToWorked();
                 }
             }
         }
