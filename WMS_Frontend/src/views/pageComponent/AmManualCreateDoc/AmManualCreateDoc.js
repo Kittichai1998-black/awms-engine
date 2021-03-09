@@ -501,7 +501,7 @@ const AmManualCreateDoc = props => {
                       <AmDocumentStatus style={{ width: "30px" }} labelShort={y.DocitemEventStatus} statusCode={y.DocitemEventStatus} />
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet No.: </label>
+                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={2} xl={1}>
                       <label>{y.BaseCode}</label>
@@ -549,7 +549,7 @@ const AmManualCreateDoc = props => {
                       <AmDocumentStatus style={{ width: "30px" }} labelShort={y.DocitemEventStatus} statusCode={y.DocitemEventStatus} />
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
-                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet No.: </label>
+                      <label style={{ fontWeight: "bold", float: "right", paddingRight: "5px" }}>Pallet : </label>
                     </Grid>
                     <Grid item xs={3} sm={2} md={2} lg={1} xl={1}>
                       <label>{y.PalletCode}</label>

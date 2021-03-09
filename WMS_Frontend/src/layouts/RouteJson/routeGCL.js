@@ -58,17 +58,24 @@ const CreateGRByQR = Loadable({
 });
 
 const RegistShuttle = Loadable({
-    loader: () => import("../../views/page/GCL/Receive/RegistShuttle"),
-    loading: Loading
+  loader: () => import("../../views/page/GCL/Receive/RegistShuttle"),
+  loading: Loading
 });
+
+// const GR_Detail = Loadable({
+//   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
+//   loading: Loading
+// });
 const routes = [
 
   { path: "/monitor/location", name: "Monitor Location", compoment: Monitor_Location, exact: true, child: true },
   { path: "/receive/mappingreceive", name: "GR HH", compoment: GR_PalletByHH, exact: true, child: true },
-   { path: "/receive/registsht", name: "regis SH", compoment: RegistShuttle, exact: true, child: true },
+  { path: "/receive/registsht", name: "regis SH", compoment: RegistShuttle, exact: true, child: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/search", name: "GR Search", compoment: GR_Search, exact: true },
+  { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+  //{ path: "/receive/detail", name: "GR Create", compoment: GR_Detail, exact: true },
 
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaysearch", name: "PA Search", compoment: PA_Search, exact: true },
@@ -79,8 +86,8 @@ const routes = [
   { path: "/issue/manualcreate", name: "GRI HH", compoment: CreateGIByQR, exact: true },
 
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
-    { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
-    { path: "/setting/registsht", name: "PK Search", compoment: RegistShuttle, exact: true },
+  { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
+  { path: "/setting/registsht", name: "PK Search", compoment: RegistShuttle, exact: true },
 ];
 
 export default routes;
