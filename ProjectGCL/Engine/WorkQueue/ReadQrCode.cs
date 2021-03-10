@@ -130,15 +130,15 @@ namespace ProjectGCL.Engine.WorkQueue
                                     if (item.Options != null && docTypeIDs == 1001)
                                     {
 
-                                        var startPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(item.Options, GCLOptionVOConst.OPT_START_PALLET);
-                                        var endPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(item.Options, GCLOptionVOConst.OPT_END_PALLET);
-
-                                        //var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                        var startPallet = Int32.Parse(startPalletOp);
-                                        var endPallet = Int32.Parse(endPalletOp);
+                                        string codeMax = docItembygade.Max(x => x.BaseCode);
+                                        string codeMin = docItembygade.Min(x => x.BaseCode);
+                                        var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
+                                        var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
+                                        var palletMax = Int32.Parse(baseCodeMax.pallet);
+                                        var palletMin = Int32.Parse(baseCodeMin.pallet);
                                         var noPallet = Int32.Parse(qrModel.pallet);
 
-                                        if (noPallet < endPallet)
+                                        if (noPallet >= palletMin && noPallet <= palletMax)
                                         {
 
                                             docId = doc.ID;
@@ -153,8 +153,6 @@ namespace ProjectGCL.Engine.WorkQueue
 
                             });
                         }
-                  
-                
                 }
             }
             else {

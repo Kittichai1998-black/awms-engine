@@ -371,26 +371,32 @@ const MappingReceive_HH = (props) => {
                 return <RenderAddBarCode data={inputList} />
             case 2:
                 return <><div>
-                    {dataDoc ? <div><FormInline>
-                        <labelHead>Document No. : </labelHead>
-                        <labelText>{dataDoc.docCode}</labelText>
-                    </FormInline>
+                    {dataDoc ? <div>
+                        <FormInline>
+                            <labelHead>Document No. : </labelHead>
+                            <labelText>{dataDoc.docCode}</labelText>
+                        </FormInline>
+
                         <FormInline>
                             <labelHead>Gade :</labelHead>
                             <labelText>{dataDoc.gade}</labelText>
                         </FormInline>
+
                         <FormInline>
                             <labelHead>Lot : </labelHead>
                             <labelText>{dataDoc.lot}</labelText>
                         </FormInline>
+
                         <FormInline>
                             <labelHead>Start Pallet : </labelHead>
                             <labelText>{dataDoc.start_pallet}</labelText>
                         </FormInline>
+
                         <FormInline>
                             <labelHead>End Pallet : </labelHead>
                             <labelText>{dataDoc.end_pallet}</labelText>
-                        </FormInline></div> : null}
+                        </FormInline>
+                    </div> : null}
                 </div></>;
             default:
                 return 'Unknown step';
@@ -550,17 +556,13 @@ const MappingReceive_HH = (props) => {
             "QR": barcode_pstos,
             "DocID": dataDoc !== undefined ? dataDoc.docId : null
         }
-        console.log(barcode_pstos)
-        console.log(dataDoc)
-        console.log(datas)
+
         Axios.post(window.apipath + '/v2/write_file_post_wcs', datas).then((res) => {
             if (res.data._result.status === 1) {
-                //setdataDoc(res.data);
-                setSettingAlert({ type: "success", content: "Success", state: true })
+                setSettingAlert({ type: 'success', message: res.data._result.message, state: true });
             } else {
-                setSettingAlert({ type: "error", content: res.data._result.message, state: true })
-                //setOpenAlert(true);
-                //setdataDoc();
+                setSettingAlert({ type: 'error', message: res.data._result.message, state: true });
+
             }
         });
 

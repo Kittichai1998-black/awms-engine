@@ -88,8 +88,8 @@ namespace ProjectGCL.Engine.Document
             //res.datas = new List<TRes.DocData>();
             foreach (var qrCode in reqVO.qrCodes)
             {
-                var qrModel1 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode1, "{gade} {lot} {pallet}");
-                var qrModel2 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode2, "{gade} {lot} {pallet}");
+                var qrModel1 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode1, "{gade}  {lot}  {pallet}");
+                var qrModel2 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode2, "{gade}  {lot}  {pallet}");
 
                 if (qrModel1 == null && qrModel2 == null)
                 {
@@ -134,21 +134,20 @@ namespace ProjectGCL.Engine.Document
                                 {
                                     if (docI.Options != null && docTypeIDs == 1011)
                                     {
-                                        var startPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(docI.Options, GCLOptionVOConst.OPT_START_PALLET);
-                                        var endPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(docI.Options, GCLOptionVOConst.OPT_END_PALLET);
-
-                                        //var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                        var startPallet = Int32.Parse(startPalletOp);
-                                        var endPallet = Int32.Parse(endPalletOp);
+                                        string codeMax = docItembygade.Max(x => x.BaseCode);
+                                        string codeMin = docItembygade.Min(x => x.BaseCode);
+                                        var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
+                                        var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
+                                        var palletMax = Int32.Parse(baseCodeMax.pallet);
+                                        var palletMin = Int32.Parse(baseCodeMin.pallet);
                                         var noPallet1 = Int32.Parse(qrModel1.pallet);
                                         var noPallet2 = Int32.Parse(qrModel2.pallet);
 
-                                        if (noPallet1 <= endPallet && noPallet2 <= endPallet)
+                                        if (noPallet1 >= palletMin && noPallet1 <= palletMax && noPallet2 >= palletMin && noPallet2 <= palletMax)
                                         {
-                                            res.start_pallet = startPalletOp;
-                                            res.end_pallet = endPalletOp;
                                             res.docId = doc.ID;
-
+                                            res.start_pallet = baseCodeMin.pallet;
+                                            res.end_pallet = baseCodeMax.pallet;
                                         }
                                         else
                                         {
@@ -187,6 +186,8 @@ namespace ProjectGCL.Engine.Document
                         new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                      }, this.BuVO);
 
+               
+
 
                     docItembygade.ForEach(docI =>
                     {
@@ -207,24 +208,21 @@ namespace ProjectGCL.Engine.Document
                             {
                                 if (docI.Options != null && docTypeIDs == 1011)
                                 {
-                                    //var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(doc.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                    //var startPallet = Int32.Parse(docoption.startPallet);
-                                    //var endPallet = Int32.Parse(docoption.endPallet);
-                                    //var noPallet = Int32.Parse(qrModel1.pallet);
-                                    var startPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(docI.Options, GCLOptionVOConst.OPT_START_PALLET);
-                                    var endPalletOp = AMWUtil.Common.ObjectUtil.QryStrGetValue(docI.Options, GCLOptionVOConst.OPT_END_PALLET);
-
-                                    //var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(docI.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                    var startPallet = Int32.Parse(startPalletOp);
-                                    var endPallet = Int32.Parse(endPalletOp);
+                                    string codeMax = docItembygade.Max(x => x.BaseCode);
+                                    string codeMin = docItembygade.Min(x => x.BaseCode);
+                                    var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
+                                    var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
+                                    var palletMax = Int32.Parse(baseCodeMax.pallet);
+                                    var palletMin = Int32.Parse(baseCodeMin.pallet);
                                     var noPallet1 = Int32.Parse(qrModel1.pallet);
-                                
+                                 
 
-                                    if (noPallet1 <= endPallet)
+                                    if (noPallet1 >= palletMin && noPallet1 <= palletMax)
                                     {
-                                        res.start_pallet = startPalletOp;
-                                        res.end_pallet = endPalletOp;
-                                       // res.docId = doc.ID;
+                                       
+                                       res.docId = doc.ID;
+                                       res.start_pallet = baseCodeMin.pallet;
+                                       res.end_pallet = baseCodeMax.pallet;
 
 
                                         var datasdocumentPA = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
