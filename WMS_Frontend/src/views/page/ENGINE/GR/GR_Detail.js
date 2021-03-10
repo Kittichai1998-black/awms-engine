@@ -29,7 +29,7 @@ const GR_Detail = props => {
                 //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
                 CreateputAway={true}
-                TextBtnCreateputAway={'Creare PutAway'}
+                TextBtnCreateputAway={'Create PutAway'}
                 apiCreate={'/receive/putawaycreate?docID='}
                 columns={columns}
                 typeDoc={"received"}
@@ -39,7 +39,7 @@ const GR_Detail = props => {
                 buttonBack={true}
                 linkBack={"/receive/search"}
                 history={props.history}
-                usePrintPDF={true}
+                usePrintPDF={false}
             >
             </DocView>
             )
@@ -48,32 +48,19 @@ const GR_Detail = props => {
     }, [header])
 
     useEffect(() => {
-        if (OwnerGroupType !== undefined) {
-            var DataprocessType;
-            if (OwnerGroupType === 1) {
-                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse" , values: "SouWarehouseName" }
-            } else if (OwnerGroupType === 2) {
-                DataprocessType = { label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" }
-            } else if (OwnerGroupType === 3) {
-                DataprocessType = { label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" }
-            } else {
-                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" }
-            }
-        }
+
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc Date", values: "DocumentDate", type: "date" }
+                { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", value:  "DocumentProcessTypeCode",values : "ReDocumentProcessTypeName" },
+                { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
+
             [
-                { label: "PO NO.", values: "Ref1" }
-            ],
-            [
-                DataprocessType,
+                { label: "Bagging", value: "Ref2" },
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
@@ -89,17 +76,17 @@ const GR_Detail = props => {
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
         {
             Header: "Item Code",
-            Cell: e => { return e.original.SKUMaster_Code},
-            CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
+            Cell: e => { return e.original.SKUMaster_Code },
+            CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
         {
             Header: "Item Name",
             Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
+            CellPDF: e => { return e.SKUMaster_Name }, widthPDF: 40
         },
-        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
-        { Header: "Lot", accessor: "Lot",width: 130, widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+
+        { Header: "Lot", accessor: "Lot", width: 130, widthPDF: 25 },
+        { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
@@ -107,12 +94,11 @@ const GR_Detail = props => {
             Header: "Quality Status", accessor: "AuditStatus",
             Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
+            widthPDF: 30,
+            width: 30,
         },
         { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
-        { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
+
     ];
 
 
@@ -130,12 +116,11 @@ const GR_Detail = props => {
             }
         },
         { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
-        { Header: "Pack Code", accessor: "packCode",  widthPDF: 10, width: 150,  },
+        { Header: "Pack Code", accessor: "packCode", widthPDF: 10, width: 150, },
         { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
-        { Header: "Pallet",width: 100, accessor: "rootCode", widthPDF: 10 },
-        { Header: "Control NO.", accessor: "diOrderNo", widthPDF: 10 },
+        { Header: "Pallet", width: 100, accessor: "rootCode", widthPDF: 10 },
         { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Grade", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
         //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
         { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
@@ -146,17 +131,6 @@ const GR_Detail = props => {
             widthPDF: 10
         },
         { Header: "Remark", accessor: "remark", widthPDF: 10 },
-        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        {
-            Header: "MFG.Date", accessor: "diProductionDate",
-            Cell: e => getFormatDatePro(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDatePro(e)
-        },
-        {
-            Header: "Expire Date", accessor: "diExpireDate",
-            Cell: e => getFormatDateExp(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDateExp(e)
-        },
     ];
 
     const getFormatDatePro = (e) => {
@@ -200,7 +174,7 @@ const GR_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 0 )
+        if (value.status === 0)
             return <Circle style={{ color: "gray" }} />;
         else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
@@ -223,6 +197,7 @@ const GR_Detail = props => {
 
 
     const GetAuditStatusIcon = (value) => {
+        console.log(value.diAuditStatus)
         if (value.diAuditStatus != undefined) {
             return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
         } else if (value.AuditStatus != undefined) {
@@ -239,7 +214,12 @@ const GR_Detail = props => {
 
 
 
-    return ({docview});
+    return (
+        <div>
+            <div>{docview}</div>
+        </div>
+
+    );
 };
 
 export default GR_Detail;
