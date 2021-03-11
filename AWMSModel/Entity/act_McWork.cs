@@ -13,8 +13,8 @@ namespace AMSModel.Entity
         public long SeqGroup;
         public int SeqItem;
         public long? WMS_WorkQueue_ID;
+        public long? Rec_McObject_ID;
         public long? Cur_McObject_ID;
-        public long? Des_McObject_ID;
         public long BaseObject_ID;
         public long Cur_Warehouse_ID;
         public long Cur_Area_ID;

@@ -31,6 +31,12 @@ namespace AWCSEngine
             this.lisDisplayCommand.Items.Add("{srm} {command} {sou} {des} {unit} {pallet} {weigth}");
             this.lisDisplayCommand.Items.Add("/mcwork all {machine} {des_loc} {pallet}");
             this.lisDisplayCommand.Items.Add("-------------------------------------");
+
+
+            this.lisDisplayDevices.Items.Add("<<====== Devices ======>>");
+            this.lisDisplayMcLists.Items.Add("<<====== Machines ======>>");
+            this.lisDisplayEvents.Items.Add("<<====== Events ======>>");
+
             this.wkDisplay.RunWorkerAsync();
         }
 
@@ -64,25 +70,22 @@ namespace AWCSEngine
         }
         private void wkDisplay_DoWork(object sender, DoWorkEventArgs e)
         {
-            this.lisDisplayMcLists_Add("<<====== Machines ======>>");
-            this.lisDisplayEvents_Add("<<====== Events ======>>");
 
-
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 1.ThreadMcRuntime.Initial Connecting..."));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (000%) 1.ThreadMcRuntime.Initial Connecting..."));
             ThreadMcRuntime.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 1.ThreadMcRuntime.Initial Connected!!!"));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (025%) 1.ThreadMcRuntime.Initial Connected!!!"));
 
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 2.ThreadWorkRuntime.Initial Connecting..."));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (030%) 2.ThreadWorkRuntime.Initial Connecting..."));
             ThreadWorkRuntime.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 2.ThreadWorkRuntime.Initial Connected!!!"));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (050%) 2.ThreadWorkRuntime.Initial Connected!!!"));
 
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 3.lisDisplayEvents.Initial Connecting..."));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (055%) 3.lisDisplayEvents.Initial Connecting..."));
             ThreadAPIFileRuntime.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 3.lisDisplayEvents.Initial Connected!!!"));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (075%) 3.lisDisplayEvents.Initial Connected!!!"));
 
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 4.lisDisplayEvents.Initial Connecting..."));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (080%) 4.lisDisplayEvents.Initial Connecting..."));
             ThreadWakeUp.GetInitial().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 4.lisDisplayEvents.Initial Connected!!!"));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > (100%) 4.lisDisplayEvents.Initial Connected!!!"));
 
 
 
@@ -101,10 +104,10 @@ namespace AWCSEngine
                         }
                     }));
                     this.lisDisplayEvents.Invoke((MethodInvoker)(() => {
-                        if (this.lisDisplayMcLists.Items.Count > 100)
+                        if (this.lisDisplayEvents.Items.Count > 100)
                             for (int i = 0; i < 50; i++)
-                                this.lisDisplayMcLists.Items.RemoveAt(1);
-                        foreach (var msg in DisplayController.McLists_Reading())
+                                this.lisDisplayEvents.Items.RemoveAt(1);
+                        foreach (var msg in DisplayController.Events_Reading())
                         {
                             this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, msg));
                         }
@@ -114,7 +117,6 @@ namespace AWCSEngine
                         this.lisDisplayDevices.Items.Clear();
                         if (!string.IsNullOrEmpty(this.McCode_ReadDeive))
                         {
-                            this.lisDisplayDevices.Items.Add("<<====== Devices ======>>");
                             var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(this.McCode_ReadDeive);
                             if (mc == null)
                             {
@@ -321,7 +323,7 @@ namespace AWCSEngine
                         BaseObject_ID = baseObj.ID.Value,
                         WMS_WorkQueue_ID = null,
                         Cur_McObject_ID = null,
-                        Des_McObject_ID = mc.ID,
+                        Rec_McObject_ID = mc.ID,
                         Cur_Warehouse_ID = mc.Cur_Area.Warehouse_ID,
                         Cur_Area_ID = mc.Cur_Area.ID.Value,
                         Cur_Location_ID = mc.Cur_Location.ID.Value,

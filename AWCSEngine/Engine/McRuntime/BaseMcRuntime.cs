@@ -33,7 +33,8 @@ namespace AWCSEngine.Engine.McRuntime
         //public act_BaseObject BaseObj { get; private set; }
 
         public acs_McCommand RunCmd { get => this.McObj.Command_ID == null ? null : StaticValueManager.GetInstant().GetMcCommand(this.McObj.Command_ID.Value); }
-        public List<acs_McCommandAction> RunCmdActions { get => this.McObj.Command_ID == null ? null : StaticValueManager.GetInstant().ListMcCommandAction(this.McObj.Command_ID.Value); }
+        public List<acs_McCommandAction> RunCmdActions { get => this.McObj.Command_ID == null ? null : StaticValueManager.GetInstant()
+                .ListMcCommandAction(this.McObj.Command_ID.Value).Where(x=>x.Seq>=this.McObj.CommandAction_Seq).ToList(); }
         public List<string> RunCmdParameters { get => this.McObj.CommandParameter == null?null:this.McObj.CommandParameter.Split("&").ToList(); }
 
 
@@ -99,7 +100,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.McObj.EventStatus = McObjectEventStatus.IDEL;
 
             this.McWork4Work = McWorkADO.GetInstant().GetByCurMcObject(this.McObj.ID.Value, this.BuVO);
-            this.McWork4Receive = McWorkADO.GetInstant().GetByDesMcObject(this.McObj.ID.Value, this.BuVO);
+            this.McWork4Receive = McWorkADO.GetInstant().GetByRecMcObject(this.McObj.ID.Value, this.BuVO);
             if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_KEEP)
             {
                 this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
@@ -118,9 +119,25 @@ namespace AWCSEngine.Engine.McRuntime
             this.OnStart();
         }
 
+        private int _Status4CallBack = -1;
+        private Action<BaseMcRuntime> _Status4CallBack_OnChange = null;
+        public void Remove_CallBackStatus()
+        {
+            this._Status4CallBack = -1;
+            this._Status4CallBack_OnChange = null;
+        }
+        public void CallBackStatus(int status,Action<BaseMcRuntime> callback_OnChange)
+        {
+            this._Status4CallBack = status;
+            this._Status4CallBack_OnChange = callback_OnChange;
+        }
         public bool PostCommand(McCommandType comm, Func<BaseMcRuntime, LoopResult> callback_OnChange)
         {
             return this.PostCommand(comm, new ListKeyValue<string, object>(), callback_OnChange);
+        }
+        public bool PostCommand(McCommandType comm)
+        {
+            return this.PostCommand(comm, new ListKeyValue<string, object>(), null);
         }
         public bool PostCommand(McCommandType comm,
             int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
@@ -148,7 +165,7 @@ namespace AWCSEngine.Engine.McRuntime
                 else
                 {
                     this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
-                    this.McObj.CommandAction_Seq = this.RunCmdActions.Min(x => x.Seq);
+                    this.McObj.CommandAction_Seq = 1;
                     this.McObj.CommandParameter = parameters.ToQryStr();
                     this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
                 }
@@ -167,7 +184,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
         public void SetAuto(bool isAuto)
         {
-            this.McObj.IsOnline = isAuto;
+            this.McObj.IsAuto = isAuto;
         }
 
 
@@ -257,6 +274,12 @@ namespace AWCSEngine.Engine.McRuntime
                     this._Callback_OnChange = null;
 
             }
+
+            if(this._Status4CallBack == this.McObj.DV_Pre_Status && this._Status4CallBack_OnChange != null)
+            {
+                this._Status4CallBack_OnChange(this);
+                this.Remove_CallBackStatus();
+            }
         }
 
         private void _3_Write_Cmd2Plc_OnRun()
@@ -317,17 +340,13 @@ namespace AWCSEngine.Engine.McRuntime
 
                 if (isNext)
                 {
-                    var _Next_CmdActs = this.RunCmdActions.FindAll(x => x.Seq > this.McObj.CommandAction_Seq.Value);
+                    this.McObj.CommandAction_Seq++;
                     if (this.McObj.EventStatus == McObjectEventStatus.COMMAND_CONDITION)
                     {
                         this.McObj.EventStatus = McObjectEventStatus.COMMAND_WRITING;
                     }
 
-                    if (_Next_CmdActs.Count > 0)
-                    {
-                        this.McObj.CommandAction_Seq = _Next_CmdActs.Min(x => x.Seq);
-                    }
-                    else
+                    if (this.RunCmdActions.Count <= 0)
                     {
                         this.McObj.Command_ID = null;
                         this.McObj.CommandAction_Seq = null;

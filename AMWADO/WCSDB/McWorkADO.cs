@@ -34,12 +34,12 @@ namespace ADO.WCSDB
                     .New("Status", EntityStatus.ACTIVE)
                     .Add("Cur_Location_ID", locID), buVO).FirstOrDefault();
         }
-        public act_McWork GetByDesMcObject(long curMcObjID, VOCriteria buVO)
+        public act_McWork GetByRecMcObject(long curMcObjID, VOCriteria buVO)
         {
             return DataADO.GetInstant().SelectBy<act_McWork>(
                 ListKeyValue<string, object>
                     .New("Status", EntityStatus.ACTIVE)
-                    .Add("Des_McObject_ID", curMcObjID), buVO).FirstOrDefault();
+                    .Add("Rec_McObject_ID", curMcObjID), buVO).FirstOrDefault();
         }
         public act_McWork GetByCurMcObject(long curMcObjID, VOCriteria buVO)
         {
