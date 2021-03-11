@@ -86,7 +86,7 @@ const DocumentSearch = props => {
                 widthDD: 220,
             },
         },
-        { Header: "Customer", accessor: "ForCustomerName", width: 150 },
+        //{ Header: "Customer", accessor: "ForCustomerName", width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
         {
             Header: "Doc Date",

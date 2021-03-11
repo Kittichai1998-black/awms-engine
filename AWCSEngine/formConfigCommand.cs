@@ -300,7 +300,7 @@ namespace AWCSEngine
             DialogResult dialogResult = form.ShowDialog();
             value1 = textBox.Text;
             value1 = value1.Trim();
-            if (string.IsNullOrEmpty(value1)) { MessageBox.Show("Value is Empty!"); return DialogResult.Cancel; }
+            //if (string.IsNullOrEmpty(value1)) { MessageBox.Show("Value is Empty!"); return DialogResult.Cancel; }
             return dialogResult;
         }
         public DialogResult InputBox2(string title, string promptText0, string promptText1, string promptText2,
@@ -364,7 +364,7 @@ namespace AWCSEngine
             value1 = value1.Trim();
             value2 = value2.Trim();
             if (dialogResult == DialogResult.OK)
-                if (string.IsNullOrEmpty(value0) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(value2))
+                if (string.IsNullOrEmpty(value0) || string.IsNullOrEmpty(value2) )
                 {
                     MessageBox.Show("Value is Empty!"); return DialogResult.Cancel;
                 }

@@ -273,11 +273,11 @@ const DocumentView = props => {
                                     sumQty += y.distoQty;
                                     sumBaseQty += y.distoBaseQty;
                                 }
-                            } else if (props.typeDocNo === 2004) {                              
-                                    if (y.dcDocType_ID === 2004) {
-                                        sumQty += y.distoQty;
-                                        sumBaseQty += y.distoBaseQty;
-                                    }
+                            } else if (props.typeDocNo === 2004) {
+                                if (y.dcDocType_ID === 2004) {
+                                    sumQty += y.distoQty;
+                                    sumBaseQty += y.distoBaseQty;
+                                }
                             } else if (props.typeDocNo === y.dcDocType_ID) {
                                 let intDocID = parseInt(docID);
                                 if (intDocID === y.dcID) {
@@ -311,7 +311,7 @@ const DocumentView = props => {
                     row.locationcode =
                         qryStr.locationcode === "undefined" ? null : qryStr.locationcode;
 
-                  
+
                     dataTable.push({
                         ...row, _baseqty:
                             typeDoc === "received"
@@ -399,7 +399,7 @@ const DocumentView = props => {
                                             ...rowDetail
                                         });
                                     }
-                                } else if (props.typeDocNo === 2004) {                              
+                                } else if (props.typeDocNo === 2004) {
                                     if (rowDetail.dcDocType_ID === 2004) {
                                         console.log(rowDetail)
                                         dataTableDetailSOU.push({
@@ -430,47 +430,47 @@ const DocumentView = props => {
                         });
 
 
-                    } 
-                   /* else {
-                        Axios.get(
-                            window.apipath + "/v2/GetSPSearchAPI?"
-                            + "&docID=" + docID
-                            + "&spname=DOCITEN_LIST_IN_DOC"
-                        ).then(res => {
-                            if (res.data.datas) {
-                                let dt = [];
-                                res.data.datas.forEach((x, i) => {
-                                    var qryStr = queryString.parse(x.diOptions);
-                                    if (props.typeDocNo === 1012) {
-                                        if (x.dcDocType_ID === 1002) {
-                                            dt.push(
-                                                {
-                                                    ...x,
-                                                    rootCode: qryStr.palletcode,
-                                                    remark: qryStr.remark
-                                                }
-                                            )
-                                        }
-                                    } else if (props.typeDocNo === 1011) {
-                                        if (x.dcDocType_ID === 1001) {
-                                            dt.push({
-                                                ...x,
-                                                rootCode: qryStr.palletcode,
-                                                remark: qryStr.remark
-                                            })
-                                        }
-                                    } else {
-                                        dt.push({
-                                            ...x,
-                                            rootCode: qryStr.palletcode,
-                                            remark: qryStr.remark
-                                        })
-                                    }
-                                })
-                                setDataDetailSOU(dt)
-                            }
-                        })
-                    }*/
+                    }
+                    /* else {
+                         Axios.get(
+                             window.apipath + "/v2/GetSPSearchAPI?"
+                             + "&docID=" + docID
+                             + "&spname=DOCITEN_LIST_IN_DOC"
+                         ).then(res => {
+                             if (res.data.datas) {
+                                 let dt = [];
+                                 res.data.datas.forEach((x, i) => {
+                                     var qryStr = queryString.parse(x.diOptions);
+                                     if (props.typeDocNo === 1012) {
+                                         if (x.dcDocType_ID === 1002) {
+                                             dt.push(
+                                                 {
+                                                     ...x,
+                                                     rootCode: qryStr.palletcode,
+                                                     remark: qryStr.remark
+                                                 }
+                                             )
+                                         }
+                                     } else if (props.typeDocNo === 1011) {
+                                         if (x.dcDocType_ID === 1001) {
+                                             dt.push({
+                                                 ...x,
+                                                 rootCode: qryStr.palletcode,
+                                                 remark: qryStr.remark
+                                             })
+                                         }
+                                     } else {
+                                         dt.push({
+                                             ...x,
+                                             rootCode: qryStr.palletcode,
+                                             remark: qryStr.remark
+                                         })
+                                     }
+                                 })
+                                 setDataDetailSOU(dt)
+                             }
+                         })
+                     }*/
                 }
 
                 if (res.data.des_bstos) {
@@ -604,13 +604,12 @@ const DocumentView = props => {
         } else if (type === "option") {
             var qryStr = queryString.parse(dataHeader.Options);
             return qryStr[values] === "undefined" ? null : qryStr[values];
-        }else{
-            if(value)
-            {
+        } else {
+            if (value) {
                 let str1 = dataHeader[value] === undefined || dataHeader[value] === null ? "-" : `${dataHeader[value]}`;
-                let str2 = dataHeader[values] === undefined || dataHeader[values] === null ? "" :  ` : ${dataHeader[values]}`;
+                let str2 = dataHeader[values] === undefined || dataHeader[values] === null ? "" : ` : ${dataHeader[values]}`;
                 return `${str1}${str2}`
-            }else{
+            } else {
                 return dataHeader[values] === undefined || dataHeader[values] === null ? "-" : dataHeader[values];
             }
         }
@@ -831,7 +830,7 @@ const DocumentView = props => {
         console.log(res)
         return res;
     }
-     
+
     const ExportPDF = async () => {
         try {
             let hor_align_center = "ALIGN_CENTER";
@@ -1085,6 +1084,7 @@ const DocumentView = props => {
                 // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
                 <AmTable
                     selection={"checkbox"}
+                    selection={props.usePrintBarcodePallet}
                     selectionData={(data) => {
                         setSelection(data);
                     }} dataKey="ID"
@@ -1094,7 +1094,7 @@ const DocumentView = props => {
                     height={200}
                     tableConfig={false}
                     rowNumber={false}
-                    customAction={dataHeader.EventStatus === 32 || dataHeader.DocumentProcessTypeCode === "8011" ? null :
+                    customAction={props.usePrintBarcodePallet === false ? null : (dataHeader.EventStatus === 32 || dataHeader.DocumentProcessTypeCode === "8011" ? null :
                         [{
                             label: <div style={{ fontSize: "12px" }}>
                                 {"QRCODE MANUAL"}</div>,
@@ -1118,7 +1118,7 @@ const DocumentView = props => {
                                 }
 
                             }
-                        }]}
+                        }])}
                 />
             ) :
                 typeDoc ?

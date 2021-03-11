@@ -55,7 +55,7 @@ namespace ProjectGCL.Engine.WorkQueue
             //res.datas = new List<TRes.DocData>();
             if (reqVO.qr != null)
             {
-                var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "{gade}_{lot}_{pallet}");
+                var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "{gade} {lot} {pallet}");
 
                 if (qrModel == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
@@ -130,12 +130,15 @@ namespace ProjectGCL.Engine.WorkQueue
                                     if (item.Options != null && docTypeIDs == 1001)
                                     {
 
-                                        var docoption = ObjectUtil.ConvertTextFormatToModel<PalletNo>(item.Options, "discharge={discharge}&start_pallet={startPallet}&end_pallet={endPallet}&qty_per_pallet={qty_per_pallet}");
-                                        var startPallet = Int32.Parse(docoption.startPallet);
-                                        var endPallet = Int32.Parse(docoption.endPallet);
+                                        string codeMax = docItembygade.Max(x => x.BaseCode);
+                                        string codeMin = docItembygade.Min(x => x.BaseCode);
+                                        var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
+                                        var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
+                                        var palletMax = Int32.Parse(baseCodeMax.pallet);
+                                        var palletMin = Int32.Parse(baseCodeMin.pallet);
                                         var noPallet = Int32.Parse(qrModel.pallet);
 
-                                        if (noPallet < endPallet)
+                                        if (noPallet >= palletMin && noPallet <= palletMax)
                                         {
 
                                             docId = doc.ID;
@@ -150,8 +153,6 @@ namespace ProjectGCL.Engine.WorkQueue
 
                             });
                         }
-                  
-                
                 }
             }
             else {
@@ -214,8 +215,8 @@ namespace ProjectGCL.Engine.WorkQueue
                                 ref4 = Item.Ref4,
                                 cartonNo = Item.CartonNo,
                                 forCustomerID = datadoc.For_Customer_ID,
-                                options = AMWUtil.Common.ObjectUtil.QryStrSetValue(Item.Options, new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, Item.ID)),
-                                //options = Item.Options,
+                                //options = AMWUtil.Common.ObjectUtil.QryStrSetValue(Item.Options, new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, Item.ID)),
+                                options = Item.Options,
                                 addQty = Item.Quantity.Value,
                                 unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == Item.UnitType_ID).Code,
                                 packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == Item.BaseUnitType_ID).Code,

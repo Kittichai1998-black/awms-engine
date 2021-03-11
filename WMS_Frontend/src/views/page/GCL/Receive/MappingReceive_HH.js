@@ -208,19 +208,7 @@ const styles = theme => ({
 
 
 
-const AreaMasterLocationQuerys = () => {
-    return {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "AreaLocationMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20},{ "f": "ObjectSize_ID", "c":"=", "v": 4}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
-}
+
 
 const MappingReceive_HH = (props) => {
     const { t } = useTranslation();
@@ -231,10 +219,10 @@ const MappingReceive_HH = (props) => {
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
     const [dialogGate, setdialogGate] = useState(false);
-    const [areaMasterLocquery, setareaMasterLocquery] = useState(AreaMasterLocationQuerys);
+    const [areaMasterLocquery, setareaMasterLocquery] = useState();
     const [areaMasterLoc, setareaMasterLoc] = useState();
     const [bodyCode, setbodyCode] = useState();
-    const [warehouseID, setwarehouseID] = useState(0);
+    const [warehouseID, setwarehouseID] = useState(1);
     const [warehouseCode, setwarehouseCode] = useState();
     const [gateCode, setgateCode] = useState();
     const [gateID, setgateID] = useState();
@@ -245,10 +233,18 @@ const MappingReceive_HH = (props) => {
 
     useEffect(() => {
         if (warehouseID != 0) {
-            getareaLocQuery(warehouseID)
+            setareaMasterLocquery(AreaLocationMasterQuery)
         }
     }, [warehouseID])
 
+    useEffect(() => {
+        setareaMasterLocquery(AreaLocationMasterQuery)
+    }, [])
+
+
+    useEffect(() => {
+        getareaLocQuery(warehouseID)
+    }, [areaMasterLocquery])
 
     useEffect(() => {
         if (gateCode) {
@@ -260,18 +256,15 @@ const MappingReceive_HH = (props) => {
 
 
     const getareaLocQuery = (IDwarehouse) => {
-        if (areaMasterLocquery) {
-            let queryAr = areaMasterLocquery;
+        if (areaMasterLocquery !== undefined) {
             let objQuery = areaMasterLocquery;
-            if (objQuery !== null) {
-                let areaLocqry = JSON.parse(objQuery.q)
-                areaLocqry.push({ 'f': 'warehouse_ID', 'c': '=', 'v': IDwarehouse })
-                objQuery.q = JSON.stringify(areaLocqry);
-            }
-            setareaMasterLocquery(queryAr);
-            setareaMasterLoc(objQuery)
+            let areaLocqry = JSON.parse(objQuery.q)
+            areaLocqry.push({ 'f': 'warehouse_ID', 'c': '=', 'v': IDwarehouse })
+            objQuery.q = JSON.stringify(areaLocqry);
+            console.log(objQuery)
+            setareaMasterLoc(objQuery);
+            editorListcolunmGate();
         }
-
     }
 
     const WarehouseMasterQuery = {
@@ -285,6 +278,20 @@ const MappingReceive_HH = (props) => {
         l: 100,
         all: ""
     };
+
+    const AreaLocationMasterQuery = () => {
+        return {
+            queryString: window.apipath + "/v2/SelectDataViwAPI/",
+            t: "AreaLocationMaster",
+            q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20},{ "f": "ObjectSize_ID", "c":"=", "v": 4}]',
+            f: "*",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: "",
+        }
+    }
 
     //steps
     const steps = getSteps();
@@ -371,26 +378,32 @@ const MappingReceive_HH = (props) => {
                 return <RenderAddBarCode data={inputList} />
             case 2:
                 return <><div>
-                    {dataDoc ? <div><FormInline>
-                        <labelHead>Document No. : </labelHead>
-                        <labelText>{dataDoc.docCode}</labelText>
-                    </FormInline>
+                    {dataDoc ? <div>
+                        <FormInline>
+                            <labelHead>Document No. : </labelHead>
+                            <labelText>{dataDoc.docCode}</labelText>
+                        </FormInline>
+
                         <FormInline>
                             <labelHead>Gade :</labelHead>
                             <labelText>{dataDoc.gade}</labelText>
                         </FormInline>
+
                         <FormInline>
                             <labelHead>Lot : </labelHead>
                             <labelText>{dataDoc.lot}</labelText>
                         </FormInline>
+
                         <FormInline>
                             <labelHead>Start Pallet : </labelHead>
                             <labelText>{dataDoc.start_pallet}</labelText>
                         </FormInline>
+
                         <FormInline>
                             <labelHead>End Pallet : </labelHead>
                             <labelText>{dataDoc.end_pallet}</labelText>
-                        </FormInline></div> : null}
+                        </FormInline>
+                    </div> : null}
                 </div></>;
             default:
                 return 'Unknown step';
@@ -535,8 +548,7 @@ const MappingReceive_HH = (props) => {
         alertDialogRenderer("success", t("Sucess"))
         let barcode_pstos = [];
         let bars = barCodeDoc['qrCodes'][0]
-        console.log(bars)
-        console.log(barCodeDoc)
+
         if (bars.qrCode1 !== "null" && bars.qrCode2 !== "null") {
             barcode_pstos.push(bars.qrCode1)
             barcode_pstos.push(bars.qrCode2)
@@ -551,17 +563,17 @@ const MappingReceive_HH = (props) => {
             "QR": barcode_pstos,
             "DocID": dataDoc !== undefined ? dataDoc.docId : null
         }
-        console.log(barcode_pstos)
-        console.log(dataDoc)
-        console.log(datas)
+
         Axios.post(window.apipath + '/v2/write_file_post_wcs', datas).then((res) => {
             if (res.data._result.status === 1) {
-                //setdataDoc(res.data);
-                setSettingAlert({ type: "success", content: "Success", state: true })
+                setSettingAlert({ type: 'success', message: res.data._result.message, state: true });
+                valueInput["locationCode"] = ''
+                setbarCodeDoc();
+                setdataDoc();
+
             } else {
-                setSettingAlert({ type: "error", content: res.data._result.message, state: true })
-                //setOpenAlert(true);
-                //setdataDoc();
+                setSettingAlert({ type: 'error', message: res.data._result.message, state: true });
+
             }
         });
 
@@ -738,7 +750,7 @@ const MappingReceive_HH = (props) => {
                 </Stepper>
                 {activeStep === steps.length && (
                     <Paper square elevation={0} className={classes.resetContainer}>
-                        <Typography>All steps completed - you&apos;re finished</Typography>
+                        <Typography></Typography>
                         <AmButton styleType="dark_clear" onClick={handleReset} className={classes.button}>
                             {t('Reset')}
                         </AmButton>

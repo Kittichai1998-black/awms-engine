@@ -50,16 +50,16 @@ const PK_Detail = props => {
             var DataprocessType;
             if (OwnerGroupType === 1) {
                 DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
-                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
+                { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
                 DataprocessType = [{ label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" },
-                    { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
+                { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
                 DataprocessType = [{ label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" },
                 { label: "Des. Supplier", value: "DesSupplier", values: "DesSupplierName" }]
             } else {
                 DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
-                    { label: "Des. Warehouse", value: "DesWarehouse", value: "DesWarehouse"  ,values: "DesWarehouseName" }]
+                { label: "Des. Warehouse", value: "DesWarehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             }
 
         }
@@ -70,9 +70,14 @@ const PK_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
+                { label: "Bagging", value: "Ref2" },
+                { label: "", value: "", values: "" }
+            ],
+            [
                 { label: "Process Type", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
+
 
             DataprocessType,
 
@@ -91,19 +96,18 @@ const PK_Detail = props => {
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
             Header: "Item Code",
-            Cell: e => { return e.original.SKUMaster_Code},
-            CellPDF: e => { return e.SKUMaster_Code},
+            Cell: e => { return e.original.SKUMaster_Code },
+            CellPDF: e => { return e.SKUMaster_Code },
             widthPDF: 40
         },
         {
             Header: "Item Name",
             Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return  e.SKUMaster_Name },
+            CellPDF: e => { return e.SKUMaster_Name },
             widthPDF: 40
         },
-        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Picking Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
@@ -113,10 +117,8 @@ const PK_Detail = props => {
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
-        { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
-        { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
+
+
     ];
 
 
@@ -135,9 +137,8 @@ const PK_Detail = props => {
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
         { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
-        { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Grade", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
         { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
         { width: 70, accessor: "distoUnitCode", Header: "Unit", widthPDF: 10 },
@@ -148,16 +149,8 @@ const PK_Detail = props => {
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
-        { Header: "Remark", accessor: "remark", widthPDF: 10 },
-        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        {
-            Header: "MFG.Date", accessor: "diProductionDate",
-            Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
-        },
-        {
-            Header: "Expire Date", accessor: "diExpireDate",
-            Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
-        },
+
+
     ];
 
     const getFormatDatePro = (e) => {
