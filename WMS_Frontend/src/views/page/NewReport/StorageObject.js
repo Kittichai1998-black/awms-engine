@@ -7,7 +7,7 @@ import {
 import AmRedirectLog from "../../../components/AmRedirectLog";
 import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
 import { Hold, Lock } from "../../../components/Models/Hold";
-import { AuditStatus } from "../../../components/Models/AuditStatus";
+import { AuditStatusGCL } from "../../../components/Models/AuditStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
@@ -60,14 +60,14 @@ const StorageObject = props => {
       filterType: "dropdown",
       filterConfig: {
         filterType: "dropdown",
-        dataDropDown: AuditStatus,
+        dataDropDown: AuditStatusGCL,
         typeDropDown: "normal",
         widthDD: 120,
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
     { Header: "Lot", accessor: "Lot", width: 80 },
-    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
+    { Header: "Grade", accessor: "Ref1", width: 80 },
     {
       Header: "Item Code",
       accessor: "SKU_Code",
@@ -101,34 +101,7 @@ const StorageObject = props => {
     { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
     { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
     { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
-    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
-    { Header: "MDT Shelf life", accessor: "ExpiryDay", width: 100, type: "number" },
-    { Header: "MDT Shelf life (%)", accessor: "ShelfLifeRemainPercent", width: 100, type: "number" },
-    { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
-    {
-      Header: "MFG.Date",
-      accessor: "Product_Date",
-      width: 150,
-      type: "datetime",
-      filterType: "datetime",
-      filterConfig: {
-        filterType: "datetime",
-      }
-      , customFilter: { field: "Product_Date" },
-      dateFormat: "DD/MM/YYYY"
-    },
-    {
-      Header: "Expiry Date",
-      accessor: "Expiry_Date",
-      width: 150,
-      type: "datetime",
-      filterType: "datetime",
-      filterConfig: {
-        filterType: "datetime",
-      }
-      , customFilter: { field: "Expiry_Date" },
-      dateFormat: "DD/MM/YYYY"
-    },
+
     {
       Header: "Received Time",
       accessor: "Receive_Time",
@@ -157,18 +130,27 @@ const StorageObject = props => {
 
   };
   const getAuditStatusValue = Status => {
-    if (Status === "QUARANTINE") {
-      return <AuditStatusIcon key={0} statusCode={0} />;
-    } else if (Status === "PASSED") {
-      return <AuditStatusIcon key={1} statusCode={1} />;
-    } else if (Status === "REJECTED") {
-      return <AuditStatusIcon key={2} statusCode={2} />;
+    if (Status === "QI") {
+      return <AuditStatusIcon key={4} statusCode={4} />;
+    } else if (Status === "ACC") {
+      return <AuditStatusIcon key={5} statusCode={5} />;
+    } else if (Status === "ACD") {
+      return <AuditStatusIcon key={6} statusCode={6} />;
+    } else if (Status === "ACN") {
+      return <AuditStatusIcon key={7} statusCode={7} />;
+    } else if (Status === "ACM") {
+      return <AuditStatusIcon key={8} statusCode={8} />;
     } else if (Status === "HOLD") {
       return <AuditStatusIcon key={9} statusCode={9} />;
+    } else if (Status === "BLOCK") {
+      return <AuditStatusIcon key={10} statusCode={10} />;
+    } else if (Status === "UR") {
+      return <AuditStatusIcon key={11} statusCode={11} />;
     } else {
       return null;
     }
   }
+
   const getOptions = value => {
     var qryStr = queryString.parse(value);
     return qryStr["remark"]
