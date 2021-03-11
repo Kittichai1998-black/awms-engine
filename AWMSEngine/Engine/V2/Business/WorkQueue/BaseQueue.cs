@@ -32,6 +32,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         public WorkQueueCriteria GenerateResponse(StorageObjectCriteria sto, SPworkQueue queueTrx)
         {
+            var sku = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(sto.skuID.Value, this.BuVO);
+
             var sou_lm = ADO.WMSDB.DataADO.GetInstant()
                 .SelectByID<ams_AreaLocationMaster>(queueTrx.Sou_AreaLocationMaster_ID, this.BuVO);
 
@@ -73,6 +75,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         lot = x.lot,
                         orderNo = x.orderNo,
                         prodDate = x.productDate,
+                        Info1 = sku.Info1,
+                        Info2 = sku.Info2,
+                        Info3 = sku.Info3,
                     })
                     .ToList()
                 },

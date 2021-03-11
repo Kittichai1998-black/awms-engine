@@ -1,4 +1,6 @@
-﻿using ADO.WCSStaticValue;
+﻿using ADO.WCSDB;
+using ADO.WCSStaticValue;
+using AMSModel.Constant.EnumConst;
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWCSEngine.Controller;
@@ -21,6 +23,7 @@ namespace AWCSEngine.Engine.APIFileRuntime
         {
             public string GateCode;
             public List<string> QR;
+            public string ResultMessage;
         }
 
         public PostQRtoReceiveGate(string logref) : base(logref)
@@ -37,8 +40,9 @@ namespace AWCSEngine.Engine.APIFileRuntime
             //if (mcGate == null)
             //    throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_NOT_FOUND, req.GateCode);
 
-            
-            if (InboundGate_W08(req)) ;
+            string result_msg = string.Empty;
+
+            if (InboundGate_W08(req,ref result_msg)) ;
             else if (Inbound_W07(req)) ;
             else if (Inbound_W06(req)) ;
             else if (Inbound_W04(req)) ;
@@ -46,20 +50,31 @@ namespace AWCSEngine.Engine.APIFileRuntime
             else if (Inbound_W02(req)) ;
             else { throw new AMWException(this.Logger, AMWExceptionCode.V0_INBOUND_CONDITION_FAIL); }
 
-            return new TRes() { GateCode = req.GateCode, QR = req.QR };
+            return new TRes() { GateCode = req.GateCode, QR = req.QR, ResultMessage= result_msg };
         }
 
-        private bool InboundGate_W08(TReq req)
+        private bool InboundGate_W08(TReq req,ref string result_msg)
         {
             if (!req.GateCode.In("RC8-2", "PS8-4", "PS8-5")) return false;
 
+
             var mcObj = ADO.WCSDB.McObjectADO.GetInstant().GetByMstCode(req.GateCode,this.BuVO);
-            new CreateBaseObjectTemp_byQR(this.LogRefID, this.BuVO).Execute(new CreateBaseObjectTemp_byQR.TReq()
+            var bo = new CreateBaseObjectTemp_byQR(this.LogRefID, this.BuVO).Execute(new CreateBaseObjectTemp_byQR.TReq()
             {
                 McObject_ID = mcObj.ID.Value,
-                LabelData = string.Join(",", req.QR.ToArray())
-                
+                LabelData = req.QR.Json()
             });
+            if (bo.status == 1)
+            {
+                if (bo.result.Status == EntityStatus.ACTIVE)
+                    result_msg = "Inserted.";
+                else if (bo.result.Status == EntityStatus.REMOVE)
+                    result_msg = "Removed.";
+            }
+            else
+            {
+                throw new Exception(bo.message);
+            }
 
             return true;
         }

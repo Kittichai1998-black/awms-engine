@@ -46,6 +46,9 @@ namespace AMSModel.Criteria
                 public string orderNo;
                 public DateTime? prodDate;
 
+                public string Info1;
+                public string Info2;
+                public string Info3;
                 //public DateTime? minProductDate;//วันผลิด ต่ำสุดจากทั้งหมดใยพาเลท
                 //public DateTime? maxProductDate;//วันผลิด สูงสุดจากทั้งหมดใยพาเลท
                 //public DateTime? minExpireDate;//วันหมดอายุ ต่ำสุดจากทั้งหมดใยพาเลท

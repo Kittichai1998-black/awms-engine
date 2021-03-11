@@ -17,6 +17,9 @@ namespace AMSModel.Entity
         public decimal SkuQty;
         public string SkuUnit;
         public decimal WeiKG;
+        public string Info1;
+        public string Info2;
+        public string Info3;
         public string LabelData;
         public string Options;
         public BaseObjectEventStatus EventStatus;

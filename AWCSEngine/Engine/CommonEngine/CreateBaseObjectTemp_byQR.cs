@@ -27,6 +27,21 @@ namespace AWCSEngine.Engine.CommonEngine
 
         protected override act_BaseObject ExecuteChild(CreateBaseObjectTemp_byQR.TReq req)
         {
+            var bo = BaseObjectADO.GetInstant().GetByLabel(req.LabelData,this.BuVO);
+            if(bo != null)
+            {
+                if (bo.EventStatus == BaseObjectEventStatus.TEMP)
+                {
+                    bo.Status = EntityStatus.REMOVE;
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(bo, this.BuVO);
+                    return bo;
+                }
+                else
+                {
+                    throw new Exception("เครื่องจักรกำลังทำงาน ไม่สามารถลบพาเลทรับเข้าได้");
+                }
+            }
+
             BaseMcRuntime mcRun = Controller.McRuntimeController.GetInstant().GetMcRuntime(req.McObject_ID);
             act_BaseObject baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByMcObject(req.McObject_ID, this.BuVO);
             if (baseObj != null)

@@ -31,7 +31,15 @@ namespace ADO.WCSStaticValue
         public acs_McCommand GetMcCommand(long mcMstID, McCommandType cmdType)
         {
             var mccm = this.McCommandMcMasters.FindAll(x => x.McMaster_ID == mcMstID);
-            return this.McCommands.FirstOrDefault(x => x.McCommandType == cmdType && mccm.Any(y => y.McCommand_ID == x.ID));
+            var comm = this.McCommands.FirstOrDefault(x => x.McCommandType == cmdType && mccm.Any(y => y.McCommand_ID == x.ID));
+            if (comm != null)
+                return comm;
+            return
+                this.McCommands.FirstOrDefault(x =>
+                {
+                    var y = this.ListMcCommandAction(x.ID.Value);
+                    return x.McCommandType == cmdType && y.Count == 1 && string.IsNullOrWhiteSpace(y[0].DKV_Condition);
+                });
         }
         public List<acs_McCommand> ListMcCommand(long mcMstID)
         {
