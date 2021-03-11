@@ -33,7 +33,7 @@ namespace AWCSEngine.Controller
                 List<KeyValuePair<int, string>> res = new List<KeyValuePair<int, string>>();
                 for (int i = 0; i < _McLists.Count; i++)
                 {
-                    if (Regex.IsMatch(_McLists[i], "^[^,],1,"))
+                    if (Regex.IsMatch(_McLists[i], "^[^,]+,1,"))
                     {
                         var msg = _McLists[i].Split(',', 3);
                         res.Add(new KeyValuePair<int, string>(i, msg.Last()));

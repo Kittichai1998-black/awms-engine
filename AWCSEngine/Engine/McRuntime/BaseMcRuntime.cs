@@ -394,11 +394,10 @@ namespace AWCSEngine.Engine.McRuntime
                 Controller.DisplayController.McLists_Write(this.Code,
                     this.Code +
                     $"({this.EventStatus.ToString().Substring(0, 4)} {(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}) > " +
-                    " > " +
                     "[" + (this.McObj.IsAuto ? "AUTO" : "MANUAL") + "] " +
-                    "LOC=" + this.Cur_Location.Code + " | " +
-                    "STA=" + this.McObj.DV_Pre_Status + " | " +
-                    "ERR=" + error);
+                    "Loc=" + this.Cur_Location.Code + " | " +
+                    "PreSta=" + this.McObj.DV_Pre_Status + " | " +
+                    "Err=" + error);
             else
                 Controller.DisplayController.McLists_Write(this.Code, this.Code + " > Offline!");
         }
