@@ -66,8 +66,13 @@ namespace ProjectGCL.Engine.Document
             ResConfirmResult dataProcessQ_s = new ResConfirmResult();
             foreach (var line in reqVO.RECORD)
             {
+
+                if(line.LINE.staging == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "staging มีค่าเป็น null");
+
                 amt_Document document = new amt_Document();
                 var staging = new ams_AreaMaster();
+
                 string[] stagingwords = line.LINE.staging.Split(",-,-");
                 string[] docwords = line.LINE.Dock_no == null? stagingwords : line.LINE.Dock_no.Split(",-,-");
                 staging = this.genStaging(this.Logger, stagingwords[0], this.BuVO);
