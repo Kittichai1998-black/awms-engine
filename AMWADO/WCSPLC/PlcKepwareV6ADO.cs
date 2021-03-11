@@ -53,7 +53,7 @@ namespace ADO.WCSPLC
             {
                 foreach (var f in fs)
                 {
-                    if (f.Name.StartsWith("DK_"))
+                    if (f.Name.StartsWith("DK_") && !f.Name.StartsWith("DK_CON"))
                     {
                         if (f.GetValue(mst) != null &&
                             !string.IsNullOrEmpty(f.GetValue(mst).ToString()))

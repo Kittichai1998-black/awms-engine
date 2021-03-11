@@ -45,7 +45,7 @@ namespace AWCSEngine.Engine.McRuntime
         public acs_Location Cur_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value); }
         public acs_Location Sou_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Sou_Location_ID.Value); }
         public acs_Location Des_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Des_Location_ID.Value); }
-        public string MessageLog { get; set; }
+        public List<string> DeviceLogs { get; set; }
         public List<string> DeviceNames { get; set; }
         public BaseMcRuntime(acs_McMaster mcMst) : base(ObjectUtil.GenUniqID())
         {
@@ -57,10 +57,9 @@ namespace AWCSEngine.Engine.McRuntime
             return "McObject";
         }
 
-        private McObjectEventStatus EventStatus_BeforError;
+        /*private McObjectEventStatus EventStatus_BeforError;
         public void PostError(string error)
         {
-            this.MessageLog = error;
             this.EventStatus_BeforError = this.McObj.EventStatus;
             this.McObj.EventStatus = McObjectEventStatus.ERROR;
         }
@@ -71,7 +70,7 @@ namespace AWCSEngine.Engine.McRuntime
         public void ClearERROR_PostTryAgain()
         {
             this.McObj.EventStatus = McObjectEventStatus.IDEL;
-        }
+        }*/
 
         public void Initial()
         {
@@ -95,6 +94,10 @@ namespace AWCSEngine.Engine.McRuntime
                 throw;
             }
 
+            this.McObj = McObjectADO.GetInstant().GetByMstID(this.McMst.ID.Value, this.BuVO);
+            this._McObj_TMP = this.McObj.Clone();
+            this.McObj.EventStatus = McObjectEventStatus.IDEL;
+
             this.McWork4Work = McWorkADO.GetInstant().GetByCurMcObject(this.McObj.ID.Value, this.BuVO);
             this.McWork4Receive = McWorkADO.GetInstant().GetByDesMcObject(this.McObj.ID.Value, this.BuVO);
             if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_KEEP)
@@ -102,9 +105,7 @@ namespace AWCSEngine.Engine.McRuntime
                 this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
             }
-            this.McObj = McObjectADO.GetInstant().GetByMstID(this.McMst.ID.Value, this.BuVO);
-            this._McObj_TMP = this.McObj.Clone();
-            this.McObj.EventStatus = McObjectEventStatus.IDEL;
+
             string mcMstStr = this.McMst.Json();
             this.Logger.LogInfo("McMst > " + mcMstStr);
             string mcObjStr = this.McObj.Json();
@@ -137,15 +138,36 @@ namespace AWCSEngine.Engine.McRuntime
             //if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
             {
                 this.Logger.LogInfo("[CMD] > " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
-                this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
-                this.McObj.CommandAction_Seq = this.RunCmdActions.Min(x => x.Seq);
-                this.McObj.CommandParameter = parameters.ToQryStr();
-                this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
+                if ((int)comm == 0)
+                {
+                    this.McObj.Command_ID = null;
+                    this.McObj.CommandAction_Seq = null;
+                    this.McObj.CommandParameter = null;
+                    this.McObj.EventStatus = McObjectEventStatus.IDEL;
+                }
+                else
+                {
+                    this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
+                    this.McObj.CommandAction_Seq = this.RunCmdActions.Min(x => x.Seq);
+                    this.McObj.CommandParameter = parameters.ToQryStr();
+                    this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
+                }
 
                 this._Callback_OnChange = callback_OnChange;
 
             }
+
+            DisplayController.Events_Write(this.Code + " > PostCommand = " + (int)comm);
             return true;
+        }
+
+        public void SetOnline(bool isOnline)
+        {
+            this.McObj.IsOnline = isOnline;
+        }
+        public void SetAuto(bool isAuto)
+        {
+            this.McObj.IsOnline = isAuto;
         }
 
 
@@ -157,15 +179,24 @@ namespace AWCSEngine.Engine.McRuntime
         {
             try
             {
-                if (this.McObj == null || this.McObj.Status != EntityStatus.ACTIVE) { this.MessageLog = "Offline"; return null; }
-
-                //if (this.McObj.EventStatus != McObjectEventStatus.ERROR) return null;
-                this._1_Read_Plc2McObj_OnRun();
-                this._2_ExecuteChild_OnRun();
-                this._3_Write_Cmd2Plc_OnRun();
-                this._4_DBLog_OnRun();
-                if (this.McObj.EventStatus != McObjectEventStatus.ERROR)
+                if (this.McObj != null)
+                {
+                    if (this.McObj.IsOnline)
+                    {
+                        this._1_Read_Plc2McObj_OnRun();
+                        if (this.McObj.IsAuto)
+                        {
+                            this._2_ExecuteChild_OnRun();
+                        }
+                        this._3_Write_Cmd2Plc_OnRun();
+                        this._4_DBLog_OnRun();
+                    }
                     this._5_MessageLog_OnRun();
+                }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_NOT_FOUND); 
+                }
             }
             catch (AMWException ex)
             {
@@ -178,12 +209,6 @@ namespace AWCSEngine.Engine.McRuntime
             }
             finally
             {
-                if (this._Callback_OnChange != null)
-                {
-                    if (this._Callback_OnChange(this) == LoopResult.Break)
-                        this._Callback_OnChange = null;
-
-                }
             }
 
             return null;
@@ -226,6 +251,12 @@ namespace AWCSEngine.Engine.McRuntime
         {
             this.OnRun();
 
+            if (this._Callback_OnChange != null)
+            {
+                if (this._Callback_OnChange(this) == LoopResult.Break)
+                    this._Callback_OnChange = null;
+
+            }
         }
 
         private void _3_Write_Cmd2Plc_OnRun()
@@ -244,6 +275,7 @@ namespace AWCSEngine.Engine.McRuntime
                         (this.McObj.CommandAction_Seq == 1 && this.RunCmdParameters.LastOrDefault() == "\\nc") || 
                         act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value.Trim()))
                     {
+                        DisplayController.Events_Write(this.Code + " > SEQ(" + act.Seq + ") PLC Condition TRUE = " + act.DKV_Condition);
                         string _act_sets = act.DKV_Set;
                         for (int i = 0; i < this.RunCmdParameters.Count; i++)
                         {
@@ -276,7 +308,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
                         });
 
-
+                        DisplayController.Events_Write(this.Code + " > SEQ(" + act.Seq + ")  PLC Device Set = " + _act_sets);
                         this.Logger.LogInfo("[" + this.McObj.EventStatus + "] > " + _act_sets);
                         isNext = true;
                         break;
@@ -304,11 +336,13 @@ namespace AWCSEngine.Engine.McRuntime
                         this.McObj.EventStatus = McObjectEventStatus.DONE;
                         this.Logger.LogInfo("[" + this.McObj.EventStatus + "]");
                     }
+
                 }
             }
             else if(this.McObj.EventStatus == McObjectEventStatus.DONE)
             {
                 this.McObj.EventStatus = McObjectEventStatus.IDEL;
+                DisplayController.Events_Write(this.Code + " > PLC DONE Set Command!!!");
                 this.Logger.LogInfo("[" + this.McObj.EventStatus + "]");
             }
         }
@@ -340,17 +374,33 @@ namespace AWCSEngine.Engine.McRuntime
         private void _5_MessageLog_OnRun(string error = "")
         {
             //if (error != "") { this.MessageLog = error; return; }
-            
-            this.MessageLog = $"({this.EventStatus.ToString().Substring(0,4)} {(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}) > ";
+            if (this.DeviceLogs == null)
+                this.DeviceLogs = new List<string>();
+            this.DeviceLogs.Clear();
+            this.DeviceLogs.Add("LOCATION="+ this.Cur_Location.Code);
+            this.DeviceLogs.Add("ERROR="+ error);
             this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
             {
                 string name = x.Name;
-                if ((name.StartsWith("DK_Set") || name.StartsWith("DK_Pre")) && x.GetValue(this.McMst) != null && !string.IsNullOrEmpty( x.GetValue(this.McMst).ToString()))
+                if ((name.StartsWith("DK_Set") || name.StartsWith("DK_Pre")) &&
+                        x.GetValue(this.McMst) != null &&
+                        !string.IsNullOrEmpty(x.GetValue(this.McMst).ToString()))
                 {
-                    this.MessageLog += name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)) + " | ";
+                    this.DeviceLogs.Add(name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)));
                 }
             });
-            this.MessageLog += "\n:::::::" + error;
+
+            if (this.McObj.IsOnline)
+                Controller.DisplayController.McLists_Write(this.Code,
+                    this.Code +
+                    $"({this.EventStatus.ToString().Substring(0, 4)} {(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}) > " +
+                    " > " +
+                    "[" + (this.McObj.IsAuto ? "AUTO" : "MANUAL") + "] " +
+                    "LOC=" + this.Cur_Location.Code + " | " +
+                    "STA=" + this.McObj.DV_Pre_Status + " | " +
+                    "ERR=" + error);
+            else
+                Controller.DisplayController.McLists_Write(this.Code, this.Code + " > Offline!");
         }
 
         public void Dispose()

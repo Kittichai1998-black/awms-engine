@@ -27,10 +27,6 @@ namespace AWCSEngine
                 appProperty[PropertyConst.APP_KEY_LOG_FILENAME]);
 
 
-            ThreadMcRuntime.GetInstant().Initial();
-            ThreadWorkRuntime.GetInstant().Initial();
-            ThreadAPIFileRuntime.GetInstant().Initial();
-            ThreadWakeUp.GetInitial().Initial();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();

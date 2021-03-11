@@ -14,11 +14,11 @@ form.simulation.arrow.margin=10
 
 ###################################
 
-thread.worker.engine.delay=200
+thread.worker.engine.delay=500
 
-thread.worker.control.delay=200
+thread.worker.control.delay=500
 
-thread.worker.api.delay=200
+thread.worker.api.delay=500
 thread.worker.api.count=1
 thread.worker.api.create_queue_inbound.dir_in=D:/wcsapi/create_queue_inbound/in/
 thread.worker.api.create_queue_inbound.dir_out=1D:/wcsapi/create_queue_inbound/out/

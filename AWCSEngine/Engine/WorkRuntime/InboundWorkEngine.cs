@@ -16,6 +16,20 @@ namespace AWCSEngine.Engine.WorkRuntime
 {
     public class InboundWorkEngine : BaseWorkRuntime
     {
+        public class TReq_RegisterWQ : RequestRegisterWQCriteria
+        {
+            public string apikey;
+        }
+        public class TRes_RegisterWQ : WorkQueueCriteria
+        {
+            public Result _result;
+            public class Result
+            {
+                public int status;
+                public string message;
+            }
+        }
+
         public InboundWorkEngine(string logref) : base(logref)
         {
         }
@@ -32,149 +46,83 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         private void OnRun_W08_Test()
         {
-            return;
-            var mcRC8_2 = McController.GetMcRuntime("RC8-2");
-            var mcSRM11 = McController.GetMcRuntime("SRM11");
-            var mcSHU19 = McController.GetMcRuntime("SHU#19");
-            if (mcRC8_2.McObj.DV_Pre_Status == 98)//ยืนยัน CV-PD รับพาเลทเข้า
+            var baseObjTmps = ADO.WCSDB.BaseObjectADO.GetInstant().ListTemp(this.BuVO);
+            baseObjTmps.ForEach(baseObj =>
             {
-                var mcWork = McWorkADO.GetInstant().GetByCurLocation(mcRC8_2.Cur_Location.ID.Value,this.BuVO);
-                var bObj = BaseObjectADO.GetInstant().GetByID(mcWork.BaseObject_ID,this.BuVO);
-                if (mcWork != null)
-                {
-                    mcRC8_2.PostCommand(McCommandType.CM_1,
-                        ListKeyValue<string, object>
-                        .New("Set_PalletID", bObj.Code),
-                        null);
-                }
-            }
-            else if(mcRC8_2.McObj.DV_Pre_Status == 4)//รอ SRM รับพาเลทเข้า
-            {
-                var mcWork = McWorkADO.GetInstant().GetByCurLocation(mcRC8_2.Cur_Location.ID.Value, this.BuVO);
-                if (mcSRM11.McObj.DV_Pre_Status == 90)
-                {
-                    if (mcSHU19.Cur_Location.Code.Substring(3, 6) !=
-                        this.StaticValue.GetLocation(mcWork.Des_Location_ID.Value).Code.Substring(3, 6))
-                    //ถ้า Bay นั้น ไม่มี Pallet Shuttle ให้ย้ายพาเลท Shuttle ก่อน
-                    {
-                        if (mcSHU19.McObj.DV_Pre_Status == 90)
-                        {
-                            if (mcSHU19.Cur_Location.GetBay() == 2)//พาเลท shuttle มาถึงปลายทาง zone in ให้ปิดการทำงาน
-                            {
-                                mcSHU19.PostCommand(McCommandType.CM_60, null);
-                            }
-                            else//สั่ง พาเลท shuttle มาถึงปลายทาง zone in
-                            {
-                                mcSHU19.PostCommand(McCommandType.CM_62, null);
-                            }
-                        }
-                        else if (mcSHU19.McObj.DV_Pre_Status == 82)//พาเลท shuttle หยุดทำงาน พร้อม ย้าย
-                        {
-                            mcSRM11.PostCommand(McCommandType.CM_1,
-                                ListKeyValue<string, object>
-                                .New("Set_SouLoc", "")
-                                .Add("Set_DesLoc", "")
-                                .Add("Set_Unit", "3")
-                                .Add("Set_PalletID", ""),
-                                null);
-                        }
-                    }
-                    else
-                    {
-                        mcSRM11.PostCommand(McCommandType.CM_1,
-                            ListKeyValue<string, object>
-                            .New("Set_SouLoc", "")
-                            .Add("Set_DesLoc", "")
-                            .Add("Set_Unit", "1")
-                            .Add("Set_PalletID", ""),
-                            null);
-                    }
-                }
-            }
-        }
-        private void OnRun_W08_del()
-        {
-            /*var mcGate_RC8_2 = McController.GetMcRuntime("RC8-2");
-            if (mcGate_RC8_2.McObj.DV_Pre_Status == 4)
-            {
-                var baseObj = BaseObjectADO.GetInstant().GetByMcObject(mcGate_RC8_2.ID, this.BuVO);
-                if (baseObj != null && baseObj.EventStatus == BaseObjectEventStatus.TEMP)
-                {
-                    var area = ADO.WCSDB.DataADO.GetInstant().SelectByID<acs_Area>(baseObj.Area_ID,this.BuVO);
-                    var areaLocation = ADO.WCSDB.DataADO.GetInstant().SelectByID<acs_Location>(baseObj.Location_ID, this.BuVO);
-                    var warehouse = ADO.WCSDB.DataADO.GetInstant().SelectByID<acs_Warehouse>(area.Warehouse_ID, this.BuVO);
-
-                    var desAreaLocation = ADO.WMSDB.DataADO.GetInstant().SelectBy<acs_Location>(
-                        new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("Code",AMWUtil.Common.ObjectUtil.QryStrGetValue(baseObj.Options,OptionVOConst.OPT_DES_LOCATION), SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
-                        }, this.BuVO).FirstOrDefault();
-
-                    var desArea = ADO.WCSDB.DataADO.GetInstant().SelectByID<acs_Area>(desAreaLocation.Area_ID, this.BuVO);
-                    var desWarehouse = ADO.WCSDB.DataADO.GetInstant().SelectByID<acs_Warehouse>(desArea.Warehouse_ID, this.BuVO);
-
-                    RequestRegisterWQCriteria data_req = new RequestRegisterWQCriteria()
-                    {
-                        baseCode = baseObj.Code,
-                        ioType = IOType.INBOUND,
-                        weight = null,
-                        height = null,
-                        width = null,
-                        length = null,
-                        warehouseCode = warehouse.Code,
-                        areaCode = area.Code,
-                        locationCode = areaLocation.Code,
-                        desWarehouseCode = desWarehouse.Code,
-                        desAreaCode = desArea.Code,
-                        desLocationCode = desAreaLocation.Code,
-                        autoDoc = false,
-                        barcode_pstos = baseObj.LabelData.Split(',').ToList(),
-                        forCustomerCode = null,
-                        options = null,
-                        actualTime = DateTime.Now
-
-                    };
-                    var dr = RESTFulAccess.SendJson<dynamic>(
-                        this.Logger, StaticValueManager.GetInstant().GetConfigValue("wms.api_url.register_wq"),
+                var loc = this.StaticValue.GetLocation(baseObj.Location_ID);
+                var area = this.StaticValue.GetArea(loc.Area_ID);
+                var wh = this.StaticValue.GetArea(area.Warehouse_ID);
+                var mc = McController.GetMcRuntimeByLocation(loc.ID.Value);
+                if (mc == null) return;
+                var response =
+                    RESTFulAccess.SendJson<TRes_RegisterWQ>(
+                        this.Logger,
+                        this.StaticValue.GetConfigValue("api.url.register_wq"),
                         RESTFulAccess.HttpMethod.POST,
-                        data_req);
-                    if (dr._result.status == 1)
-                    {
-                        WorkQueueCriteria res = ObjectUtil.Cast2<WorkQueueCriteria>(dr);
-                        new CommonEngine.RegisterMcQueueInbound(this.LogRefID, this.BuVO)
-                            .Execute(new CommonEngine.RegisterMcQueueInbound.TReq()
-                            {
-                                wqID = res.queueID.Value,
-                                //souLocCode = res.souLocationCode,
-                                //desLocCode = res.desLocationCode
-                            });
-                    }
-                    else
-                    {
-                        mcGate_RC8_2.PostError("WMS : " + dr._result.message);
-                    }
+                        new TReq_RegisterWQ()
+                        {
+                            apikey = this.StaticValue.GetConfigValue("api.apikey"),
+                            baseCode = baseObj.Code,
+                            actualTime = DateTime.Now,
+                            warehouseCode = wh.Code,
+                            areaCode = area.Code,
+                            locationCode = mc.Code,
+                            desWarehouseCode = null,
+                            desAreaCode = null,
+                            desLocationCode = null,
+                            ioType = IOType.INBOUND,
+                            width = null,
+                            height = null,
+                            length = null,
+                            weight = 1500,
+                            forCustomerCode = null,
+                            autoDoc = false,
+                            options = string.Empty,
+                            barcode_pstos = baseObj.LabelData.Json<List<string>>()
+                        });
 
-                }
-                else if (baseObj != null && baseObj.EventStatus == BaseObjectEventStatus.IDLE)
+                if (response._result.status == 1)
                 {
-                    var mcSRM_11 = McController.GetMcRuntime("SRM11");
-                    mcSRM_11.PostCommand(McCommandType.CM_21,
-                        new ListKeyValue<string, object>()
-                            .Add("sou", mcGate_RC8_2.Cur_Location.Code)
-                            .Add("des", "001002003"),
-                            (status) =>
-                            {
-                                if (status.EventStatus == McObjectEventStatus.DONE)
-                                {
-                                    baseObj.Location_ID = 111;
-                                    DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
-                                }
-                            }
-                        );
+                    var desArea = this.StaticValue.GetArea(response.desLocationCode);
+                    var desLoc = this.StaticValue.GetLocation(response.desLocationCode);
+                    baseObj.Status = EntityStatus.ACTIVE;
+                    baseObj.EventStatus = BaseObjectEventStatus.IDLE;
+                    baseObj.SkuCode = response.baseInfo.packInfos[0].code;
+                    baseObj.SkuName = response.baseInfo.packInfos[0].code;
+                    baseObj.SkuQty = response.baseInfo.packInfos[0].qty;
+                    baseObj.SkuUnit = response.baseInfo.packInfos[0].unit;
+                    baseObj.Info1 = response.baseInfo.packInfos[0].Info1;
+                    baseObj.Info2 = response.baseInfo.packInfos[0].Info2;
+                    baseObj.Info3 = response.baseInfo.packInfos[0].Info3;
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj,this.BuVO);
+
+                    var mcWork = new act_McWork()
+                    {
+                        ID = null,
+                        Priority = PriorityType.NORMAL,
+                        SeqGroup = response.seq,
+                        SeqItem = 0,
+                        BaseObject_ID = baseObj.ID.Value,
+                        WMS_WorkQueue_ID = response.queueID,
+                        Cur_McObject_ID = null,
+                        Des_McObject_ID = mc.ID,
+                        Cur_Warehouse_ID = mc.Cur_Area.Warehouse_ID,
+                        Cur_Area_ID = mc.Cur_Area.ID.Value,
+                        Cur_Location_ID = mc.Cur_Location.ID.Value,
+                        Sou_Area_ID = mc.Cur_Area.ID.Value,
+                        Sou_Location_ID = mc.Cur_Location.ID.Value,
+                        Des_Area_ID = desArea.ID.Value,
+                        Des_Location_ID = desLoc.ID.Value,
+                        StartTime = DateTime.Now,
+                        ActualTime = DateTime.Now,
+                        EndTime = null,
+                        TreeRoute = "{}",//treeRouting.Json(),
+                        EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
+                        Status = EntityStatus.ACTIVE
+                    };
+                    DataADO.GetInstant().Insert<act_McWork>(mcWork, this.BuVO);
                 }
-            }*/
-     
-        
+            });
         }
 
         protected override void OnStop()

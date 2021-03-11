@@ -5,6 +5,7 @@ using AMSModel.Entity;
 using AMWUtil.Common;
 using AWCSEngine.Controller;
 using AWCSEngine.Util;
+using AWCSEngine.Worker;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,19 +26,85 @@ namespace AWCSEngine
         }
         private void formAdminConsole_Load(object sender, EventArgs e)
         {
+            this.lisDisplayCommand.Click += LisDisplayCommand_Click;
+            this.lisDisplayCommand.Items.Add("{machine} {command} {p1} {p2} {p3}");
+            this.lisDisplayCommand.Items.Add("{srm} {command} {sou} {des} {unit} {pallet} {weigth}");
+            this.lisDisplayCommand.Items.Add("/mcwork all {machine} {des_loc} {pallet}");
+            this.lisDisplayCommand.Items.Add("-------------------------------------");
             this.wkDisplay.RunWorkerAsync();
         }
-        
 
+        private void LisDisplayCommand_Click(object sender, EventArgs e)
+        {
+            string[] txt = this.lisDisplayCommand.Text.Split('>', 2);
+            if (txt.Length == 2)
+                this.txtCommand.Text = txt[1];
+        }
+
+        private string McCode_ReadDeive = string.Empty;
         private void wkDisplay_DoWork(object sender, DoWorkEventArgs e)
         {
+            this.lisDisplayMcLists.Items.Add("<<====== Machines ======>>");
+            this.lisDisplayEvents.Items.Add("<<====== Events ======>>");
+
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 1.ThreadMcRuntime.Initial Connecting..."));
+            ThreadMcRuntime.GetInstant().Initial();
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 1.ThreadMcRuntime.Initial Connected!!!"));
+
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 2.ThreadWorkRuntime.Initial Connecting..."));
+            ThreadWorkRuntime.GetInstant().Initial();
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 2.ThreadWorkRuntime.Initial Connected!!!"));
+
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 3.lisDisplayEvents.Initial Connecting..."));
+            ThreadAPIFileRuntime.GetInstant().Initial();
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 3.lisDisplayEvents.Initial Connected!!!"));
+
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 4.lisDisplayEvents.Initial Connecting..."));
+            ThreadWakeUp.GetInitial().Initial();
+            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, "System > 4.lisDisplayEvents.Initial Connected!!!"));
+
+
             while (true)
             {
                 if (this.IsHandleCreated)
-                    this.lisDisplayEngine.Invoke((MethodInvoker)(() => {
-                        this.lisDisplayEngine.Items.Clear();
-                        this.lisDisplayEngine.Items.AddRange(McRuntimeController.GetInstant().ListMessageLog());
+                {
+                    this.lisDisplayMcLists.Invoke((MethodInvoker)(() => {
+                        foreach (var msg in DisplayController.McLists_Reading())
+                        {
+                            if (this.lisDisplayMcLists.Items.Count < msg.Key + 1)
+                                for (int i = 0; i < (msg.Key + 1) - this.lisDisplayMcLists.Items.Count; i++)
+                                    this.lisDisplayMcLists.Items.Add(string.Empty);
+
+                            this.lisDisplayMcLists.Items[msg.Key+1] = msg.Value;
+                        }
                     }));
+                    this.lisDisplayEvents.Invoke((MethodInvoker)(() => {
+                        if (this.lisDisplayMcLists.Items.Count > 100)
+                            for (int i = 0; i < 50; i++)
+                                this.lisDisplayMcLists.Items.RemoveAt(1);
+                        foreach (var msg in DisplayController.McLists_Reading())
+                        {
+                            this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} {1}", DateTime.Now, msg));
+                        }
+                    }));
+                    this.lisDisplayDevices.Items.Clear();
+                    if(!string.IsNullOrEmpty(this.McCode_ReadDeive))
+                    {
+                        this.lisDisplayDevices.Items.Add("<<====== Devices ======>>");
+                        var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(this.McCode_ReadDeive);
+                        if (mc == null)
+                        {
+                            this.lisDisplayDevices.Items.Add(this.McCode_ReadDeive + " : (Not Found.)");
+                        }
+                        else
+                        {
+                            this.lisDisplayDevices.Items.Add(this.McCode_ReadDeive + " : " +
+                                (mc.McObj.IsOnline ? "Online." : "Offile!") + " / " +
+                                (mc.McObj.IsAuto ? "Auto" : "Manual"));
+                            this.lisDisplayDevices.Items.AddRange(mc.DeviceLogs.ToArray());
+                        }
+                    }
+                }
 
                 Thread.Sleep(500);
             }
@@ -55,13 +122,16 @@ namespace AWCSEngine
         {
             if(e.KeyCode == Keys.Enter)
             {
-                if (this.txtCommand.Text.StartsWith("/"))
+                string command = this.txtCommand.Text;
+                this.lisDisplayCommand.Items.Add("COMMAND > " + command);
+                this.txtCommand.Text = string.Empty;
+
+                if (command.StartsWith("/"))
                 {
-                    CommandCallFunction(this.txtCommand.Text);
+                    CommandCallFunction(command);
                     return;
                 }
-                this.lisDisplayCommand.Items.Add( "COMMAND > " + this.txtCommand.Text);
-                string[] comm = this.txtCommand.Text.Split(' ');
+                string[] comm = command.Split(' ');
                 if (comm.Length < 2)
                 {
                     this.lisDisplayCommand.Items.Add( "ERROR > รูปแบบคำสั่งไม่ถูกต้อง [machine] [command] [location1] [location2]");
@@ -79,17 +149,31 @@ namespace AWCSEngine
                             else if(kv.Length == 2)
                                 parameters.Add(kv[0], kv[1]);
                         }
-                        McRuntimeController.GetInstant().PostCommand(
-                            comm[0],
-                            (McCommandType)int.Parse(comm[1]),
-                            parameters,
-                            null
-                            );
-                        this.txtCommand.Text = comm[0] + " ";
+
+                        if (comm[1].ToLower().In("auto","online"))
+                        {
+                            if (comm[1].ToLower() == "auto")
+                            {
+                                McRuntimeController.GetInstant().GetMcRuntime(comm[0]).SetAuto(comm[2].ToLower().In("1", "true", "y"));
+                            }
+                            else if (comm[1].ToLower() == "online")
+                            {
+                                McRuntimeController.GetInstant().GetMcRuntime(comm[0]).SetOnline(comm[2].ToLower().In("1", "true", "y"));
+                            }
+                        }
+                        else
+                        {
+                            McRuntimeController.GetInstant().PostCommand(
+                                comm[0],
+                                (McCommandType)int.Parse(comm[1]),
+                                parameters,
+                                null
+                                );
+                        }
                     }
                     catch (Exception ex)
                     {
-                        this.lisDisplayCommand.Items.Add ("ERROR > " + ex.Message);
+                        this.lisDisplayCommand.Items.Add ("COMMAND > ERROR : " + ex.Message);
                     }
                 }
             }
@@ -172,11 +256,11 @@ namespace AWCSEngine
             }
             else if (comm[0].ToLower().Equals("/mcwork"))
             {
-                if (comm[1].ToLower().Equals("all"))
+                if (comm[1].ToLower().Equals("test-inbound"))
                 {
-                    string baseCode = comm[2];
-                    string mcCode = comm[3];
-                    string desCode = comm[4];
+                    string mcCode = comm[2];
+                    string desCode = comm[3];
+                    string baseCode = comm[4];
                     var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(mcCode);
 
                     ADO.WCSDB.DataADO.GetInstant().Insert<act_BaseObject>(new act_BaseObject()
@@ -206,8 +290,8 @@ namespace AWCSEngine
                         SeqItem = 0,
                         BaseObject_ID = baseObj.ID.Value,
                         WMS_WorkQueue_ID = null,
-                        Cur_McObject_ID = mc.ID,
-                        Des_McObject_ID = null,
+                        Cur_McObject_ID = null,
+                        Des_McObject_ID = mc.ID,
                         Cur_Warehouse_ID = mc.Cur_Area.Warehouse_ID,
                         Cur_Area_ID = mc.Cur_Area.ID.Value,
                         Cur_Location_ID = mc.Cur_Location.ID.Value,
@@ -219,7 +303,7 @@ namespace AWCSEngine
                         ActualTime = DateTime.Now,
                         EndTime = null,
                         TreeRoute = "",//treeRouting.Json(),
-                        EventStatus = McWorkEventStatus.ACTIVE_WORKING,
+                        EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
                         Status = EntityStatus.ACTIVE
                     }, null);
 

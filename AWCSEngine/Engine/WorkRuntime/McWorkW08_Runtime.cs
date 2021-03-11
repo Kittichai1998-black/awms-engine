@@ -57,12 +57,12 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         private void Inbound_OnRun()
         {
-            var mcWork_Workeds = McWorkADO.GetInstant().ListWorked_inWarehouse("W8", this.BuVO);
+            /*var mcWork_Workeds = McWorkADO.GetInstant().ListWorked_inWarehouse("W8", this.BuVO);
             var wh8 = this.StaticValue.GetWarehouse("W8");
             mcWork_Workeds.ForEach(work =>
             {
                 var _mcGateIn = this.McGateManualIn.FirstOrDefault(x => x.McWork4Work != null && x.McWork4Work.ID == work.ID);
-                if (_mcGateIn != null)//รับเข้า Gate INBOUND
+                if (_mcGateIn != null && _mcGateIn.McWork4Work != null && _mcGateIn.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED)//รับเข้า Gate INBOUND
                 {
                     var workDesLoc = this.StaticValue.GetLocation(work.Des_Location_ID.Value);
                     var _mcShuInRow = McController.ListMcRuntimeByLocation(wh8.ID.Value, null, workDesLoc.GetBay(), workDesLoc.GetLv()).FirstOrDefault();
@@ -75,7 +75,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                             _mcShuFree.PostCommand(McCommandType.CM_62,//SHU กลับ Stanby หน้า
                                 (_mcShuFree_90) =>
                                 {
-                                    while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
+                                    if (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
 
                                     _mcShuFree_90.PostCommand(McCommandType.CM_60,
                                         (_mcShuFree_82) =>//ปิดเครื่อง SHU เพื่อย้าย
@@ -90,14 +90,14 @@ namespace AWCSEngine.Engine.WorkRuntime
                                                     _srm_souLocCode, _srm_desLocCode, 3, "0000000000", 1000,
                                                     (_mcSrmOut_90) =>//SRM ย้าย SHU
                                                     {
-                                                        while (_mcSrmOut_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
+                                                        if (_mcSrmOut_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
                                                         _mcShuFree_82.PostCommand(McCommandType.CM_1,
                                                                 ListKeyValue<string, object>
                                                                 .New("Set_SouLoc", _srm_desLocCode % 1000000)
                                                                 .Add("Set_ShtDi", 1),
                                                                 (_mcShuFree_90) =>//เปิด SHU
                                                                     {
-                                                                        while (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
+                                                                        if (_mcShuFree_90.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
                                                                         _mcGateIn.McWork_0_WorkedToReceive_NextMC(_mcSrmOut_90.ID);
                                                                         return LoopResult.Break;
                                                                 });
@@ -120,7 +120,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                         });
                     }
                 }
-            });
+            });*/
         }
 
         protected override void OnStop()
