@@ -130,7 +130,13 @@ namespace ProjectGCL.Engine.Document
                             {
                                 var docTypeIDs = doc.DocumentType_ID.GetValueInt();
                                 var EvenStatus = doc.EventStatus.GetValueInt();
-                                if (EvenStatus == 10)
+                                var qtyPer = AMWUtil.Common.ObjectUtil.QryStrGetValue(docI.Options, GCLOptionVOConst.OPT_QTY_PER_PALLET);
+                                var qtyPers = Decimal.Parse(qtyPer);
+                                
+                                if (qtyPers < 1500)
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Pallet Not Correct");
+
+                                if (EvenStatus == 10 || EvenStatus == 11)
                                 {
                                     if (docI.Options != null && docTypeIDs == 1011)
                                     {
@@ -151,7 +157,7 @@ namespace ProjectGCL.Engine.Document
                                         }
                                         else
                                         {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
+                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, " Status Document not Correct");
                                         }
                                     }
                                 }
@@ -203,8 +209,13 @@ namespace ProjectGCL.Engine.Document
                         var docTypeIDs = doc.DocumentType_ID.GetValueInt();
 
                         var EvenStatus = doc.EventStatus.GetValueInt();
+                            var qtyPer = AMWUtil.Common.ObjectUtil.QryStrGetValue(docI.Options, GCLOptionVOConst.OPT_QTY_PER_PALLET);
+                            var qtyPers = Decimal.Parse(qtyPer);
+                            
+                            if (qtyPers < 1500)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Pallet Not Correct");
 
-                            if (EvenStatus == 10)
+                            if (EvenStatus == 10 || EvenStatus == 11)
                             {
                                 if (docI.Options != null && docTypeIDs == 1011)
                                 {
@@ -223,7 +234,6 @@ namespace ProjectGCL.Engine.Document
                                        res.docId = doc.ID;
                                        res.start_pallet = baseCodeMin.pallet;
                                        res.end_pallet = baseCodeMax.pallet;
-
 
                                         var datasdocumentPA = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
                                 new SQLConditionCriteria("ParentDocument_ID",string.Join(',',docI.Document_ID), SQLOperatorType.IN),
@@ -251,8 +261,6 @@ namespace ProjectGCL.Engine.Document
                                     {
                                         throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
                                     }
-
-                                
 
                                 }
                             }

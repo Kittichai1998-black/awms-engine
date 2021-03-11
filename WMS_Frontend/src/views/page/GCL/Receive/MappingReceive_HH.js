@@ -208,19 +208,7 @@ const styles = theme => ({
 
 
 
-const AreaMasterLocationQuerys = () => {
-    return {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "AreaLocationMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20},{ "f": "ObjectSize_ID", "c":"=", "v": 4}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
-}
+
 
 const MappingReceive_HH = (props) => {
     const { t } = useTranslation();
@@ -231,10 +219,10 @@ const MappingReceive_HH = (props) => {
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
     const [dialogGate, setdialogGate] = useState(false);
-    const [areaMasterLocquery, setareaMasterLocquery] = useState(AreaMasterLocationQuerys);
+    const [areaMasterLocquery, setareaMasterLocquery] = useState();
     const [areaMasterLoc, setareaMasterLoc] = useState();
     const [bodyCode, setbodyCode] = useState();
-    const [warehouseID, setwarehouseID] = useState(0);
+    const [warehouseID, setwarehouseID] = useState(1);
     const [warehouseCode, setwarehouseCode] = useState();
     const [gateCode, setgateCode] = useState();
     const [gateID, setgateID] = useState();
@@ -245,10 +233,18 @@ const MappingReceive_HH = (props) => {
 
     useEffect(() => {
         if (warehouseID != 0) {
-            getareaLocQuery(warehouseID)
+            setareaMasterLocquery(AreaLocationMasterQuery)
         }
     }, [warehouseID])
 
+    useEffect(() => {
+        setareaMasterLocquery(AreaLocationMasterQuery)
+    }, [])
+
+
+    useEffect(() => {
+        getareaLocQuery(warehouseID)
+    }, [areaMasterLocquery])
 
     useEffect(() => {
         if (gateCode) {
@@ -260,18 +256,15 @@ const MappingReceive_HH = (props) => {
 
 
     const getareaLocQuery = (IDwarehouse) => {
-        if (areaMasterLocquery) {
-            let queryAr = areaMasterLocquery;
+        if (areaMasterLocquery !== undefined) {
             let objQuery = areaMasterLocquery;
-            if (objQuery !== null) {
-                let areaLocqry = JSON.parse(objQuery.q)
-                areaLocqry.push({ 'f': 'warehouse_ID', 'c': '=', 'v': IDwarehouse })
-                objQuery.q = JSON.stringify(areaLocqry);
-            }
-            setareaMasterLocquery(queryAr);
-            setareaMasterLoc(objQuery)
+            let areaLocqry = JSON.parse(objQuery.q)
+            areaLocqry.push({ 'f': 'warehouse_ID', 'c': '=', 'v': IDwarehouse })
+            objQuery.q = JSON.stringify(areaLocqry);
+            console.log(objQuery)
+            setareaMasterLoc(objQuery);
+            editorListcolunmGate();
         }
-
     }
 
     const WarehouseMasterQuery = {
@@ -285,6 +278,20 @@ const MappingReceive_HH = (props) => {
         l: 100,
         all: ""
     };
+
+    const AreaLocationMasterQuery = () => {
+        return {
+            queryString: window.apipath + "/v2/SelectDataViwAPI/",
+            t: "AreaLocationMaster",
+            q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20},{ "f": "ObjectSize_ID", "c":"=", "v": 4}]',
+            f: "*",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: "",
+        }
+    }
 
     //steps
     const steps = getSteps();
@@ -560,6 +567,10 @@ const MappingReceive_HH = (props) => {
         Axios.post(window.apipath + '/v2/write_file_post_wcs', datas).then((res) => {
             if (res.data._result.status === 1) {
                 setSettingAlert({ type: 'success', message: res.data._result.message, state: true });
+                valueInput["locationCode"] = ''
+                setbarCodeDoc();
+                setdataDoc();
+
             } else {
                 setSettingAlert({ type: 'error', message: res.data._result.message, state: true });
 
