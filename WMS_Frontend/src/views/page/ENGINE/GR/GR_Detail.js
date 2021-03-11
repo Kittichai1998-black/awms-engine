@@ -28,7 +28,7 @@ const GR_Detail = props => {
                 columnsDetailSOU={columnsDetailSOU}
                 //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
-                CreateputAway={true}
+                CreateputAway={false}
                 TextBtnCreateputAway={'Create PutAway'}
                 apiCreate={'/receive/putawaycreate?docID='}
                 columns={columns}
