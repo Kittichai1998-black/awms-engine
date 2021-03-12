@@ -58,7 +58,7 @@ namespace ADO.WCSStaticValue
         {
             return this.Areas.FirstOrDefault(x => x.Code == code);
         }
-        public acs_Warehouse GeWarehouse(long id)
+        public acs_Warehouse GetWarehouse(long id)
         {
             return this.Warehouses.FirstOrDefault(x => x.ID == id);
         }
@@ -100,7 +100,7 @@ namespace ADO.WCSStaticValue
         {
             return this.WorkServices.FirstOrDefault(x => x.ID == id);
         }
-        public acs_WorkService GetBotService(string code)
+        public acs_WorkService GetWorkService(string code)
         {
             return this.WorkServices.FirstOrDefault(x => x.Code == code);
         }

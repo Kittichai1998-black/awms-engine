@@ -16,12 +16,26 @@ namespace AWCSEngine.Engine.McRuntime
         {
         }
 
-        private bool _lock_step = false;
-        private long? _mcShuFreeID_tmp = null;
+        private long? _mcShuFreeID_wh8_in = null;
         protected override void OnRun()
         {
-            if (_lock_step) return;
+            if (this.Code == "SRM11")
+                this.OnRun_WH8_Inbound();
+            else if(this.Code == "SRM12")
+                this.OnRun_WH8_Outbound();
+        }
+        protected void OnRun_WH8_Outbound()
+        {
+            //SRM 90 พร้อมเบิก
+            //Shut Zone5 / status 90
+            //Shut Stand / 5
+            if(this.McObj.DV_Pre_Status == 90)
+            {
 
+            }
+        }
+        protected void OnRun_WH8_Inbound()
+        {
             //SRM รอรับงาน
             if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
             {
@@ -33,8 +47,8 @@ namespace AWCSEngine.Engine.McRuntime
                 if (_mcShuInRow == null)
                 {
                     BaseMcRuntime _mcShuFree =
-                              _mcShuFreeID_tmp.HasValue ?
-                              McRuntimeController.GetInstant().GetMcRuntime(_mcShuFreeID_tmp.Value) :
+                              _mcShuFreeID_wh8_in.HasValue ?
+                              McRuntimeController.GetInstant().GetMcRuntime(_mcShuFreeID_wh8_in.Value) :
                               McRuntimeController.GetInstant().ListMcRuntimeByWarehouse(this.Cur_Area.ID.Value)
                               .OrderBy(x => x.McObj.CommandActionTime)
                               .FirstOrDefault(x => x.McWork4Receive == null && x.McWork4Work == null && x.Code.StartsWith("SHU"));
@@ -50,7 +64,7 @@ namespace AWCSEngine.Engine.McRuntime
                         //1.2 รถว่าง พร้อมทำงาน และ zone ถูกต้อง / สั่งปิดเครื่อง
                         else if (_mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone == 1)
                         {
-                            _mcShuFree.PostCommand(McCommandType.CM_60, null);
+                            _mcShuFree.PostCommand(McCommandType.CM_60);
                         }
                         //1.3 รถว่าง รถถูกปิด / สั่งเครนเตรียมย้าย
                         else if (_mcShuFree.McObj.DV_Pre_Status == 82)
@@ -61,10 +75,13 @@ namespace AWCSEngine.Engine.McRuntime
                             var _srm_desLocCode = desLoc.Code.Get2<int>() % 1000000;
                             _srm_desLocCode += 2000000;
                             this.PostCommand(McCommandType.CM_1, _srm_souLocCode, _srm_desLocCode, 3, "0000000000", 1000, (srm) => {
-                                if (srm.McObj.DV_Pre_Status != 90) return LoopResult.Continue;
-                                _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
-                                _mcShuFreeID_tmp = null;
-                                return LoopResult.Break;
+                                if (srm.McObj.DV_Pre_Status == 90 && srm.EventStatus == McObjectEventStatus.IDEL)
+                                {
+                                    _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
+                                    _mcShuFreeID_wh8_in = null;
+                                    return LoopResult.Break;
+                                } 
+                                return LoopResult.Continue;
                             });
                         }
                     }
