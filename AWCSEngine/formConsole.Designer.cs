@@ -50,6 +50,7 @@ namespace AWCSEngine
             this.txtCommand.Name = "txtCommand";
             this.txtCommand.Size = new System.Drawing.Size(1260, 31);
             this.txtCommand.TabIndex = 0;
+            this.txtCommand.TextChanged += new System.EventHandler(this.txtCommand_TextChanged);
             this.txtCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCommand_KeyDown);
             // 
             // wkDisplay
@@ -68,8 +69,10 @@ namespace AWCSEngine
             this.lisDisplayCommand.Location = new System.Drawing.Point(0, 389);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
+            this.lisDisplayCommand.ScrollAlwaysVisible = true;
             this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 127);
             this.lisDisplayCommand.TabIndex = 2;
+            this.lisDisplayCommand.Click += new System.EventHandler(this.lisDisplayCommand_Click_1);
             // 
             // menuMain
             // 
@@ -97,10 +100,10 @@ namespace AWCSEngine
             this.lisDisplayMcLists.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.lisDisplayMcLists.FormattingEnabled = true;
             this.lisDisplayMcLists.ItemHeight = 25;
-            this.lisDisplayMcLists.Location = new System.Drawing.Point(788, 0);
+            this.lisDisplayMcLists.Location = new System.Drawing.Point(659, 0);
             this.lisDisplayMcLists.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayMcLists.Name = "lisDisplayMcLists";
-            this.lisDisplayMcLists.Size = new System.Drawing.Size(472, 389);
+            this.lisDisplayMcLists.Size = new System.Drawing.Size(601, 389);
             this.lisDisplayMcLists.TabIndex = 5;
             // 
             // lisDisplayEvents
@@ -114,7 +117,8 @@ namespace AWCSEngine
             this.lisDisplayEvents.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEvents.Name = "lisDisplayEvents";
-            this.lisDisplayEvents.Size = new System.Drawing.Size(788, 389);
+            this.lisDisplayEvents.ScrollAlwaysVisible = true;
+            this.lisDisplayEvents.Size = new System.Drawing.Size(1260, 516);
             this.lisDisplayEvents.TabIndex = 6;
             // 
             // lisDisplayDevices
@@ -125,7 +129,7 @@ namespace AWCSEngine
             this.lisDisplayDevices.ForeColor = System.Drawing.Color.Yellow;
             this.lisDisplayDevices.FormattingEnabled = true;
             this.lisDisplayDevices.ItemHeight = 25;
-            this.lisDisplayDevices.Location = new System.Drawing.Point(580, 0);
+            this.lisDisplayDevices.Location = new System.Drawing.Point(451, 0);
             this.lisDisplayDevices.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayDevices.Name = "lisDisplayDevices";
             this.lisDisplayDevices.Size = new System.Drawing.Size(208, 389);
@@ -134,9 +138,9 @@ namespace AWCSEngine
             // panel2
             // 
             this.panel2.Controls.Add(this.lisDisplayDevices);
-            this.panel2.Controls.Add(this.lisDisplayEvents);
             this.panel2.Controls.Add(this.lisDisplayMcLists);
             this.panel2.Controls.Add(this.lisDisplayCommand);
+            this.panel2.Controls.Add(this.lisDisplayEvents);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 33);
             this.panel2.Name = "panel2";

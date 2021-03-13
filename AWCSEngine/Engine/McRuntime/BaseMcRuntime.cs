@@ -117,6 +117,8 @@ namespace AWCSEngine.Engine.McRuntime
             this.DeviceNames = new List<string>();
             this.McObj.GetType().GetFields().ToList().ForEach(x => { if (x.Name.StartsWith("DV_")){ this.DeviceNames.Add(x.Name.Substring(3)); } });
             this.OnStart();
+
+            DisplayController.Events_Write($"{this.Code} > [START] {(this.McObj.IsOnline ? "Online" : "Offline")} | {(this.McObj.IsAuto?"Auto":"Manual")}");
         }
 
         private int _Status4CallBack = -1;
@@ -152,39 +154,41 @@ namespace AWCSEngine.Engine.McRuntime
         }
         public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Func<BaseMcRuntime, LoopResult> callback_OnChange)
         {
-            //if(this.McObj.EventStatus == McObjectEventStatus.IDEL)
+            if ((int)comm == 0)
             {
-                this.Logger.LogInfo("[CMD] > " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
-                if ((int)comm == 0)
-                {
-                    this.McObj.Command_ID = null;
-                    this.McObj.CommandAction_Seq = null;
-                    this.McObj.CommandParameter = null;
-                    this.McObj.EventStatus = McObjectEventStatus.IDEL;
-                }
-                else
-                {
-                    this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
-                    this.McObj.CommandAction_Seq = 1;
-                    this.McObj.CommandParameter = parameters.ToQryStr();
-                    this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
-                }
-
+                this.Logger.LogInfo("[CMD] > Clear!");
+                DisplayController.Events_Write(this.Code + " > [CMD] Clear!");
+                this.McObj.Command_ID = null;
+                this.McObj.CommandAction_Seq = null;
+                this.McObj.CommandParameter = null;
+                this.McObj.EventStatus = McObjectEventStatus.IDEL;
+                this._Callback_OnChange = null;
+            }
+            else if (this.McObj.EventStatus == McObjectEventStatus.IDEL)
+            {
+                this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
+                DisplayController.Events_Write(this.Code + " > [CMD] Post = " + (int)comm);
+                this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
+                this.McObj.CommandAction_Seq = 1;
+                this.McObj.CommandParameter = parameters.ToQryStr();
+                this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
                 this._Callback_OnChange = callback_OnChange;
-
             }
 
-            DisplayController.Events_Write(this.Code + " > PostCommand = " + (int)comm);
             return true;
         }
 
         public void SetOnline(bool isOnline)
         {
             this.McObj.IsOnline = isOnline;
+            DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsOnline ? "Online" : "Offline")}");
+
         }
         public void SetAuto(bool isAuto)
         {
             this.McObj.IsAuto = isAuto;
+            DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsAuto ? "Auto" : "Manual")}");
+
         }
 
 
@@ -298,7 +302,6 @@ namespace AWCSEngine.Engine.McRuntime
                         (this.McObj.CommandAction_Seq == 1 && this.RunCmdParameters.LastOrDefault() == "\\nc") || 
                         act_conditions.TrueForAll(x => this.McObj.Get2<string>("DV_" + x.Key) == x.Value.Trim()))
                     {
-                        DisplayController.Events_Write(this.Code + " > SEQ(" + act.Seq + ") PLC Condition TRUE = " + act.DKV_Condition);
                         string _act_sets = act.DKV_Set;
                         for (int i = 0; i < this.RunCmdParameters.Count; i++)
                         {
@@ -307,8 +310,13 @@ namespace AWCSEngine.Engine.McRuntime
                             _act_sets = _act_sets.Replace("{" + i + "}", v).Replace("{" + kv[0] + "}", v);
                         }
 
-                        var act_sets = _act_sets.QryStrToKeyValues();
-                        act_sets.ForEach(x2 => {
+                        var _act_sets_comp = _act_sets.QryStrToKeyValues();
+                        int maxSeq = this.RunCmdActions.Max(x => x.Seq);
+                        string _log_con = $"{this.Code} > [DEVICE] <<CONDITION>> ({act.Seq}/{maxSeq}) {act.DKV_Condition}";
+                        DisplayController.Events_Write(_log_con);
+                        this.Logger.LogInfo(_log_con);
+
+                        _act_sets_comp.ForEach(x2 => {
                             string name = x2.Key;
                             string val = x2.Value;
                             string deviceKey = this.McMst.Get2<string>("DK_" + name);
@@ -331,8 +339,9 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
                         });
 
-                        DisplayController.Events_Write(this.Code + " > SEQ(" + act.Seq + ")  PLC Device Set = " + _act_sets);
-                        this.Logger.LogInfo("[" + this.McObj.EventStatus + "] > " + _act_sets);
+                        string _log_set = $"{this.Code} > [DEVICE] <<SET>> ({act.Seq}/{maxSeq}) {_act_sets}";
+                        DisplayController.Events_Write(_log_set);
+                        this.Logger.LogInfo(_log_set);
                         isNext = true;
                         break;
                     }
@@ -361,11 +370,17 @@ namespace AWCSEngine.Engine.McRuntime
             else if(this.McObj.EventStatus == McObjectEventStatus.DONE)
             {
                 this.McObj.EventStatus = McObjectEventStatus.IDEL;
-                DisplayController.Events_Write(this.Code + " > PLC DONE Set Command!!!");
                 this.Logger.LogInfo("[" + this.McObj.EventStatus + "]");
+            }
+
+            if(this.McObj.EventStatus != this._EventStatus_Temp)
+            {
+                DisplayController.Events_Write($"{this.Code} > [EVT.STATUS] {this.EventStatus}!");
+                this._EventStatus_Temp = this.EventStatus;
             }
         }
 
+        private McObjectEventStatus _EventStatus_Temp = (McObjectEventStatus)9999;
         private void _4_DBLog_OnRun()
         {
             try
@@ -412,11 +427,12 @@ namespace AWCSEngine.Engine.McRuntime
             if (this.McObj.IsOnline)
                 Controller.DisplayController.McLists_Write(this.Code,
                     this.Code +
-                    $"({this.EventStatus.ToString().Substring(0, 4)} {(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}) > " +
-                    "[" + (this.McObj.IsAuto ? "AUTO" : "MANUAL") + "] " +
+                    $" [{this.EventStatus.ToString().Substring(0, 4)}/{(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}]" +
+                    " > " +
+                    (this.McObj.IsAuto ? "AUTO" : "MANUAL") + " | " +
                     "Loc=" + this.Cur_Location.Code + " | " +
-                    "PreSta=" + this.McObj.DV_Pre_Status + " | " +
-                    "Err=" + error);
+                    "PST=" + this.McObj.DV_Pre_Status + " | " +
+                    (!string.IsNullOrWhiteSpace(error)?"[ERROR!]":""));
             else
                 Controller.DisplayController.McLists_Write(this.Code, this.Code + " > Offline!");
         }
