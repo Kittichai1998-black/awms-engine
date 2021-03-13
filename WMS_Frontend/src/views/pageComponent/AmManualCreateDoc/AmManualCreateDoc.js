@@ -27,7 +27,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from '@material-ui/core/Tooltip';
 import AmDocumentStatus from "../../../components/AmDocumentStatus";
 import AuditStatusIcon from "../../../components/AmAuditStatus";
-
+import AmDropdown from '../../../components/AmDropdown';
 const Axios = new apicall();
 const styles = theme => ({
   root: {
@@ -145,7 +145,7 @@ const FormInline = styled.div`
 
 const LabelH = styled.label`
   font-weight: bold;
-  width: 40px;
+  width: 115px;
   paddingleft: 20px;
 `;
 
@@ -156,10 +156,25 @@ const LabelH1 = styled.label`
 `;
 
 
+
 const AmManualCreateDoc = props => {
+  const WarehouseQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "Warehouse",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    f: "ID as warehouseID,Name,Code",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: "",
+  }
+
+
   const { t } = useTranslation();
   const { classes } = props;
 
+  const [valueInput, setValueInput] = useState({});
   const inputScan = useRef()
   const [qrcode, setqrcode] = useState()
   const [count, setCount] = useState(0);
@@ -194,9 +209,12 @@ const AmManualCreateDoc = props => {
     const signalrStart = () => {
       connection.start()
         .then(() => {
+          //console.log(valueInput["warehouseID"])
           connection.on(props.doctype === 1011 ? 'DASHBOARD_DOC_GR' : 'DASHBOARD_DOC_GI', res => {
             setCount(count + 1);
-            setData(JSON.parse(res))
+            var dataFilter = JSON.parse(res).filter(x => x.Des_Warehouse_ID === (valueInput["warehouseID"] === undefined ? 1 : valueInput["warehouseID"]))
+            // console.log(JSON.parse(res))
+            setData(dataFilter)
           })
         })
         .catch((err) => {
@@ -222,6 +240,13 @@ const AmManualCreateDoc = props => {
 
 
   const ref = useRef(props.columnEdit.map(() => createRef()))
+  const onHandleChangeInput = (keydata, value) => {
+
+    valueInput[keydata] = value;
+    //console.log(valueInput["warehouseID"])
+  }
+
+
   const onScan = (datas) => {
     // console.log(datas)
     // console.log(datas.split("|").length)
@@ -674,6 +699,30 @@ const AmManualCreateDoc = props => {
         columns={DataGenerateLast()}
       />
       <Paper >
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+
+            <FormInline>
+              <LabelH style={{ marginLeft: "5px", fontSize: "18px" }}>  {t("Warehouse")}</LabelH>
+              <AmDropdown
+                id={"id"}
+                placeholder={"warehouse"}
+                fieldDataKey={"warehouseID"}
+                fieldLabel={["Code"]}
+                labelPattern=" : "
+                width={200}
+                ddlMinWidth={200}
+
+                defaultValue={1}
+                zIndex={1000}
+                queryApi={WarehouseQuery}
+                onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(fieldDataKey, value)}
+              />
+            </FormInline>
+
+          </Grid>
+        </Grid>
+
         <Grid container spacing={3} style={{ marginTop: "10px" }}>
 
           <Grid item xs={2.5} style={{ paddingRight: "0px" }}>
@@ -709,6 +758,7 @@ const AmManualCreateDoc = props => {
             >
               {t("Manual")}
             </AmButton>
+
           </Grid>
 
           {generateCard(data)}
