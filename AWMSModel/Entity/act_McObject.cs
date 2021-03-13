@@ -15,6 +15,7 @@ namespace AMSModel.Entity
         public long? Sou_Location_ID;
         public long? Des_Location_ID;
         public long? Cur_Location_ID;
+        public DateTime CommandActionTime;
         public McObjectEventStatus EventStatus;
 
 

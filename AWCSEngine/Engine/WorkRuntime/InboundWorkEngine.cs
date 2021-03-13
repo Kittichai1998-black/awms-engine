@@ -105,7 +105,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                         BaseObject_ID = baseObj.ID.Value,
                         WMS_WorkQueue_ID = response.queueID,
                         Cur_McObject_ID = null,
-                        Des_McObject_ID = mc.ID,
+                        Rec_McObject_ID = mc.ID,
                         Cur_Warehouse_ID = mc.Cur_Area.Warehouse_ID,
                         Cur_Area_ID = mc.Cur_Area.ID.Value,
                         Cur_Location_ID = mc.Cur_Location.ID.Value,

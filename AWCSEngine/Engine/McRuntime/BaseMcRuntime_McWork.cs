@@ -15,7 +15,7 @@ namespace AWCSEngine.Engine.McRuntime
         public void McWork_0_Reload()
         {
             this.McWork4Work = McWorkADO.GetInstant().GetByCurMcObject(this.McMst.ID.Value, this.BuVO);
-            this.McWork4Receive = McWorkADO.GetInstant().GetByDesMcObject(this.McMst.ID.Value, this.BuVO);
+            this.McWork4Receive = McWorkADO.GetInstant().GetByRecMcObject(this.McMst.ID.Value, this.BuVO);
             if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_KEEP)
             {
                 this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
@@ -29,7 +29,7 @@ namespace AWCSEngine.Engine.McRuntime
             var nextMc = McRuntimeController.GetInstant().GetMcRuntime(toMcID);
             nextMc.McWork4Receive = this.McWork4Work;
 
-            this.McWork4Work.Des_McObject_ID = toMcID;
+            this.McWork4Work.Rec_McObject_ID = toMcID;
             this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_RECEIVE;
             this.McWork4Work.ActualTime = DateTime.Now;
 
@@ -42,7 +42,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.McWork4Work = this.McWork4Receive;
             this.McWork4Receive = null;
             this.McWork4Work.Cur_McObject_ID = this.ID;
-            this.McWork4Work.Des_McObject_ID = null;
+            this.McWork4Work.Rec_McObject_ID = null;
             this.McWork4Work.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
             this.McWork4Work.ActualTime = DateTime.Now;
             DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);

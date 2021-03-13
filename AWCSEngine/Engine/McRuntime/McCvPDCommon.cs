@@ -16,7 +16,7 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_WORKED)
+            if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
             {
                 if (this.McObj.DV_Pre_Status == 98)
                 {

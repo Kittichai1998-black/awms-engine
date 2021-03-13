@@ -37,20 +37,18 @@ namespace AWCSEngine
             this.lisDisplayMcLists = new System.Windows.Forms.ListBox();
             this.lisDisplayEvents = new System.Windows.Forms.ListBox();
             this.lisDisplayDevices = new System.Windows.Forms.ListBox();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.menuMain.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtCommand
             // 
             this.txtCommand.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtCommand.Location = new System.Drawing.Point(0, 587);
+            this.txtCommand.Location = new System.Drawing.Point(0, 549);
             this.txtCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCommand.Name = "txtCommand";
-            this.txtCommand.Size = new System.Drawing.Size(1141, 31);
+            this.txtCommand.Size = new System.Drawing.Size(1260, 31);
             this.txtCommand.TabIndex = 0;
             this.txtCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCommand_KeyDown);
             // 
@@ -67,10 +65,10 @@ namespace AWCSEngine
             this.lisDisplayCommand.ForeColor = System.Drawing.Color.LightBlue;
             this.lisDisplayCommand.FormattingEnabled = true;
             this.lisDisplayCommand.ItemHeight = 25;
-            this.lisDisplayCommand.Location = new System.Drawing.Point(0, 427);
+            this.lisDisplayCommand.Location = new System.Drawing.Point(0, 389);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.Size = new System.Drawing.Size(895, 127);
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 127);
             this.lisDisplayCommand.TabIndex = 2;
             // 
             // menuMain
@@ -80,7 +78,7 @@ namespace AWCSEngine
             this.menuConfigCommand});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
-            this.menuMain.Size = new System.Drawing.Size(1141, 33);
+            this.menuMain.Size = new System.Drawing.Size(1260, 33);
             this.menuMain.TabIndex = 4;
             this.menuMain.Text = "xxxx";
             this.menuMain.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuMain_ItemClicked);
@@ -95,61 +93,54 @@ namespace AWCSEngine
             // 
             this.lisDisplayMcLists.BackColor = System.Drawing.SystemColors.ControlText;
             this.lisDisplayMcLists.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lisDisplayMcLists.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lisDisplayMcLists.Dock = System.Windows.Forms.DockStyle.Right;
             this.lisDisplayMcLists.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.lisDisplayMcLists.FormattingEnabled = true;
             this.lisDisplayMcLists.ItemHeight = 25;
-            this.lisDisplayMcLists.Location = new System.Drawing.Point(0, 0);
+            this.lisDisplayMcLists.Location = new System.Drawing.Point(788, 0);
             this.lisDisplayMcLists.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayMcLists.Name = "lisDisplayMcLists";
-            this.lisDisplayMcLists.Size = new System.Drawing.Size(895, 427);
+            this.lisDisplayMcLists.Size = new System.Drawing.Size(472, 389);
             this.lisDisplayMcLists.TabIndex = 5;
             // 
             // lisDisplayEvents
             // 
             this.lisDisplayEvents.BackColor = System.Drawing.SystemColors.InfoText;
             this.lisDisplayEvents.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lisDisplayEvents.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lisDisplayEvents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lisDisplayEvents.ForeColor = System.Drawing.Color.LightCoral;
             this.lisDisplayEvents.FormattingEnabled = true;
             this.lisDisplayEvents.ItemHeight = 25;
-            this.lisDisplayEvents.Location = new System.Drawing.Point(542, 33);
+            this.lisDisplayEvents.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEvents.Name = "lisDisplayEvents";
-            this.lisDisplayEvents.Size = new System.Drawing.Size(599, 554);
+            this.lisDisplayEvents.Size = new System.Drawing.Size(788, 389);
             this.lisDisplayEvents.TabIndex = 6;
             // 
             // lisDisplayDevices
             // 
             this.lisDisplayDevices.BackColor = System.Drawing.SystemColors.InfoText;
             this.lisDisplayDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lisDisplayDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lisDisplayDevices.Dock = System.Windows.Forms.DockStyle.Right;
             this.lisDisplayDevices.ForeColor = System.Drawing.Color.Yellow;
             this.lisDisplayDevices.FormattingEnabled = true;
             this.lisDisplayDevices.ItemHeight = 25;
-            this.lisDisplayDevices.Location = new System.Drawing.Point(0, 0);
+            this.lisDisplayDevices.Location = new System.Drawing.Point(580, 0);
             this.lisDisplayDevices.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayDevices.Name = "lisDisplayDevices";
-            this.lisDisplayDevices.Size = new System.Drawing.Size(246, 554);
+            this.lisDisplayDevices.Size = new System.Drawing.Size(208, 389);
             this.lisDisplayDevices.TabIndex = 7;
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.lisDisplayDevices);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel1.Location = new System.Drawing.Point(0, 33);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(246, 554);
-            this.panel1.TabIndex = 8;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.lisDisplayDevices);
+            this.panel2.Controls.Add(this.lisDisplayEvents);
             this.panel2.Controls.Add(this.lisDisplayMcLists);
             this.panel2.Controls.Add(this.lisDisplayCommand);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(246, 33);
+            this.panel2.Location = new System.Drawing.Point(0, 33);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(895, 554);
+            this.panel2.Size = new System.Drawing.Size(1260, 516);
             this.panel2.TabIndex = 9;
             // 
             // formConsole
@@ -157,10 +148,8 @@ namespace AWCSEngine
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(1141, 618);
-            this.Controls.Add(this.lisDisplayEvents);
+            this.ClientSize = new System.Drawing.Size(1260, 580);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtCommand);
             this.Controls.Add(this.menuMain);
             this.MainMenuStrip = this.menuMain;
@@ -173,7 +162,6 @@ namespace AWCSEngine
             this.Load += new System.EventHandler(this.formAdminConsole_Load);
             this.menuMain.ResumeLayout(false);
             this.menuMain.PerformLayout();
-            this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -189,7 +177,6 @@ namespace AWCSEngine
         private System.Windows.Forms.ListBox lisDisplayMcLists;
         private System.Windows.Forms.ListBox lisDisplayEvents;
         private System.Windows.Forms.ListBox lisDisplayDevices;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
     }
 }
