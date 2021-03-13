@@ -79,11 +79,11 @@ const routes = [
 
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaysearch", name: "PA Search", compoment: PA_Search, exact: true },
-  { path: "/receive/manualcreate", name: "GR HH", compoment: CreateGRByQR, exact: true },
+  { path: "/receive/handheldreceive", name: "GR HH", compoment: CreateGRByQR, exact: true },
 
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
-  { path: "/issue/manualcreate", name: "GRI HH", compoment: CreateGIByQR, exact: true },
+  { path: "/issue/manualcreate", name: "GI HH", compoment: CreateGIByQR, exact: true },
 
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
