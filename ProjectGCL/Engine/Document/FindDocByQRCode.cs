@@ -88,8 +88,8 @@ namespace ProjectGCL.Engine.Document
             //res.datas = new List<TRes.DocData>();
             foreach (var qrCode in reqVO.qrCodes)
             {
-                var qrModel1 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode1, "{gade}  {lot}  {pallet}");
-                var qrModel2 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode2, "{gade}  {lot}  {pallet}");
+                var qrModel1 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode1, "{gade} {lot} {pallet}");
+                var qrModel2 = ObjectUtil.ConvertTextFormatToModel<QR>(qrCode.qrCode2, "{gade} {lot} {pallet}");
 
                 if (qrModel1 == null && qrModel2 == null)
                 {
@@ -142,22 +142,29 @@ namespace ProjectGCL.Engine.Document
                                     {
                                         string codeMax = docItembygade.Max(x => x.BaseCode);
                                         string codeMin = docItembygade.Min(x => x.BaseCode);
-                                        var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
-                                        var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
-                                        var palletMax = Int32.Parse(baseCodeMax.pallet);
-                                        var palletMin = Int32.Parse(baseCodeMin.pallet);
-                                        var noPallet1 = Int32.Parse(qrModel1.pallet);
-                                        var noPallet2 = Int32.Parse(qrModel2.pallet);
+                                        //var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
+                                        var leghtMax = codeMax.Length;
+                                        var leghtMin = codeMin.Length;
 
-                                        if (noPallet1 >= palletMin && noPallet1 <= palletMax && noPallet2 >= palletMin && noPallet2 <= palletMax)
+                                        if (leghtMax < 25 && leghtMin < 25)
                                         {
-                                            res.docId = doc.ID;
-                                            res.start_pallet = baseCodeMin.pallet;
-                                            res.end_pallet = baseCodeMax.pallet;
-                                        }
-                                        else
-                                        {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, " Status Document not Correct");
+                                            var baseCodeMax = codeMax.Substring(20, 4);
+                                            var baseCodeMin = codeMin.Substring(20, 4);
+                                            var palletMax = Int32.Parse(baseCodeMax);
+                                            var palletMin = Int32.Parse(baseCodeMin);
+                                            var noPallet1 = Int32.Parse(qrModel1.pallet);
+                                            var noPallet2 = Int32.Parse(qrModel2.pallet);
+
+                                            if (noPallet1 >= palletMin && noPallet1 <= palletMax && noPallet2 >= palletMin && noPallet2 <= palletMax)
+                                            {
+                                                res.docId = doc.ID;
+                                                res.start_pallet = baseCodeMin;
+                                                res.end_pallet = baseCodeMax;
+                                            }
+                                            else
+                                            {
+                                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, " Status Document not Correct");
+                                            }
                                         }
                                     }
                                 }
@@ -219,29 +226,34 @@ namespace ProjectGCL.Engine.Document
                             {
                                 if (docI.Options != null && docTypeIDs == 1011)
                                 {
-                                    string codeMax = docItembygade.Max(x => x.BaseCode);
-                                    string codeMin = docItembygade.Min(x => x.BaseCode);
-                                    var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
-                                    var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
-                                    var palletMax = Int32.Parse(baseCodeMax.pallet);
-                                    var palletMin = Int32.Parse(baseCodeMin.pallet);
-                                    var noPallet1 = Int32.Parse(qrModel1.pallet);
-                                 
+                                    var codeMax = docItembygade.Max(x => x.BaseCode);
+                                    var codeMin = docItembygade.Min(x => x.BaseCode);
+                                    var leghtMax = codeMax.Length;
+                                    var leghtMin = codeMin.Length;
 
-                                    if (noPallet1 >= palletMin && noPallet1 <= palletMax)
+                                    if (leghtMax < 25 && leghtMin < 25)
                                     {
-                                       
-                                       res.docId = doc.ID;
-                                       res.start_pallet = baseCodeMin.pallet;
-                                       res.end_pallet = baseCodeMax.pallet;
 
-                                        var datasdocumentPA = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
+                                        var baseCodeMax = codeMax.Substring(20, 4);
+                                        var baseCodeMin = codeMin.Substring(20, 4);
+                                        var palletMax = Int32.Parse(baseCodeMax);
+                                        var palletMin = Int32.Parse(baseCodeMin);
+                                        var noPallet1 = Int32.Parse(qrModel1.pallet);
+
+                                        if (noPallet1 >= palletMin && noPallet1 <= palletMax)
+                                        {
+
+                                            res.docId = doc.ID;
+                                            res.start_pallet = baseCodeMin;
+                                            res.end_pallet = baseCodeMax;
+
+                                            var datasdocumentPA = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
                                 new SQLConditionCriteria("ParentDocument_ID",string.Join(',',docI.Document_ID), SQLOperatorType.IN),
                                  }, this.BuVO);
 
 
-                                        datasdocumentPA.ForEach(pa =>
-                                        {
+                                            datasdocumentPA.ForEach(pa =>
+                                            {
 
                                             //res.start_pallet = docoption.startPallet;
                                             //res.end_pallet = docoption.endPallet;
@@ -251,15 +263,16 @@ namespace ProjectGCL.Engine.Document
                                             //res.start_pallet = null;
                                             //res.end_pallet = null;
                                             res.docId = doc.ID;
-                                            res.putawayCode = pa.Code;
-                                            res.putawayID = pa.ID.Value;
+                                                res.putawayCode = pa.Code;
+                                                res.putawayID = pa.ID.Value;
 
-                                        });
+                                            });
 
-                                    }
-                                    else
-                                    {
-                                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
+                                        }
+                                        else
+                                        {
+                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
+                                        }
                                     }
 
                                 }
