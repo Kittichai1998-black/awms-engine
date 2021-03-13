@@ -47,7 +47,7 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     this.PostCommand(McCommandType.CM_55, (mc) =>
                     {
-                        if(this.McObj.DV_Con_Comm == 55)
+                        if (mc.EventStatus == McObjectEventStatus.DONE)
                         {
                             this.McWork_1_ReceiveToWorking();
                             return LoopResult.Break;
@@ -59,10 +59,18 @@ namespace AWCSEngine.Engine.McRuntime
             else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
             {
                 //จบงาน
-                if (this.McObj.DV_Pre_Status == 90)
+                if (this.McObj.DV_Pre_Status == 99)
                 {
-                    this.McWork_2_WorkingToWorked();
-                    this.McWork_4_WorkedToDone();
+                    this.PostCommand(McCommandType.CM_99, (mc) =>
+                    {
+                        if(mc.EventStatus == McObjectEventStatus.DONE)
+                        {
+                            this.McWork_2_WorkingToWorked();
+                            this.McWork_4_WorkedToDone();
+                            return LoopResult.Break;
+                        }
+                        return LoopResult.Continue;
+                    });
                 }
             }
 

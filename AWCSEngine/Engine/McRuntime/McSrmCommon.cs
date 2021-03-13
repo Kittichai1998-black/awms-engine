@@ -93,7 +93,7 @@ namespace AWCSEngine.Engine.McRuntime
                     if (_mcShuInRow.McObj.DV_Pre_Status == 82)
                     {
                         _mcShuInRow.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
-                            .New("Set_SouLoc", _mcShuInRow.Code.Get2<int>() % 1000000)
+                            .New("Set_SouLoc", _mcShuInRow.Cur_Location.Code.Get2<int>() % 1000000)
                             .Add("Set_ShtDi", 1), null);
                     }
                     //2.2 รถ สถานะพร้อมทำงาน แต่รถไม่อยู่ที่ home / สั่งกลับ home
