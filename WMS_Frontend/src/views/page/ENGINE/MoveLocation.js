@@ -159,7 +159,7 @@ const MoveLocation = props => {
             fieldDataKey={"ID"}
             fieldLabel={["Code", "Name"]}
             labelPattern=" : "
-            width={250}
+            width={300}
             ddlMinWidth={200}
             zIndex={1000}
             defaultValue={1}

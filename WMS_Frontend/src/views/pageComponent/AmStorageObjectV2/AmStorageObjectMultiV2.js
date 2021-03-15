@@ -70,7 +70,7 @@ const AmStorageObjectMulti = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
     //q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": "' + localStorage.getItem("User_ProductOwner") + '"}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
@@ -309,46 +309,129 @@ const AmStorageObjectMulti = props => {
 
   }
 
+  // var auditAction = [{
+  //   label: <div style={{ fontSize: "12px" }}>
+  //     {"QUARANTINE"}</div>,
+  //   action: (data) => {
+  //     if (selection.length === 0) {
+  //       setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+  //     } else {
+  //       setDialog(true)
+  //       setAditStatus("0")
+  //       setMode("audit")
+  //     }
+  //   }
+
+  // }, {
+  //   label: <div style={{ fontSize: "12px" }}>
+  //     {"PASSED"}</div>,
+  //   action: (data) => {
+  //     if (selection.length === 0) {
+  //       setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+  //     } else {
+  //       setDialog(true)
+  //       setAditStatus("1")
+  //       setMode("audit")
+  //     }
+  //   }
+
+  // }, {
+  //   label: <div style={{ fontSize: "12px" }}>
+  //     {"REJECTED"}</div>,
+  //   action: (data) => {
+  //     if (selection.length === 0) {
+  //       setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+  //     } else {
+  //       setDialog(true)
+  //       setAditStatus("2")
+  //       setMode("audit")
+  //     }
+  //   }
+
+  // }, {
+  //   label: <div style={{ fontSize: "12px" }}>
+  //     {"HOLD"}</div>,
+  //   action: (data) => {
+  //     if (selection.length === 0) {
+  //       setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+  //     } else {
+  //       setDialog(true)
+  //       setAditStatus("9")
+  //       setMode("audit")
+  //     }
+  //   }
+
+  // },
+  // ]
+
   var auditAction = [{
     label: <div style={{ fontSize: "12px" }}>
-      {"QUARANTINE"}</div>,
+      {"QI"}</div>,
     action: (data) => {
       if (selection.length === 0) {
         setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
       } else {
         setDialog(true)
-        setAditStatus("0")
+        setAditStatus("4")
         setMode("audit")
       }
     }
 
   }, {
     label: <div style={{ fontSize: "12px" }}>
-      {"PASSED"}</div>,
+      {"ACC"}</div>,
     action: (data) => {
       if (selection.length === 0) {
         setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
       } else {
         setDialog(true)
-        setAditStatus("1")
+        setAditStatus("5")
         setMode("audit")
       }
     }
 
   }, {
     label: <div style={{ fontSize: "12px" }}>
-      {"REJECTED"}</div>,
+      {"ACD"}</div>,
     action: (data) => {
       if (selection.length === 0) {
         setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
       } else {
         setDialog(true)
-        setAditStatus("2")
+        setAditStatus("6")
         setMode("audit")
       }
     }
 
   }, {
+    label: <div style={{ fontSize: "12px" }}>
+      {"ACN"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("7")
+        setMode("audit")
+      }
+    }
+
+  },
+  {
+    label: <div style={{ fontSize: "12px" }}>
+      {"ACM"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("8")
+        setMode("audit")
+      }
+    }
+
+  },
+  {
     label: <div style={{ fontSize: "12px" }}>
       {"HOLD"}</div>,
     action: (data) => {
@@ -362,6 +445,34 @@ const AmStorageObjectMulti = props => {
     }
 
   },
+  {
+    label: <div style={{ fontSize: "12px" }}>
+      {"BLOCK"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("10")
+        setMode("audit")
+      }
+    }
+
+  },
+  {
+    label: <div style={{ fontSize: "12px" }}>
+      {"UR"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("11")
+        setMode("audit")
+      }
+    }
+
+  }
   ]
 
   const Clear = () => {
