@@ -132,20 +132,29 @@ namespace ProjectGCL.Engine.WorkQueue
 
                                         string codeMax = docItembygade.Max(x => x.BaseCode);
                                         string codeMin = docItembygade.Min(x => x.BaseCode);
-                                        var baseCodeMax = ObjectUtil.ConvertTextFormatToModel<QR>(codeMax, "{gade}  {lot} {pallet}");
-                                        var baseCodeMin = ObjectUtil.ConvertTextFormatToModel<QR>(codeMin, "{gade}  {lot} {pallet}");
-                                        var palletMax = Int32.Parse(baseCodeMax.pallet);
-                                        var palletMin = Int32.Parse(baseCodeMin.pallet);
-                                        var noPallet = Int32.Parse(qrModel.pallet);
+                                        var leghtMax = codeMax.Length;
+                                        var leghtMin = codeMin.Length;
 
-                                        if (noPallet >= palletMin && noPallet <= palletMax)
+                                        if (leghtMax < 25 && leghtMin < 25)
                                         {
+                                            var baseCodeMax = codeMax.Substring(20, 4);
+                                            var baseCodeMin = codeMin.Substring(20, 4);
+                                            var palletMax = Int32.Parse(baseCodeMax);
+                                            var palletMin = Int32.Parse(baseCodeMin);
+                                            var noPallet = Int32.Parse(qrModel.pallet);
 
-                                            docId = doc.ID;
+                                            if (noPallet >= palletMin && noPallet <= palletMax)
+                                            {
+
+                                                docId = doc.ID;
+                                            }
+                                            else
+                                            {
+                                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
+                                            }
                                         }
-                                        else
-                                        {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Not Found");
+                                        else {
+                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "BarCode Not Found");
                                         }
                                     }
 
