@@ -213,7 +213,13 @@ const AmManualCreateDoc = props => {
           connection.on(props.doctype === 1011 ? 'DASHBOARD_DOC_GR' : 'DASHBOARD_DOC_GI', res => {
             setCount(count + 1);
             var dataFilter = JSON.parse(res).filter(x => x.Des_Warehouse_ID === (valueInput["warehouseID"] === undefined ? 1 : valueInput["warehouseID"]))
-            // console.log(JSON.parse(res))
+
+            if (valueInput["bagging"] !== undefined && valueInput["bagging"] !== "") {
+              // console.log(valueInput["bagging"])
+              dataFilter = dataFilter.filter(x => x.Ref2 === valueInput["bagging"])
+            }
+
+            //console.log(JSON.parse(res))
             setData(dataFilter)
           })
         })
@@ -671,6 +677,7 @@ const AmManualCreateDoc = props => {
     setqrcode()
     setLast("")
     setDocItemID()
+    setValueInput({})
   }
 
   return (
@@ -719,7 +726,19 @@ const AmManualCreateDoc = props => {
                 onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(fieldDataKey, value)}
               />
             </FormInline>
-
+            <LabelH style={{ marginLeft: "5px", fontSize: "18px" }}>  {props.doctype === 1011 ? t("Bagging") : t("Do")}</LabelH>
+            <AmInput
+              id={"bagging "}
+              autoFocus={autoFocus}
+              style={{ width: "200px" }}
+              inputRef={inputScan}
+              onChange={(value) => setqrcode(value)}
+              onKeyPress={(value, obj, element, event) => {
+                if (event.key === "Enter") {
+                  onHandleChangeInput("bagging", value)
+                }
+              }}
+            />
           </Grid>
         </Grid>
 
