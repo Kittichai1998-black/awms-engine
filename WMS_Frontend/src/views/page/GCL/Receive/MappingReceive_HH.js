@@ -229,6 +229,7 @@ const MappingReceive_HH = (props) => {
     const [barCodeDoc, setbarCodeDoc] = useState();
     const [inputList, setInputList] = useState([{ barcode: "" }]);
     const [barCode, setbarCode] = useState([]);
+    const [barCodeSto, setbarCodeSto] = useState([]);
     const [dataDoc, setdataDoc] = useState({});
 
     useEffect(() => {
@@ -261,7 +262,6 @@ const MappingReceive_HH = (props) => {
             let areaLocqry = JSON.parse(objQuery.q)
             areaLocqry.push({ 'f': 'warehouse_ID', 'c': '=', 'v': IDwarehouse })
             objQuery.q = JSON.stringify(areaLocqry);
-            console.log(objQuery)
             setareaMasterLoc(objQuery);
             editorListcolunmGate();
         }
@@ -476,7 +476,7 @@ const MappingReceive_HH = (props) => {
                 });
 
                 if (listBarcode.length > 0) {
-                    CheckBarcodeMappingDocument(listBarcode);
+                    CheckBarcodeMappingDocument([...listBarcode]);
                 } else {
                     alertDialogRenderer("warning", t("Please Scan Barcode Product."))
                 }
@@ -500,10 +500,10 @@ const MappingReceive_HH = (props) => {
     }
 
     const handleReset = () => {
-        //setValueInput({});
+        setValueInput({});
         setActiveStep(0);
         setDatas(null);
-        //setInputList([{ barcode: "" }]);
+        setInputList([{ barcode: "" }]);
     };
 
     const onHandleChangeInput = (value, field) => {
@@ -516,22 +516,53 @@ const MappingReceive_HH = (props) => {
     };
 
     const CheckBarcodeMappingDocument = (listBarcode) => {
+
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         var qrCode = [];
-        var barCode = {};
-        let qrCodes;
+        var barCodes = {};
+
         listBarcode.forEach((x, i) => {
-            qrCodes = {
-                "qrCode1": listBarcode[0] ? listBarcode[0] : "null",
-                "qrCode2": listBarcode[1] ? listBarcode[1] : "null"
+            if (x) {
+                var str = x;
+                var cleanStr = str.trim();
+
+                if (x.length < 25) {
+                    var gade = cleanStr.substr(0, 8);
+                    var lot = cleanStr.substr(9, 9);
+                    var pallet = cleanStr.substr(20, 4);
+
+                    if (gade.length > 8)
+                        setSettingAlert({ type: 'error', message: 'BarCode not Correct', state: true });
+
+
+                    if (lot.length > 9)
+                        setSettingAlert({ type: 'error', message: 'BarCode not Correct', state: true });
+
+
+                    if (pallet.length > 4)
+                        setSettingAlert({ type: 'error', message: 'BarCode not Correct', state: true });
+
+                    let dataBar = gade.trim() + ' ' + lot.trim() + ' ' + pallet.trim()
+                    qrCode.push(dataBar);
+              
+                } else {
+                    setSettingAlert({ type: 'error', message: 'BarCode not Correct', state: true });
+                }
             }
 
-        })
-        qrCode.push(qrCodes)
-        barCode['qrCodes'] = qrCode
-        setbarCodeDoc(barCode);
+        });
+        setbarCodeSto(qrCode);
+        let databarCode = [];
 
-        Axios.post(window.apipath + '/v2/FindDocByQRCode', barCode).then((res) => {
+        let qrCodes = {
+            "qrCode1": qrCode[0] ? qrCode[0] : "null",
+            "qrCode2": qrCode[1] ? qrCode[1] : "null"
+        }
+        databarCode.push(qrCodes)
+        barCodes['qrCodes'] = databarCode
+        setbarCodeDoc(barCodes);
+
+        Axios.post(window.apipath + '/v2/FindDocByQRCode', barCodes).then((res) => {
             if (res.data._result.status === 1) {
                 setdataDoc(res.data);
             } else {
@@ -546,21 +577,12 @@ const MappingReceive_HH = (props) => {
     const ConfirmReceive = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         alertDialogRenderer("success", t("Sucess"))
-        let barcode_pstos = [];
-        let bars = barCodeDoc['qrCodes'][0]
-
-        if (bars.qrCode1 !== "null" && bars.qrCode2 !== "null") {
-            barcode_pstos.push(bars.qrCode1)
-            barcode_pstos.push(bars.qrCode2)
-        } else if (bars.qrCode !== "null") {
-            barcode_pstos.push(bars.qrCode1)
-        }
 
         let datas = {}
         datas = {
             //"warehouseCode" : warehouseCode,
             "GateCode": gateCode,
-            "QR": barcode_pstos,
+            "QR": barCodeSto,
             "DocID": dataDoc !== undefined ? dataDoc.docId : null
         }
 

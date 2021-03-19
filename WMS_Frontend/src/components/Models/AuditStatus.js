@@ -3,8 +3,15 @@ const AuditStatus = [
   { label: "PASSED", value: "PASSED" },
   { label: "NOTPASS", value: "NOTPASS" },
   { label: "REJECTED", value: "REJECTED" },
-  { label: "HOLD", value: "HOLD" }
-
+  { label: "HOLD", value: "HOLD" },
+  { label: 'QI', value: 'QI' },
+  { label: 'ACC', value: 'ACC' },
+  { label: 'ACD', value: 'ACD' },
+  { label: 'ACN', value: 'ACN' },
+  { label: 'ACM', value: 'ACM' },
+  { label: 'HOLD', value: 'HOLD' },
+  { label: 'BLOCK', value: 'BLOCK' },
+  { label: 'UR', value: 'UR' },
 ];
 const AuditStatusGCL = [
   { label: 'QI', value: '4' },
@@ -18,10 +25,10 @@ const AuditStatusGCL = [
 
 ];
 const AuditStatusVal = [
-  { label: "QUARANTINE", value: 0 },
-  { label: "PASSED", value: 1 },
-  { label: "REJECTED", value: 2 },
-  { label: "NOTPASSED", value: 3 },
+  // { label: "QUARANTINE", value: 0 },
+  // { label: "PASSED", value: 1 },
+  // { label: "REJECTED", value: 2 },
+  // { label: "NOTPASSED", value: 3 },
   { label: 'QI', value: 4 },
   { label: 'ACC', value: 5 },
   { label: 'ACD', value: 6 },

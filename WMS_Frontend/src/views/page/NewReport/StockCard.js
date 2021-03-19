@@ -95,7 +95,7 @@ const StockCard = (props) => {
         { Header: 'SKU Type', accessor: 'SkuTypeName', width: 140, sortable: false },
         //{ Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
-        { Header: 'Control No.', accessor: 'OrderNo', width: 100, sortable: false },
+        //{ Header: 'Control No.', accessor: 'OrderNo', width: 100, sortable: false },
         {
             Header: 'Issue', accessor: 'CreditQuantity', width: 70, sortable: false,
             Footer: true, filterable: false,

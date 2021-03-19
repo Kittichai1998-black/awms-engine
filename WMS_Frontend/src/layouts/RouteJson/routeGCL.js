@@ -61,7 +61,10 @@ const RegistShuttle = Loadable({
   loader: () => import("../../views/page/GCL/Receive/RegistShuttle"),
   loading: Loading
 });
-
+const GI_WorkQueue = Loadable({
+  loader: () => import("../../views/page/GCL/Issue/PK_ManageQueue"),
+  loading: Loading
+});
 // const GR_Detail = Loadable({
 //   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
 //   loading: Loading
@@ -84,6 +87,7 @@ const routes = [
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
   { path: "/issue/manualcreate", name: "GI HH", compoment: CreateGIByQR, exact: true },
+  { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
