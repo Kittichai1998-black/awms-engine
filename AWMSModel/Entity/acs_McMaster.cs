@@ -12,9 +12,6 @@ namespace AMSModel.Entity
         public PlcCommunicationType PlcCommuType;
         public string PlcDeviceName;
        
-        public string Code;
-        public string Name;
-
         public string DK_Set_SouLoc;
         public int DW_Set_SouLoc;
 

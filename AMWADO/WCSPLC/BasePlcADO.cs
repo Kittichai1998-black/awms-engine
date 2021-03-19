@@ -31,6 +31,7 @@ namespace ADO.WCSPLC
                 {
                     T newInst = (T)Activator.CreateInstance(typeof(T), new object[] { });
                     newInst.PlcDeviceName = plcDeviceName;
+                    //newInst.IsConnect = false;
                     newInst.Open();
                     instants.Add(dirKey, newInst);
                 }
@@ -39,11 +40,14 @@ namespace ADO.WCSPLC
         }
 
         public string PlcDeviceName { get; private set; }
+        public abstract bool IsConnect { get; }
+
         public abstract void Open();
         public abstract void Close();
         public abstract T1 GetDevice<T1>(string key);
         public abstract string GetDeviceString(string key, int length);
         public abstract void SetDevice<T1>(string key, T1 val);
         public abstract void SetDeviceString(string key, string val, int length);
+
     }
 }

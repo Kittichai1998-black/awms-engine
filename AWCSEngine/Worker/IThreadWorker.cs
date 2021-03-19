@@ -10,5 +10,6 @@ namespace AWCSEngine.Worker
         void Initial();
         void WakeUpAll();
         void Run(object _arg);
+        void Abort();
     }
 }

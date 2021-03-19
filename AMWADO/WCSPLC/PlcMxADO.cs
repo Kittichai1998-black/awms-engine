@@ -7,6 +7,8 @@ namespace ADO.WCSPLC
 {
     public class PlcMxADO : BasePlcADO<PlcMxADO>
     {
+        public override bool IsConnect => throw new NotImplementedException();
+
         public override void Close()
         {
             throw new NotImplementedException();

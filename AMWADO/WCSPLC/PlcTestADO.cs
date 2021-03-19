@@ -9,6 +9,9 @@ namespace ADO.WCSPLC
     public class PlcTestADO : BasePlcADO<PlcTestADO>
     {
         private Dictionary<string, object> datas = new Dictionary<string, object>();
+
+        public override bool IsConnect => throw new NotImplementedException();
+
         private void IPlcADO()
         {
         }

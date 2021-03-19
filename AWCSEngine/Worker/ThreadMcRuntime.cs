@@ -73,5 +73,10 @@ namespace AWCSEngine.Worker
             }
         }
 
+        public void Abort()
+        {
+            this.McThreads.ForEach(x => { x.Abort(); });
+        }
+
     }
 }

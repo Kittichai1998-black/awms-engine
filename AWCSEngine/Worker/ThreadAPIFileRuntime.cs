@@ -120,5 +120,10 @@ namespace AWCSEngine.Worker
                 }
             }
         }
+
+        public void Abort()
+        {
+            this.Threads.ForEach(x => { if (x.IsAlive) x.Abort(); });
+        }
     }
 }

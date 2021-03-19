@@ -32,9 +32,9 @@ namespace AWCSEngine
             this.lisDisplayCommand.Items.Add("-------------------------------------");
 
 
-            this.lisDisplayDevices.Items.Add("<<====== Devices ======>>");
-            this.lisDisplayMcLists.Items.Add("<<====== Machines ======>>");
-            this.lisDisplayEvents.Items.Add("<<====== Events ======>>");
+            this.lisDisplayDevices.Items.Add("<<== Devices ==>>");
+            this.lisDisplayMcLists.Items.Add("<<== Machines ==>>");
+            this.lisDisplayEvents.Items.Add("<<== Events ==>>");
 
             this.wkDisplay.RunWorkerAsync();
         }
@@ -63,22 +63,30 @@ namespace AWCSEngine
         }
         private void wkDisplay_DoWork(object sender, DoWorkEventArgs e)
         {
+            float _ini = 0;
+            float _maxinit = 10;
 
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (000%) 1.ThreadMcRuntime.Initial Connecting..."));
-            ThreadMcRuntime.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (025%) 1.ThreadMcRuntime.Initial Connected!!!"));
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connecting..."));
+            StaticValueManager.GetInstant().LoadAll();                                              
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connected!!!"));
+                                                                                                     
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connecting..."));
+            ThreadMcRuntime.GetInstant().Initial();                                                  
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connected!!!"));
+                                                                                                      
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWorkRuntime.Initial Connecting..."));
+            ThreadWorkRuntime.GetInstant().Initial();                                           
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWorkRuntime.Initial Connected!!!"));
+                                                                                                       
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadAPIFileRuntime.Initial Connecting..."));
+            ThreadAPIFileRuntime.GetInstant().Initial();                                        
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadAPIFileRuntime.Initial Connected!!!"));
+                                                                                                      
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connecting..."));
+            ThreadWakeUp.GetInstant().Initial();
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connected!!!"));
 
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (030%) 2.ThreadWorkRuntime.Initial Connecting..."));
-            ThreadWorkRuntime.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (050%) 2.ThreadWorkRuntime.Initial Connected!!!"));
-
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (055%) 3.lisDisplayEvents.Initial Connecting..."));
-            ThreadAPIFileRuntime.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (075%) 3.lisDisplayEvents.Initial Connected!!!"));
-
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (080%) 4.lisDisplayEvents.Initial Connecting..."));
-            ThreadWakeUp.GetInitial().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (100%) 4.lisDisplayEvents.Initial Connected!!!"));
+            this.lisDisplayEvents_Add("---------------------- System Online ----------------------");
 
 
 
@@ -90,7 +98,7 @@ namespace AWCSEngine
                         foreach (var msg in DisplayController.McLists_Reading())
                         {
                             if (this.lisDisplayMcLists.Items.Count <= msg.Key + 1)
-                                for (int i = 0; i < (msg.Key + 1) - this.lisDisplayMcLists.Items.Count; i++)
+                                for (int i = 0; i <= (msg.Key + 1) - this.lisDisplayMcLists.Items.Count; i++)
                                     this.lisDisplayMcLists.Items.Add(string.Empty);
 
                             this.lisDisplayMcLists.Items[msg.Key+1] = msg.Value;
@@ -99,9 +107,8 @@ namespace AWCSEngine
                         }
                     }));
                     this.lisDisplayEvents.Invoke((MethodInvoker)(() => {
-                        if (this.lisDisplayEvents.Items.Count > 100)
-                            for (int i = 0; i < 50; i++)
-                                this.lisDisplayEvents.Items.RemoveAt(1);
+                        while (this.lisDisplayEvents.Items.Count > 27)
+                            this.lisDisplayEvents.Items.RemoveAt(1);
                         foreach (var msg in DisplayController.Events_Reading())
                         {
                             this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, msg));
@@ -112,7 +119,7 @@ namespace AWCSEngine
                     this.lisDisplayDevices.Invoke((MethodInvoker)(() =>
                     {
                         this.lisDisplayDevices.Items.Clear();
-                        this.lisDisplayDevices.Items.Add("<<====== Devices ======>>");
+                        this.lisDisplayDevices.Items.Add("<<== Devices ==>>");
                         if (!string.IsNullOrEmpty(this.McCode_ReadDeive))
                         {
                             var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(this.McCode_ReadDeive);
@@ -142,13 +149,31 @@ namespace AWCSEngine
         {
         }
 
-        private void formAdminConsole_FormClosing(object sender, FormClosingEventArgs e)
-        {
-        }
+
 
         private void txtCommand_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Up)
+            {
+                if (this.lisDisplayCommand.SelectedIndex == -1)
+                    this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.Items.Count - 1;
+                else if (this.lisDisplayCommand.SelectedIndex-1 >= 0)
+                    this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.SelectedIndex- 1;
+                else
+                    this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.Items.Count -1;
+                this.txtCommand.Focus();
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                if (this.lisDisplayCommand.SelectedIndex == -1)
+                    this.lisDisplayCommand.SelectedIndex = 0;
+                else if (this.lisDisplayCommand.SelectedIndex + 1 < this.lisDisplayCommand.Items.Count)
+                    this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.SelectedIndex + 1;
+                else
+                    this.lisDisplayCommand.SelectedIndex = 0;
+                this.txtCommand.Focus();
+            }
+            else if (e.KeyCode == Keys.Enter)
             {
                 string command = this.txtCommand.Text;
                 this.lisDisplayCommand.Items.Add("COMMAND > " + command);
@@ -209,6 +234,20 @@ namespace AWCSEngine
             }
         }
 
+        private void formAdminConsole_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            /*this.lisDisplayEvents_Add("---------------------- System Closing ----------------------");
+            ThreadWakeUp.GetInstant().Abort();
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ThreadWakeUp Abort!!!"));
+            ThreadMcRuntime.GetInstant().Abort();
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ThreadMcRuntime Abort!!!"));
+            ThreadAPIFileRuntime.GetInstant().Abort();
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ThreadAPIFileRuntime Abort!!!"));
+            ThreadWorkRuntime.GetInstant().Abort();
+            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ThreadWorkRuntime Abort!!!"));
+            this.lisDisplayEvents_Add("---------------------- System Closed ----------------------");
+            Thread.Sleep(1000);*/
+        }
         private void formConsole_FormClosed(object sender, FormClosedEventArgs e)
         {
             Environment.Exit(0);
@@ -256,6 +295,19 @@ namespace AWCSEngine
             else if (comm[0].ToLower().Equals("/loadstatic"))
             {
                 StaticValueManager.GetInstant().LoadAll();
+            }
+            else if (comm[0].ToLower().Equals("/location"))
+            {
+                var mc = McRuntimeController.GetInstant().GetMcRuntime(comm[1]);
+                var loc = StaticValueManager.GetInstant().GetLocation(comm[2]);
+                if (loc == null)
+                    this.lisDisplayCommand.Items.Add("Location Not Found!");
+                else if (mc == null)
+                    this.lisDisplayCommand.Items.Add("McRuntime Not Found!");
+                else
+                {
+                    mc.McObj.Cur_Location_ID = loc.ID.Value;
+                }
             }
             else if (comm[0].ToLower().Equals("/baseobj"))
             {
@@ -351,9 +403,14 @@ namespace AWCSEngine
 
         private void menuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem.Text == "Config Command")
+            if (e.ClickedItem.Text == "Command")
             {
                 formConfigCommand fm = new formConfigCommand();
+                fm.Show();
+            }
+            else if (e.ClickedItem.Text == "Storage")
+            {
+                formStorageView fm = new formStorageView();
                 fm.Show();
             }
         }
@@ -362,12 +419,19 @@ namespace AWCSEngine
         {
             string[] txt = this.lisDisplayCommand.Text.Split('>', 2);
             if (txt.Length == 2)
-                this.txtCommand.Text = txt[1];
+                this.txtCommand.Text = txt[1].Trim();
         }
 
         private void txtCommand_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void lisDisplayCommand_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string[] txt = this.lisDisplayCommand.Text.Split('>', 2);
+            if (txt.Length == 2)
+                this.txtCommand.Text = txt[1].Trim();
         }
     }
 }

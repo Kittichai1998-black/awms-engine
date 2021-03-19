@@ -12,8 +12,6 @@ namespace AMSModel.Entity
         public long? Command_ID;
         public long? CommandAction_Seq;
         public string CommandParameter;
-        public long? Sou_Location_ID;
-        public long? Des_Location_ID;
         public long? Cur_Location_ID;
         public DateTime CommandActionTime;
         public McObjectEventStatus EventStatus;
@@ -59,6 +57,5 @@ namespace AMSModel.Entity
 
         public bool IsOnline;
         public bool IsAuto;
-        public DateTime LastActionCommand;
     }
 }

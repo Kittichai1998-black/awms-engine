@@ -33,11 +33,12 @@ namespace AWCSEngine
             this.wkDisplay = new System.ComponentModel.BackgroundWorker();
             this.lisDisplayCommand = new System.Windows.Forms.ListBox();
             this.menuMain = new System.Windows.Forms.MenuStrip();
-            this.menuConfigCommand = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCommand = new System.Windows.Forms.ToolStripMenuItem();
             this.lisDisplayMcLists = new System.Windows.Forms.ListBox();
             this.lisDisplayEvents = new System.Windows.Forms.ListBox();
             this.lisDisplayDevices = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.menuStorage = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMain.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -66,19 +67,20 @@ namespace AWCSEngine
             this.lisDisplayCommand.ForeColor = System.Drawing.Color.LightBlue;
             this.lisDisplayCommand.FormattingEnabled = true;
             this.lisDisplayCommand.ItemHeight = 25;
-            this.lisDisplayCommand.Location = new System.Drawing.Point(0, 389);
+            this.lisDisplayCommand.Location = new System.Drawing.Point(0, 339);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.ScrollAlwaysVisible = true;
-            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 127);
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 177);
             this.lisDisplayCommand.TabIndex = 2;
             this.lisDisplayCommand.Click += new System.EventHandler(this.lisDisplayCommand_Click_1);
+            this.lisDisplayCommand.SelectedIndexChanged += new System.EventHandler(this.lisDisplayCommand_SelectedIndexChanged);
             // 
             // menuMain
             // 
             this.menuMain.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuConfigCommand});
+            this.menuCommand,
+            this.menuStorage});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
             this.menuMain.Size = new System.Drawing.Size(1260, 33);
@@ -86,11 +88,11 @@ namespace AWCSEngine
             this.menuMain.Text = "xxxx";
             this.menuMain.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuMain_ItemClicked);
             // 
-            // menuConfigCommand
+            // menuCommand
             // 
-            this.menuConfigCommand.Name = "menuConfigCommand";
-            this.menuConfigCommand.Size = new System.Drawing.Size(170, 29);
-            this.menuConfigCommand.Text = "Config Command";
+            this.menuCommand.Name = "menuCommand";
+            this.menuCommand.Size = new System.Drawing.Size(112, 29);
+            this.menuCommand.Text = "Command";
             // 
             // lisDisplayMcLists
             // 
@@ -100,10 +102,10 @@ namespace AWCSEngine
             this.lisDisplayMcLists.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.lisDisplayMcLists.FormattingEnabled = true;
             this.lisDisplayMcLists.ItemHeight = 25;
-            this.lisDisplayMcLists.Location = new System.Drawing.Point(659, 0);
+            this.lisDisplayMcLists.Location = new System.Drawing.Point(697, 0);
             this.lisDisplayMcLists.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayMcLists.Name = "lisDisplayMcLists";
-            this.lisDisplayMcLists.Size = new System.Drawing.Size(601, 389);
+            this.lisDisplayMcLists.Size = new System.Drawing.Size(563, 339);
             this.lisDisplayMcLists.TabIndex = 5;
             // 
             // lisDisplayEvents
@@ -117,7 +119,6 @@ namespace AWCSEngine
             this.lisDisplayEvents.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEvents.Name = "lisDisplayEvents";
-            this.lisDisplayEvents.ScrollAlwaysVisible = true;
             this.lisDisplayEvents.Size = new System.Drawing.Size(1260, 516);
             this.lisDisplayEvents.TabIndex = 6;
             // 
@@ -129,10 +130,10 @@ namespace AWCSEngine
             this.lisDisplayDevices.ForeColor = System.Drawing.Color.Yellow;
             this.lisDisplayDevices.FormattingEnabled = true;
             this.lisDisplayDevices.ItemHeight = 25;
-            this.lisDisplayDevices.Location = new System.Drawing.Point(451, 0);
+            this.lisDisplayDevices.Location = new System.Drawing.Point(489, 0);
             this.lisDisplayDevices.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayDevices.Name = "lisDisplayDevices";
-            this.lisDisplayDevices.Size = new System.Drawing.Size(208, 389);
+            this.lisDisplayDevices.Size = new System.Drawing.Size(208, 339);
             this.lisDisplayDevices.TabIndex = 7;
             // 
             // panel2
@@ -146,6 +147,12 @@ namespace AWCSEngine
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1260, 516);
             this.panel2.TabIndex = 9;
+            // 
+            // menuStorage
+            // 
+            this.menuStorage.Name = "menuStorage";
+            this.menuStorage.Size = new System.Drawing.Size(89, 29);
+            this.menuStorage.Text = "Storage";
             // 
             // formConsole
             // 
@@ -182,5 +189,7 @@ namespace AWCSEngine
         private System.Windows.Forms.ListBox lisDisplayEvents;
         private System.Windows.Forms.ListBox lisDisplayDevices;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ToolStripMenuItem menuCommand;
+        private System.Windows.Forms.ToolStripMenuItem menuStorage;
     }
 }

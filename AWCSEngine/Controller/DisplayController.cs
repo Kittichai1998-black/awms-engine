@@ -49,14 +49,20 @@ namespace AWCSEngine.Controller
         private static List<string> _Events = new List<string>();
         public static void Events_Write(string msg)
         {
-            _Events.Add(msg);
+            lock (_Lock_Events)
+            {
+                _Events.Add(msg);
+            }
         }
 
         public static List<string> Events_Reading()
         {
-            var res = _Events.ToList();
-            _Events.Clear();
-            return res;
+            lock (_Lock_Events)
+            {
+                var res = _Events.ToList();
+                _Events.Clear();
+                return res;
+            }
         }
     }
 }

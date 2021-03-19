@@ -28,7 +28,13 @@ namespace AWCSEngine.Engine.McRuntime
             }
             else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
             {
-                if (this.McObj.DV_Pre_Status == 4)
+                if(this.McObj.DV_Pre_Status == 98)
+                {
+                    var souLoc = this.StaticValue.GetLocation(this.McWork4Work.Cur_Location_ID);
+                    var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
+                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, null);
+                }
+                else if (this.McObj.DV_Pre_Status == 4)
                 {
                     this.McWork_2_WorkingToWorked();
                     if (this.Code.In("RC8-2"))
