@@ -48,7 +48,10 @@ namespace AMSModel.Constant.StringConst
         public const string APP_KEY_wk_api_in = "thread.worker.api.dir_in";
         public const string APP_KEY_wk_api_out = "thread.worker.api.dir_out";
 
+        public const string APP_KEY_machine_code_pattle = "machine.code.pattle";
+        public const string APP_KEY_machine_code_fixed = "machine.code.fixed";
 
-        
+
+
     }
 }

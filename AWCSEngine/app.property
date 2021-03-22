@@ -29,3 +29,7 @@ thread.worker.api.create_queue_move.dir_out=1D:/wcsapi/create_queue_move/out/
 
 thread.worker.wakeup.delay=5000
 thread.worker.wakeup.count=2
+
+######################################
+
+machine.code.pattle=

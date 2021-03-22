@@ -28,6 +28,8 @@ namespace AWCSEngine
         {
             this.lisDisplayCommand.Items.Add("{machine} {command} {p1} {p2} {p3}");
             this.lisDisplayCommand.Items.Add("{srm} {command} {sou} {des} {unit} {pallet} {weigth}");
+            this.lisDisplayCommand.Items.Add("{shu} {comm} {sou} {sht_di}");
+
             this.lisDisplayCommand.Items.Add("/mcwork all {machine} {des_loc} {pallet}");
             this.lisDisplayCommand.Items.Add("-------------------------------------");
 
@@ -40,7 +42,7 @@ namespace AWCSEngine
         }
 
 
-        private string McCode_ReadDeive = string.Empty;
+        private List<string> McCode_ReadDeives = new List<string>();
 
 
         private void lisDisplayMcLists_Add(string txt)
@@ -66,27 +68,36 @@ namespace AWCSEngine
             float _ini = 0;
             float _maxinit = 10;
 
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connecting..."));
-            StaticValueManager.GetInstant().LoadAll();                                              
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connected!!!"));
-                                                                                                     
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connecting..."));
-            ThreadMcRuntime.GetInstant().Initial();                                                  
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connected!!!"));
-                                                                                                      
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWorkRuntime.Initial Connecting..."));
-            ThreadWorkRuntime.GetInstant().Initial();                                           
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWorkRuntime.Initial Connected!!!"));
-                                                                                                       
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadAPIFileRuntime.Initial Connecting..."));
-            ThreadAPIFileRuntime.GetInstant().Initial();                                        
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadAPIFileRuntime.Initial Connected!!!"));
-                                                                                                      
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > ("+ (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connecting..."));
-            ThreadWakeUp.GetInstant().Initial();
-            this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connected!!!"));
+            try
+            {
 
-            this.lisDisplayEvents_Add("---------------------- System Online ----------------------");
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connecting..."));
+                StaticValueManager.GetInstant().LoadAll();
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connected!!!"));
+
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connecting..."));
+                ThreadMcRuntime.GetInstant().Initial();
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connected!!!"));
+
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWorkRuntime.Initial Connecting..."));
+                ThreadWorkRuntime.GetInstant().Initial();
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWorkRuntime.Initial Connected!!!"));
+
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadAPIFileRuntime.Initial Connecting..."));
+                ThreadAPIFileRuntime.GetInstant().Initial();
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadAPIFileRuntime.Initial Connected!!!"));
+
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connecting..."));
+                ThreadWakeUp.GetInstant().Initial();
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connected!!!"));
+
+                this.lisDisplayEvents_Add("---------------------- System Online ----------------------");
+            }
+            catch (Exception ex)
+            {
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | [ERROR] {1}", DateTime.Now, ex.Message));
+                return;
+            }
 
 
 
@@ -120,19 +131,24 @@ namespace AWCSEngine
                     {
                         this.lisDisplayDevices.Items.Clear();
                         this.lisDisplayDevices.Items.Add("<<== Devices ==>>");
-                        if (!string.IsNullOrEmpty(this.McCode_ReadDeive))
+                        if (McCode_ReadDeives.Count > 0)
                         {
-                            var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(this.McCode_ReadDeive);
-                            if (mc == null)
+                            foreach(var mcCode in this.McCode_ReadDeives)
                             {
-                                this.lisDisplayDevices.Items.Add(this.McCode_ReadDeive + " : (Not Found.)");
-                            }
-                            else
-                            {
-                                this.lisDisplayDevices.Items.Add(this.McCode_ReadDeive + " : " +
-                                    (mc.McObj.IsOnline ? "Online." : "Offile!") + " / " +
-                                    (mc.McObj.IsAuto ? "Auto" : "Manual"));
-                                this.lisDisplayDevices.Items.AddRange(mc.DeviceLogs.ToArray());
+                                var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(mcCode);
+                                if (mc == null)
+                                {
+                                    this.lisDisplayDevices.Items.Add(this.McCode_ReadDeives + " : (Not Found.)");
+                                }
+                                else
+                                {
+                                    this.lisDisplayDevices.Items.Add("--------------------");
+                                    this.lisDisplayDevices.Items.Add("@" + mcCode.ToUpper() + " : " +
+                                        (mc.McObj.IsOnline ? "Online." : "Offile!") + " / " +
+                                        (mc.McObj.IsAuto ? "Auto" : "Manual"));
+                                    this.lisDisplayDevices.Items.AddRange(mc.DeviceLogs.OrderBy(x => x).ToArray());
+                                    this.lisDisplayDevices.Items.Add("");
+                                }
                             }
                             int visibleItems = lisDisplayDevices.ClientSize.Height / lisDisplayDevices.ItemHeight;
                             lisDisplayDevices.TopIndex = Math.Max(lisDisplayDevices.Items.Count - visibleItems + 1, 0);
@@ -194,7 +210,10 @@ namespace AWCSEngine
                     {
                         if (comm.Length == 1)
                         {
-                            this.McCode_ReadDeive = comm[0];
+                            if (this.McCode_ReadDeives == null) this.McCode_ReadDeives = new List<string>();
+                            this.McCode_ReadDeives.Insert(0,comm[0]);
+                            if (this.McCode_ReadDeives.Count > 2)
+                                this.McCode_ReadDeives.RemoveAt(2);
                         }
                         else if (comm[1].ToLower().In("auto", "online", "view"))
                         {

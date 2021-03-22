@@ -9,6 +9,9 @@ namespace AMSModel.Entity
     {
         public string NameEngine;
         public int ThreadIndex;
+        public string Info1;
+        public string Info2;
+        public string Info3;
         public PlcCommunicationType PlcCommuType;
         public string PlcDeviceName;
        

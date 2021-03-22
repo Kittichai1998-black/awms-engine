@@ -28,9 +28,9 @@ namespace AWCSEngine.Engine.McRuntime
                 var wh = this.StaticValue.GetWarehouse(area.Warehouse_ID);
                 if(wh.Code.ToLower() == "w8")
                 {
-                    if (area.Code.ToLower() == "out")
+                    if (this.McMst.Info1 == "out")
                         OnRun_w8_Outbound();
-                    else
+                    else if (this.McMst.Info1 == "in")
                         OnRun_w8_Inbound();
                 }
             }
@@ -132,20 +132,19 @@ namespace AWCSEngine.Engine.McRuntime
         }
         private void OnRun_w8_Inbound()
         {
-
             if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
             {
                 if (this.McObj.DV_Pre_Status == 90)
                 {
                     this.PostCommand(McCommandType.CM_55, (mc) =>
                     {
-                        if (mc.EventStatus == McObjectEventStatus.DONE)
-                        {
-                            this.McWork_1_ReceiveToWorking();
-                            return LoopResult.Break;
-                        }
-                        return LoopResult.Continue;
+                        this.McWork_1_ReceiveToWorking();
+                        return LoopResult.Break;
                     });
+                }
+                else if(this.McObj.DV_Pre_Status == 99)
+                {
+                    this.McWork_1_ReceiveToWorking();
                 }
             }
             else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
@@ -155,13 +154,9 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     this.PostCommand(McCommandType.CM_99, (mc) =>
                     {
-                        if(mc.EventStatus == McObjectEventStatus.DONE)
-                        {
-                            this.McWork_2_WorkingToWorked();
-                            this.McWork_4_WorkedToDone();
-                            return LoopResult.Break;
-                        }
-                        return LoopResult.Continue;
+                        this.McWork_2_WorkingToWorked();
+                        this.McWork_4_WorkedToDone();
+                        return LoopResult.Break;
                     });
                 }
             }
