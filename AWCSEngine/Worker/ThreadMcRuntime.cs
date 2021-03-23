@@ -38,7 +38,7 @@ namespace AWCSEngine.Worker
             string[] fix_codes = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_machine_code_fixed].Split(new char[] { ','});
             ADO.WCSStaticValue.StaticValueManager.GetInstant().McMasters.ForEach(x=>
             {
-                if (Regex.IsMatch(x.Code, pattle_codes) || fix_codes.Contains(x.Code))
+                if ((!string.IsNullOrEmpty(pattle_codes) && Regex.IsMatch(x.Code, pattle_codes) ) || fix_codes.Contains(x.Code))
                     this.AddMcMst2McThread(x.ThreadIndex, x);
             });
         }
