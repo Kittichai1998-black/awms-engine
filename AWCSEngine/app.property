@@ -34,4 +34,12 @@ thread.worker.wakeup.count=2
 
 app.name = W8-OUTBOUND
 app.machine.online.pattle_code = 
+<<<<<<< HEAD
 app.machine.online.fixed_code = RC8-1,RC8-2,PS8-1,SRM11
+=======
+app.machine.online.fixed_code = SHU5,SHU19
+
+
+
+
+>>>>>>> a12507a910ffae77cc6831ea8c2d23d80ecc3222

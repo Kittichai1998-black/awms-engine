@@ -57,7 +57,8 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         private void Inbound_OnRun()
         {
-            /*var mcWork_Workeds = McWorkADO.GetInstant().ListWorked_inWarehouse("W8", this.BuVO);
+            /*
+            var mcWork_Workeds = McWorkADO.GetInstant().ListWorked_inWarehouse("W8", this.BuVO);
             var wh8 = this.StaticValue.GetWarehouse("W8");
             mcWork_Workeds.ForEach(work =>
             {

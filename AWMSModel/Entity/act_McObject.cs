@@ -57,5 +57,7 @@ namespace AMSModel.Entity
 
         public bool IsOnline;
         public bool IsAuto;
+
+        public int McMaster_ID;
     }
 }
