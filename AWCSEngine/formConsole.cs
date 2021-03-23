@@ -1,8 +1,10 @@
 ﻿using ADO.WCSDB;
 using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
 using AMSModel.Entity;
 using AMWUtil.Common;
+using AMWUtil.PropertyFile;
 using AWCSEngine.Controller;
 using AWCSEngine.Util;
 using AWCSEngine.Worker;
@@ -26,6 +28,10 @@ namespace AWCSEngine
         }
         private void formAdminConsole_Load(object sender, EventArgs e)
         {
+            string app_name = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_name];
+            this.Name = "WCS : " + app_name;
+
+
             this.lisDisplayCommand.Items.Add("{machine} {command} {p1} {p2} {p3}");
             this.lisDisplayCommand.Items.Add("{srm} {command} {sou} {des} {unit} {pallet} {weigth}");
             this.lisDisplayCommand.Items.Add("{shu} {comm} {sou} {sht_di}");

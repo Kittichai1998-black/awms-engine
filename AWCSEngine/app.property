@@ -32,4 +32,6 @@ thread.worker.wakeup.count=2
 
 ######################################
 
-machine.code.pattle=
+app.name = W8-OUTBOUND
+app.machine.online.pattle_code = 
+app.machine.online.fixed_code = RC8-1
