@@ -130,7 +130,7 @@ namespace AWCSEngine
             this.lisDisplayDevices.ForeColor = System.Drawing.Color.Yellow;
             this.lisDisplayDevices.FormattingEnabled = true;
             this.lisDisplayDevices.ItemHeight = 25;
-            this.lisDisplayDevices.Location = new System.Drawing.Point(489, 0);
+            this.lisDisplayDevices.Location = new System.Drawing.Point(459, 0);
             this.lisDisplayDevices.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayDevices.Name = "lisDisplayDevices";
             this.lisDisplayDevices.Size = new System.Drawing.Size(208, 339);

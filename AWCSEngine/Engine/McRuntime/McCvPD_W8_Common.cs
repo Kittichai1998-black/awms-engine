@@ -8,14 +8,28 @@ using System.Text;
 
 namespace AWCSEngine.Engine.McRuntime
 {
-    public class McCvPDCommon : BaseMcRuntime
+    public class McCvPD_W8_Common : BaseMcRuntime
     {
-        public McCvPDCommon(acs_McMaster mcMst) : base(mcMst)
+        public McCvPD_W8_Common(acs_McMaster mcMst) : base(mcMst)
         {
         }
 
         protected override void OnRun()
         {
+            if (this.Code == "RC8-2")
+            {
+                this.RC8_2_OnRun();
+            }
+            else if(this.Code == "RC8-1")
+            {
+                this.RC8_1_OnRun();
+            }
+        }
+        private void RC8_1_OnRun()
+        {
+
+        }
+        private void RC8_2_OnRun() { 
             if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
             {
                 if (this.McObj.DV_Pre_Status == 98)

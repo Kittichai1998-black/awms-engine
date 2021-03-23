@@ -69,6 +69,8 @@ namespace AWCSEngine
                 }));
             }
         }
+
+        private char ping_clock = '\\';
         private void wkDisplay_DoWork(object sender, DoWorkEventArgs e)
         {
             float _ini = 0;
@@ -111,7 +113,10 @@ namespace AWCSEngine
             {
                 if (this.IsHandleCreated)
                 {
+                    if (this.ping_clock == '⬤') this.ping_clock = ' ';
+                    else if (this.ping_clock == ' ') this.ping_clock = '⬤';
                     this.lisDisplayMcLists.Invoke((MethodInvoker)(() => {
+                        this.lisDisplayMcLists.Items[0] = "<<== Machines ==>> " + this.ping_clock;
                         foreach (var msg in DisplayController.McLists_Reading())
                         {
                             if (this.lisDisplayMcLists.Items.Count <= msg.Key + 1)
@@ -124,6 +129,7 @@ namespace AWCSEngine
                         }
                     }));
                     this.lisDisplayEvents.Invoke((MethodInvoker)(() => {
+                        this.lisDisplayEvents.Items[0] = "<<== Events ==>> " + ping_clock;
                         while (this.lisDisplayEvents.Items.Count > 27)
                             this.lisDisplayEvents.Items.RemoveAt(1);
                         foreach (var msg in DisplayController.Events_Reading())
@@ -136,7 +142,7 @@ namespace AWCSEngine
                     this.lisDisplayDevices.Invoke((MethodInvoker)(() =>
                     {
                         this.lisDisplayDevices.Items.Clear();
-                        this.lisDisplayDevices.Items.Add("<<== Devices ==>>");
+                        this.lisDisplayDevices.Items.Add("<<== Devices ==>> " + ping_clock);
                         if (McCode_ReadDeives.Count > 0)
                         {
                             foreach(var mcCode in this.McCode_ReadDeives)
