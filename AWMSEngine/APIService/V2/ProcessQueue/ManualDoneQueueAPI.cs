@@ -1,4 +1,4 @@
-﻿using ADO.WCSAPI;
+﻿using ADO.WMSAPI;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 
@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel <WCSQueueADO.TReqCheckQueue> (this.RequestVO);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel <CallOldWcsAPI.TReqCheckQueue> (this.RequestVO);
             var res = new ManualDoneQueue().Execute(this.Logger, this.BuVO, req);
 
             return res;

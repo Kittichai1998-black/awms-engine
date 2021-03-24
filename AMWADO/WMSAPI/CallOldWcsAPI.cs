@@ -3,9 +3,9 @@ using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 
-namespace ADO.WCSAPI
+namespace ADO.WMSAPI
 {
-    public class WCSQueueADO : BaseAPI<WCSQueueADO>
+    public class CallOldWcsAPI : BaseAPI<CallOldWcsAPI>
     {
         public class TReq
         {

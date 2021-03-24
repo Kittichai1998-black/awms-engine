@@ -117,24 +117,13 @@ namespace AWCSEngine.Engine.McRuntime
                             if (_mcShuFree.PostCommand(McCommandType.CM_62))
                             {
                                 StepTxt = "1.1";
-                                DisplayController.Events_Write($"{this.Code} > exec 1.1");
                             }
                         }
                         //1.2 รถว่าง พร้อมทำงาน และ zone ถูกต้อง / สั่งปิดเครื่อง
                         else if (_mcShuFree.EventStatus == McObjectEventStatus.IDEL &&
                         _mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone == 1 && StepTxt != "1.2")
                         {
-                            if(_mcShuFree.PostCommand(McCommandType.CM_60, (mc) => {
-                                if (mc.IsOnline && mc.EventStatus == McObjectEventStatus.DONE)
-                                {
-                                    return LoopResult.Break;
-                                }
-                                return LoopResult.Continue;
-                            }))
-                            {
-                                StepTxt = "1.2";
-                                DisplayController.Events_Write($"{this.Code} > exec 1.2");
-                            }
+                            _mcShuFree.PostCommand(McCommandType.CM_60, "1.2");
                         }
                         //1.3 รถว่าง รถถูกปิด / สั่งเครนเตรียมย้าย
                         else if (_mcShuFree.EventStatus == McObjectEventStatus.IDEL &&
@@ -145,34 +134,31 @@ namespace AWCSEngine.Engine.McRuntime
                             var desLoc = this.StaticValue.GetLocation(this.McWork4Receive.Des_Location_ID.Value);
                             var _srm_desLocCode = desLoc.Code.Get2<int>() % 1000000;
                             _srm_desLocCode += 2000000;
-                            if (this.PostCommand(McCommandType.CM_1, _srm_souLocCode, _srm_desLocCode, 3, "0000000000", 1000, (srm) => {
-                                if (srm.McObj.DV_Pre_Status == 99)
+                            this.PostCommand(McCommandType.CM_1,
+                                _srm_souLocCode,
+                                _srm_desLocCode,
+                                3, "0000000000", 1000,
+                                (srm) =>
                                 {
-                                    DisplayController.Events_Write($"{this.Code} > exec 1.3-99");
-                                    _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
-                                    _mcShuFreeID_wh8_in = null;
-                                    this.PostCommand(McCommandType.CM_99);
-                                    return LoopResult.Break;
-                                }
-                                return LoopResult.Continue;
-                            }))
-                            {
-                                StepTxt = "1.3";
-                                DisplayController.Events_Write($"{this.Code} > exec 1.3");
-                            }
+                                    if (srm.McObj.DV_Pre_Status == 99)
+                                    {
+                                        DisplayController.Events_Write($"{this.Code} > exec 1.3-99");
+                                        _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
+                                        _mcShuFreeID_wh8_in = null;
+                                        this.PostCommand(McCommandType.CM_99);
+                                        return LoopResult.Break;
+                                    }
+                                    return LoopResult.Continue;
+                                }, "1.3");
                         }
                         //1.4 รถปิดอยู่และไม่อยู่ zone 1 / เปิดรถสั่งกลับ home เตรียมย้าย
                         else if (_mcShuFree.EventStatus == McObjectEventStatus.IDEL &&
                         _mcShuFree.McObj.DV_Pre_Status == 82 && _mcShuFree.McObj.DV_Pre_Zone != 1 && StepTxt != "1.4")
                         {
 
-                            if (_mcShuFree.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
+                            _mcShuFree.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                                 .New("Set_SouLoc", _mcShuFree.Cur_Location.Code.Get2<int>() % 1000000)
-                                .Add("Set_ShtDi", 1)))
-                            {
-                                StepTxt = "1.4";
-                                DisplayController.Events_Write($"{this.Code} > exec 1.4");
-                            }
+                                .Add("Set_ShtDi", 1), "1.4");
                         }
                     }
                 }
@@ -181,34 +167,22 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     //if (_mcShuInRow.McObj.Battery <= 20) return;
                     //2.1 สั่งสตาร์รถ โซนด้านหน้า
-                    if (_mcShuInRow.EventStatus == McObjectEventStatus.IDEL &&
-                        _mcShuInRow.McObj.DV_Pre_Status == 82 && StepTxt != "2.1")
+                    if (_mcShuInRow.McObj.DV_Pre_Status == 82 && StepTxt != "2.1")
                     {
-                        if(_mcShuInRow.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
+                        _mcShuInRow.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                             .New("Set_SouLoc", _mcShuInRow.Cur_Location.Code.Get2<int>() % 1000000)
-                            .Add("Set_ShtDi", 1)))
-                        {
-                            StepTxt = "2.1";
-                            DisplayController.Events_Write($"{this.Code} > exec 2.1");
-                        }
+                            .Add("Set_ShtDi", 1), "2.1");
                     }
                     //2.2 รถ สถานะพร้อมทำงาน แต่รถไม่อยู่ที่ home / สั่งกลับ home
-                    else if (_mcShuInRow.EventStatus == McObjectEventStatus.IDEL &&
-                        _mcShuInRow.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone != 2 && StepTxt != "2.2")
+                    else if (_mcShuInRow.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone != 2 && StepTxt != "2.2")
                     {
-                        if (_mcShuInRow.PostCommand(McCommandType.CM_2))
-                        {
-                            StepTxt = "2.2";
-                            DisplayController.Events_Write($"{this.Code} > exec 2.2");
-                        }
+                        _mcShuInRow.PostCommand(McCommandType.CM_2, "2.2");
                     }
                     //2.3 รถ สถานะพร้อมทำงาน และอยู่ home ด้านหน้า / รับงานให้ SRM
-                    else if (_mcShuInRow.EventStatus == McObjectEventStatus.IDEL &&
-                        _mcShuInRow.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone == 2 && StepTxt != "2.3")
+                    else if (_mcShuInRow.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone == 2 && StepTxt != "2.3")
                     {
                         this.McWork_1_ReceiveToWorking();
-                        StepTxt = "2.3";
-                        DisplayController.Events_Write($"{this.Code} > exec 2.3");
+                        this.StepTxt = "2.3";
                     }
                 }
             }
@@ -220,18 +194,12 @@ namespace AWCSEngine.Engine.McRuntime
                 BaseMcRuntime _mcShuInRow = McRuntimeController.GetInstant().ListMcRuntimeByLocation(decArea.Warehouse_ID, null, decLoc.GetBay(), decLoc.GetLv()).FirstOrDefault();
 
                 //3.1 แถวถูก แต่ zone ไม่ถูก / สั่งรถหลบ
-                if(_mcShuInRow.EventStatus == McObjectEventStatus.IDEL &&
-                    _mcShuInRow.McObj.DV_Pre_Zone != 2 && _mcShuInRow.McObj.DV_Pre_Status==90 && StepTxt != "3.1")
+                if(_mcShuInRow.McObj.DV_Pre_Zone != 2 && _mcShuInRow.McObj.DV_Pre_Status==90 && StepTxt != "3.1")
                 {
-                    if (_mcShuInRow.PostCommand(McCommandType.CM_2))
-                    {
-                        StepTxt = "3.1";
-                        DisplayController.Events_Write($"{this.Code} > exec 3.1");
-                    }
+                    _mcShuInRow.PostCommand(McCommandType.CM_2, "3.1");
                 }
                 //3.2 แถวถูก โซนถูก สั่ง SRM ย้ายพาเลท
-                else if (this.EventStatus == McObjectEventStatus.IDEL && 
-                    this.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone == 2 && StepTxt != "3.2")
+                else if (this.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone == 2 && StepTxt != "3.2")
                 {
 
                     var desArea = this.StaticValue.GetArea(this.McWork4Work.Des_Area_ID);
@@ -240,7 +208,7 @@ namespace AWCSEngine.Engine.McRuntime
                     var desLocPLC = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
                     var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
 
-                    if (this.PostCommand(McCommandType.CM_1, souLocPLC, desLocPLC, 1, baseObj.Code, 1500,
+                    this.PostCommand(McCommandType.CM_1, souLocPLC, desLocPLC, 1, baseObj.Code, 1500,
                         (mc) =>
                         {
                             if (mc.McObj.DV_Pre_Status == 99)
@@ -254,11 +222,7 @@ namespace AWCSEngine.Engine.McRuntime
                             }
 
                             return LoopResult.Continue;
-                        }))
-                    {
-                        StepTxt = "3.2";
-                        DisplayController.Events_Write($"{this.Code} > exec 3.2");
-                    }
+                        }, "3.2");
                 }
             }
         }

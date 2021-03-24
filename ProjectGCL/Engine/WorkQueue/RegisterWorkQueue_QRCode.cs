@@ -5,7 +5,7 @@ using AMSModel.Criteria;
 
 namespace ProjectGCL.Engine.WorkQueue
 {
-    public class RegisterWorkQueue_QRCode : RequestRegisterWQCriteria
+    public class RegisterWorkQueue_QRCode : WMReq_RegisterWQ
     {
     }
 

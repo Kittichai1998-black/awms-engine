@@ -16,22 +16,12 @@ using System.Linq;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class DoneWorkQueue : BaseQueue<DoneWorkQueue.TReq, WorkQueueCriteria>
+    public class DoneWorkQueue : BaseQueue<WMReq_DoneWQ, WorkQueueCriteria>
     {
 
-        public class TReq
-        {
-            public long? queueID;
-            public string baseCode;
-            public string warehouseCode;
-            public string areaCode;
-            public string locationCode;
-            public DateTime actualTime;
-
-        }
         public class TReqandWorkQueue
         {
-            public TReq reqVO;
+            public WMReq_DoneWQ reqVO;
             public WorkQueueCriteria workQ;
             public amt_Document document;
         }
@@ -39,7 +29,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private ams_Warehouse _warehouse;
         private ams_AreaMaster _area;
 
-        protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
+        protected override WorkQueueCriteria ExecuteEngine(WMReq_DoneWQ reqVO)
 
         {
             this.InitDataASRS(reqVO);
@@ -61,7 +51,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             return workQ;
         }
 
-        private void InitDataASRS(TReq reqVO)
+        private void InitDataASRS(WMReq_DoneWQ reqVO)
         {
             this._warehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (_warehouse == null)
@@ -79,7 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Area Location Not Found");
         }
 
-        private StorageObjectCriteria UpdateStorageObjectLocation(TReq reqVO, SPworkQueue queueTrx)
+        private StorageObjectCriteria UpdateStorageObjectLocation(WMReq_DoneWQ reqVO, SPworkQueue queueTrx)
         {
             var mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             if (mapsto.parentType != StorageObjectType.LOCATION)
@@ -90,7 +80,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             return mapsto;
         }
 
-        private WorkQueueCriteria UpdateDocumentItemStorageObject(TReq reqVO, SPworkQueue queueTrx)
+        private WorkQueueCriteria UpdateDocumentItemStorageObject(WMReq_DoneWQ reqVO, SPworkQueue queueTrx)
         {
             WorkQueueCriteria workQueueRes = new WorkQueueCriteria();
             var stos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
@@ -160,7 +150,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             return docsCode;
         }
          
-        private void ManageDocumentInput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
+        private void ManageDocumentInput(WMReq_DoneWQ reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
@@ -243,7 +233,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             }
         }
-        private void ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
+        private void ManageDocumentOutput(WMReq_DoneWQ reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
             var listDisto = new List<amt_DocumentItemStorageObject>();
@@ -387,7 +377,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
         }
         
-        private WorkQueueCriteria ManageWQ(TReq reqVO, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
+        private WorkQueueCriteria ManageWQ(WMReq_DoneWQ reqVO, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
             {

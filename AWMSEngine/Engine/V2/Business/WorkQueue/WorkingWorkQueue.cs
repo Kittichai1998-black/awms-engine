@@ -12,18 +12,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class WorkingWorkQueue : BaseQueue<WorkingWorkQueue.TReq, WorkQueueCriteria>
+    public class WorkingWorkQueue : BaseQueue<WMReq_WorkingWQ, WorkQueueCriteria>
     {
-        public class TReq
-        {
-            public long? queueID;
-            public string baseCode;
-            public string warehouseCode;
-            public string areaCode;
-            public string locationCode;
-            public DateTime actualTime;
-        }
-        protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
+        protected override WorkQueueCriteria ExecuteEngine(WMReq_WorkingWQ reqVO)
         {
             this.initMasterData(reqVO);
             var queueTrx = this.UpdateWorkQueueWork(reqVO);
@@ -40,7 +31,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private ams_AreaMaster am;
         private ams_AreaLocationMaster lm;
 
-        private void initMasterData(TReq reqVO)
+        private void initMasterData(WMReq_WorkingWQ reqVO)
         {
             wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
@@ -61,7 +52,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "'  Not Found");
         }
 
-        private SPworkQueue UpdateWorkQueueWork(TReq reqVO)
+        private SPworkQueue UpdateWorkQueueWork(WMReq_WorkingWQ reqVO)
         {
             var queueTrx = ADO.WMSDB.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
 
@@ -97,14 +88,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             return queueTrx;
         }
 
-        private StorageObjectCriteria UpdateStorageObject(TReq reqVO, SPworkQueue queueTrx)
+        private StorageObjectCriteria UpdateStorageObject(WMReq_WorkingWQ reqVO, SPworkQueue queueTrx)
         {
             var baseInfo = ADO.WMSDB.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
 
             ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(baseInfo, this.lm.ID.Value, this.BuVO);
             return baseInfo;
         }
-        private void UpdateDocumentItemStorageObject(TReq reqVO, SPworkQueue queueTrx)
+        private void UpdateDocumentItemStorageObject(WMReq_WorkingWQ reqVO, SPworkQueue queueTrx)
         {
             var stos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID.Value, null, false, true, this.BuVO);
             var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();

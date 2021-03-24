@@ -14,6 +14,7 @@ namespace AMSModel.Entity
         public string CommandParameter;
         public long? Cur_Location_ID;
         public DateTime CommandActionTime;
+        public string StepTxt;
         public McObjectEventStatus EventStatus;
 
 

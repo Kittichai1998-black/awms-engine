@@ -1,4 +1,4 @@
-﻿using ADO.WCSAPI;
+﻿using ADO.WMSAPI;
 using AMWUtil.Exception;
 using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria;
@@ -8,21 +8,21 @@ using System.Linq;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class ManualDoneQueue : BaseEngine<WCSQueueADO.TReqCheckQueue, ManualDoneQueue.TRes>
+    public class ManualDoneQueue : BaseEngine<CallOldWcsAPI.TReqCheckQueue, ManualDoneQueue.TRes>
     {
 
         public class TRes
         {
             public List<WorkQueueCriteria> workQ;
         }
-        protected override TRes ExecuteEngine(WCSQueueADO.TReqCheckQueue reqVO)
+        protected override TRes ExecuteEngine(CallOldWcsAPI.TReqCheckQueue reqVO)
         {
             //เช็คสถานะ q จาก wc
 
             List<WorkQueueCriteria> doneWorkQueue = new List<WorkQueueCriteria>();
             WorkQueueCriteria doneWorkQueues = new WorkQueueCriteria();
 
-            var checkQueues = WCSQueueADO.GetInstant().SendCheckQueue(reqVO, this.BuVO);
+            var checkQueues = CallOldWcsAPI.GetInstant().SendCheckQueue(reqVO, this.BuVO);
 
             if (checkQueues.data.Count == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Not respones from WCS");

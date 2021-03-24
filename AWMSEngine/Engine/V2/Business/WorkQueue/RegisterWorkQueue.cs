@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
     public class RegisterWorkQueue : BaseQueue<RegisterWorkQueue.TReq, WorkQueueCriteria>
     {
-        public class TReq : RequestRegisterWQCriteria
+        public class TReq : WMReq_RegisterWQ
         {
         }
 

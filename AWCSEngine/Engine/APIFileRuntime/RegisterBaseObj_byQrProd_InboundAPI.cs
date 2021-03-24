@@ -12,7 +12,7 @@ using System.Text;
 
 namespace AWCSEngine.Engine.APIFileRuntime
 {
-    public class PostQRtoReceiveGate : BaseAPIFileRuntime
+    public class RegisterBaseObj_byQrProd_InboundAPI : BaseAPIFileRuntime
     {
         public class TReq
         {
@@ -26,7 +26,7 @@ namespace AWCSEngine.Engine.APIFileRuntime
             public string ResultMessage;
         }
 
-        public PostQRtoReceiveGate(string logref) : base(logref)
+        public RegisterBaseObj_byQrProd_InboundAPI(string logref) : base(logref)
         {
         }
 
@@ -59,16 +59,16 @@ namespace AWCSEngine.Engine.APIFileRuntime
 
 
             var mcObj = ADO.WCSDB.McObjectADO.GetInstant().GetByMstCode(req.GateCode,this.BuVO);
-            var bo = new CreateBaseObjectTemp_byQR(this.LogRefID, this.BuVO).Execute(new CreateBaseObjectTemp_byQR.TReq()
+            var bo = new RegisterBaseObj_byQrProd_InboundComm(this.LogRefID, this.BuVO).Execute(new RegisterBaseObj_byQrProd_InboundComm.TReq()
             {
                 McObject_ID = mcObj.ID.Value,
                 LabelData = req.QR.Json()
             });
             if (bo.status == 1)
             {
-                if (bo.result.Status == EntityStatus.ACTIVE)
+                if (bo.data.Status == EntityStatus.ACTIVE)
                     result_msg = "Inserted.";
-                else if (bo.result.Status == EntityStatus.REMOVE)
+                else if (bo.data.Status == EntityStatus.REMOVE)
                     result_msg = "Removed.";
             }
             else

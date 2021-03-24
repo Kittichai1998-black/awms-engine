@@ -16,7 +16,7 @@ namespace AWCSEngine.Engine.WorkRuntime
 {
     public class InboundWorkEngine : BaseWorkRuntime
     {
-        public class TReq_RegisterWQ : RequestRegisterWQCriteria
+        public class TReq_RegisterWQ : WMReq_RegisterWQ
         {
             public string apikey;
         }
@@ -41,11 +41,6 @@ namespace AWCSEngine.Engine.WorkRuntime
         protected override void OnRun()
         {
 
-            this.OnRun_W08_Test();
-        }
-
-        private void OnRun_W08_Test()
-        {
             var baseObjTmps = ADO.WCSDB.BaseObjectADO.GetInstant().ListTemp(this.BuVO);
             baseObjTmps.ForEach(baseObj =>
             {
@@ -53,15 +48,11 @@ namespace AWCSEngine.Engine.WorkRuntime
                 var area = this.StaticValue.GetArea(loc.Area_ID);
                 var wh = this.StaticValue.GetArea(area.Warehouse_ID);
                 var mc = McController.GetMcRuntimeByLocation(loc.ID.Value);
-                if (mc == null) return;
-                var response =
-                    RESTFulAccess.SendJson<TRes_RegisterWQ>(
-                        this.Logger,
-                        this.StaticValue.GetConfigValue("api.url.register_wq"),
-                        RESTFulAccess.HttpMethod.POST,
+                if (mc == null || mc.McWork4Receive != null || mc.McWork4Work != null) return;
+                var response = ADO.WCSAPI.CallWmsAPI.GetInstant().RegisterWQ(
                         new TReq_RegisterWQ()
                         {
-                            apikey = this.StaticValue.GetConfigValue("api.apikey"),
+                            apikey = this.StaticValue.GetConfigValue("wms.api.apikey"),
                             baseCode = baseObj.Code,
                             actualTime = DateTime.Now,
                             warehouseCode = wh.Code,
@@ -79,12 +70,12 @@ namespace AWCSEngine.Engine.WorkRuntime
                             autoDoc = false,
                             options = string.Empty,
                             barcode_pstos = baseObj.LabelData.Json<List<string>>()
-                        });
+                        );
 
                 if (response._result.status == 1)
                 {
                     var desArea = this.StaticValue.GetArea(response.desLocationCode);
-                    var desLoc = this.StaticValue.GetLocation(response.desLocationCode);
+                    var desLoc = this.StaticValue.GetLocation(response.desWarehouseCode,response.desLocationCode);
                     baseObj.Status = EntityStatus.ACTIVE;
                     baseObj.EventStatus = BaseObjectEventStatus.IDLE;
                     baseObj.SkuCode = response.baseInfo.packInfos[0].code;
@@ -99,9 +90,9 @@ namespace AWCSEngine.Engine.WorkRuntime
                     var mcWork = new act_McWork()
                     {
                         ID = null,
-                        Priority = PriorityType.NORMAL,
-                        SeqGroup = response.seq,
-                        SeqItem = 0,
+                        Priority = response.priority,
+                        SeqGroup = response.seqGroup,
+                        SeqItem = response.seqItem,
                         BaseObject_ID = baseObj.ID.Value,
                         WMS_WorkQueue_ID = response.queueID,
                         Cur_McObject_ID = null,
@@ -121,6 +112,13 @@ namespace AWCSEngine.Engine.WorkRuntime
                         Status = EntityStatus.ACTIVE
                     };
                     DataADO.GetInstant().Insert<act_McWork>(mcWork, this.BuVO);
+                }
+                else
+                {
+                    baseObj.Status = EntityStatus.REMOVE;
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+                    mc.PostCommand(McCommandType.CM_14);
+                    mc.StepTxt = string.Empty;
                 }
             });
         }

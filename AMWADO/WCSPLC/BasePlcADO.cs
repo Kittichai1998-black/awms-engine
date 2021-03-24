@@ -38,9 +38,19 @@ namespace ADO.WCSPLC
                 return instants[dirKey];
             }
         }
+        public static List<T> ListInstant()
+        {
+            List<T> res = new List<T>();
+            foreach (var r in instants)
+            {
+                res.Add(r.Value);
+            }
+            return res;
+        }
 
         public string PlcDeviceName { get; private set; }
         public abstract bool IsConnect { get; }
+        public abstract bool IsCheckCCONN { get; protected set; }
 
         public abstract void Open();
         public abstract void Close();

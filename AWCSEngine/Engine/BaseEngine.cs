@@ -30,7 +30,7 @@ namespace AWCSEngine.Engine
             ResponseCriteria<TRes> res = new ResponseCriteria<TRes>();
             try
             {
-                res.result = this.ExecuteChild(request);
+                res.data = this.ExecuteChild(request);
                 res.status = 1;
                 res.message = "SUCCESS";
                 res.trace = "";

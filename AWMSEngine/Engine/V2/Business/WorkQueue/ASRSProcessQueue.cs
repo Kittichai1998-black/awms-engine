@@ -9,7 +9,7 @@ using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ADO.WCSAPI;
+using ADO.WMSAPI;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -262,18 +262,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }, this.BuVO);
 
 
-            WCSQueueADO.TReq req = new WCSQueueADO.TReq()
+            CallOldWcsAPI.TReq req = new CallOldWcsAPI.TReq()
             {
                 queueOut = _pickStos
                 .Where(x => this.StaticValue.GetAreaMasterGroupType(x.areaID) == AreaMasterGroupType.STORAGE_AUTO)
-                .Select(x => new WCSQueueADO.TReq.queueout()
+                .Select(x => new CallOldWcsAPI.TReq.queueout()
                 {
                     queueID = null,
                     desWarehouseCode = reqVO.desASRSWarehouseCode,
                     desAreaCode = reqVO.desASRSAreaCode,
                     desLocationCode = reqVO.desASRSLocationCode,
                     priority = 0,
-                    baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
+                    baseInfo = new CallOldWcsAPI.TReq.queueout.baseinfo()
                     {
                         eventStatus = getRsto.FirstOrDefault(y => y.ID == x.rstoID).EventStatus,
                         baseCode = x.rstoCode,
@@ -283,7 +283,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             };
             if (req.queueOut.Count > 0)
             {
-                var wcsRes = WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
+                var wcsRes = CallOldWcsAPI.GetInstant().SendReady(req, this.BuVO);
                 if (wcsRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");

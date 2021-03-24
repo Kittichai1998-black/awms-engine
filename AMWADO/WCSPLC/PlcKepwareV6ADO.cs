@@ -24,7 +24,7 @@ namespace ADO.WCSPLC
         Array OPC_WriteItems = null;
 
         public override bool IsConnect { get => this.OPC_ConnGroups == null ? false : this.OPC_ConnGroups.IsActive; }
-
+        public override bool IsCheckCCONN { get; protected set; }
 
         protected const string KEPWARE_PRODID = "Kepware.KEPServerEX.V6";
         public override void Open()
@@ -72,8 +72,13 @@ namespace ADO.WCSPLC
 
                 if (!this.PlcDeviceName.StartsWith("SHU"))
                 {
+                    this.IsCheckCCONN = true;
                     _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_READ");
                     _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_WRITE");
+                }
+                else
+                {
+                    this.IsCheckCCONN = false;
                 }
 
                 this.OPC_ConnOPCServer.ServerShutDown += OPC_ConnOPCServer_ServerShutDown;
@@ -105,6 +110,7 @@ namespace ADO.WCSPLC
             }
             catch
             {
+                throw;
             }
             
         }

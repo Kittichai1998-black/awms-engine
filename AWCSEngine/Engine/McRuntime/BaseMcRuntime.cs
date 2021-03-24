@@ -40,7 +40,11 @@ namespace AWCSEngine.Engine.McRuntime
 
         //public McObjectStatus McEngineStatus { get; private set; }
 
-        protected string StepTxt = string.Empty;
+        public string StepTxt
+        {
+            get => this.McObj.StepTxt;
+            set { this.McObj.StepTxt = value; DisplayController.Events_Write($"{this.Code} > step {value}"); }
+        }
         public long ID { get => this.McObj.ID.Value; }
         public string Code { get => this.McMst.Code; }
         public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
@@ -121,66 +125,6 @@ namespace AWCSEngine.Engine.McRuntime
             DisplayController.Events_Write($"{this.Code} > [START] {(this.McObj.IsOnline ? "Online" : "Offline")} | {(this.McObj.IsAuto?"Auto":"Manual")}");
         }
 
-        private int _Status4CallBack = -1;
-        private Action<BaseMcRuntime> _Status4CallBack_OnChange = null;
-        public void Remove_CallBackStatus()
-        {
-            this._Status4CallBack = -1;
-            this._Status4CallBack_OnChange = null;
-        }
-        public void CallBackStatus(int status, Action<BaseMcRuntime> callback_OnChange = null)
-        {
-            this._Status4CallBack = status;
-            this._Status4CallBack_OnChange = callback_OnChange;
-        }
-        public bool PostCommand(McCommandType comm, Func<BaseMcRuntime, LoopResult> callback_OnChange = null)
-        {
-            return this.PostCommand(comm, new ListKeyValue<string, object>(), callback_OnChange);
-        }
-        public bool PostCommand(McCommandType comm,
-            int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
-            Func<BaseMcRuntime, LoopResult> callback_OnChange = null)
-        {
-            return this.PostCommand(comm, ListKeyValue<string, object>
-                            .New("Set_SouLoc", Set_SouLoc)
-                            .Add("Set_DesLoc", Set_DesLoc)
-                            .Add("Set_Unit", Set_Unit)
-                            .Add("Set_PalletID", Set_PalletID)
-                            .Add("Set_Weigth", Set_Weigh), callback_OnChange);
-        }
-        public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Func<BaseMcRuntime, LoopResult> callback_OnChange = null)
-        {
-            if (_Callback_OnChanges == null) _Callback_OnChanges = new List<Func<BaseMcRuntime, LoopResult>>();
-
-            if ((int)comm == 0)
-            {
-                this.Logger.LogInfo("[CMD] > Clear!");
-                DisplayController.Events_Write(this.Code + " > [CMD] Clear!");
-                this.McObj.Command_ID = null;
-                this.McObj.CommandAction_Seq = null;
-                this.McObj.CommandParameter = null;
-                this.McObj.EventStatus = McObjectEventStatus.IDEL;
-                this.StepTxt = string.Empty;
-                //this._Callback_OnChange = null;
-                return true;
-            }
-            else if (this.McObj.EventStatus == McObjectEventStatus.IDEL)
-            {
-                this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
-                DisplayController.Events_Write(this.Code + " > [CMD] Post = " + (int)comm);
-                this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
-                this.McObj.CommandAction_Seq = 1;
-                this.McObj.CommandParameter = parameters.ToQryStr();
-                this.McObj.CommandActionTime = DateTime.Now;
-                this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
-                this.StepTxt = string.Empty;
-                if (callback_OnChange != null)
-                    this._Callback_OnChanges.Add(callback_OnChange);
-                return true;
-            }
-
-            return false;
-        }
 
         public bool IsOnline { get => this.McObj.IsOnline; }
         public bool IsAuto { get => this.McObj.IsAuto; }
@@ -289,11 +233,6 @@ namespace AWCSEngine.Engine.McRuntime
                 i_removes.ForEach(i => this._Callback_OnChanges.RemoveAt(i));
             }
 
-            if(this._Status4CallBack == this.McObj.DV_Pre_Status && this._Status4CallBack_OnChange != null)
-            {
-                this._Status4CallBack_OnChange(this);
-                this.Remove_CallBackStatus();
-            }
         }
 
         private void _3_Write_Cmd2Plc_OnRun()

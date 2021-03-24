@@ -9,9 +9,10 @@ namespace AMSModel.Entity
 {
     public class act_McWork : BaseEntityCreateModify
     {
-        public PriorityType Priority;
+        public int QueueType;
+        public int Priority;
         public long SeqGroup;
-        public int SeqItem;
+        public long SeqItem;
         public long? WMS_WorkQueue_ID;
         public long? Rec_McObject_ID;
         public long? Cur_McObject_ID;
