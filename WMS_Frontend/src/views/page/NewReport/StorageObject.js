@@ -85,8 +85,8 @@ const StorageObject = props => {
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
-    { Header: "Control No.", accessor: "OrderNo", width: 100 },
-    { Header: "Customer", accessor: "For_Customer", width: 100 },
+    //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
+    //{ Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
 

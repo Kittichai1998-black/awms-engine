@@ -14,18 +14,18 @@ using System.Text;
 
 namespace AWCSEngine.Engine.CommonEngine
 {
-    public class CreateBaseObjectTemp_byQR : BaseCommonEngine<CreateBaseObjectTemp_byQR.TReq, act_BaseObject>
+    public class RegisterBaseObj_byQrProd_InboundComm : BaseCommonEngine<RegisterBaseObj_byQrProd_InboundComm.TReq, act_BaseObject>
     {
         public class TReq
         {
             public long McObject_ID;
             public string LabelData;
         }
-        public CreateBaseObjectTemp_byQR(string logref,VOCriteria buVO) : base(logref,buVO)
+        public RegisterBaseObj_byQrProd_InboundComm(string logref,VOCriteria buVO) : base(logref,buVO)
         {
         }
 
-        protected override act_BaseObject ExecuteChild(CreateBaseObjectTemp_byQR.TReq req)
+        protected override act_BaseObject ExecuteChild(RegisterBaseObj_byQrProd_InboundComm.TReq req)
         {
             var bo = BaseObjectADO.GetInstant().GetByLabel(req.LabelData,this.BuVO);
             if(bo != null)

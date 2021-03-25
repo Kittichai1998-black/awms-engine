@@ -366,7 +366,7 @@ const AmPalletInformation = (props) => {
                         <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No. " + sto.cartonNo}</Typography>
                         : null;
                     let serial = sto.ref1 != null && sto.ref1.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{"Serial: " + sto.ref1}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Grade: " + sto.ref1}</Typography>
                         : null;
                     let currentQty = sto.qty != null ?
                         <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.qty + " " + sto.unitCode}</Typography>

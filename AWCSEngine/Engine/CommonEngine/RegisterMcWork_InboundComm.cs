@@ -13,19 +13,9 @@ using System.Text;
 
 namespace AWCSEngine.Engine.CommonEngine
 {
-    public class RegisterMcQueueInbound : BaseCommonEngine<RegisterMcQueueInbound.TReq, act_McWork>
+    public class RegisterMcWork_InboundComm : BaseCommonEngine<, act_McWork>
     {
-        public class TReq
-        {
-            public long wqID;
-            public long souAreaID;
-            public List<long> souLocIDs;
-            public long desAreaID;
-            public List<long> desLocIDs;
-            public RegisterBaseObjectCriteria baseObjCri;
-        }
-
-        public RegisterMcQueueInbound(string logref, VOCriteria buVO) : base(logref,buVO)
+        public RegisterMcWork_InboundComm(string logref, VOCriteria buVO) : base(logref,buVO)
         {
         }
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 namespace AMSModel.Criteria
 {
-    public class RequestRegisterWQCriteria
+    public class WMReq_RegisterWQ
     {
         public string baseCode;//รหัสพาเลท
         public IOType ioType = IOType.INBOUND;

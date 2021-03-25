@@ -58,6 +58,11 @@ namespace ADO.WCSStaticValue
         {
             return this.Areas.FirstOrDefault(x => x.Code == code);
         }
+        public List<acs_Area> ListArea_ByWarehouse(string whCode)
+        {
+            var wh = this.GetWarehouse(whCode);
+            return this.Areas.Where(x => x.Warehouse_ID == wh.ID.Value).ToList();
+        }
         public acs_Warehouse GetWarehouse(long id)
         {
             return this.Warehouses.FirstOrDefault(x => x.ID == id);
@@ -80,9 +85,10 @@ namespace ADO.WCSStaticValue
         {
             return this.Locations.FirstOrDefault(x => x.ID == id);
         }
-        public acs_Location GetLocation(string code)
+        public acs_Location GetLocation(string whCode,string locCode)
         {
-            return this.Locations.FirstOrDefault(x => x.Code == code);
+            var areas = this.ListArea_ByWarehouse(whCode).Select(x => x.ID.Value);
+            return this.Locations.FirstOrDefault(x => x.Code == locCode && areas.Contains(x.Area_ID));
         }
         public List<acs_Location> GetLocations(List<string> codes)
         {

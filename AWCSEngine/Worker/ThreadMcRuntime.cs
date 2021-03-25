@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace AWCSEngine.Worker
@@ -33,9 +34,12 @@ namespace AWCSEngine.Worker
 
         public void Initial()
         {
+            string pattle_codes = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_machine_code_pattle];
+            string[] fix_codes = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_machine_code_fixed].Split(new char[] { ','});
             ADO.WCSStaticValue.StaticValueManager.GetInstant().McMasters.ForEach(x=>
             {
-                this.AddMcMst2McThread(x.ThreadIndex, x);
+                if ((!string.IsNullOrEmpty(pattle_codes) && Regex.IsMatch(x.Code, pattle_codes) ) || fix_codes.Contains(x.Code))
+                    this.AddMcMst2McThread(x.ThreadIndex, x);
             });
         }
 
@@ -71,6 +75,11 @@ namespace AWCSEngine.Worker
                 });
                 Thread.Sleep(this.DELAY_MS);
             }
+        }
+
+        public void Abort()
+        {
+            this.McThreads.ForEach(x => { x.Abort(); });
         }
 
     }

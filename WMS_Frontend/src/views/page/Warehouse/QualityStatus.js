@@ -7,7 +7,7 @@ import {
 import AmRedirectLog from "../../../components/AmRedirectLog";
 import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
 import { Hold, Lock } from "../../../components/Models/Hold";
-import { AuditStatus } from "../../../components/Models/AuditStatus";
+import { AuditStatusGCL } from "../../../components/Models/AuditStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import AuditStatusIcon from "../../../components/AmAuditStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
@@ -62,14 +62,14 @@ const QualityStatus = props => {
       filterType: "dropdown",
       filterConfig: {
         filterType: "dropdown",
-        dataDropDown: AuditStatus,
+        dataDropDown: AuditStatusGCL,
         typeDropDown: "normal",
         widthDD: 120,
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
     //{ Header: "Lot", accessor: "Lot", width: 80 },
-    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
+    { Header: "Grade", accessor: "Ref1", width: 80 },
 
     {
       Header: "Item Code",
@@ -87,9 +87,9 @@ const QualityStatus = props => {
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
-    { Header: "Control No.", accessor: "OrderNo", width: 100 },
-    { Header: "Customer", accessor: "For_Customer", width: 100 },
-    { Header: "Area", accessor: "Area", width: 100 },
+    // { Header: "Control No.", accessor: "OrderNo", width: 100 },
+    // { Header: "Customer", accessor: "For_Customer", width: 100 },
+    { Header: "Area", accessor: "Area", width: 150 },
     { Header: "Location", accessor: "Location", width: 100 },
     {
       Header: "Qty",
@@ -191,14 +191,22 @@ const QualityStatus = props => {
 
   };
   const getAuditStatusValue = Status => {
-    if (Status === "QUARANTINE") {
-      return <AuditStatusIcon key={0} statusCode={0} />;
-    } else if (Status === "PASSED") {
-      return <AuditStatusIcon key={1} statusCode={1} />;
-    } else if (Status === "REJECTED") {
-      return <AuditStatusIcon key={2} statusCode={2} />;
+    if (Status === "QI") {
+      return <AuditStatusIcon key={4} statusCode={4} />;
+    } else if (Status === "ACC") {
+      return <AuditStatusIcon key={5} statusCode={5} />;
+    } else if (Status === "ACD") {
+      return <AuditStatusIcon key={6} statusCode={6} />;
+    } else if (Status === "ACN") {
+      return <AuditStatusIcon key={7} statusCode={7} />;
+    } else if (Status === "ACM") {
+      return <AuditStatusIcon key={8} statusCode={8} />;
     } else if (Status === "HOLD") {
       return <AuditStatusIcon key={9} statusCode={9} />;
+    } else if (Status === "BLOCK") {
+      return <AuditStatusIcon key={10} statusCode={10} />;
+    } else if (Status === "UR") {
+      return <AuditStatusIcon key={11} statusCode={11} />;
     } else {
       return null;
     }
@@ -262,7 +270,7 @@ const QualityStatus = props => {
         multi={true}
         action={true}
         actionAuditStatus={true}
-        customTopLeftControl={SendEmail}
+        //customTopLeftControl={SendEmail}
         typeSKU={"PM"}
       />
     </div>

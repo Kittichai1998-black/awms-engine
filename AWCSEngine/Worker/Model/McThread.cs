@@ -37,5 +37,10 @@ namespace AWCSEngine.Worker.Model
             McEngines.Add(mcEngine);
             mcEngine.Initial();
         }
+        public void Abort()
+        {
+            if (this._McThread.IsAlive)
+                this._McThread.Abort();
+        }
     }
 }

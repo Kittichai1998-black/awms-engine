@@ -21,13 +21,13 @@ namespace AMWUtil.DataAccess.Http
             DELETE,
             PATCH
         }
-        public static TResponse SendForm<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+        public static TResponse SendForm<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 120000)
             where TResponse : class
         {
             return SendForm<TResponse>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
         
-        public static TResponse SendForm<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+        public static TResponse SendForm<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 120000)
             where TResponse : class
         {
             TResponse result = null;
@@ -100,12 +100,12 @@ namespace AMWUtil.DataAccess.Http
 
             return result;
         }
-        public static TResponse SendJson<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+        public static TResponse SendJson<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 120000)
             where TResponse : class
         {
             return SendJson<TResponse>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
-        public static TResponse SendJson<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+        public static TResponse SendJson<TResponse>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 120000)
             where TResponse : class
         {
             TResponse result = null;

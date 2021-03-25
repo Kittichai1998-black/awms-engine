@@ -18,7 +18,7 @@ namespace AWCSEngine.Engine.McRuntime
     public abstract partial class BaseMcRuntime : BaseEngine<NullCriteria, NullCriteria>, IDisposable
     {
         private act_McObject _McObj_TMP { get; set; }
-        private Func<BaseMcRuntime, LoopResult> _Callback_OnChange { get; set; }
+        private List<Func<BaseMcRuntime, LoopResult>> _Callback_OnChanges { get; set; }
         //private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
 
         protected abstract void OnStart();
@@ -39,13 +39,17 @@ namespace AWCSEngine.Engine.McRuntime
 
 
         //public McObjectStatus McEngineStatus { get; private set; }
+
+        public string StepTxt
+        {
+            get => this.McObj.StepTxt;
+            set { this.McObj.StepTxt = value; DisplayController.Events_Write($"{this.Code} > step {value}"); }
+        }
         public long ID { get => this.McObj.ID.Value; }
         public string Code { get => this.McMst.Code; }
         public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
         public acs_Area Cur_Area { get => StaticValueManager.GetInstant().GetArea(this.Cur_Location.Area_ID); }
         public acs_Location Cur_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value); }
-        public acs_Location Sou_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Sou_Location_ID.Value); }
-        public acs_Location Des_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Des_Location_ID.Value); }
         public List<string> DeviceLogs { get; set; }
         public List<string> DeviceNames { get; set; }
         public BaseMcRuntime(acs_McMaster mcMst) : base(ObjectUtil.GenUniqID())
@@ -121,63 +125,9 @@ namespace AWCSEngine.Engine.McRuntime
             DisplayController.Events_Write($"{this.Code} > [START] {(this.McObj.IsOnline ? "Online" : "Offline")} | {(this.McObj.IsAuto?"Auto":"Manual")}");
         }
 
-        private int _Status4CallBack = -1;
-        private Action<BaseMcRuntime> _Status4CallBack_OnChange = null;
-        public void Remove_CallBackStatus()
-        {
-            this._Status4CallBack = -1;
-            this._Status4CallBack_OnChange = null;
-        }
-        public void CallBackStatus(int status,Action<BaseMcRuntime> callback_OnChange)
-        {
-            this._Status4CallBack = status;
-            this._Status4CallBack_OnChange = callback_OnChange;
-        }
-        public bool PostCommand(McCommandType comm, Func<BaseMcRuntime, LoopResult> callback_OnChange)
-        {
-            return this.PostCommand(comm, new ListKeyValue<string, object>(), callback_OnChange);
-        }
-        public bool PostCommand(McCommandType comm)
-        {
-            return this.PostCommand(comm, new ListKeyValue<string, object>(), null);
-        }
-        public bool PostCommand(McCommandType comm,
-            int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
-            Func<BaseMcRuntime, LoopResult> callback_OnChange)
-        {
-            return this.PostCommand(comm, ListKeyValue<string, object>
-                            .New("Set_SouLoc", Set_SouLoc)
-                            .Add("Set_DesLoc", Set_DesLoc)
-                            .Add("Set_Unit", Set_Unit)
-                            .Add("Set_PalletID", Set_PalletID)
-                            .Add("Set_Weigth", Set_Weigh), callback_OnChange);
-        }
-        public bool PostCommand(McCommandType comm, ListKeyValue<string,object> parameters, Func<BaseMcRuntime, LoopResult> callback_OnChange)
-        {
-            if ((int)comm == 0)
-            {
-                this.Logger.LogInfo("[CMD] > Clear!");
-                DisplayController.Events_Write(this.Code + " > [CMD] Clear!");
-                this.McObj.Command_ID = null;
-                this.McObj.CommandAction_Seq = null;
-                this.McObj.CommandParameter = null;
-                this.McObj.EventStatus = McObjectEventStatus.IDEL;
-                this._Callback_OnChange = null;
-            }
-            else if (this.McObj.EventStatus == McObjectEventStatus.IDEL)
-            {
-                this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " + parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
-                DisplayController.Events_Write(this.Code + " > [CMD] Post = " + (int)comm);
-                this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
-                this.McObj.CommandAction_Seq = 1;
-                this.McObj.CommandParameter = parameters.ToQryStr();
-                this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
-                this._Callback_OnChange = callback_OnChange;
-            }
 
-            return true;
-        }
-
+        public bool IsOnline { get => this.McObj.IsOnline; }
+        public bool IsAuto { get => this.McObj.IsAuto; }
         public void SetOnline(bool isOnline)
         {
             this.McObj.IsOnline = isOnline;
@@ -202,7 +152,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj != null)
                 {
-                    if (this.McObj.IsOnline)
+                    if (this.McObj.IsOnline && this.PlcADO.IsConnect)
                     {
                         this._1_Read_Plc2McObj_OnRun();
                         if (this.McObj.IsAuto)
@@ -272,18 +222,17 @@ namespace AWCSEngine.Engine.McRuntime
         {
             this.OnRun();
 
-            if (this._Callback_OnChange != null)
+            if (this._Callback_OnChanges != null&& this._Callback_OnChanges.Count > 0 && this.EventStatus == McObjectEventStatus.IDEL)
             {
-                if (this._Callback_OnChange(this) == LoopResult.Break)
-                    this._Callback_OnChange = null;
-
+                List<int> i_removes = new List<int>();
+                for (int i = 0;i < this._Callback_OnChanges.Count; i++)
+                {
+                    if (this._Callback_OnChanges[i](this) == LoopResult.Break)
+                        i_removes.Add(i);
+                }
+                i_removes.ForEach(i => this._Callback_OnChanges.RemoveAt(i));
             }
 
-            if(this._Status4CallBack == this.McObj.DV_Pre_Status && this._Status4CallBack_OnChange != null)
-            {
-                this._Status4CallBack_OnChange(this);
-                this.Remove_CallBackStatus();
-            }
         }
 
         private void _3_Write_Cmd2Plc_OnRun()
@@ -312,7 +261,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                         var _act_sets_comp = _act_sets.QryStrToKeyValues();
                         int maxSeq = this.RunCmdActions.Max(x => x.Seq);
-                        string _log_con = $"{this.Code} > [DEVICE] <<CONDITION>> ({act.Seq}/{maxSeq}) {act.DKV_Condition}";
+                        string _log_con = $"{this.Code} > [DEVICE_START] ({act.Seq}/{maxSeq}) {act.DKV_Condition}";
                         DisplayController.Events_Write(_log_con);
                         this.Logger.LogInfo(_log_con);
 
@@ -320,8 +269,10 @@ namespace AWCSEngine.Engine.McRuntime
                             string name = x2.Key;
                             string val = x2.Value;
                             string deviceKey = this.McMst.Get2<string>("DK_" + name);
-
                             var t_deviceVal = this.McObj.GetType().GetField("DV_" + name).FieldType;
+
+                            //DisplayController.Events_Write($"{this.Code} > <setting> {deviceKey}={val}");
+
                             if (t_deviceVal == typeof(string))
                             {
                                 var valWord = this.McMst.Get2<int>("DW_" + name);
@@ -337,9 +288,10 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.PlcADO.SetDevice<float>(deviceKey, val.Get2<float>());
                             else if (t_deviceVal == typeof(double))
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
+
                         });
 
-                        string _log_set = $"{this.Code} > [DEVICE] <<SET>> ({act.Seq}/{maxSeq}) {_act_sets}";
+                        string _log_set = $"{this.Code} > [DEVICE_END] ({act.Seq}/{maxSeq})] {_act_sets}";
                         DisplayController.Events_Write(_log_set);
                         this.Logger.LogInfo(_log_set);
                         isNext = true;
@@ -411,30 +363,39 @@ namespace AWCSEngine.Engine.McRuntime
             if (this.DeviceLogs == null)
                 this.DeviceLogs = new List<string>();
             this.DeviceLogs.Clear();
-            this.DeviceLogs.Add("LOCATION="+ this.Cur_Location.Code);
-            this.DeviceLogs.Add("ERROR="+ error);
-            this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
+            if (!this.PlcADO.IsConnect)
             {
-                string name = x.Name;
-                if ((name.StartsWith("DK_Set") || name.StartsWith("DK_Pre")) &&
-                        x.GetValue(this.McMst) != null &&
-                        !string.IsNullOrEmpty(x.GetValue(this.McMst).ToString()))
-                {
-                    this.DeviceLogs.Add(name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)));
-                }
-            });
-
-            if (this.McObj.IsOnline)
-                Controller.DisplayController.McLists_Write(this.Code,
-                    this.Code +
-                    $" [{this.EventStatus.ToString().Substring(0, 4)}/{(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0)}]" +
-                    " > " +
-                    (this.McObj.IsAuto ? "AUTO" : "MANUAL") + " | " +
-                    "Loc=" + this.Cur_Location.Code + " | " +
-                    "PST=" + this.McObj.DV_Pre_Status + " | " +
-                    (!string.IsNullOrWhiteSpace(error)?"[ERROR!]":""));
+                this.DeviceLogs.Add("!!!!!PLC Disconnect!!!!!");
+                Controller.DisplayController.McLists_Write(this.Code, this.Code + " > !!!!!PLC Disconnect!!!!!");
+            }
             else
-                Controller.DisplayController.McLists_Write(this.Code, this.Code + " > Offline!");
+            {
+                this.DeviceLogs.Add("LOCATION=" + this.Cur_Location.Code);
+                this.DeviceLogs.Add("ERROR=" + error);
+                this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
+                {
+                    string name = x.Name;
+                    if ((name.StartsWith("DK_Set") || name.StartsWith("DK_Pre")) &&
+                            x.GetValue(this.McMst) != null &&
+                            !string.IsNullOrEmpty(x.GetValue(this.McMst).ToString()))
+                    {
+                        this.DeviceLogs.Add(name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)));
+                    }
+                });
+
+
+                    Controller.DisplayController.McLists_Write(this.Code,
+                        this.Code +
+                        $" [{this.EventStatus.ToString().Substring(0, 4)}]" +
+                        " > " +
+                        (this.McObj.IsAuto ? "A" : "M") + " | " +
+                        $"CMD={(this.RunCmd != null ? ((int)this.RunCmd.McCommandType) + " (" + this.McObj.CommandAction_Seq +")": "0 (0)")} | " +
+                        "PST=" + this.McObj.DV_Pre_Status + " | " +
+                        "LOC=" + this.Cur_Location.Code + " | " +
+                        (!string.IsNullOrWhiteSpace(error) ? "[ERR!]" : "") +
+                        (!this.PlcADO.IsConnect ? "[DIS!]" : ""));
+            }
+            
         }
 
         public void Dispose()

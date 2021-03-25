@@ -1,4 +1,4 @@
-﻿using ADO.WCSAPI;
+﻿using ADO.WMSAPI;
 using AMWUtil.Exception;
 using AWMSEngine.Engine.V2.Business.Issued;
 using AMSModel.Constant.EnumConst;
@@ -215,8 +215,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private void WCSSendQueue(List<RootStoProcess> rstos, List<amt_Document> docs)
         {
             var seq_wq = StaticValue.GetConfigValue(ConfigCommon.WQ_SEQ);
-            WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
-            WCSQueueADO.TReq groupQueueWcs = null;// Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
+            CallOldWcsAPI.TReq wcQueue = new CallOldWcsAPI.TReq() { queueOut = new List<CallOldWcsAPI.TReq.queueout>() };
+            CallOldWcsAPI.TReq groupQueueWcs = null;// Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
             if (groupQueueWcs == null)
             {
                 var getRsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
@@ -252,7 +252,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         rstoByDocID.rstos.ForEach(rsto =>
                         {
-                            wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
+                            wcQueue.queueOut.Add(new CallOldWcsAPI.TReq.queueout()
                             {
                                 priority = rsto.priority,
                                 queueID = rsto.workQueueID.Value,
@@ -263,13 +263,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                                ADO.WMSDB.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                                null,
 
-                                baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
+                                baseInfo = new CallOldWcsAPI.TReq.queueout.baseinfo()
                                 {
                                     eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
                                     baseCode = rsto.rstoCode,
                                     pickSeqGroup = groupSeq.ToString(),
                                     pickSeqIndex = seq,
-                                    packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
+                                    packInfos = rsto.docItems.Select(x => new CallOldWcsAPI.TReq.queueout.baseinfo.packinfo()
                                     {
                                         batch = x.pstoBatch,
                                         lot = x.pstoLot,
@@ -329,7 +329,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //});
             if (wcQueue.queueOut.Count > 0)
             {
-                var wcsRes = WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
+                var wcsRes = CallOldWcsAPI.GetInstant().SendQueue(wcQueue, this.BuVO);
                 if (wcsRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");

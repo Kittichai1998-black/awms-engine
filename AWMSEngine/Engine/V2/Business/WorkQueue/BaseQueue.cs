@@ -89,7 +89,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 queueParentID = queueTrx.Parent_WorkQueue_ID == null ? null : queueTrx.Parent_WorkQueue_ID,
                 queueRefID = queueTrx.RefID == null ? null : queueTrx.RefID,
                 queueStatus = queueTrx.EventStatus,
-                seq = queueTrx.Seq
+                seqGroup = ADO.WMSDB.DataADO.GetInstant().NextNum("WqSeqGroup", false, this.BuVO),
+                seqItem = 0
             };
 
             return res;

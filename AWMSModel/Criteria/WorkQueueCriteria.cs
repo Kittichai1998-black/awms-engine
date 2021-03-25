@@ -9,7 +9,9 @@ namespace AMSModel.Criteria
     {
         public long? queueID;//รหัสคิว
         public IOType ioType;
-        public int seq;
+        public long seqGroup;
+        public long seqItem;
+        public int priority;
         public long? queueParentID;
         public string queueRefID;
         public WorkQueueEventStatus queueStatus;
@@ -49,10 +51,6 @@ namespace AMSModel.Criteria
                 public string Info1;
                 public string Info2;
                 public string Info3;
-                //public DateTime? minProductDate;//วันผลิด ต่ำสุดจากทั้งหมดใยพาเลท
-                //public DateTime? maxProductDate;//วันผลิด สูงสุดจากทั้งหมดใยพาเลท
-                //public DateTime? minExpireDate;//วันหมดอายุ ต่ำสุดจากทั้งหมดใยพาเลท
-                //public DateTime? maxExpireDate;//วันหมดอายุ สูงสุดจากทั้งหมดใยพาเลท
             }
         }
         public List<long> docIDs;

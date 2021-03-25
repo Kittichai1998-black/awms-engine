@@ -39,6 +39,11 @@ namespace AWCSEngine.Engine.McRuntime
         }
         public void McWork_1_ReceiveToWorking()
         {
+            if (this.McWork4Receive.Cur_McObject_ID.HasValue)
+            {
+                var oldMc = Controller.McRuntimeController.GetInstant().GetMcRuntime(this.McWork4Receive.Cur_McObject_ID.Value);
+                oldMc.McWork4Work = oldMc.McWork4Work = null;
+            }
             this.McWork4Work = this.McWork4Receive;
             this.McWork4Receive = null;
             this.McWork4Work.Cur_McObject_ID = this.ID;

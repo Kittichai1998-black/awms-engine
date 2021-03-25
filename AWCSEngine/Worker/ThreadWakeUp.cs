@@ -15,7 +15,7 @@ namespace AWCSEngine.Worker
         
         private static object lockWait=new object();
         private static ThreadWakeUp instant;
-        public static ThreadWakeUp GetInitial()
+        public static ThreadWakeUp GetInstant()
         {
             if(ThreadWakeUp.instant == null)
             {
@@ -65,6 +65,11 @@ namespace AWCSEngine.Worker
                     Thread.Sleep(this.DELAY_MS);
                 }
             }
+        }
+
+        public void Abort()
+        {
+            this.Threads.ForEach(x => { if (x.IsAlive) x.Abort(); });
         }
     }
 }

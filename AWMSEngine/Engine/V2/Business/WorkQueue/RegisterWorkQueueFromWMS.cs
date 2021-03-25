@@ -18,7 +18,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             if(resRegQueue != null)
             {
-                var wcsRes = ADO.WCSAPI.WCSQueueADO.GetInstant().SendConfirm(resRegQueue, this.BuVO);
+                var wcsRes = ADO.WMSAPI.CallOldWcsAPI.GetInstant().SendConfirm(resRegQueue, this.BuVO);
                 if (wcsRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);

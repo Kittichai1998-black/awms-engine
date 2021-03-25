@@ -13,20 +13,13 @@ using System.Text;
 
 namespace AWCSEngine.Engine.CommonEngine
 {
-    public class RegisterMcQueueOutbound : BaseCommonEngine<RegisterMcQueueOutbound.TReq, act_McWork>
+    public class RegisterMcWork_OutboundComm : BaseCommonEngine<TReq_RegisterMcWork_OutboundAPI.TWork, act_McWork>
     {
-        public class TReq
-        {
-            public long wqID;
-            public string baseCode;
-            public string desLocCode;
-        }
-
-        public RegisterMcQueueOutbound(string logref, VOCriteria buVO) : base(logref,buVO)
+        public RegisterMcWork_OutboundComm(string logref, VOCriteria buVO) : base(logref,buVO)
         {
         }
 
-        protected override act_McWork ExecuteChild(RegisterMcQueueOutbound.TReq req)
+        protected override act_McWork ExecuteChild(TReq_RegisterMcWork_OutboundAPI.TWork req)
         {
             var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByCode(req.baseCode, this.BuVO);
             if (baseObj == null)
@@ -35,7 +28,9 @@ namespace AWCSEngine.Engine.CommonEngine
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_PALLET_STATUS_CANT_ISSUE, new string[] { req.baseCode, baseObj.EventStatus.ToString() });
 
             var souLoc = StaticValueManager.GetInstant().GetLocation(baseObj.Location_ID);
-            var desLoc = StaticValueManager.GetInstant().GetLocation(req.desLocCode);
+            var desWh = StaticValueManager.GetInstant().GetWarehouse(req.desWarehouseCode);
+            var desArea = StaticValueManager.GetInstant().GetArea(req.desAreaCode);
+            var desLoc = StaticValueManager.GetInstant().GetLocation(req.desWarehouseCode, req.desAreaCode);
             TreeNode<long> treeRoute = null;// LocationUtil.GetLocationRouteTree(baseObj.Location_ID, desLoc.ID.Value);
             if (treeRoute == null)
             {
@@ -45,15 +40,19 @@ namespace AWCSEngine.Engine.CommonEngine
             act_McWork mcQ = new act_McWork()
             {
                 ID = null,
+                WMS_WorkQueue_ID = req.wqID,
+                SeqGroup = req.seqGroup,
+                SeqItem = req.seqItem,
+                Priority = req.priority,
+                QueueType = 2,
                 BaseObject_ID = baseObj.ID.Value,
                 Sou_Area_ID = souLoc.Area_ID,
                 Sou_Location_ID = souLoc.ID.Value,
-                Des_Area_ID = desLoc.Area_ID,
-                Des_Location_ID = desLoc.ID.Value,
+                Des_Area_ID = desArea.ID.Value,
+                Des_Location_ID = desLoc == null ? null : desLoc.ID,
                 Cur_Area_ID = baseObj.Area_ID,
                 Cur_Location_ID = baseObj.Location_ID,
-                TreeRoute = treeRoute.Json(),
-                WMS_WorkQueue_ID = req.wqID,
+                TreeRoute = "{}",
             };
 
             mcQ.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mcQ, this.BuVO);
