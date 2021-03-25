@@ -146,6 +146,8 @@ const AmHeaderputandpick = (props) => {
 
     useEffect(() => {
         if (doc.docID != 0 && doc.docID !== undefined) {
+            //let QdocItem = DocumentItemQueryss(doc.docID, props.docItemQuery);
+            //getDocItemQuery(QdocItem);
             doc.setdataSourceItemTB([])
             doc.setdatadocItem([])
             doc.setdataSet([])
@@ -154,7 +156,6 @@ const AmHeaderputandpick = (props) => {
             GetdataItem(doc.docID) //getdataHeader
         }
     }, [doc.docID])
-
 
     useEffect(() => {
         if (doc.datadocItem > 0) {
@@ -176,11 +177,6 @@ const AmHeaderputandpick = (props) => {
     useEffect(() => {
         setdataCheck(dataCheck)
     }, [dataCheck])
-
-    useEffect(() => {
-        console.log(columns)
-        console.log(doc.datadocItem)
-    }, [columns, doc.datadocItem])
 
 
     useEffect(() => {
@@ -215,11 +211,9 @@ const AmHeaderputandpick = (props) => {
     }, [doc.docID])
 
 
-    useEffect(() => {
-        console.log(columns)
-        console.log(doc.datadocItem)
-        console.log(dataSelectSet)
-    }, [columns])
+    //useEffect(() => {
+    //    FormatDataTB()
+    //}, [dataFromSto])
 
 
     //const DocumentItemQueryss = (docID, docItemQuery) => {
@@ -252,17 +246,15 @@ const AmHeaderputandpick = (props) => {
         let datas
         setChkCol(true)
         props.doccolumnEditItem.forEach((x, i) => {
-
-            if (x.accessor === "DiffQty" ) {
+            if (x.Header === "Quantity") {
                 datas = {
-                    width: 160, Header: x.Header, accessor: 'DiffQty', Cell: e => genInputQty(e.original)
-                }    
+                    width: 160, Header: "Quantity", accessor: "Quantity", Cell: e => genInputQty(e.original)
+                }
 
             } else {
                 datas = x
-        
             }
-            columnSet.push(datas)          
+            columnSet.push(datas)
         })
         setcolumns(columnSet)
     }
@@ -283,8 +275,10 @@ const AmHeaderputandpick = (props) => {
 
     const getData = () => {
         Axios.get(getDocItem()).then(res => {
+            console.log(res)
             if (res.data.datas.length != 0) {
                 //setdataFromSto(res.data.datas);
+              
                 setDataformStonandView(res.data.datas)
             }
         })
@@ -469,6 +463,7 @@ const AmHeaderputandpick = (props) => {
 
             //} else if (value <= qtys) {
             let datas = {
+
                 recQty: parseFloat(value),
                 docItemID: datarow.ID
             }
@@ -596,6 +591,8 @@ const AmHeaderputandpick = (props) => {
     }
 
     const genInputQty = (datarow) => {
+        console.log(datarow)
+        console.log(dataCheck)
         let defaultQty = datarow.DiffQty;
         return <AmInput id={datarow.ID}
             style={{ width: "100px" }}
@@ -808,6 +805,7 @@ const AmHeaderputandpick = (props) => {
                 {"ITEM"}
             </DialogTitle>
             <DialogContent>
+                <div>
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
@@ -818,10 +816,10 @@ const AmHeaderputandpick = (props) => {
                         selectionData={data => setDataSelect(data)}
                         rowNumber={false}
                         //  totalize={count}
-                    pageSize={100}
-                    minRows={ 20}
-                    height='200px'
+                        pageSize={100}
+                    //height={500}
                     />
+                </div>
             </DialogContent>
             <DialogActions>
                 <AmButton
@@ -845,6 +843,7 @@ const AmHeaderputandpick = (props) => {
                 {"ITEM"}
             </DialogTitle>
             <DialogContent>
+                <div>
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
@@ -858,9 +857,9 @@ const AmHeaderputandpick = (props) => {
                         rowNumber={false}
                         //  totalize={count}
                         pageSize={100}
-                    height="500px"
+                    //height={500}
                     />
-          
+                </div>
             </DialogContent>
             <DialogActions>
                 <AmButton

@@ -49,10 +49,6 @@ const GR_Create = props => {
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
                 ],
                 [
-                    { label: "Grade", type: "input", key: "ref1", codeTranslate: "Grade", width: '300px' },
-                    { label: "Doc.WMS", type: "input", key: "ref2", codeTranslate: "Doc.WMS", width: '300px' }
-                ],
-                [
                     { label: "Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
                     { label: "Des. Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
                 ],
@@ -125,6 +121,7 @@ const GR_Create = props => {
 
 
         var columnEdit = [
+            { Header: "Bagging Order", accessor: "doc_wms", type: "input", width: '300px', required: true },
             {
                 Header: "Item Code",
                 accessor: "Code",
@@ -138,26 +135,22 @@ const GR_Create = props => {
                 required: true
             },
             {
-                Header: "Item Name",
-                accessor: "Name",
-                type: "text",
-                //queryApi: skuquery,
-                //fieldLabel: ["Name"],
-                //columsddl: columsFindPopupSKU,
-                //related: ["Code",],
-                //fieldDataKey: "Name",
-                //required: true
+                Header: "Unit Type",
+                accessor: "unitType",
+                type: "dropdown",
+                fieldLabel: ["Name"],
+                idddl: "ID",
+                queryApi: UnitTypeQuery,
+                defaultValue:105,
+                width: '300px'
             },
-            Headers,
-            { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
-            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
-            { Header: "Quantity/Pallet", accessor: "options", type: "input", width: '300px' },
-            { Header: "Start Pallet", accessor: "options", type: "input", width: '300px' },
-            { Header: "End Pallet", accessor: "options", type: "input", width: '300px' },
-            AuditStatusDDL,
-            { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
-
-
+            { Header: "Grade", accessor: "grade", type: "input", width: '300px' },
+            { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
+            { Header: "Start Pallet", accessor: "start_pallet", type: "inputNum", width: '300px' },
+            { Header: "End Pallet", accessor: "end_pallet", type: "inputNum", width: '300px' },
+            { Header: "Qty", accessor: "quantity", type: "inputNum", width: '300px' },
+            { Header: "Qty Per Pallet", accessor: "qty_per_pallet", type: "inputNum", width: '300px' },
+            { Header: "Storage Status", accessor: "status", type: "dropdownvalue", data: AuditStatus, key: "value",  width: '300px'},
 
         ];
 
@@ -165,12 +158,12 @@ const GR_Create = props => {
     }, [skuType, ProcessTypeCode])
 
     const AuditStatus = [
-        { label: 'QQQ', value: '5' },
         { label: 'QUARANTINE', value: '0' },
         { label: 'PASSED', value: '1' },
         //{ label: 'REJECTED', value: '2' },
         { label: 'HOLD', value: '9' },
     ];
+
 
 
     const WarehouseQuery = {
@@ -186,12 +179,12 @@ const GR_Create = props => {
     };
 
     const UnitTypeQuery = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "UnitTypeConvert",
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "UnitType",
         q: '[{ "f": "Status", "c":"<", "v": 2},]',
         f: "*",
         g: "",
-        s: "[{ 'f': 'unitTypeID', 'od': 'asc' }]",
+        s: "[{ 'f': 'ID', 'od': 'asc' }]",
         sk: 0,
         l: 100,
         all: ""
@@ -223,7 +216,6 @@ const GR_Create = props => {
     };
 
 
-
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
@@ -241,20 +233,30 @@ const GR_Create = props => {
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
+
+    const columsFindPopupWarehouse = [
+        { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+    ];
+
+    const columsFindPopup_Customer = [
+        { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+    ];
+
     const columns = [
+        { Header: "Bagging Order", accessor: "doc_wms" },
         { Header: "Item Code", accessor: "Code" },
-        { Header: "Item Name", accessor: "Name", width: 200 },
-        { Header: "Lot", accessor: "lot" },
-        { Header: "Quantity", accessor: "quantity" },
-        { Header: "Unit", accessor: "unitType" },
-        {
-            Header: "Quality Status", accessor: "auditStatus",
-            Cell: e => getAuditStatus(e.original)
-        },
-        { Header: "Quantity/Pallet", accessor: "options" },
-        { Header: "Start Pallet", accessor: "options" },
-        { Header: "End Pallet", accessor: "options" },
-        { Header: "Remark", accessor: "remark" },
+        { Header: "Item Name", accessor: "Name" },
+        { Header: "Unit Type", accessor: "unitType"},
+        { Header: "Grade", accessor: "grade" },
+        { Header: "Lot", accessor: "lot"},
+        { Header: "Start Pallet", accessor: "start_pallet" },
+        { Header: "End Pallet", accessor: "end_pallet"},
+        { Header: "Qty", accessor: "quantity"},
+        { Header: "Qty Per Pallet", accessor: "qty_per_pallet"},
+        { Header: "Storage Status", accessor: "status" },
+
     ];
 
     const getAuditStatus = (e) => {

@@ -136,7 +136,7 @@ const AmCreateDocument = (props) => {
     const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
     const [unitCon, setunitCon] = useState();
 
-    const [qryPallet, setQryPallet] = useState(props.addList ? props.addList.queryApi: null);
+    const [qryPallet, setQryPallet] = useState(props.addList ? props.addList.queryApi : null);
 
 
     // const [checkItem, setcheckItem] = useState(false);
@@ -184,15 +184,15 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (skuID) {
-            setunitCon(UnitTypeConverts)         
-        } 
+            setunitCon(UnitTypeConverts)
+        }
     }, [skuID])
 
     useEffect(() => {
         if (unitCon) {
             getUnitTypeConvertQuery(skuID, UnitQurys)
         }
-    }, [unitCon,skuID])
+    }, [unitCon, skuID])
 
     useEffect(() => {
         setdataUnit(dataUnit)
@@ -213,7 +213,7 @@ const AmCreateDocument = (props) => {
         }
         //setcreateDocumentData({})
         getHeaderCreate()
-        let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {          
+        let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
             if (el.key === "documentProcessTypeID" && processType === undefined) {
                 createDocumentData["documentProcessTypeID"] = el.defaultValue
             } else {
@@ -320,7 +320,7 @@ const AmCreateDocument = (props) => {
             setUnitQurys(unitCon)
             getDataUnitType(objQuery)
         }
-        
+
     }
 
 
@@ -522,6 +522,7 @@ const AmCreateDocument = (props) => {
                     return
                 }
 
+
                 if (chkEdit) {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
@@ -546,11 +547,13 @@ const AmCreateDocument = (props) => {
                 setInputError(inputError.map(x => x.accessor))
             }
         } else {
+
             setInputError([])
             setEditData({})
             setDialog(false)
             setDialogItem(false)
         }
+
     }
 
 
@@ -685,7 +688,7 @@ const AmCreateDocument = (props) => {
                             data={dataUnit}
                             returnDefaultValue={true}
                             defaultValue={editData[accessor] ? editData[accessor] : editData['unitType'] ? editData['unitType'] :
-                            defaultValue ? defaultValue : ""}
+                                defaultValue ? defaultValue : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
@@ -830,8 +833,7 @@ const AmCreateDocument = (props) => {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
-                        } else {
-                        }
+                        } else { }
                     }}
                 />
             )
@@ -893,8 +895,10 @@ const AmCreateDocument = (props) => {
                 />
             )
         } else if (type === "labeltext") {
+            //getTextsValue(key, valueTexts)
+            return <label>{texts}</label>
 
-           return <label>{texts}</label>
+
 
         } else if (type === "dropdown") {
             return (
@@ -1057,7 +1061,7 @@ const AmCreateDocument = (props) => {
             expireDate: null,
             productionDate: null,
             shelfLifeDay: null,
-            eventStatus : 10,
+            eventStatus: 10,
             docItemStos: [],
             baseStos: []
         }
@@ -1201,8 +1205,11 @@ const AmCreateDocument = (props) => {
                     if (doc.actionTime) {
                         CreateDocuments(doc)
                     } else {
+                        console.log(dataSource)
                         setMsgDialog('Actiomtime Not Found');
                         setStateDialogErr(true);
+                        console.log(dataSource)
+
                     }
                 } else {
                     //console.log(doc)
@@ -1324,7 +1331,7 @@ const AmCreateDocument = (props) => {
             /> */}
             <AmTable
                 dataKey="ID"
-                columns={props.columnsModifi ? props.columnsModifi : columns}            
+                columns={props.columnsModifi ? props.columnsModifi : columns}
                 pageSize={1000}
                 //pagination={true}
                 //onPageSizeChange={(pg) => { setPageSize(pg) }}

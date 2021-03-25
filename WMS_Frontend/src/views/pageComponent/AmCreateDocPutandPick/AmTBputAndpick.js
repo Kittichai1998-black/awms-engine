@@ -245,6 +245,7 @@ const AmTBputAndpick = (props) => {
         <AmTable
             tableConfig={false}
             columns={columns}
+            pageSize={1000}
             dataSource={doc.dataSourceItemTB.length != 0 ? [...doc.dataSourceItemTB] : []}
         ></AmTable>
 
