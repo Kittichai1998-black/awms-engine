@@ -20,6 +20,10 @@ namespace ADO.WCSStaticValue
         {
             return this.Configs.FirstOrDefault(x => x.DataKey == key);
         }
+        public acs_McMaster GetMcMaster(long id)
+        {
+            return this.McMasters.FirstOrDefault(x => x.ID == id);
+        }
         public acs_McMaster GetMcMaster(string code)
         {
             return this.McMasters.FirstOrDefault(x => x.Code == code);
@@ -84,6 +88,10 @@ namespace ADO.WCSStaticValue
         public acs_Location GetLocation(long id)
         {
             return this.Locations.FirstOrDefault(x => x.ID == id);
+        }
+        public acs_Location GetLocation(string locCode)
+        {
+            return this.Locations.FirstOrDefault(x => x.Code == locCode);
         }
         public acs_Location GetLocation(string whCode,string locCode)
         {

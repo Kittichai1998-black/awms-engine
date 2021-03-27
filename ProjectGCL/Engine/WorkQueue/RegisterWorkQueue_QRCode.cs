@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria;
+using AMSModel.Criteria.API;
 
 namespace ProjectGCL.Engine.WorkQueue
 {

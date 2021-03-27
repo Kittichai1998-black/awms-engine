@@ -1,15 +1,14 @@
-﻿using AMSModel.Constant.EnumConst;
-using System;
+﻿using System;
 using System.Collections.Generic;
-namespace AMSModel.Criteria
+using System.Text;
+
+namespace AMSModel.Criteria.API
 {
-    public class WMReq_WorkingWQ
+    public class WMReq_UpdateBaseStoLocation
     {
-        public long? queueID;
         public string baseCode;
         public string warehouseCode;
         public string areaCode;
         public string locationCode;
-        public DateTime actualTime;
     }
 }

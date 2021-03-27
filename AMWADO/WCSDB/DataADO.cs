@@ -217,6 +217,16 @@ namespace ADO.WCSDB
                 keyValues.ToArray(),
                 buVO);
         }
+        public List<T> SelectBy<T>(VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                new SQLConditionCriteria[] { },
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
+        }
         public List<T> SelectBy<T>(string field, object value, VOCriteria buVO)
              where T : IEntityModel
         {

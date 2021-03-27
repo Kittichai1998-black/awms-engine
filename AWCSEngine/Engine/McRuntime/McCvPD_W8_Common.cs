@@ -6,6 +6,7 @@ using AWCSEngine.Engine.CommonEngine;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace AWCSEngine.Engine.McRuntime
 {
@@ -34,13 +35,26 @@ namespace AWCSEngine.Engine.McRuntime
                 //0.1 สแกน QRCode สินค้า รอตรวจสอบ
                 if(this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.StepTxt != "0.1")
                 {
-                    new RegisterBaseObj_byQrProd_InboundComm(this.LogRefID, this.BuVO)
-                        .Execute(new RegisterBaseObj_byQrProd_InboundComm.TReq()
-                        {
-                            LabelData = this.McObj.DV_Pre_BarProd,
-                            McObject_ID = this.ID
-                        });
-                    this.StepTxt = "0.1";
+                    try
+                    {
+                        this.BuVO.SqlTransaction_Begin();
+                        var bObj =
+                            new Comm_CreateBaseObjTemp_byQrProd(this.LogRefID, this.BuVO)
+                            .Execute(new Comm_CreateBaseObjTemp_byQrProd.TReq()
+                            {
+                                LabelData = this.McObj.DV_Pre_BarProd,
+                                McObject_ID = this.ID
+                            });
+                        this.StepTxt = "0.1";
+                        this.BuVO.SqlTransaction_Commit();
+                    }
+                    catch(Exception ex)
+                    {
+                        this.BuVO.SqlTransaction_Rollback();
+                        this.Logger.LogError(ex.Message);
+                        this.Logger.LogError(ex.StackTrace);
+                        Thread.Sleep(5000);
+                    }
                 }
             }
             else

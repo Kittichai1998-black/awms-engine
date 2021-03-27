@@ -136,7 +136,8 @@ namespace AWCSEngine.Engine.McRuntime
             }
             else if (this.McObj.EventStatus == McObjectEventStatus.IDEL)
             {
-                this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " + parameters==null?string.Empty: parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&'));
+                this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " +
+                    (parameters == null ? string.Empty : parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&')));
                 DisplayController.Events_Write(this.Code + " > [CMD] Post = " + (int)comm);
                 this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
                 this.McObj.CommandAction_Seq = 1;

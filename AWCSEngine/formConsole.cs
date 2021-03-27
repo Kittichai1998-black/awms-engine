@@ -2,10 +2,12 @@
 using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
 using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.PropertyFile;
 using AWCSEngine.Controller;
+using AWCSEngine.Engine.CommonEngine;
 using AWCSEngine.Util;
 using AWCSEngine.Worker;
 using System;
@@ -40,7 +42,6 @@ namespace AWCSEngine
             this.lisDisplayCommand.Items.Add("-------------------------------------");
 
 
-            this.lisDisplayDevices.Items.Add("<<== Devices ==>>");
             this.lisDisplayMcLists.Items.Add("<<== Machines ==>>");
             this.lisDisplayEvents.Items.Add("<<== Events ==>>");
 
@@ -100,6 +101,19 @@ namespace AWCSEngine
                 this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connected!!!"));
 
                 this.lisDisplayEvents_Add("---------------------- System Online ----------------------");
+
+
+                if (this.IsHandleCreated)
+                {
+                    this.chkMcList.Invoke((MethodInvoker)(() => {
+                        Controller.McRuntimeController.GetInstant().ListMcRuntime()
+                        .ForEach(x =>
+                        {
+                            this.chkMcList.Items.Add(x.Code);
+                            this.chkMcList.SetItemChecked(this.chkMcList.Items.Count - 1, true);
+                        });
+                    }));
+                }
             }
             catch (Exception ex)
             {
@@ -114,23 +128,27 @@ namespace AWCSEngine
                 if (this.IsHandleCreated)
                 {
                     if (this.ping_clock == '⬤') this.ping_clock = ' ';
-                    else if (this.ping_clock == ' ') this.ping_clock = '⬤';
+                    else this.ping_clock = '⬤';
                     this.lisDisplayMcLists.Invoke((MethodInvoker)(() => {
-                        this.lisDisplayMcLists.Items[0] = "<<== Machines ==>> " + this.ping_clock;
-                        foreach (var msg in DisplayController.McLists_Reading())
+                        this.lisDisplayMcLists.Items.Clear();
+                        this.lisDisplayMcLists.Items.Add("<<== Machines ==>> " + this.ping_clock);
+                        foreach (string mcCode in this.chkMcList.CheckedItems)
                         {
-                            if (this.lisDisplayMcLists.Items.Count <= msg.Key + 1)
-                                for (int i = 0; i <= (msg.Key + 1) - this.lisDisplayMcLists.Items.Count; i++)
-                                    this.lisDisplayMcLists.Items.Add(string.Empty);
-
-                            this.lisDisplayMcLists.Items[msg.Key+1] = msg.Value;
-                            int visibleItems = lisDisplayMcLists.ClientSize.Height / lisDisplayMcLists.ItemHeight;
-                            lisDisplayMcLists.TopIndex = Math.Max(lisDisplayMcLists.Items.Count - visibleItems + 1, 0);
+                            var msg = DisplayController.McLists_Message(mcCode);
+                            var msg2 = msg.Split("\n");
+                            for(int i = 0; i < 4; i++)
+                            {
+                                if (i < msg2.Length)
+                                    this.lisDisplayMcLists.Items.Add(msg2[i]);
+                                else
+                                    this.lisDisplayCommand.Items.Add(string.Empty);
+                            }
+                            this.lisDisplayMcLists.Items.Add(string.Empty);
                         }
                     }));
                     this.lisDisplayEvents.Invoke((MethodInvoker)(() => {
                         this.lisDisplayEvents.Items[0] = "<<== Events ==>> " + ping_clock;
-                        while (this.lisDisplayEvents.Items.Count > 27)
+                        while (this.lisDisplayEvents.Items.Count > 100)
                             this.lisDisplayEvents.Items.RemoveAt(1);
                         foreach (var msg in DisplayController.Events_Reading())
                         {
@@ -138,33 +156,6 @@ namespace AWCSEngine
                         }
                         int visibleItems = lisDisplayEvents.ClientSize.Height / lisDisplayEvents.ItemHeight;
                         lisDisplayEvents.TopIndex = Math.Max(lisDisplayEvents.Items.Count - visibleItems + 1, 0);
-                    }));
-                    this.lisDisplayDevices.Invoke((MethodInvoker)(() =>
-                    {
-                        this.lisDisplayDevices.Items.Clear();
-                        this.lisDisplayDevices.Items.Add("<<== Devices ==>> " + ping_clock);
-                        if (McCode_ReadDeives.Count > 0)
-                        {
-                            foreach(var mcCode in this.McCode_ReadDeives)
-                            {
-                                var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(mcCode);
-                                if (mc == null)
-                                {
-                                    this.lisDisplayDevices.Items.Add(this.McCode_ReadDeives + " : (Not Found.)");
-                                }
-                                else
-                                {
-                                    this.lisDisplayDevices.Items.Add("--------------------");
-                                    this.lisDisplayDevices.Items.Add("@" + mcCode.ToUpper() + " : " +
-                                        (mc.McObj.IsOnline ? "Online." : "Offile!") + " / " +
-                                        (mc.McObj.IsAuto ? "Auto" : "Manual"));
-                                    this.lisDisplayDevices.Items.AddRange(mc.DeviceLogs.OrderBy(x => x).ToArray());
-                                    this.lisDisplayDevices.Items.Add("");
-                                }
-                            }
-                            int visibleItems = lisDisplayDevices.ClientSize.Height / lisDisplayDevices.ItemHeight;
-                            lisDisplayDevices.TopIndex = Math.Max(lisDisplayDevices.Items.Count - visibleItems + 1, 0);
-                        }
                     }));
 
                 }
@@ -213,7 +204,7 @@ namespace AWCSEngine
                 string[] comm = command.Split(' ');
                 if (command.StartsWith("/"))
                 {
-                    CommandCallFunction(command);
+                    new Comm_ConsoleFunction(string.Empty,new VOCriteria()).Execute(comm);
                     return;
                 }
                 else
@@ -222,20 +213,13 @@ namespace AWCSEngine
                     {
                         if (comm.Length == 1)
                         {
-                            if (this.McCode_ReadDeives == null) this.McCode_ReadDeives = new List<string>();
-                            this.McCode_ReadDeives.Insert(0,comm[0]);
-                            if (this.McCode_ReadDeives.Count > 2)
-                                this.McCode_ReadDeives.RemoveAt(2);
-                        }
-                        else if (comm[1].ToLower().In("auto", "online", "view"))
-                        {
-                            if (comm[1].ToLower() == "auto")
+                            if (this.IsHandleCreated)
                             {
-                                McRuntimeController.GetInstant().GetMcRuntime(comm[0]).SetAuto(comm[2].ToLower().In("1", "true", "y"));
-                            }
-                            else if (comm[1].ToLower() == "online")
-                            {
-                                McRuntimeController.GetInstant().GetMcRuntime(comm[0]).SetOnline(comm[2].ToLower().In("1", "true", "y"));
+                                this.chkMcList.Invoke((MethodInvoker)(() => {
+                                    var index = this.chkMcList.Items.IndexOf(comm[0].ToUpper());
+                                    if (index != -1)
+                                        this.chkMcList.SetItemChecked(index, !this.chkMcList.GetItemChecked(index));
+                                }));
                             }
                         }
                         else
@@ -307,130 +291,7 @@ namespace AWCSEngine
 
             }
         }
-        private void CommandCallTestCase(string caseNo)
-        {
-            switch (caseNo)
-            {
-                // case "1":CommandCallFunction($"/mcwork new {new Random().Next(0,9999999):0000000000} 002048002");
-                default: return;
-            }
-        }
-        private void CommandCallFunction(string _comm)
-        {
-            string[] comm = _comm.Trim().Split(" ");
-
-            if (comm[0].ToLower().Equals("/test"))
-            {
-                CommandCallTestCase(_comm);
-            }
-            else if (comm[0].ToLower().Equals("/loadstatic"))
-            {
-                StaticValueManager.GetInstant().LoadAll();
-            }
-            else if (comm[0].ToLower().Equals("/location"))
-            {
-                var mc = McRuntimeController.GetInstant().GetMcRuntime(comm[1]);
-                var loc = StaticValueManager.GetInstant().GetLocation(comm[2]);
-                if (loc == null)
-                    this.lisDisplayCommand.Items.Add("Location Not Found!");
-                else if (mc == null)
-                    this.lisDisplayCommand.Items.Add("McRuntime Not Found!");
-                else
-                {
-                    mc.McObj.Cur_Location_ID = loc.ID.Value;
-                }
-            }
-            else if (comm[0].ToLower().Equals("/baseobj"))
-            {
-                if (comm[1].ToLower().Equals("new"))
-                {
-                    string baseCode = comm[2];
-                    string locCode = comm[3];
-                    string evtStatus = comm.Length < 5 ? "idle" : comm[4];
-
-                    var loc = StaticValueManager.GetInstant().GetLocation(locCode);
-                    var mc = DataADO.GetInstant().SelectBy<act_McObject>("Cur_Location_ID", loc.ID.Value, null).FirstOrDefault();
-
-                    ADO.WCSDB.DataADO.GetInstant().Insert<act_BaseObject>(new act_BaseObject()
-                    {
-                        Code = baseCode,
-                        Area_ID = loc.Area_ID,
-                        Location_ID = loc.ID.Value,
-                        LabelData = null,
-                        Model = null,
-                        McObject_ID = mc.ID,
-                        SkuCode = "TEST01",
-                        SkuName = "TEST01",
-                        SkuQty = 1000,
-                        SkuUnit = "kg",
-                        WeiKG = 1000,
-                        Status = EntityStatus.ACTIVE,
-                        Options = null,
-                        EventStatus = evtStatus.ToLower() == "idle" ? BaseObjectEventStatus.IDLE :
-                                        evtStatus.ToLower() == "move" ? BaseObjectEventStatus.MOVE :
-                                         BaseObjectEventStatus.TEMP
-                    }, null);
-                }
-            }
-            else if (comm[0].ToLower().Equals("/mcwork"))
-            {
-                if (comm[1].ToLower().Equals("test-inbound"))
-                {
-                    string mcCode = comm[2];
-                    string desCode = comm[3];
-                    string baseCode = comm[4];
-                    var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(mcCode);
-
-                    ADO.WCSDB.DataADO.GetInstant().Insert<act_BaseObject>(new act_BaseObject()
-                    {
-                        Code = baseCode,
-                        Area_ID = mc.Cur_Area.ID.Value,
-                        Location_ID = mc.Cur_Location.ID.Value,
-                        LabelData = null,
-                        Model = null,
-                        McObject_ID = mc.ID,
-                        SkuCode = "TEST01",
-                        SkuName = "TEST01",
-                        SkuQty = 1000,
-                        SkuUnit = "kg",
-                        WeiKG = 1000,
-                        Status = EntityStatus.ACTIVE,
-                        Options = null,
-                        EventStatus = BaseObjectEventStatus.IDLE
-                    }, null);
-                    var baseObj = BaseObjectADO.GetInstant().GetByCode(baseCode, null);
-                    var desLoc = StaticValueManager.GetInstant().GetLocation(desCode);
-                    //var treeRouting = LocationUtil.GetLocationRouteTree(mc.Cur_Location.ID.Value, desLoc.Area_ID, desLoc.ID);
-                    DataADO.GetInstant().Insert<act_McWork>(new act_McWork()
-                    {
-                        Priority = PriorityType.NORMAL,
-                        SeqGroup = 0,
-                        SeqItem = 0,
-                        BaseObject_ID = baseObj.ID.Value,
-                        WMS_WorkQueue_ID = null,
-                        Cur_McObject_ID = null,
-                        Rec_McObject_ID = mc.ID,
-                        Cur_Warehouse_ID = mc.Cur_Area.Warehouse_ID,
-                        Cur_Area_ID = mc.Cur_Area.ID.Value,
-                        Cur_Location_ID = mc.Cur_Location.ID.Value,
-                        Sou_Area_ID = mc.Cur_Area.ID.Value,
-                        Sou_Location_ID = mc.Cur_Location.ID.Value,
-                        Des_Area_ID = desLoc.Area_ID,
-                        Des_Location_ID = desLoc.ID.Value,
-                        StartTime = DateTime.Now,
-                        ActualTime = DateTime.Now,
-                        EndTime = null,
-                        TreeRoute = "",//treeRouting.Json(),
-                        EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
-                        Status = EntityStatus.ACTIVE
-                    }, null);
-
-
-                    mc.McWork_0_Reload();
-                }
-            }
-
-        }
+        
 
         private void menuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -463,6 +324,20 @@ namespace AWCSEngine
             string[] txt = this.lisDisplayCommand.Text.Split('>', 2);
             if (txt.Length == 2)
                 this.txtCommand.Text = txt[1].Trim();
+        }
+
+        private void lisDisplayMcLists_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ChkMcList_Click(object sender, System.EventArgs e)
+        {
+            if(this.chkMcList.SelectedIndex >= 0)
+            {
+                var index = this.chkMcList.SelectedIndex;
+                this.chkMcList.SetItemChecked(index, true);
+            }
         }
     }
 }

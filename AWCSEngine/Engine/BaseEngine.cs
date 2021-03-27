@@ -28,25 +28,26 @@ namespace AWCSEngine.Engine
         public ResponseCriteria<TRes> Execute(TReq request)
         {
             ResponseCriteria<TRes> res = new ResponseCriteria<TRes>();
+            res.result = new ResponseCriteria<TRes>.Result();
             try
             {
                 res.data = this.ExecuteChild(request);
-                res.status = 1;
-                res.message = "SUCCESS";
-                res.trace = "";
+                res.result.status = 1;
+                res.result.message = "SUCCESS";
+                res.result.trace = "";
             }
             catch (AMWException ex)
             {
-                res.status = 0;
-                res.message = ex.Message;
-                res.trace = ex.StackTrace;
+                res.result.status = 0;
+                res.result.message = ex.Message;
+                res.result.trace = ex.StackTrace;
                 throw;
             }
             catch (Exception ex)
             {
-                res.status = 0;
-                res.message = ex.Message;
-                res.trace = ex.StackTrace;
+                res.result.status = 0;
+                res.result.message = ex.Message;
+                res.result.trace = ex.StackTrace;
                 this.Logger.LogError(ex.StackTrace);
                 throw new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
             }

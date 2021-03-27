@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AWMSEngine.Engine;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Constant.EnumConst;
 using AMWUtil.Logger;
 
 namespace ProjectGCL.Engine.Document

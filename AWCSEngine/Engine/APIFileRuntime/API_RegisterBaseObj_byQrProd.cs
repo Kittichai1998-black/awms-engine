@@ -12,7 +12,7 @@ using System.Text;
 
 namespace AWCSEngine.Engine.APIFileRuntime
 {
-    public class RegisterBaseObj_byQrProd_InboundAPI : BaseAPIFileRuntime
+    public class API_RegisterBaseObj_byQrProd : BaseAPIFileRuntime
     {
         public class TReq
         {
@@ -26,7 +26,7 @@ namespace AWCSEngine.Engine.APIFileRuntime
             public string ResultMessage;
         }
 
-        public RegisterBaseObj_byQrProd_InboundAPI(string logref) : base(logref)
+        public API_RegisterBaseObj_byQrProd(string logref) : base(logref)
         {
         }
 
@@ -59,12 +59,12 @@ namespace AWCSEngine.Engine.APIFileRuntime
 
 
             var mcObj = ADO.WCSDB.McObjectADO.GetInstant().GetByMstCode(req.GateCode,this.BuVO);
-            var bo = new RegisterBaseObj_byQrProd_InboundComm(this.LogRefID, this.BuVO).Execute(new RegisterBaseObj_byQrProd_InboundComm.TReq()
+            var bo = new Comm_CreateBaseObjTemp_byQrProd(this.LogRefID, this.BuVO).Execute(new Comm_CreateBaseObjTemp_byQrProd.TReq()
             {
                 McObject_ID = mcObj.ID.Value,
                 LabelData = req.QR.Json()
             });
-            if (bo.status == 1)
+            if (bo.result.status == 1)
             {
                 if (bo.data.Status == EntityStatus.ACTIVE)
                     result_msg = "Inserted.";
@@ -73,7 +73,7 @@ namespace AWCSEngine.Engine.APIFileRuntime
             }
             else
             {
-                throw new Exception(bo.message);
+                throw new Exception(bo.result.message);
             }
 
             return true;

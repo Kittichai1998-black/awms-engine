@@ -1,4 +1,6 @@
 ﻿
+using System.Drawing;
+
 namespace AWCSEngine
 {
     partial class formConsole
@@ -31,22 +33,35 @@ namespace AWCSEngine
         {
             this.txtCommand = new System.Windows.Forms.TextBox();
             this.wkDisplay = new System.ComponentModel.BackgroundWorker();
-            this.lisDisplayCommand = new System.Windows.Forms.ListBox();
             this.menuMain = new System.Windows.Forms.MenuStrip();
             this.menuCommand = new System.Windows.Forms.ToolStripMenuItem();
-            this.lisDisplayMcLists = new System.Windows.Forms.ListBox();
-            this.lisDisplayEvents = new System.Windows.Forms.ListBox();
-            this.lisDisplayDevices = new System.Windows.Forms.ListBox();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.menuStorage = new System.Windows.Forms.ToolStripMenuItem();
+            this.lisDisplayEvents = new System.Windows.Forms.ListBox();
+            this.lisDisplayCommand = new System.Windows.Forms.ListBox();
+            this.lisDisplayMcLists = new System.Windows.Forms.ListBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.chkMcList = new System.Windows.Forms.CheckedListBox();
             this.menuMain.SuspendLayout();
-            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.Panel2.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtCommand
             // 
             this.txtCommand.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtCommand.Location = new System.Drawing.Point(0, 549);
+            this.txtCommand.Location = new System.Drawing.Point(0, 145);
             this.txtCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCommand.Name = "txtCommand";
             this.txtCommand.Size = new System.Drawing.Size(1260, 31);
@@ -58,22 +73,6 @@ namespace AWCSEngine
             // 
             this.wkDisplay.DoWork += new System.ComponentModel.DoWorkEventHandler(this.wkDisplay_DoWork);
             this.wkDisplay.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.wkDisplay_ProgressChanged);
-            // 
-            // lisDisplayCommand
-            // 
-            this.lisDisplayCommand.BackColor = System.Drawing.SystemColors.InfoText;
-            this.lisDisplayCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lisDisplayCommand.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lisDisplayCommand.ForeColor = System.Drawing.Color.LightBlue;
-            this.lisDisplayCommand.FormattingEnabled = true;
-            this.lisDisplayCommand.ItemHeight = 25;
-            this.lisDisplayCommand.Location = new System.Drawing.Point(0, 339);
-            this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 177);
-            this.lisDisplayCommand.TabIndex = 2;
-            this.lisDisplayCommand.Click += new System.EventHandler(this.lisDisplayCommand_Click_1);
-            this.lisDisplayCommand.SelectedIndexChanged += new System.EventHandler(this.lisDisplayCommand_SelectedIndexChanged);
             // 
             // menuMain
             // 
@@ -94,19 +93,11 @@ namespace AWCSEngine
             this.menuCommand.Size = new System.Drawing.Size(112, 29);
             this.menuCommand.Text = "Command";
             // 
-            // lisDisplayMcLists
+            // menuStorage
             // 
-            this.lisDisplayMcLists.BackColor = System.Drawing.SystemColors.ControlText;
-            this.lisDisplayMcLists.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lisDisplayMcLists.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lisDisplayMcLists.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.lisDisplayMcLists.FormattingEnabled = true;
-            this.lisDisplayMcLists.ItemHeight = 25;
-            this.lisDisplayMcLists.Location = new System.Drawing.Point(697, 0);
-            this.lisDisplayMcLists.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.lisDisplayMcLists.Name = "lisDisplayMcLists";
-            this.lisDisplayMcLists.Size = new System.Drawing.Size(563, 339);
-            this.lisDisplayMcLists.TabIndex = 5;
+            this.menuStorage.Name = "menuStorage";
+            this.menuStorage.Size = new System.Drawing.Size(89, 29);
+            this.menuStorage.Text = "Storage";
             // 
             // lisDisplayEvents
             // 
@@ -119,40 +110,108 @@ namespace AWCSEngine
             this.lisDisplayEvents.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEvents.Name = "lisDisplayEvents";
-            this.lisDisplayEvents.Size = new System.Drawing.Size(1260, 516);
+            this.lisDisplayEvents.Size = new System.Drawing.Size(606, 367);
             this.lisDisplayEvents.TabIndex = 6;
             // 
-            // lisDisplayDevices
+            // lisDisplayCommand
             // 
-            this.lisDisplayDevices.BackColor = System.Drawing.SystemColors.InfoText;
-            this.lisDisplayDevices.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lisDisplayDevices.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lisDisplayDevices.ForeColor = System.Drawing.Color.Yellow;
-            this.lisDisplayDevices.FormattingEnabled = true;
-            this.lisDisplayDevices.ItemHeight = 25;
-            this.lisDisplayDevices.Location = new System.Drawing.Point(459, 0);
-            this.lisDisplayDevices.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.lisDisplayDevices.Name = "lisDisplayDevices";
-            this.lisDisplayDevices.Size = new System.Drawing.Size(208, 339);
-            this.lisDisplayDevices.TabIndex = 7;
+            this.lisDisplayCommand.BackColor = System.Drawing.SystemColors.InfoText;
+            this.lisDisplayCommand.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lisDisplayCommand.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lisDisplayCommand.ForeColor = System.Drawing.Color.LightBlue;
+            this.lisDisplayCommand.FormattingEnabled = true;
+            this.lisDisplayCommand.ItemHeight = 25;
+            this.lisDisplayCommand.Location = new System.Drawing.Point(0, 0);
+            this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.lisDisplayCommand.Name = "lisDisplayCommand";
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 176);
+            this.lisDisplayCommand.TabIndex = 2;
+            this.lisDisplayCommand.Click += new System.EventHandler(this.lisDisplayCommand_Click_1);
+            this.lisDisplayCommand.SelectedIndexChanged += new System.EventHandler(this.lisDisplayCommand_SelectedIndexChanged);
             // 
-            // panel2
+            // lisDisplayMcLists
             // 
-            this.panel2.Controls.Add(this.lisDisplayDevices);
-            this.panel2.Controls.Add(this.lisDisplayMcLists);
-            this.panel2.Controls.Add(this.lisDisplayCommand);
-            this.panel2.Controls.Add(this.lisDisplayEvents);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 33);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1260, 516);
-            this.panel2.TabIndex = 9;
+            this.lisDisplayMcLists.BackColor = System.Drawing.SystemColors.ControlText;
+            this.lisDisplayMcLists.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lisDisplayMcLists.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lisDisplayMcLists.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.lisDisplayMcLists.FormattingEnabled = true;
+            this.lisDisplayMcLists.ItemHeight = 25;
+            this.lisDisplayMcLists.Location = new System.Drawing.Point(0, 0);
+            this.lisDisplayMcLists.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.lisDisplayMcLists.Name = "lisDisplayMcLists";
+            this.lisDisplayMcLists.Size = new System.Drawing.Size(496, 367);
+            this.lisDisplayMcLists.TabIndex = 5;
+            this.lisDisplayMcLists.SelectedIndexChanged += new System.EventHandler(this.lisDisplayMcLists_SelectedIndexChanged);
             // 
-            // menuStorage
+            // splitContainer1
             // 
-            this.menuStorage.Name = "menuStorage";
-            this.menuStorage.Size = new System.Drawing.Size(89, 29);
-            this.menuStorage.Text = "Storage";
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 33);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.txtCommand);
+            this.splitContainer1.Panel2.Controls.Add(this.lisDisplayCommand);
+            this.splitContainer1.Size = new System.Drawing.Size(1260, 547);
+            this.splitContainer1.SplitterDistance = 367;
+            this.splitContainer1.TabIndex = 7;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.splitContainer3);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.lisDisplayEvents);
+            this.splitContainer2.Size = new System.Drawing.Size(1260, 367);
+            this.splitContainer2.SplitterDistance = 650;
+            this.splitContainer2.TabIndex = 7;
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer3.IsSplitterFixed = true;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.chkMcList);
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.lisDisplayMcLists);
+            this.splitContainer3.Size = new System.Drawing.Size(650, 367);
+            this.splitContainer3.SplitterDistance = 150;
+            this.splitContainer3.TabIndex = 8;
+            // 
+            // chkMcList
+            // 
+            this.chkMcList.BackColor = System.Drawing.Color.Black;
+            this.chkMcList.CheckOnClick = true;
+            this.chkMcList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chkMcList.ForeColor = System.Drawing.Color.Yellow;
+            this.chkMcList.FormattingEnabled = true;
+            this.chkMcList.Location = new System.Drawing.Point(0, 0);
+            this.chkMcList.Name = "chkMcList";
+            this.chkMcList.Size = new System.Drawing.Size(150, 367);
+            this.chkMcList.TabIndex = 7;
             // 
             // formConsole
             // 
@@ -160,8 +219,7 @@ namespace AWCSEngine
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(1260, 580);
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.txtCommand);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuMain);
             this.MainMenuStrip = this.menuMain;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -173,23 +231,38 @@ namespace AWCSEngine
             this.Load += new System.EventHandler(this.formAdminConsole_Load);
             this.menuMain.ResumeLayout(false);
             this.menuMain.PerformLayout();
-            this.panel2.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
+
         #endregion
 
         private System.Windows.Forms.TextBox txtCommand;
         private System.ComponentModel.BackgroundWorker wkDisplay;
-        private System.Windows.Forms.ListBox lisDisplayCommand;
         private System.Windows.Forms.MenuStrip menuMain;
         private System.Windows.Forms.ToolStripMenuItem menuConfigCommand;
-        private System.Windows.Forms.ListBox lisDisplayMcLists;
-        private System.Windows.Forms.ListBox lisDisplayEvents;
-        private System.Windows.Forms.ListBox lisDisplayDevices;
-        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ToolStripMenuItem menuCommand;
         private System.Windows.Forms.ToolStripMenuItem menuStorage;
+        private System.Windows.Forms.ListBox lisDisplayEvents;
+        private System.Windows.Forms.ListBox lisDisplayCommand;
+        private System.Windows.Forms.ListBox lisDisplayMcLists;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer splitContainer3;
+        private System.Windows.Forms.CheckedListBox chkMcList;
     }
 }

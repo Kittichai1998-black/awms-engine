@@ -79,8 +79,11 @@ namespace AMWUtil.Exception
         V0_SET_STATUS_FAIL,
         [AMWExceptionCodeAttribute("V0124", DefaultMessage = "การรรับงานต่อไม่ถูกต้อง ไม่สามารถทำคำสั่ง '{0}' ได้")]
         V0_MC_CANT_WORKACTION,
+        [AMWExceptionCodeAttribute("V0125", DefaultMessage = "พาเลทเลที่ {0} มีสถานะไม่พร้อมใช้งาน(TEMP status)")]
+        V0_BASE_NOT_TEMP_ESTATUS,
 
-
+        [AMWExceptionCodeAttribute("V0126", DefaultMessage = "ไม่ได้ตั้งค่า Location เครื่องจักร์ {0}")]
+        V0_MC_LOCATION_NOT_SET,
 
 
 

@@ -26,7 +26,7 @@ namespace AWCSEngine.Controller
                 }
             }
         }
-        public static List<KeyValuePair<int,string>> McLists_Reading()
+        public static List<KeyValuePair<int, string>> McLists_Reading()
         {
             lock (_Lock_McLists)
             {
@@ -41,6 +41,16 @@ namespace AWCSEngine.Controller
                     }
                 }
                 return res;
+            }
+        }
+        public static string McLists_Message(string mcCode)
+        {
+            lock (_Lock_McLists)
+            {
+                var mcMsg = _McLists.FirstOrDefault(x=>x.StartsWith(mcCode+","));
+                if (mcMsg == null) return string.Empty;
+                var mcMsg2 = mcMsg.Split(",");
+                return mcMsg2[2];
             }
         }
 

@@ -126,8 +126,7 @@ namespace AWCSEngine.Engine.McRuntime
                             _mcShuFree.PostCommand(McCommandType.CM_60, "1.2");
                         }
                         //1.3 รถว่าง รถถูกปิด / สั่งเครนเตรียมย้าย
-                        else if (_mcShuFree.EventStatus == McObjectEventStatus.IDEL &&
-                        _mcShuFree.McObj.DV_Pre_Status == 82 && _mcShuFree.McObj.DV_Pre_Zone == 1 && StepTxt != "1.3")
+                        else if (_mcShuFree.McObj.DV_Pre_Status == 82 && _mcShuFree.McObj.DV_Pre_Zone == 1 && StepTxt != "1.3")
                         {
                             var _srm_souLocCode = _mcShuFree.Cur_Location.Code.Get2<int>() % 1000000;
                             _srm_souLocCode += 2000000;
@@ -143,7 +142,8 @@ namespace AWCSEngine.Engine.McRuntime
                                     if (srm.McObj.DV_Pre_Status == 99)
                                     {
                                         DisplayController.Events_Write($"{this.Code} > exec 1.3-99");
-                                        _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
+                                        var wh = this.StaticValue.GetWarehouse(srm.Cur_Area.Warehouse_ID);
+                                        _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(wh.Code,_srm_desLocCode.ToString("000000000")).ID.Value;
                                         _mcShuFreeID_wh8_in = null;
                                         this.PostCommand(McCommandType.CM_99);
                                         return LoopResult.Break;

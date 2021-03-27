@@ -36,7 +36,7 @@ namespace ADO.WCSDB
                 .SelectBy<act_BaseObject>(
                 new SQLConditionCriteria[] {
                     new SQLConditionCriteria("LabelData", labelData, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS, SQLConditionType.OR)
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, BuVO).FirstOrDefault();
             return baseObj;
         }

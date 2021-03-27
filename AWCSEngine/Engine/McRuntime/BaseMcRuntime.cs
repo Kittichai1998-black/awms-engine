@@ -21,6 +21,9 @@ namespace AWCSEngine.Engine.McRuntime
         private List<Func<BaseMcRuntime, LoopResult>> _Callback_OnChanges { get; set; }
         //private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
 
+        private McObjectEventStatus _EventStatus_Temp = (McObjectEventStatus)9999;
+        private bool IsOnChanged = true;
+
         protected abstract void OnStart();
         protected abstract void OnRun();
         protected abstract void OnEnd();
@@ -28,8 +31,37 @@ namespace AWCSEngine.Engine.McRuntime
 
         public acs_McMaster McMst { get; private set; }
         public act_McObject McObj { get; private set; }
-        public act_McWork McWork4Work { get; private set; }
-        public act_McWork McWork4Receive { get; private set; }
+
+        private string McWork4Work_BaseCode { get; set; }
+        private string McWork4Receive_BaseCode { get; set; }
+
+        private act_McWork _McWork4Work { get; set; }
+        private act_McWork _McWork4Receive { get; set; }
+        public act_McWork McWork4Work {
+            get => _McWork4Work;
+            private set
+            {
+                _McWork4Work = value;
+                if (_McWork4Work != null)
+                    this.McWork4Work_BaseCode =
+                        BaseObjectADO.GetInstant().GetByID(_McWork4Work.BaseObject_ID, this.BuVO).Code;
+                else
+                    this.McWork4Work_BaseCode = null;
+            }
+        }
+        public act_McWork McWork4Receive
+        {
+            get => _McWork4Receive;
+            private set
+            {
+                _McWork4Receive = value;
+                if (_McWork4Receive != null)
+                    this.McWork4Receive_BaseCode =
+                        BaseObjectADO.GetInstant().GetByID(_McWork4Receive.BaseObject_ID, this.BuVO).Code;
+                else
+                    this.McWork4Receive_BaseCode = null;
+            }
+        }
         //public act_BaseObject BaseObj { get; private set; }
 
         public acs_McCommand RunCmd { get => this.McObj.Command_ID == null ? null : StaticValueManager.GetInstant().GetMcCommand(this.McObj.Command_ID.Value); }
@@ -48,9 +80,25 @@ namespace AWCSEngine.Engine.McRuntime
         public long ID { get => this.McObj.ID.Value; }
         public string Code { get => this.McMst.Code; }
         public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
-        public acs_Area Cur_Area { get => StaticValueManager.GetInstant().GetArea(this.Cur_Location.Area_ID); }
-        public acs_Location Cur_Location { get => StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value); }
-        public List<string> DeviceLogs { get; set; }
+        public acs_Area Cur_Area
+        {
+            get
+            {
+                if (this.McObj.Cur_Location_ID == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_LOCATION_NOT_SET, this.Code);
+                return StaticValueManager.GetInstant().GetArea(this.Cur_Location.Area_ID);
+            }
+        }
+        public acs_Location Cur_Location
+        {
+            get
+            {
+                if (this.McObj.Cur_Location_ID == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_LOCATION_NOT_SET, this.Code);
+                return StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value);
+            }
+        }
+        //public List<string> DeviceLogs { get; set; }
         public List<string> DeviceNames { get; set; }
         public BaseMcRuntime(acs_McMaster mcMst) : base(ObjectUtil.GenUniqID())
         {
@@ -61,21 +109,12 @@ namespace AWCSEngine.Engine.McRuntime
         {
             return "McObject";
         }
-
-        /*private McObjectEventStatus EventStatus_BeforError;
-        public void PostError(string error)
+        protected void Reload()
         {
-            this.EventStatus_BeforError = this.McObj.EventStatus;
-            this.McObj.EventStatus = McObjectEventStatus.ERROR;
+            this.StaticValue.LoadMcMaster();
+            this.Initial();
+            this.StepTxt = string.Empty;
         }
-        public void ClearERROR_PostIDEL()
-        {
-            this.McObj.EventStatus = McObjectEventStatus.IDEL;
-        }
-        public void ClearERROR_PostTryAgain()
-        {
-            this.McObj.EventStatus = McObjectEventStatus.IDEL;
-        }*/
 
         public void Initial()
         {
@@ -123,6 +162,8 @@ namespace AWCSEngine.Engine.McRuntime
             this.OnStart();
 
             DisplayController.Events_Write($"{this.Code} > [START] {(this.McObj.IsOnline ? "Online" : "Offline")} | {(this.McObj.IsAuto?"Auto":"Manual")}");
+
+            this._5_MessageLog_OnRun();
         }
 
 
@@ -160,8 +201,8 @@ namespace AWCSEngine.Engine.McRuntime
                             this._2_ExecuteChild_OnRun();
                         }
                         this._3_Write_Cmd2Plc_OnRun();
-                        this._4_DBLog_OnRun();
                     }
+                    this._4_DBLog_OnRun();
                     this._5_MessageLog_OnRun();
                 }
                 else
@@ -198,21 +239,21 @@ namespace AWCSEngine.Engine.McRuntime
                     return;
 
                 deviceKey = deviceKey.ToUpper();
-                object deviceVal =  t_McObj.GetField("DV_" + name).GetValue(McObj); 
-                if (deviceVal is string)
+                var deviceType =  t_McObj.GetField("DV_" + name).FieldType; 
+                if (deviceType == typeof(string))
                 {
                     var valWord = t_McMst.GetField("DW_" + name).GetValue(McMst).Get2<int>();
                     t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDeviceString(deviceKey, valWord));
                 }
-                else if (deviceVal is short)
+                else if (deviceType == typeof(short))
                     t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<short>(deviceKey));
-                else if (deviceVal is int)
+                else if (deviceType == typeof(int))
                     t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<int>(deviceKey));
-                else if (deviceVal is long)
+                else if (deviceType == typeof(long))
                     t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<long>(deviceKey));
-                else if (deviceVal is float)
+                else if (deviceType == typeof(float))
                     t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<float>(deviceKey));
-                else if (deviceVal is double)
+                else if (deviceType == typeof(double))
                     t_McObj.GetField("DV_" + name).SetValue(McObj, this.PlcADO.GetDevice<double>(deviceKey));
             });
 
@@ -332,7 +373,6 @@ namespace AWCSEngine.Engine.McRuntime
             }
         }
 
-        private McObjectEventStatus _EventStatus_Temp = (McObjectEventStatus)9999;
         private void _4_DBLog_OnRun()
         {
             try
@@ -341,14 +381,16 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     DataADO.GetInstant().UpdateBy<act_McObject>(this.McObj, this.BuVO);
                     this._McObj_TMP = this.McObj.Clone();
+                    this.IsOnChanged = true;
                 }
-                if(this.McWork4Work != null &&
+                if (this.McWork4Work != null &&
                     this.McObj.Cur_Location_ID != this.McWork4Work.Cur_Location_ID)
                 {
                     this.McWork4Work.Cur_Location_ID = this.McObj.Cur_Location_ID.Value;
                     this.McWork4Work.Cur_Warehouse_ID = this.Cur_Area.ID.Value;
                     this.McWork4Work.Cur_Area_ID = this.Cur_Area.Warehouse_ID;
                     DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
+                    this.IsOnChanged = true;
                 }
             }
             catch (Exception ex)
@@ -359,19 +401,33 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void _5_MessageLog_OnRun(string error = "")
         {
-            //if (error != "") { this.MessageLog = error; return; }
-            if (this.DeviceLogs == null)
-                this.DeviceLogs = new List<string>();
-            this.DeviceLogs.Clear();
+            //if (!this.IsOnChanged) { return; }
+
             if (!this.PlcADO.IsConnect)
             {
-                this.DeviceLogs.Add("!!!!!PLC Disconnect!!!!!");
-                Controller.DisplayController.McLists_Write(this.Code, this.Code + " > !!!!!PLC Disconnect!!!!!");
+                Controller.DisplayController.McLists_Write(this.Code, this.Code + " > ===PLC Disconnect!===");
             }
             else
             {
-                this.DeviceLogs.Add("LOCATION=" + this.Cur_Location.Code);
-                this.DeviceLogs.Add("ERROR=" + error);
+
+                string str_line1 =
+                    string.Format(
+                        "{0} >> {1}/{2} | CMD={3} {4} | PSTS={5} | LOC={6} | STEP={7} | {8}"
+                        , this.Code                                                 //0
+                        , this.McObj.IsAuto ? "ONLINE" : "OFFLINE"                  //1
+                        , this.McObj.IsOnline ? "AUTO" : "MANUL"                    //2
+                        , this.EventStatus.ToString().Substring(0, 4)               //3
+                        , this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0  //4
+                        , this.McObj.DV_Pre_Status                                  //5
+                        , this.Cur_Location.Code                                    //6
+                        , this.StepTxt                                              //7
+                        , error                                                     //8
+                        );
+
+
+
+                List<string> deviceLogs_1 = new List<string>();
+                List<string> deviceLogs_2 = new List<string>();
                 this.McMst.GetType().GetFields().OrderBy(x => x.Name).ToList().ForEach(x =>
                 {
                     string name = x.Name;
@@ -379,21 +435,46 @@ namespace AWCSEngine.Engine.McRuntime
                             x.GetValue(this.McMst) != null &&
                             !string.IsNullOrEmpty(x.GetValue(this.McMst).ToString()))
                     {
-                        this.DeviceLogs.Add(name.Substring(3) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)));
+                        if (name.StartsWith("S"))
+                            deviceLogs_1.Add(name.Substring(7) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)));
+                        else if (name.StartsWith("P"))
+                            deviceLogs_2.Add(name.Substring(7) + "=" + this.McObj.Get2<string>("DV_" + name.Substring(3)));
                     }
                 });
+                string str_line2_1 =
+                    string.Format(
+                        "{0} >> [Set] {1}"
+                        , new string(' ', this.Code.Length)
+                        , string.Join(" | ", deviceLogs_1.ToArray()));
+                string str_line2_2 =
+                    string.Format(
+                        "{0} >> [Pre] {1}"
+                        , new string(' ', this.Code.Length)
+                        , string.Join(" | ", deviceLogs_2.ToArray()));
 
+                string[] txt3 = new string[9];
+                txt3[0] = new string(' ', this.Code.Length);
+                if (this.McWork4Receive != null)
+                {
+                    txt3[1] = this.McWork4Receive.ID.ToString();
+                    txt3[2] = this.McWork4Receive_BaseCode;
+                    txt3[3] = StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID).Code;
+                    txt3[4] = this.McWork4Receive.EventStatus.ToString();
+                }
+                else if (this.McWork4Work != null)
+                {
+                    txt3[5] = this.McWork4Work.ID.ToString();
+                    txt3[6] = this.McWork4Work_BaseCode;
+                    txt3[7] = StaticValue.GetLocation(this.McWork4Work.Cur_Location_ID).Code;
+                    txt3[8] = this.McWork4Work.EventStatus.ToString();
+                }
 
-                    Controller.DisplayController.McLists_Write(this.Code,
-                        this.Code +
-                        $" [{this.EventStatus.ToString().Substring(0, 4)}]" +
-                        " > " +
-                        (this.McObj.IsAuto ? "A" : "M") + " | " +
-                        $"CMD={(this.RunCmd != null ? ((int)this.RunCmd.McCommandType) + " (" + this.McObj.CommandAction_Seq +")": "0 (0)")} | " +
-                        "PST=" + this.McObj.DV_Pre_Status + " | " +
-                        "LOC=" + this.Cur_Location.Code + " | " +
-                        (!string.IsNullOrWhiteSpace(error) ? "[ERR!]" : "") +
-                        (!this.PlcADO.IsConnect ? "[DIS!]" : ""));
+                string str_line3 = string.Format(
+                        "{0} >> [REC] ID={1}, PL={2}, C.LOC={3}, STS={4} // [CUR] ID={5}, PL={6}, D.LOC={7}, STS={8}"
+                        , txt3[0], txt3[1], txt3[2], txt3[3], txt3[4], txt3[5], txt3[6], txt3[7], txt3[8]);
+
+                Controller.DisplayController.McLists_Write(this.Code, $"{str_line1}\n{str_line2_1}\n{str_line2_2}\n{str_line3}");
+                this.IsOnChanged = false;
             }
             
         }

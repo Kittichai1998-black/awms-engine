@@ -5,6 +5,7 @@ using AMSModel.Criteria;
 using AMSModel.Entity;
 using System.Collections.Generic;
 using System.Linq;
+using AMSModel.Criteria.API;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -37,7 +38,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         var location = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(queueTrx.Des_AreaLocationMaster_ID, this.BuVO);
 
                         var doneWorkQueuedata = new DoneWorkQueue();
-                        doneWorkQueues = doneWorkQueuedata.Execute(this.Logger, this.BuVO, new DoneWorkQueue.TReq()
+                        doneWorkQueues = doneWorkQueuedata.Execute(this.Logger, this.BuVO, new WMReq_DoneWQ()
                         {
                             queueID = queueTrx.ID,
                             baseCode = queueTrx.StorageObject_Code,

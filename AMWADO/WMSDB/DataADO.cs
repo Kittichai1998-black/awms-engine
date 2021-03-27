@@ -348,6 +348,12 @@ namespace ADO.WMSDB
 
             return comm;
         }
+        public long? UpdateByID<T>(T data, VOCriteria buVO)
+             where T : BaseEntityID
+        {
+            if (!data.ID.HasValue) return -1;
+            return UpdateByID<T>(data.ID.Value, buVO, data.PropertieFieldKeyValuePairs().ToArray());
+        }
         public long? UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {

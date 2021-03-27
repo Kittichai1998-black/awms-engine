@@ -16,7 +16,6 @@ namespace AMSModel.Criteria.API
             public long seqItem;
             public string baseCode;
             public string desWarehouseCode;
-            public string desAreaCode;
             public string desLocationCode;
         }
     }

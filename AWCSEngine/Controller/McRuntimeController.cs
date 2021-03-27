@@ -24,15 +24,14 @@ namespace AWCSEngine.Controller
             this.McObjectList.Add(mcEng);
         }
 
-        public string[] ListMessageLog()
-        {
-            if (this.McObjectList == null) return new string[] { };
-            return this.McObjectList.Select(x => x.Code + " > " + x.DeviceLogs).ToArray();
-        }
-
         public BaseMcRuntime GetMcRuntimeByLocation(long curLocID)
         {
             return this.McObjectList.FirstOrDefault(x => x.McObj.Cur_Location_ID == curLocID);
+        }
+
+        public List<BaseMcRuntime> ListMcRuntime()
+        {
+            return this.McObjectList;
         }
         public List<BaseMcRuntime> ListMcRuntimeByLocation(long whID, int? bank, int? bay, int? lv)
         {
@@ -46,9 +45,9 @@ namespace AWCSEngine.Controller
         {
             return this.McObjectList.Where(x => x.Cur_Area.ID == areaID).ToList();
         }
-        public BaseMcRuntime GetMcRuntimeByLocation(string curLocCode)
+        public BaseMcRuntime GetMcRuntimeByLocation(string curWarehouseCode,string curLocCode)
         {
-            var curLoc = StaticValueManager.GetInstant().GetLocation(curLocCode);
+            var curLoc = StaticValueManager.GetInstant().GetLocation(curWarehouseCode,curLocCode);
             return this.McObjectList.FirstOrDefault(x => x.McObj.Cur_Location_ID == curLoc.ID);
         }
         public List<BaseMcRuntime> GetMcRuntimeByArea(long areaID)

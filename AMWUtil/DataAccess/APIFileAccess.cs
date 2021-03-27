@@ -13,7 +13,7 @@ namespace AMWUtil.DataAccess
     public static class APIFileAccess
     {
         public static TResponse WriteLocalSync<TResponse>(
-            AMWLogger logger, string partIn, string partOut, string filename, object request, int timeout = 15000)
+            AMWLogger logger, string partIn, string partOut, string filename, object request, int timeout = 60000)
         {
             partIn = Regex.Replace(partIn, "[\\/]$", "") + "/";
             partOut = Regex.Replace(partOut, "[\\/]$", "") + "/";

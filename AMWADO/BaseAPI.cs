@@ -35,8 +35,11 @@ namespace ADO
             }
             finally
             {
-                outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
-                buVO.FinalLogSendAPIEvent.AddRange(outResults);
+                if(buVO.FinalLogSendAPIEvent != null)
+                {
+                    outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
+                    buVO.FinalLogSendAPIEvent.AddRange(outResults);
+                }
             }
         }
         public T SendJson<T>(string apiConfigName, object datas, VOCriteria buVO)
@@ -61,8 +64,11 @@ namespace ADO
             }
             finally
             {
-                outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
-                buVO.FinalLogSendAPIEvent.AddRange(outResults);
+                if (buVO.FinalLogSendAPIEvent != null)
+                {
+                    outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
+                    buVO.FinalLogSendAPIEvent.AddRange(outResults);
+                }
             }
         }
         public T SendForm<T>(string apiConfigName, object datas, VOCriteria buVO)
@@ -72,5 +78,29 @@ namespace ADO
         }
 
 
+        public T SendFileJson<T>(string apiRefID, string partIn,string partOut, object datas,VOCriteria buVO)
+            where T : class, new()
+        {
+            List<HttpResultModel> outResults = new List<HttpResultModel>();
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            try
+            {
+                var res = AMWUtil.DataAccess.APIFileAccess.WriteLocalSync<T>(
+                    buVO.Logger, partIn, partOut, apiRefID + ".json", datas); ;
+                return res;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                if (buVO.FinalLogSendAPIEvent != null)
+                {
+                    //outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
+                    buVO.FinalLogSendAPIEvent.AddRange(outResults);
+                }
+            }
+        }
     }
 }

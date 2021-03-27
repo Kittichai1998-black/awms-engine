@@ -50,11 +50,11 @@ namespace ADO.WCSStaticValue
         }
         public List<acs_APIFileService> LoadAPIFileService(VOCriteria buVO = null)
         {
-            return this._APIFiles = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_APIFileService>("status", 1, buVO ?? new VOCriteria());
+            return this._APIFiles = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_APIFileService>( buVO ?? new VOCriteria());
         }
         public List<acs_WorkService> LoadWorkService(VOCriteria buVO = null)
         {
-            return this._WorkServices = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_WorkService>("status", 1, buVO ?? new VOCriteria());
+            return this._WorkServices = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_WorkService>( buVO ?? new VOCriteria());
         }
 
 

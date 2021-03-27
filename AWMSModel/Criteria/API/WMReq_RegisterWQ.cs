@@ -1,7 +1,7 @@
 ﻿using AMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
-namespace AMSModel.Criteria
+namespace AMSModel.Criteria.API
 {
     public class WMReq_RegisterWQ
     {

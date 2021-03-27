@@ -52,12 +52,16 @@ namespace AWCSEngine.Worker
         {
             var works = StaticValueManager.GetInstant().WorkServices;
             List<BaseWorkRuntime> mcWorkEngines = new List<BaseWorkRuntime>();
-            foreach(var work in works)
+            string[] ids = PropertyFileManager.GetInstant().Get("app")["runtime.active.work.ids"].Split(new char[] { ','});
+
+            foreach (var work in works)
             {
+                if (!ids.Contains(work.ID.Value.ToString())) continue;
                 var ctype = ClassType.GetClassType(work.FullClassName);
                 var exec = (BaseWorkRuntime)Activator.CreateInstance(ctype, new object[] { ObjectUtil.GenUniqID() });
                 mcWorkEngines.Add(exec);
             }
+           
             while (true)
             {
                 lock (_lock_run)

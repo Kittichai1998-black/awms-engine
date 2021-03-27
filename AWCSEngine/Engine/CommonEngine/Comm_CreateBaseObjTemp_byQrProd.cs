@@ -14,31 +14,29 @@ using System.Text;
 
 namespace AWCSEngine.Engine.CommonEngine
 {
-    public class RegisterBaseObj_byQrProd_InboundComm : BaseCommonEngine<RegisterBaseObj_byQrProd_InboundComm.TReq, act_BaseObject>
+    public class Comm_CreateBaseObjTemp_byQrProd : BaseCommonEngine<Comm_CreateBaseObjTemp_byQrProd.TReq, act_BaseObject>
     {
         public class TReq
         {
             public long McObject_ID;
             public string LabelData;
         }
-        public RegisterBaseObj_byQrProd_InboundComm(string logref,VOCriteria buVO) : base(logref,buVO)
+        public Comm_CreateBaseObjTemp_byQrProd(string logref,VOCriteria buVO) : base(logref,buVO)
         {
         }
 
-        protected override act_BaseObject ExecuteChild(RegisterBaseObj_byQrProd_InboundComm.TReq req)
+        protected override act_BaseObject ExecuteChild(Comm_CreateBaseObjTemp_byQrProd.TReq req)
         {
             var bo = BaseObjectADO.GetInstant().GetByLabel(req.LabelData,this.BuVO);
             if(bo != null)
             {
                 if (bo.EventStatus == BaseObjectEventStatus.TEMP)
                 {
-                    bo.Status = EntityStatus.REMOVE;
-                    DataADO.GetInstant().UpdateBy<act_BaseObject>(bo, this.BuVO);
                     return bo;
                 }
                 else
                 {
-                    throw new Exception("เครื่องจักรกำลังทำงาน ไม่สามารถลบพาเลทรับเข้าได้");
+                    throw new Exception("พาเลทอยู่ระหว่างรับเข้า ไม่สามารถรับเข้าซ้ำได้");
                 }
             }
 
@@ -49,7 +47,7 @@ namespace AWCSEngine.Engine.CommonEngine
             string baseCode;
             do
             {
-                baseCode = (DataADO.GetInstant().NextNum("base_no", false, this.BuVO) % (Math.Pow( 10,10))).ToString();
+                baseCode = (DataADO.GetInstant().NextNum("base_no", false, this.BuVO) % (Math.Pow( 10,10))).ToString("0000000000");
             } while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>(baseCode, this.BuVO) != null);
             
             baseObj = new act_BaseObject()

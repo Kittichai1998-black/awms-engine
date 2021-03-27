@@ -13,6 +13,7 @@ using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AMSModel.Criteria.API;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {

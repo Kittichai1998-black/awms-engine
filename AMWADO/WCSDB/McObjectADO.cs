@@ -11,6 +11,12 @@ namespace ADO.WCSDB
 {
     public class McObjectADO : BaseWCSDB<McObjectADO>
     {
+        public act_McObject GetByID(long id, VOCriteria BuVO)
+        {
+            return DataADO.GetInstant().SelectBy<act_McObject>(
+                new ListKeyValue<string, object>().Add("ID", id)
+                , BuVO).FirstOrDefault();
+        }
         public act_McObject GetByMstID(long mstID, VOCriteria BuVO)
         {
             return DataADO.GetInstant().SelectBy<act_McObject>(
