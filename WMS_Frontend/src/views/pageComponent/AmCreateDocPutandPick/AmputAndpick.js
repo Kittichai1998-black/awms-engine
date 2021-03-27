@@ -31,7 +31,7 @@ const AmputAndpick = (props) => {
                 onChangeDoument={props.onChangeDoument}
                 doctypeDocNo={props.doctypeDocNo}
                 docIDCreate={getDocID()}
-        >
+            >
             </AmHeaderputandpick>
         </div>
         <div>
@@ -48,7 +48,7 @@ const AmputAndpick = (props) => {
             docapicreate={props.docapicreate}
         >
         </AmputAndpickManage>
-        
+
     </PutandPickProvider>
 
 

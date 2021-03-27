@@ -129,7 +129,7 @@ const AmputAndpickManage = (props) => {
         })
 
         if (props.doccreateDocType === "putAway") {
-            docs.receiveItems = doc.dataSourceItemTB.map((x,i) => {
+            docs.receiveItems = doc.dataSourceItemTB.map((x, i) => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
                 x.quantity = x.DiffQty
@@ -160,7 +160,7 @@ const AmputAndpickManage = (props) => {
             })
 
         } else if (props.doccreateDocType === "picking") {
-            docs.issueItems = doc.dataSourceItemTB.map((x,i) => {
+            docs.issueItems = doc.dataSourceItemTB.map((x, i) => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
                 x.quantity = x.DiffQty
@@ -194,7 +194,7 @@ const AmputAndpickManage = (props) => {
         if (Object.keys(docs).length > countDoc) {
             //console.log(docs)
             CreateDocuments(docs)
- 
+
         }
 
     }
@@ -224,7 +224,7 @@ const AmputAndpickManage = (props) => {
                         onClick={() => {
                             OnCreateDocument();
                         }}
-                    >CREATE</AmButton>: null}
+                    >CREATE</AmButton> : null}
 
                 </div>
             </Grid>

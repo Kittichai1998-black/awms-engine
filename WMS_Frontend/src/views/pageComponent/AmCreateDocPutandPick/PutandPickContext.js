@@ -23,7 +23,7 @@ const initialState = {
     "dailogMsg": "",
     "editdata": [],
     "dataCreate": {},
-    "datasetTB" :[],
+    "datasetTB": [],
 
 }
 
@@ -53,7 +53,7 @@ const DocReducer = (state, action) => {
                 "dialogItem": action.value,
 
             }
-        }  case "OPENITEM": {
+        } case "OPENITEM": {
             return {
                 ...state,
                 "dialogItemSet": action.value,
