@@ -64,16 +64,16 @@ namespace AWCSEngine.Engine.APIFileRuntime
                 McObject_ID = mcObj.ID.Value,
                 LabelData = req.QR.Json()
             });
-            if (bo.result.status == 1)
+            if (bo._result.status == 1)
             {
-                if (bo.data.Status == EntityStatus.ACTIVE)
+                if (bo.datas.Status == EntityStatus.ACTIVE)
                     result_msg = "Inserted.";
-                else if (bo.data.Status == EntityStatus.REMOVE)
+                else if (bo.datas.Status == EntityStatus.REMOVE)
                     result_msg = "Removed.";
             }
             else
             {
-                throw new Exception(bo.result.message);
+                throw new Exception(bo._result.message);
             }
 
             return true;

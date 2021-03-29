@@ -6,8 +6,8 @@ namespace AMSModel.Criteria
 {
     public class ResponseCriteria<TRes>
     {
-        public TRes data;
-        public Result result;
+        public TRes datas;
+        public Result _result;
         public class Result
         {
             public int status;

@@ -40,7 +40,8 @@ namespace AWCSEngine.Engine.CommonEngine
             var bLocation = this.StaticValue.GetLocation(baseObj.Location_ID);
 
             var wq =
-                ADO.WCSAPI.CallWmsAPI.GetInstant().Send_RegisterWQ(new WMReq_RegisterWQ()
+                ADO.WCSAPI.CallWmsAPI.GetInstant().Send_RegisterWQ(
+                    new WMReq_RegisterWQ()
                 {
                     ioType = IOType.INBOUND,
                     actualTime = DateTime.Now,
@@ -59,7 +60,8 @@ namespace AWCSEngine.Engine.CommonEngine
                     width = null,
                     options = string.Empty,
                     barcode_pstos = new List<string>() { baseObj.Code }
-                });
+                },
+                    this.BuVO);
 
             var desWh = this.StaticValue.GetWarehouse(wq.desWarehouseCode);
             var desArea = this.StaticValue.GetArea(wq.desAreaCode);
@@ -67,7 +69,7 @@ namespace AWCSEngine.Engine.CommonEngine
             act_McWork mcQ = new act_McWork()
             {
                 ID = null,
-                QueueType = 1,//INBOUND
+                QueueType = (int)IOType.INBOUND,//INBOUND
                 WMS_WorkQueue_ID = wq.queueID,
 
                 Priority = wq.priority,
@@ -105,7 +107,7 @@ namespace AWCSEngine.Engine.CommonEngine
             baseObj.Info1 = wq.baseInfo.packInfos.First().Info1;
             baseObj.Info2 = wq.baseInfo.packInfos.First().Info2;
             baseObj.Info3 = wq.baseInfo.packInfos.First().Info3;
-            baseObj.EventStatus = BaseObjectEventStatus.MOVE;
+            baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
             baseObj.Status = EntityStatus.ACTIVE;
             ADO.WCSDB.DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMSModel.Criteria.API;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace AWMSEngine.APIService.V2.ASRS
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<WorkingWorkQueue.TReq>(this.RequestVO);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<WMReq_WorkingWQ>(this.RequestVO);
             var res = new WorkingWorkQueue().Execute(this.Logger, this.BuVO, req);
             return res;
         }

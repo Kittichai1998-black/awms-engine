@@ -6,8 +6,8 @@ namespace AMSModel.Constant.EnumConst
 {
     public enum IOType
     {
-        INBOUND = 0,
-        OUTBOUND = 1,
-        MOVE = 2
+        INBOUND = 1,
+        OUTBOUND = 2,
+        MOVE = 3
     }
 }

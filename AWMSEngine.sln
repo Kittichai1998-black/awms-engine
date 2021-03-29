@@ -59,6 +59,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectDOH", "ProjectDOH\Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest03", "UnitTest03\UnitTest03.csproj", "{F354AB72-BF0F-4B93-9C4B-9541E90EB8F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWCSWebApp", "AWCSWebApp\AWCSWebApp.csproj", "{3C2FAA9C-B6AD-4786-A098-79FEB7E968D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,10 @@ Global
 		{F354AB72-BF0F-4B93-9C4B-9541E90EB8F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F354AB72-BF0F-4B93-9C4B-9541E90EB8F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F354AB72-BF0F-4B93-9C4B-9541E90EB8F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2FAA9C-B6AD-4786-A098-79FEB7E968D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2FAA9C-B6AD-4786-A098-79FEB7E968D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2FAA9C-B6AD-4786-A098-79FEB7E968D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2FAA9C-B6AD-4786-A098-79FEB7E968D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

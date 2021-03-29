@@ -292,6 +292,17 @@ namespace ADO.WCSDB
                         {
                             commWhere = GenerateWhereString(w.whereGroups, commWhere);
                         }
+                        else if(w.operatorType == SQLOperatorType.EQUALS_OR_EMPTY)
+                        {
+                            commWhere += string.Format("{2} (@{1} is null OR @{1}='' OR {0}=@{1}) ",
+                                                        w.field,
+                                                        w.field + iField,
+                                                        iField == 0 ? string.Empty :
+                                                            w.conditionLeft == SQLConditionType.NONE ? "AND" : w.conditionLeft.Attribute<ValueAttribute>().Value);
+
+                            param.Add(w.field + iField, w.value);
+                            iField++;
+                        }
                         else
                         {
                             commWhere += string.Format("{3} {0} {1} {2} ",

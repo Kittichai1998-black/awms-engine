@@ -9,6 +9,7 @@ namespace AMSModel.Entity
 {
     public class act_McWork : BaseEntityCreateModify
     {
+        public IOType IOType;
         public int QueueType;
         public int Priority;
         public long SeqGroup;
@@ -28,6 +29,8 @@ namespace AMSModel.Entity
         public DateTime? EndTime;
         public DateTime? ActualTime;
         public string TreeRoute;
+        public string DocRef;
+        public string Remark;
         public McWorkEventStatus EventStatus;
         public List<TreeNode<long>> GetCur_TreeRoute()
         {

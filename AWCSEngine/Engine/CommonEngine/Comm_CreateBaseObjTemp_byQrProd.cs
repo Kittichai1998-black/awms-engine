@@ -55,8 +55,9 @@ namespace AWCSEngine.Engine.CommonEngine
                 ID = null,
                 Code = baseCode,
                 McObject_ID = mcRun.ID,
-                Location_ID = mcRun.Cur_Location.ID.Value,
+                Warehouse_ID = mcRun.Cur_Area.Warehouse_ID,
                 Area_ID = mcRun.Cur_Location.Area_ID,
+                Location_ID = mcRun.Cur_Location.ID.Value,
                 LabelData = req.LabelData,
                 EventStatus = BaseObjectEventStatus.TEMP,
                 Status = EntityStatus.ACTIVE

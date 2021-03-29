@@ -8,6 +8,8 @@ namespace AMSModel.Constant.EnumConst
     {
         TEMP = 90,
         IDLE = 10,
-        MOVE = 12
+        INBOUND = 11,
+        OUTBOUND = 12,
+        HOLD = 99
     }
 }

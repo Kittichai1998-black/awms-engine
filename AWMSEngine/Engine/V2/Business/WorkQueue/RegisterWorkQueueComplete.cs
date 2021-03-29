@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMSModel.Criteria.API;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -14,7 +15,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var regQueue = new RegisterWorkQueue();
             var resRegQueue = regQueue.Execute(this.Logger, this.BuVO, reqVO);
 
-            var workingData = new WorkingWorkQueue.TReq()
+            var workingData = new WMReq_WorkingWQ()
             {
                 warehouseCode = reqVO.warehouseCode,
                 actualTime = DateTime.Now,
@@ -26,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var workingQueue = new WorkingWorkQueue();
             var resWorkingQueue = workingQueue.Execute(this.Logger, this.BuVO, workingData);
 
-            var doneData = new DoneWorkQueue.TReq()
+            var doneData = new WMReq_DoneWQ()
             {
                 warehouseCode = resWorkingQueue.desWarehouseCode,
                 actualTime = DateTime.Now,

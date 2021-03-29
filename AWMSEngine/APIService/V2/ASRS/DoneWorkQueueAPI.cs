@@ -7,6 +7,7 @@ using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Business.Document;
 using ADO.WMSStaticValue;
 using AWMSEngine.Controllers.V2;
+using AMSModel.Criteria.API;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
@@ -20,7 +21,7 @@ namespace AWMSEngine.APIService.V2.ASRS
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            DoneWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneWorkQueue.TReq>(this.RequestVO);
+            WMReq_DoneWQ req = AMWUtil.Common.ObjectUtil.DynamicToModel<WMReq_DoneWQ>(this.RequestVO);
             var resDoneQ = new DoneWorkQueue().Execute(this.Logger, this.BuVO, req);
             new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = resDoneQ.docIDs });
             this.CommitTransaction();

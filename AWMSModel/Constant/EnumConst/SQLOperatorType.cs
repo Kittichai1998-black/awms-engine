@@ -9,6 +9,8 @@ namespace AMSModel.Constant.EnumConst
     {
         [ValueAttribute("=")]
         EQUALS,
+        [ValueAttribute("?")]
+        EQUALS_OR_EMPTY,
         [ValueAttribute("!=")]
         NOTEQUALS,
         [ValueAttribute("IS NULL")]
