@@ -59,18 +59,21 @@ namespace AWCSEngine.Engine.CommonEngine
                     length = null,
                     width = null,
                     options = string.Empty,
-                    barcode_pstos = new List<string>() { baseObj.Code }
+                    barcode_pstos = new List<string>() { baseObj.LabelData }
                 },
                     this.BuVO);
 
+            
             var desWh = this.StaticValue.GetWarehouse(wq.desWarehouseCode);
             var desArea = this.StaticValue.GetArea(wq.desAreaCode);
             var desLoc = this.StaticValue.GetLocation(wq.desWarehouseCode, wq.desLocationCode);
             act_McWork mcQ = new act_McWork()
             {
                 ID = null,
+                IOType = IOType.INBOUND,
                 QueueType = (int)IOType.INBOUND,//INBOUND
                 WMS_WorkQueue_ID = wq.queueID,
+                BuWork_ID = baseObj.BuWork_ID,
 
                 Priority = wq.priority,
                 SeqGroup = wq.seqGroup,

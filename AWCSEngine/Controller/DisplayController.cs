@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Logger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace AWCSEngine.Controller
 {
     public static class DisplayController
     {
+        private static AMWLogger Logger = AMWLoggerManager.GetLogger("_event","event");
         private static object _Lock_McLists = new object();
         private static List<string> _McLists = new List<string>();
         public static void McLists_Write(string mcCode, string msg)
@@ -61,6 +63,7 @@ namespace AWCSEngine.Controller
         {
             lock (_Lock_Events)
             {
+                Logger.LogInfo(msg);
                 _Events.Add(msg);
             }
         }

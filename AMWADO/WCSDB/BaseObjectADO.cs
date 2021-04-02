@@ -66,7 +66,8 @@ namespace ADO.WCSDB
             var baseObjs = ADO.WCSDB.DataADO.GetInstant()
                 .SelectBy<act_BaseObject>(
                 new SQLConditionCriteria[] {
-                    new SQLConditionCriteria("EventStatus", BaseObjectEventStatus.TEMP, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("EventStatus", BaseObjectEventStatus.TEMP, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, BuVO);
             return baseObjs;
         }

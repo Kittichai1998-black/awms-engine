@@ -10,6 +10,7 @@ using AWCSEngine.Engine.CommonEngine;
 using AWCSEngine.Engine.McRuntime;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AWCSEngine.Engine.CommonEngine
@@ -49,11 +50,17 @@ namespace AWCSEngine.Engine.CommonEngine
             {
                 baseCode = (DataADO.GetInstant().NextNum("base_no", false, this.BuVO) % (Math.Pow( 10,10))).ToString("0000000000");
             } while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>(baseCode, this.BuVO) != null);
-            
+
+            var buWork = DataADO.GetInstant().SelectBy<act_BuWork>(
+                ListKeyValue<string, object>
+                .New("status", EntityStatus.ACTIVE)
+                .Add("LabelData", req.LabelData),this.BuVO).FirstOrDefault();
             baseObj = new act_BaseObject()
             {
                 ID = null,
+                BuWork_ID = buWork==null?null: buWork.ID,
                 Code = baseCode,
+                Model = "N/A",
                 McObject_ID = mcRun.ID,
                 Warehouse_ID = mcRun.Cur_Area.Warehouse_ID,
                 Area_ID = mcRun.Cur_Location.Area_ID,

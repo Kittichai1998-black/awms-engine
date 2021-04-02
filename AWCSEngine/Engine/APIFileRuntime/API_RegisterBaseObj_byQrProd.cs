@@ -66,9 +66,9 @@ namespace AWCSEngine.Engine.APIFileRuntime
             });
             if (bo._result.status == 1)
             {
-                if (bo.datas.Status == EntityStatus.ACTIVE)
+                if (bo.response.Status == EntityStatus.ACTIVE)
                     result_msg = "Inserted.";
-                else if (bo.datas.Status == EntityStatus.REMOVE)
+                else if (bo.response.Status == EntityStatus.REMOVE)
                     result_msg = "Removed.";
             }
             else

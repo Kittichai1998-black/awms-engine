@@ -9,6 +9,8 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public class McPSCommon : BaseMcRuntime
     {
+        protected override McTypeEnum McType => McTypeEnum.CV;
+
         public McPSCommon(acs_McMaster mcMst) : base(mcMst)
         {
         }

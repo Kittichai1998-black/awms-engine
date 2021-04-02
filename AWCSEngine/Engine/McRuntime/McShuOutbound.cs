@@ -16,6 +16,8 @@ namespace AWCSEngine.Engine.McRuntime
         {
         }
 
+        protected override McTypeEnum McType => McTypeEnum.SHU;
+
         protected override void OnEnd()
         { 
             /// throw new NotImplementedException();

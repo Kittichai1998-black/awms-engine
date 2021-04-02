@@ -21,27 +21,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
         public bool PostCommand(McCommandType comm, ListKeyValue<string, object> parameters)
         {
-            return this.PostCommand(comm, null, null, () => { });
-        }
-        public bool PostCommand(McCommandType comm,
-            string stepTxt)
-        {
-            return this.PostCommand(comm, null, null, () => this.StepTxt = stepTxt);
-        }
-        public bool PostCommand(McCommandType comm, ListKeyValue<string, object> parameters,
-            string stepTxt)
-        {
-            return this.PostCommand(comm, null, null, () => this.StepTxt = stepTxt);
-        }
-        public bool PostCommand(McCommandType comm, Func<BaseMcRuntime, LoopResult> callback_OnChange,
-            string stepTxt)
-        {
-            return this.PostCommand(comm, null, callback_OnChange, () => this.StepTxt = stepTxt);
-        }
-        public bool PostCommand(McCommandType comm, ListKeyValue<string, object> parameters, Func<BaseMcRuntime, LoopResult> callback_OnChange,
-            string stepTxt)
-        {
-            return this.PostCommand(comm, null, callback_OnChange, () => this.StepTxt = stepTxt);
+            return this.PostCommand(comm, parameters, null, () => { });
         }
 
 
@@ -64,7 +44,7 @@ namespace AWCSEngine.Engine.McRuntime
         public bool PostCommand(McCommandType comm,ListKeyValue<string,object> parameters, 
             Func<BaseMcRuntime, LoopResult> callback_OnChange)
         {
-            return this.PostCommand(comm, null, callback_OnChange, ()=> { });
+            return this.PostCommand(comm, parameters, callback_OnChange, ()=> { });
         }
 
         public bool PostCommand(McCommandType comm,
@@ -80,21 +60,6 @@ namespace AWCSEngine.Engine.McRuntime
                             .Add("Set_Weigth", Set_Weigh), callback_OnIDLE, callback_CommandSetted);
         }
 
-        public bool PostCommand(McCommandType comm,
-            int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
-            string stepTxt)
-        {
-            return this.PostCommand(comm, Set_SouLoc, Set_DesLoc, Set_Unit, Set_PalletID, Set_Weigh,
-                null, () => this.StepTxt = stepTxt);
-        }
-        public bool PostCommand(McCommandType comm,
-            int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
-            Func<BaseMcRuntime, LoopResult> callback_OnIDLE,
-            string stepTxt)
-        {
-            return this.PostCommand(comm, Set_SouLoc, Set_DesLoc, Set_Unit, Set_PalletID, Set_Weigh,
-                callback_OnIDLE, () => this.StepTxt = stepTxt);
-        }
         public bool PostCommand(McCommandType comm,
             int Set_SouLoc, int Set_DesLoc, int Set_Unit, string Set_PalletID, int Set_Weigh,
             Action callback_CommandSetted)
@@ -138,13 +103,13 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " +
                     (parameters == null ? string.Empty : parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&')));
-                DisplayController.Events_Write(this.Code + " > [CMD] Post = " + (int)comm);
+                DisplayController.Events_Write(this.Code + " > [CMD] Post= "+ (int)comm+" : " + GetTextCommand((int)comm) + " // PST= "+ this.McObj.DV_Pre_Status+" : " + GetTextStatus(this.McObj.DV_Pre_Status));
                 this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
                 this.McObj.CommandAction_Seq = 1;
                 this.McObj.CommandParameter = parameters == null ? string.Empty : parameters.ToQryStr();
                 this.McObj.CommandActionTime = DateTime.Now;
                 this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
-                this.StepTxt = string.Empty;
+                //this.StepTxt = string.Empty;
                 if (callback_OnIDLE != null)
                     this._Callback_OnChanges.Add(callback_OnIDLE);
 

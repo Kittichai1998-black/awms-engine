@@ -49,7 +49,7 @@ namespace ADO.WCSPLC
         }
 
         public string PlcDeviceName { get; private set; }
-        public abstract bool IsConnect { get; }
+        public abstract bool IsConnect { get; set; }
         public abstract bool IsCheckCCONN { get; protected set; }
 
         public abstract void Open();

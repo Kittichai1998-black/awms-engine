@@ -75,13 +75,13 @@ namespace ADO.WCSAPI
                     }
                 , buVO).First();
 
-            var souLoc = StaticValueManager.GetInstant().GetLocation(req.locationCode);
-            var souArea = StaticValueManager.GetInstant().GetLocation(req.areaCode);
-            var souWh = StaticValueManager.GetInstant().GetLocation(req.warehouseCode);
+            var souLoc = StaticValueManager.GetInstant().GetLocation(req.warehouseCode,req.locationCode);
+            var souArea = StaticValueManager.GetInstant().GetArea(req.areaCode);
+            var souWh = StaticValueManager.GetInstant().GetWarehouse(req.warehouseCode);
 
             var desLoc = StaticValueManager.GetInstant().GetLocation(buWork.Des_Location_ID.Value);
-            var desArea = StaticValueManager.GetInstant().GetLocation(buWork.Des_Area_ID.Value);
-            var desWh = StaticValueManager.GetInstant().GetLocation(buWork.Des_Warehouse_ID.Value);
+            var desArea = StaticValueManager.GetInstant().GetArea(buWork.Des_Area_ID.Value);
+            var desWh = StaticValueManager.GetInstant().GetWarehouse(buWork.Des_Warehouse_ID.Value);
 
             WorkQueueCriteria wq = new WorkQueueCriteria()
             {

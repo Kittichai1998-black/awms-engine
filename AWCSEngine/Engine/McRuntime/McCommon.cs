@@ -8,6 +8,8 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public class McCommon : BaseMcRuntime
     {
+        protected override McTypeEnum McType => McTypeEnum.NONE;
+
         public McCommon(acs_McMaster mcMst) : base(mcMst)
         {
         }

@@ -1,4 +1,7 @@
-﻿using ADO.WCSStaticValue;
+﻿using ADO.WCSDB;
+using ADO.WCSStaticValue;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using System;
@@ -31,46 +34,82 @@ namespace AWCSEngine
 
         private void grdLocation_ChangeLV()
         {
-            var lv = this.ddlLV.Text.Split(' ')[0].Get2<int>();
+            this.grdLocation.Rows.Clear();
+            var iLv = this.ddlLV.Text.Split(' ')[0].Get2<int>();
 
-            var minBank = this.Locations.Max(x => x.GetLv());
-            var maxBank = this.Locations.Max(x => x.GetLv());
-
-            var minBay = this.Locations.Max(x => x.GetLv());
-            var maxBay = this.Locations.Max(x => x.GetLv());
-
-            for (int iBay = minBay; iBay <= maxBay; iBay++)
-            {
-                this.grdLocation.Columns.Add(iBay.ToString(), iBay.ToString());
-            }
-            for (int iBank = minBank; iBank <= maxBank; iBank++)
+            for (int iBay = 0; iBay <= this._Locations.Length; iBay++)
             {
                 DataGridViewRow row = new DataGridViewRow();
-                for (int iBay = minBay; iBay <= maxBay; iBay++)
+                for (int iBank = 0; iBank <= this._Locations[iBank].Length; iBank++)
                 {
-                 //   DataGridViewCell cell = DataGridViewCell.;
-                 //   cell.Value = string.Format("{0:000}{1:000}{2:000}", iBank, iBay, lv);
-                 //   row.Cells.Add(cell);
+                    string code = string.Format("{0:000}{1:000}{2:000}", iBank, iBay, iLv);
+                    row.Cells[iBay].Value = code;
+                    if (this._Locations[iBay][iBank][iLv] == null)
+                    {
+                        row.Cells[iBay].Style.BackColor = Color.Black;
+                    }
+                    else if (!string.IsNullOrEmpty(this._Locations[iBay][iBank][iLv].ProdCode))
+                    {
+                        row.Cells[iBay].Value = this._Locations[iBay][iBank][iLv].ProdCode;
+                        row.Cells[iBay].Style.BackColor = Color.LightGreen;
+                    }
+                    else
+                    {
+                        row.Cells[iBay].Value = this._Locations[iBay][iBank][iLv].LocCode;
+                        row.Cells[iBay].Style.BackColor = Color.White;
+                    }
+                
                 }
                 this.grdLocation.Rows.Add(row);
             }
         }
 
-        private List<acs_Location> Locations { get; set; }
+        private class TLoc
+        {
+            public string LocCode;
+            public string ProdCode;
+        }
+        private TLoc[][][] _Locations { get; set; }
         private void grdLocation_ChangeWarehouse()
         {
             var wh = StaticValueManager.GetInstant().GetWarehouse(this.ddlLV.Text);
             if (wh == null) return;
 
             var areas = StaticValueManager.GetInstant().Areas.FindAll(x => x.Warehouse_ID == wh.ID);
-            this.Locations = StaticValueManager.GetInstant().Locations
+            var locs = StaticValueManager.GetInstant().Locations
                 .Where(x => areas.Any(y => y.ID == x.Area_ID))
                 //.Select(x => x.Code)
                 .OrderBy(x => x.Code)
                 .ToList();
+            var baseObjs =
+                DataADO.GetInstant().SelectBy<act_BaseObject>(new SQLConditionCriteria[]{
+                new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("Area_ID", areas.Select(x=>x.ID.Value).ToArray(), SQLOperatorType.IN)
+            }, null);
 
-            var minLV = this.Locations.Min(x => x.GetLv());
-            var maxLV = this.Locations.Max(x => x.GetLv());
+
+            var minLV = locs.Min(x => x.GetLv());
+            var maxLV = locs.Max(x => x.GetLv());
+            var maxBay = locs.Max(x => x.GetBay());
+            var maxBank = locs.Max(x => x.GetBank());
+            this._Locations = new TLoc[maxBay][][];
+            for (int i1 =0;i1 < this._Locations.Length; i1++)
+            {
+                this._Locations[i1] = new TLoc[maxBank][];
+                for (int i2 = 0; i1 < this._Locations.Length; i1++)
+                {
+                    this._Locations[i1][i2] = new TLoc[maxLV];
+                }
+            }
+            foreach (var l in locs)
+            {
+                try
+                {
+                    var b = baseObjs.FirstOrDefault(x => x.Location_ID == l.ID);
+                    this._Locations[l.GetBay()][l.GetBank()][l.GetLv()] = new TLoc { LocCode = l.Code, ProdCode = (b == null ? string.Empty : b.SkuLot) };
+                }
+                catch { }
+            }
 
             this.ddlLV.Items.Clear();
             for (int i = minLV; i <= maxLV; i++)
@@ -79,6 +118,13 @@ namespace AWCSEngine
             }
             this.ddlLV.SelectedIndex = 0;
 
+
+            this.grdLocation.Rows.Clear();
+            this.grdLocation.Columns.Clear();
+            for (int iBay = 0; iBay < this._Locations.Length; iBay++)
+            {
+                this.grdLocation.Columns.Add((iBay + 1).ToString(), (iBay + 1).ToString());
+            }
         }
     }
 }

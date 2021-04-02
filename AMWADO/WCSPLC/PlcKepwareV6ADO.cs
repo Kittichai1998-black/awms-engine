@@ -23,13 +23,15 @@ namespace ADO.WCSPLC
         Array OPC_AccessPaths = null;
         Array OPC_WriteItems = null;
 
-        public override bool IsConnect { get => this.OPC_ConnGroups == null ? false : this.OPC_ConnGroups.IsActive; }
+        public override bool IsConnect { get; set; }
         public override bool IsCheckCCONN { get; protected set; }
-
+        public PlcKepwareV6ADO()
+        {
+            this.IsConnect = false;
+        }
         protected const string KEPWARE_PRODID = "Kepware.KEPServerEX.V6";
         public override void Open()
         {
-            if (this.IsConnect) return;
 
             try
             {
@@ -78,6 +80,7 @@ namespace ADO.WCSPLC
                 }
                 else
                 {
+                    this.IsConnect = true;
                     this.IsCheckCCONN = false;
                 }
 

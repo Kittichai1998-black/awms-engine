@@ -22,7 +22,7 @@ namespace AWCSWebApp.GCLModel.Criteria
             public string sku;
             public string grade;
             public string lot;
-            public decimal? qty;
+            public decimal qty;
             public decimal qty_per_pallet;
             public string unit;
             public string status;

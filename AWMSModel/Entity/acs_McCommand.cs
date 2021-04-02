@@ -8,5 +8,6 @@ namespace AMSModel.Entity
     public class acs_McCommand : BaseEntitySTD
     {
         public McCommandType McCommandType;
+        public bool IsDefault;
     }
 }

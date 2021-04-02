@@ -10,6 +10,8 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public class McShuCommon : BaseMcRuntime
     {
+        protected override McTypeEnum McType => McTypeEnum.SHU;
+
         public McShuCommon(acs_McMaster mcMst) : base(mcMst)
         {
         }
@@ -26,7 +28,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.McWork4Work != null ? this.McWork4Work.Des_Area_ID : 0;
                 var area =this.StaticValue.GetArea(areaID);
                 var wh = this.StaticValue.GetWarehouse(area.Warehouse_ID);
-                if(wh.Code.ToLower() == "w8")
+                if(wh.Code.ToLower() == "w08")
                 {
                     if (this.McMst.Info1.ToLower() == "out")
                         OnRun_w8_Outbound();
@@ -47,19 +49,19 @@ namespace AWCSEngine.Engine.McRuntime
                     //1.1 สั่งกลับ stanby out
                     if(this.McObj.DV_Pre_Status == 90 && this.McObj.DV_Pre_Zone != 4 && this.StepTxt != "1.1")
                     {
-                        this.PostCommand(McCommandType.CM_52, "1.1");
+                        this.PostCommand(McCommandType.CM_52,()=>this.StepTxt= "1.1");
                     }
                     //1.2 สั่ง start และกลับ home out
                     else if (this.McObj.DV_Pre_Status == 84 && this.McObj.DV_Pre_Zone != 4 && this.StepTxt != "1.2")
                     {
                         this.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                             .New("Set_SouLoc", this.Cur_Location.Code.Get2<int>() % 1000000)
-                            .Add("Set_ShtDi", 2), "1.2");
+                            .Add("Set_ShtDi", 2),()=>this.StepTxt= "1.2");
                     }
                     //1.3 สั่ง ปิดเครื่อง
                     else if (this.McObj.DV_Pre_Status == 90 && this.McObj.DV_Pre_Zone == 4 && this.StepTxt != "1.3")
                     {
-                        this.PostCommand(McCommandType.CM_60, "1.3");
+                        this.PostCommand(McCommandType.CM_60,()=>this.StepTxt= "1.3");
                     }
                     //1.4 ยก shu ออก
                     else if (this.McObj.DV_Pre_Status == 82 && this.McObj.DV_Pre_Zone == 4 && this.StepTxt != "1.4")
@@ -79,7 +81,7 @@ namespace AWCSEngine.Engine.McRuntime
                                         return LoopResult.Break;
                                     }
                                     return LoopResult.Continue;
-                                }, "1.4");
+                                }, ()=>this.StepTxt ="1.4");
                         }
                     }
                 }
@@ -91,12 +93,12 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         this.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                             .New("Set_SouLoc", this.Cur_Location.Code.Get2<int>() % 1000000)
-                            .Add("Set_ShtDi", 2),"2.1") ;
+                            .Add("Set_ShtDi", 2),()=>this.StepTxt="2.1") ;
                     }
                     //2.2 Move Home out
                     else if (this.McObj.DV_Pre_Status == 90 && this.McObj.DV_Pre_Zone != 3 && this.StepTxt != "2.2")
                     {
-                        this.PostCommand(McCommandType.CM_54, "2.2");
+                        this.PostCommand(McCommandType.CM_54,()=>this.StepTxt= "2.2");
                     }
                     //2.3 รับงาน
                     else if (this.McObj.DV_Pre_Status == 90 && this.McObj.DV_Pre_Zone == 3 && this.StepTxt != "2.3")
@@ -127,7 +129,7 @@ namespace AWCSEngine.Engine.McRuntime
                             return LoopResult.Break;
                         }
                         return LoopResult.Continue;
-                    },"3.1");
+                    },()=>this.StepTxt= "3.1");
                 }
             }
 
@@ -143,13 +145,13 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         this.McWork_1_ReceiveToWorking();
                         return LoopResult.Break;
-                    },"4.1");
+                    },()=>this.StepTxt= "4.1");
                 }
                 //4.2 จบงานรับเข้า
                 else if(this.McObj.DV_Pre_Status == 99 && this.StepTxt != "4.2")
                 {
-                    this.StepTxt = "4.2";
                     this.McWork_1_ReceiveToWorking();
+                    this.StepTxt = "4.2";
                 }
             }
             else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
@@ -162,7 +164,7 @@ namespace AWCSEngine.Engine.McRuntime
                         this.McWork_2_WorkingToWorked();
                         this.McWork_4_WorkedToDone();
                         return LoopResult.Break;
-                    }, "5.1");
+                    }, () => this.StepTxt = "5.1");
                 }
             }
 

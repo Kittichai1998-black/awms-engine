@@ -10,7 +10,7 @@ namespace ADO.WCSPLC
     {
         private Dictionary<string, object> datas = new Dictionary<string, object>();
 
-        public override bool IsConnect => throw new NotImplementedException();
+        public override bool IsConnect { get; set; }
         public override bool IsCheckCCONN { get; protected set; }
 
         private void IPlcADO()

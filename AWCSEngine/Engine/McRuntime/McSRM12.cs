@@ -10,6 +10,8 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public class McSRM12 : BaseMcRuntime
     {
+        protected override McTypeEnum McType => McTypeEnum.SRM;
+
         public McSRM12(acs_McMaster mcMst) : base(mcMst)
         {
         }

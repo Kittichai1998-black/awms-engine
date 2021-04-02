@@ -52,15 +52,6 @@ namespace AWCSEngine
         private List<string> McCode_ReadDeives = new List<string>();
 
 
-        private void lisDisplayMcLists_Add(string txt)
-        {
-            if (this.lisDisplayMcLists.IsHandleCreated)
-            {
-                this.lisDisplayMcLists.Invoke((MethodInvoker)(() => {
-                    this.lisDisplayMcLists.Items.Add(txt);
-                }));
-            }
-        }
         private void lisDisplayEvents_Add(string txt)
         {
             if (this.lisDisplayEvents.IsHandleCreated)
@@ -71,6 +62,7 @@ namespace AWCSEngine
             }
         }
 
+        private bool show_log_plc = false;
         private char ping_clock = '\\';
         private void wkDisplay_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -80,9 +72,9 @@ namespace AWCSEngine
             try
             {
 
-                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connecting..."));
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) Database.Initial Connecting..."));
                 StaticValueManager.GetInstant().LoadAll();
-                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) StaticValueManager.Initial Connected!!!"));
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) Database.Initial Connected!!!"));
 
                 this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadMcRuntime.Initial Connecting..."));
                 ThreadMcRuntime.GetInstant().Initial();
@@ -100,9 +92,6 @@ namespace AWCSEngine
                 ThreadWakeUp.GetInstant().Initial();
                 this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) ThreadWakeUp.Initial Connected!!!"));
 
-                this.lisDisplayEvents_Add("---------------------- System Online ----------------------");
-
-
                 if (this.IsHandleCreated)
                 {
                     this.chkMcList.Invoke((MethodInvoker)(() => {
@@ -114,10 +103,13 @@ namespace AWCSEngine
                         });
                     }));
                 }
+
+                this.lisDisplayEvents_Add("---------------------- System Online (100%) ----------------------");
             }
             catch (Exception ex)
             {
-                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | [ERROR] {1}", DateTime.Now, ex.Message));
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | System > [ERROR] {1}", DateTime.Now, ex.Message));
+                this.lisDisplayEvents_Add("---------------------- Exception Exit ----------------------");
                 return;
             }
 
@@ -130,29 +122,47 @@ namespace AWCSEngine
                     if (this.ping_clock == '⬤') this.ping_clock = ' ';
                     else this.ping_clock = '⬤';
                     this.lisDisplayMcLists.Invoke((MethodInvoker)(() => {
-                        this.lisDisplayMcLists.Items.Clear();
-                        this.lisDisplayMcLists.Items.Add("<<== Machines ==>> " + this.ping_clock);
+                        List<string> txts = new List<string>();
+                        txts.Add("<<== Machines ==>> " + this.ping_clock);
                         foreach (string mcCode in this.chkMcList.CheckedItems)
                         {
                             var msg = DisplayController.McLists_Message(mcCode);
                             var msg2 = msg.Split("\n");
-                            for(int i = 0; i < 4; i++)
+                            for(int i = 0; i < 5; i++)
                             {
                                 if (i < msg2.Length)
-                                    this.lisDisplayMcLists.Items.Add(msg2[i]);
+                                    txts.Add(msg2[i]);
                                 else
-                                    this.lisDisplayCommand.Items.Add(string.Empty);
+                                    txts.Add(string.Empty);
                             }
-                            this.lisDisplayMcLists.Items.Add(string.Empty);
+                            txts.Add(string.Empty);
+                        }
+
+                        for (int i = 0; i < txts.Count || i < lisDisplayMcLists.Items.Count; i++)
+                        {
+                            if (i < txts.Count)
+                            {
+                                if(i< this.lisDisplayMcLists.Items.Count)
+                                    this.lisDisplayMcLists.Items[i] = txts[i];
+                                else
+                                    this.lisDisplayMcLists.Items.Add(txts[i]);
+                            }
+                            else
+                            {
+                                this.lisDisplayMcLists.Items.RemoveAt(i);
+                                i--;
+                            }
                         }
                     }));
                     this.lisDisplayEvents.Invoke((MethodInvoker)(() => {
                         this.lisDisplayEvents.Items[0] = "<<== Events ==>> " + ping_clock;
-                        while (this.lisDisplayEvents.Items.Count > 100)
+                        while (this.lisDisplayEvents.Items.Count > 25)
                             this.lisDisplayEvents.Items.RemoveAt(1);
+                        bool isRead = false;
                         foreach (var msg in DisplayController.Events_Reading())
                         {
                             this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, msg));
+                            isRead = true;
                         }
                         int visibleItems = lisDisplayEvents.ClientSize.Height / lisDisplayEvents.ItemHeight;
                         lisDisplayEvents.TopIndex = Math.Max(lisDisplayEvents.Items.Count - visibleItems + 1, 0);
@@ -178,9 +188,7 @@ namespace AWCSEngine
                     this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.Items.Count - 1;
                 else if (this.lisDisplayCommand.SelectedIndex-1 >= 0)
                     this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.SelectedIndex- 1;
-                else
-                    this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.Items.Count -1;
-                this.txtCommand.Focus();
+                this.txtCommand.SelectAll();
             }
             else if (e.KeyCode == Keys.Down)
             {
@@ -188,35 +196,43 @@ namespace AWCSEngine
                     this.lisDisplayCommand.SelectedIndex = 0;
                 else if (this.lisDisplayCommand.SelectedIndex + 1 < this.lisDisplayCommand.Items.Count)
                     this.lisDisplayCommand.SelectedIndex = this.lisDisplayCommand.SelectedIndex + 1;
-                else
-                    this.lisDisplayCommand.SelectedIndex = 0;
-                this.txtCommand.Focus();
+                this.txtCommand.SelectAll();
             }
             else if (e.KeyCode == Keys.Enter)
             {
-                string command = this.txtCommand.Text;
-                this.lisDisplayCommand.Items.Add("COMMAND > " + command);
-                int visibleItems = lisDisplayCommand.ClientSize.Height / lisDisplayCommand.ItemHeight;
-                lisDisplayCommand.TopIndex = Math.Max(lisDisplayCommand.Items.Count - visibleItems + 1, 0);
-
-                this.txtCommand.Text = string.Empty;
-
-                string[] comm = command.Split(' ');
-                if (command.StartsWith("/"))
+                try
                 {
-                    new Comm_ConsoleFunction(string.Empty,new VOCriteria()).Execute(comm);
-                    return;
-                }
-                else
-                {
-                    try
+                    string command = this.txtCommand.Text;
+                    this.lisDisplayCommand.Items.Add("COMMAND > " + command);
+                    int visibleItems = lisDisplayCommand.ClientSize.Height / lisDisplayCommand.ItemHeight;
+                    lisDisplayCommand.TopIndex = Math.Max(lisDisplayCommand.Items.Count - visibleItems + 1, 0);
+
+                    this.txtCommand.Text = string.Empty;
+
+                    string[] comm = command.Split(' ');
+                    if(command == "/plc")
+                    {
+                        this.show_log_plc = !show_log_plc;
+                    }
+                    else if (command.StartsWith("/"))
+                    {
+                        var res = new Comm_ConsoleFunction(string.Empty, new VOCriteria()).Execute(comm);
+                        if (res._result.status == 0)
+                            throw new Exception(res._result.message);
+                        else
+                            this.lisDisplayCommand.Items.AddRange(res.response.Split("\n"));
+                    }
+                    else
                     {
                         if (comm.Length == 1)
                         {
+                            var index = this.chkMcList.Items.IndexOf(comm[0].ToUpper());
+                            if (index == -1)
+                                throw new Exception("ไม่พบ Machine ที่ระบุบ!");
                             if (this.IsHandleCreated)
                             {
-                                this.chkMcList.Invoke((MethodInvoker)(() => {
-                                    var index = this.chkMcList.Items.IndexOf(comm[0].ToUpper());
+                                this.chkMcList.Invoke((MethodInvoker)(() =>
+                                {
                                     if (index != -1)
                                         this.chkMcList.SetItemChecked(index, !this.chkMcList.GetItemChecked(index));
                                 }));
@@ -240,11 +256,17 @@ namespace AWCSEngine
                                 null
                                 );
                         }
+
                     }
-                    catch (Exception ex)
-                    {
-                        this.lisDisplayCommand.Items.Add("COMMAND > ERROR : " + ex.Message);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    this.lisDisplayCommand.Items.Add("COMMAND > ERROR : " + ex.Message);
+                }
+                finally
+                {
+                    int visibleItems = lisDisplayCommand.ClientSize.Height / lisDisplayCommand.ItemHeight;
+                    lisDisplayCommand.TopIndex = Math.Max(lisDisplayCommand.Items.Count - visibleItems + 1, 0);
                 }
             }
         }

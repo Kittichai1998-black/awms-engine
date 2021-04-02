@@ -8,6 +8,7 @@ using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -86,8 +87,8 @@ namespace AWCSEngine
                     .ForEach(cmdMc =>
                     {
                         var cmd = this.Cmds.First(x => x.ID == cmdMc.McCommand_ID);
-                        var nodePlc = new TreeNode($"Plc.{(int)cmd.McCommandType} : {cmd.McCommandType.ToString()}", 0, 0);
-                        var nodeCmd = new TreeNode($"Cmd.{cmd.ID} : {cmd.McCommandType.ToString()}", 1, 1);
+                        var nodePlc = new TreeNode($"Plc.{(int)cmd.McCommandType} : {cmd.McCommandType.Attribute<DisplayAttribute>().Name}", 0, 0);
+                        var nodeCmd = new TreeNode($"Cmd.{cmd.ID} : {cmd.Code}", 1, 1);
                         nodePlc.Nodes.Add(nodeCmd);
 
                         this.treeCMDMaps.Nodes.Add(nodePlc);
@@ -437,6 +438,11 @@ namespace AWCSEngine
             DataADO.GetInstant().UpdateBy<acs_McCommandMcMaster>(upd , null);
             this.CmdMcs = DataADO.GetInstant().ListByActive<acs_McCommandMcMaster>(null);
             this.treeCMDMaps_Load(null, null);
+        }
+
+        private void treeCMDs_DoubleClick(object sender, EventArgs e)
+        {
+            this.treeCMDs_KeyDown(sender, new KeyEventArgs(Keys.Enter));
         }
     }
 }

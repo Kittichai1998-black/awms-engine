@@ -2,6 +2,7 @@
 using AMSModel.Criteria;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
+using AWCSEngine.Controller;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +10,6 @@ using System.Text;
 namespace AWCSEngine.Engine
 {
     public abstract class BaseEngine<TReq,TRes>
-        where TRes:class,new()
     {
         protected abstract string BaseLogName();
         protected abstract TRes ExecuteChild(TReq req);
@@ -31,7 +31,7 @@ namespace AWCSEngine.Engine
             res._result = new ResponseCriteria<TRes>.Result();
             try
             {
-                res.datas = this.ExecuteChild(request);
+                res.response = this.ExecuteChild(request);
                 res._result.status = 1;
                 res._result.message = "SUCCESS";
                 res._result.trace = "";
@@ -41,7 +41,7 @@ namespace AWCSEngine.Engine
                 res._result.status = 0;
                 res._result.message = ex.Message;
                 res._result.trace = ex.StackTrace;
-                throw;
+                //throw;
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace AWCSEngine.Engine
                 res._result.message = ex.Message;
                 res._result.trace = ex.StackTrace;
                 this.Logger.LogError(ex.StackTrace);
-                throw new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
+                //throw new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
             }
             finally
             {

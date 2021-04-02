@@ -21,8 +21,10 @@ namespace AWCSWebApp.Controllers
                 buVO.Logger = AMWLoggerManager.GetLogger("pb_api", api_name);
                 buVO.SqlConnection = DataADO.GetInstant().CreateConnection();
                 buVO.SqlTransaction_Begin();
-                res.datas = func(buVO);
+                res.response = func(buVO);
                 buVO.SqlTransaction_Commit();
+                res._result.status = 1;
+                res._result.message = "SUCCESS";
             }
             catch (Exception ex)
             {

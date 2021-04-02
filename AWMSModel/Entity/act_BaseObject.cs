@@ -11,10 +11,13 @@ namespace AMSModel.Entity
         public long Area_ID;
         public long Location_ID;
         public long? McObject_ID;
+        public long? BuWork_ID;
         public string Code;
         public string Model;
         public string SkuCode;
         public string SkuName;
+        public string SkuGrade;
+        public string SkuLot;
         public decimal SkuQty;
         public string SkuUnit;
         public string SkuStatus;

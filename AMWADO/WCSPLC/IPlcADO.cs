@@ -12,7 +12,7 @@ namespace ADO.WCSPLC
         public void Open();
         public void Close();
 
-        public bool IsConnect { get; }
+        public bool IsConnect { get; set; }
         public T GetDevice<T>(string key);
         public string GetDeviceString(string key, int length);
         public void SetDevice<T>(string key,T val);

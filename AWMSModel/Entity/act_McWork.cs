@@ -18,6 +18,7 @@ namespace AMSModel.Entity
         public long? Rec_McObject_ID;
         public long? Cur_McObject_ID;
         public long BaseObject_ID;
+        public long? BuWork_ID;
         public long Cur_Warehouse_ID;
         public long Cur_Area_ID;
         public long Cur_Location_ID;

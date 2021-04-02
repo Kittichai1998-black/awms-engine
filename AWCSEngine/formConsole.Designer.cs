@@ -61,7 +61,7 @@ namespace AWCSEngine
             // txtCommand
             // 
             this.txtCommand.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtCommand.Location = new System.Drawing.Point(0, 145);
+            this.txtCommand.Location = new System.Drawing.Point(0, 212);
             this.txtCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCommand.Name = "txtCommand";
             this.txtCommand.Size = new System.Drawing.Size(1260, 31);
@@ -110,7 +110,7 @@ namespace AWCSEngine
             this.lisDisplayEvents.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayEvents.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayEvents.Name = "lisDisplayEvents";
-            this.lisDisplayEvents.Size = new System.Drawing.Size(606, 367);
+            this.lisDisplayEvents.Size = new System.Drawing.Size(406, 300);
             this.lisDisplayEvents.TabIndex = 6;
             // 
             // lisDisplayCommand
@@ -124,7 +124,7 @@ namespace AWCSEngine
             this.lisDisplayCommand.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayCommand.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayCommand.Name = "lisDisplayCommand";
-            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 176);
+            this.lisDisplayCommand.Size = new System.Drawing.Size(1260, 212);
             this.lisDisplayCommand.TabIndex = 2;
             this.lisDisplayCommand.Click += new System.EventHandler(this.lisDisplayCommand_Click_1);
             this.lisDisplayCommand.SelectedIndexChanged += new System.EventHandler(this.lisDisplayCommand_SelectedIndexChanged);
@@ -140,7 +140,7 @@ namespace AWCSEngine
             this.lisDisplayMcLists.Location = new System.Drawing.Point(0, 0);
             this.lisDisplayMcLists.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lisDisplayMcLists.Name = "lisDisplayMcLists";
-            this.lisDisplayMcLists.Size = new System.Drawing.Size(496, 367);
+            this.lisDisplayMcLists.Size = new System.Drawing.Size(696, 300);
             this.lisDisplayMcLists.TabIndex = 5;
             this.lisDisplayMcLists.SelectedIndexChanged += new System.EventHandler(this.lisDisplayMcLists_SelectedIndexChanged);
             // 
@@ -148,7 +148,6 @@ namespace AWCSEngine
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer1.IsSplitterFixed = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 33);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -159,10 +158,10 @@ namespace AWCSEngine
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.txtCommand);
             this.splitContainer1.Panel2.Controls.Add(this.lisDisplayCommand);
+            this.splitContainer1.Panel2.Controls.Add(this.txtCommand);
             this.splitContainer1.Size = new System.Drawing.Size(1260, 547);
-            this.splitContainer1.SplitterDistance = 367;
+            this.splitContainer1.SplitterDistance = 300;
             this.splitContainer1.TabIndex = 7;
             // 
             // splitContainer2
@@ -178,8 +177,8 @@ namespace AWCSEngine
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.lisDisplayEvents);
-            this.splitContainer2.Size = new System.Drawing.Size(1260, 367);
-            this.splitContainer2.SplitterDistance = 650;
+            this.splitContainer2.Size = new System.Drawing.Size(1260, 300);
+            this.splitContainer2.SplitterDistance = 850;
             this.splitContainer2.TabIndex = 7;
             // 
             // splitContainer3
@@ -197,7 +196,7 @@ namespace AWCSEngine
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.lisDisplayMcLists);
-            this.splitContainer3.Size = new System.Drawing.Size(650, 367);
+            this.splitContainer3.Size = new System.Drawing.Size(850, 300);
             this.splitContainer3.SplitterDistance = 150;
             this.splitContainer3.TabIndex = 8;
             // 
@@ -210,7 +209,7 @@ namespace AWCSEngine
             this.chkMcList.FormattingEnabled = true;
             this.chkMcList.Location = new System.Drawing.Point(0, 0);
             this.chkMcList.Name = "chkMcList";
-            this.chkMcList.Size = new System.Drawing.Size(150, 367);
+            this.chkMcList.Size = new System.Drawing.Size(150, 300);
             this.chkMcList.TabIndex = 7;
             // 
             // formConsole

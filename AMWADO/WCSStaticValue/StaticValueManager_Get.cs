@@ -41,8 +41,7 @@ namespace ADO.WCSStaticValue
             return
                 this.McCommands.FirstOrDefault(x =>
                 {
-                    var y = this.ListMcCommandAction(x.ID.Value);
-                    return x.McCommandType == cmdType && y.Count == 1 && string.IsNullOrWhiteSpace(y[0].DKV_Condition);
+                    return x.McCommandType == cmdType && x.IsDefault;
                 });
         }
         public List<acs_McCommand> ListMcCommand(long mcMstID)
@@ -62,10 +61,18 @@ namespace ADO.WCSStaticValue
         {
             return this.Areas.FirstOrDefault(x => x.Code == code);
         }
+        public acs_Area GetAreaByName(string name)
+        {
+            return this.Areas.FirstOrDefault(x => x.Name == name);
+        }
         public List<acs_Area> ListArea_ByWarehouse(string whCode)
         {
             var wh = this.GetWarehouse(whCode);
             return this.Areas.Where(x => x.Warehouse_ID == wh.ID.Value).ToList();
+        }
+        public List<acs_Area> ListArea_ByWarehouse(long whID)
+        {
+            return this.Areas.Where(x => x.Warehouse_ID == whID).ToList();
         }
         public acs_Warehouse GetWarehouse(long id)
         {
@@ -75,10 +82,18 @@ namespace ADO.WCSStaticValue
         {
             return this.Warehouses.FirstOrDefault(x => x.Code == code);
         }
+        public acs_Warehouse GetWarehouseByName(string name)
+        {
+            return this.Warehouses.FirstOrDefault(x => x.Name == name);
+        }
         public List<acs_Location> ListLocationByWarehouse(long whID)
         {
             var areaIds = this.Areas.FindAll(x => x.Warehouse_ID == whID).Select(x => x.ID.Value);
             return this.Locations.FindAll(x => areaIds.Contains(x.Area_ID));
+        }
+        public List<acs_Location> ListLocationByBayLv(int bay,int lv)
+        {
+            return this.Locations.FindAll(x => x.GetBay() == bay && x.GetLv() == lv);
         }
         public List<acs_Location> ListLocationByWarehouse(string whCode)
         {
@@ -93,7 +108,7 @@ namespace ADO.WCSStaticValue
         {
             return this.Locations.FirstOrDefault(x => x.Code == locCode);
         }
-        public acs_Location GetLocation(string whCode,string locCode)
+        public acs_Location GetLocation(string whCode, string locCode)
         {
             var areas = this.ListArea_ByWarehouse(whCode).Select(x => x.ID.Value);
             return this.Locations.FirstOrDefault(x => x.Code == locCode && areas.Contains(x.Area_ID));

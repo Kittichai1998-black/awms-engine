@@ -12,6 +12,8 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public class McCvPD_W8_Common : BaseMcRuntime
     {
+        protected override McTypeEnum McType => McTypeEnum.CV;
+
         public McCvPD_W8_Common(acs_McMaster mcMst) : base(mcMst)
         {
         }
@@ -77,7 +79,14 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
                     var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
-                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, "1.1");
+                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, ()=>this.StepTxt="1.1");
+                    this.McWork_1_ReceiveToWorking();
+                }
+                //1.2 เคสหลุด
+                else if((this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14) && this.StepTxt != "1.2")
+                {
+                    this.McWork_1_ReceiveToWorking();
+                    this.StepTxt = "1.2";
                 }
             }
             //2
@@ -88,10 +97,10 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     var souLoc = this.StaticValue.GetLocation(this.McWork4Work.Cur_Location_ID);
                     var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
-                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500,"2.1");
+                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500,()=>this.StepTxt="2.1");
                 }
                 //2.2 popup pallet รอ SRM มารับ
-                else if (this.McObj.DV_Pre_Status == 4 && this.StepTxt != "2.2")
+                else if ((this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14) && this.StepTxt != "2.2")
                 {
                     //ส่งงานให้ SRM Inbound
                     if (this.Code.In("RC8-2", "RC8-1"))
@@ -114,7 +123,7 @@ namespace AWCSEngine.Engine.McRuntime
             else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKED)
             {
                 //3.1 jpopup pallet รอ SRM มารับ (งานค้างยังไม่มี SRM มารับงาน)
-                if (this.McObj.DV_Pre_Status == 4)
+                if (this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14)
                 {
                     if (this.Code.In("RC8-2", "RC8-1"))
                     {

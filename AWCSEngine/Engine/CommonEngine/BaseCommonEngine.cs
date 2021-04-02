@@ -7,7 +7,6 @@ using System.Text;
 namespace AWCSEngine.Engine.CommonEngine
 {
     public abstract class BaseCommonEngine<TReq, TRes> : BaseEngine<TReq, TRes>
-        where TRes : class, new()
     {
 
         protected override string BaseLogName()

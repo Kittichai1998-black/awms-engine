@@ -24,7 +24,7 @@ namespace AWCSEngine.Engine.APIFileRuntime
             req.works.ForEach(x =>
             {
                 var mcWork = new Comm_CreateMcWorkOUT(this.LogRefID, this.BuVO).Execute(x);
-                res.works.Add(mcWork.datas);
+                res.works.Add(mcWork.response);
             });
             return res;
         }

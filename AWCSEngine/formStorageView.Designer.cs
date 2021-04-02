@@ -43,30 +43,30 @@ namespace AWCSEngine
             this.grdLocation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grdLocation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdLocation.Location = new System.Drawing.Point(0, 0);
-            this.grdLocation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.grdLocation.Margin = new System.Windows.Forms.Padding(2);
             this.grdLocation.Name = "grdLocation";
             this.grdLocation.RowHeadersWidth = 62;
             this.grdLocation.RowTemplate.Height = 33;
-            this.grdLocation.Size = new System.Drawing.Size(969, 525);
+            this.grdLocation.Size = new System.Drawing.Size(1211, 656);
             this.grdLocation.TabIndex = 0;
             // 
             // ddlLV
             // 
             this.ddlLV.Dock = System.Windows.Forms.DockStyle.Right;
             this.ddlLV.FormattingEnabled = true;
-            this.ddlLV.Location = new System.Drawing.Point(823, 0);
-            this.ddlLV.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ddlLV.Location = new System.Drawing.Point(1029, 0);
+            this.ddlLV.Margin = new System.Windows.Forms.Padding(2);
             this.ddlLV.Name = "ddlLV";
-            this.ddlLV.Size = new System.Drawing.Size(146, 28);
+            this.ddlLV.Size = new System.Drawing.Size(182, 33);
             this.ddlLV.TabIndex = 2;
             // 
             // txtSearch
             // 
             this.txtSearch.Dock = System.Windows.Forms.DockStyle.Left;
             this.txtSearch.Location = new System.Drawing.Point(0, 0);
-            this.txtSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(2);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(530, 27);
+            this.txtSearch.Size = new System.Drawing.Size(662, 31);
             this.txtSearch.TabIndex = 3;
             // 
             // panel1
@@ -77,29 +77,29 @@ namespace AWCSEngine
             this.panel1.Controls.Add(this.ddlLV);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(969, 34);
+            this.panel1.Size = new System.Drawing.Size(1211, 42);
             this.panel1.TabIndex = 4;
             // 
             // ddlWH
             // 
             this.ddlWH.Dock = System.Windows.Forms.DockStyle.Right;
             this.ddlWH.FormattingEnabled = true;
-            this.ddlWH.Location = new System.Drawing.Point(677, 0);
-            this.ddlWH.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ddlWH.Location = new System.Drawing.Point(847, 0);
+            this.ddlWH.Margin = new System.Windows.Forms.Padding(2);
             this.ddlWH.Name = "ddlWH";
-            this.ddlWH.Size = new System.Drawing.Size(146, 28);
+            this.ddlWH.Size = new System.Drawing.Size(182, 33);
             this.ddlWH.TabIndex = 4;
             // 
             // formStorageView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(969, 525);
+            this.ClientSize = new System.Drawing.Size(1211, 656);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.grdLocation);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "formStorageView";
             this.Text = "formStorageView";
             this.Load += new System.EventHandler(this.formStorageView_Load);

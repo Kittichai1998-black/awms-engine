@@ -1,0 +1,1 @@
+﻿$('header').load('com.header.html');
