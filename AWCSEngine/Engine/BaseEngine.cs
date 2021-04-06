@@ -38,6 +38,7 @@ namespace AWCSEngine.Engine
             }
             catch (AMWException ex)
             {
+                this.BuVO.SqlTransaction_Rollback();
                 res._result.status = 0;
                 res._result.message = ex.Message;
                 res._result.trace = ex.StackTrace;
@@ -45,6 +46,7 @@ namespace AWCSEngine.Engine
             }
             catch (Exception ex)
             {
+                this.BuVO.SqlTransaction_Rollback();
                 res._result.status = 0;
                 res._result.message = ex.Message;
                 res._result.trace = ex.StackTrace;

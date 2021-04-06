@@ -52,7 +52,7 @@ namespace AWCSEngine.Engine.CommonEngine
             StaticValueManager.GetInstant().LoadAll();
             return "OK.";
         }
-        public string fn_step(string machine, string step = "")
+        public string fn_step(string machine, string step)
         {
             Controller.McRuntimeController.GetInstant().GetMcRuntime(machine).StepTxt = step;
             return "OK.";
@@ -70,7 +70,7 @@ namespace AWCSEngine.Engine.CommonEngine
             return "OK.";
         }
 
-        public string fn_help(string method = "")
+        public string fn_help(string method)
         {
             string res = "{srm} {command} {sou} {des} {unit} {pallet}\n";
             res += "{shu} 1 {sou} {shi_di}\n";
@@ -91,7 +91,7 @@ namespace AWCSEngine.Engine.CommonEngine
 
             return res;
         }
-        public string fn_wq(string machine, string action, string next_machine = "")
+        public string fn_wq(string machine, string action, string next_machine)
         {
             var mc = Controller.McRuntimeController.GetInstant().GetMcRuntime(machine);
             if (action == "working")
@@ -114,6 +114,14 @@ namespace AWCSEngine.Engine.CommonEngine
             else if (action == "done")
             {
                 mc.McWork_4_WorkedToDone();
+            }
+            else if (action == "reload")
+            {
+                mc.McWork_0_Reload();
+            }
+            else if (action == "remove")
+            {
+                mc.McWork_9_Remove();
             }
             else
             {

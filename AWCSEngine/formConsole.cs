@@ -24,14 +24,16 @@ namespace AWCSEngine
 {
     public partial class formConsole : Form
     {
+        public static string AppName;
         public formConsole()
         {
             InitializeComponent();
         }
         private void formAdminConsole_Load(object sender, EventArgs e)
         {
-            string app_name = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_name];
-            this.Name = "WCS : " + app_name;
+            this.splitContainer2.SplitterDistance = (int)((float)this.Width * 0.6f);
+            AppName = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_name];
+            this.Text = AppName;
 
 
             this.lisDisplayCommand.Items.Add("{machine} {command} {p1} {p2} {p3}");
@@ -158,11 +160,10 @@ namespace AWCSEngine
                         this.lisDisplayEvents.Items[0] = "<<== Events ==>> " + ping_clock;
                         while (this.lisDisplayEvents.Items.Count > 25)
                             this.lisDisplayEvents.Items.RemoveAt(1);
-                        bool isRead = false;
+
                         foreach (var msg in DisplayController.Events_Reading())
                         {
                             this.lisDisplayEvents.Items.Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, msg));
-                            isRead = true;
                         }
                         int visibleItems = lisDisplayEvents.ClientSize.Height / lisDisplayEvents.ItemHeight;
                         lisDisplayEvents.TopIndex = Math.Max(lisDisplayEvents.Items.Count - visibleItems + 1, 0);

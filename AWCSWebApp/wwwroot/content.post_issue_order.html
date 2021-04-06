@@ -1,0 +1,120 @@
+﻿<div class="row mb-3">
+    <div class="col-12">
+        <h5>งานเบิกสินค้า</h5>
+        <h6 class="text-secondary">เพิ่มงานเบิก</h6>
+    </div>
+</div>
+<div class="row mb-3">
+    <label for="txtQrCode" class="col-2 col-form-label">Delivery QR</label>
+    <div class="col-8">
+        <input type="text" class="form-control" id="txtQrCode" placeholder="Delivery QR">
+    </div>
+    <div class="col-2">
+        <button id="btnPostQR" class="btn btn-primary form-control">ส่ง</button>
+    </div>
+</div>
+<hr />
+<h6 class="text-secondary">งานที่อยู่ระหว่างเบิก</h6>
+<div class="row mb-3">
+    <label class="col-2 col-form-label" for="ddlWH">คลังสินค้า</label>
+    <div class="col-10">
+        <select class="form-select" id="ddlWH">
+        </select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+
+        <table class="table table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <td>Delivery Order</td>
+                    <td>ทางออก</td>
+                    <td>รหัสสินค้า</td>
+                    <td>เกรด</td>
+                    <td>ลอท</td>
+                    <td>จำนวนเบิก</td>
+                    <td>จอง(พาเลท)</td>
+                    <td>กำลังเบิก(พาเลท)</td>
+                    <td>เสร็จ(พาเลท)</td>
+                    <td>ยกเลิก(พาเลท)</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody id="tbodyOrder">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+
+    $('#btnPostQR').click(() => {
+        post_qr($('#txtQrCode').val());
+    });
+    $('#txtQrCode').keydown((e) => {
+        if (e.keyCode == 13)
+            post_qr($('#txtQrCode').val());
+    });
+
+    function post_qr(qrCode) {
+        app.post('post_issue_order_qr', { qrCode: qrCode }, (data) => {
+            page_load(false);
+            $('#txtQrCode').val('');
+        })
+    }
+
+    function confirm_closed_buwork(trxRef) {
+        if (confirm('ยืนยันจบงาน? ยกเลิกรายการที่จองทั้งหมด!')) {
+            app.post('post_closed_buwork', { trxRef: trxRef }, (data) => {
+                page_load(false);
+            })
+        }
+    }
+
+    function ddlWH_load(_callback) {
+        app.get('list_warhouse', {},
+            (data) => {
+                data.response.forEach((e) => {
+                    $('#ddlWH').append($('<option value="' + e.code + '">' + e.name + '</option>'));
+                });
+                _callback && _callback();
+            });
+    }
+
+    function page_load(isLoop) {
+        if ($('#ddlWH').val() != "") {
+            app.get('get_order', { io: 2, wh: $('#ddlWH').val(), max: 10 },
+                (data) => {
+                    var tbody = $('#tbodyOrder');
+                    tbody.html('');
+                    data.response.forEach((v) => {
+                        var tr = $('<tr ' +
+                            (v.AllocateCount + v.WorkingCount > 0 ? '' : 'style="background:#DDD;"') +
+                            '>' +
+                            '<td>' + v.DocRef + '</td>' +
+                            '<td>' + v.DesName + '</td>' +
+                            '<td>' + v.SkuCode + '</td>' +
+                            '<td>' + v.SkuGrade + '</td>' +
+                            '<td>' + v.SkuLot + '</td>' +
+                            '<td>' + v.SumQty + '</td>' +
+                            '<td>' + v.AllocateCount + '</td>' +
+                            '<td>' + v.WorkingCount + '</td>' +
+                            '<td>' + v.DoneCount + '</td>' +
+                            '<td>' + v.RejectCount + '</td>' +
+                            '<td><button class="btn btn-danger" onclick="confirm_closed_buwork(\'' + v.TrxRef + '\')">จบงาน</button></td>' +
+                            '</tr>');
+                        tbody.append(tr);
+                    });
+
+                    if (isLoop)
+                        setTimeout(() => { page_load(true); }, 5000);
+                }, () => {
+                    if (isLoop)
+                    setTimeout(() => { page_load(true); }, 5000);
+            });
+        }
+    }
+    ddlWH_load(() => { page_load(false); });
+
+</script>

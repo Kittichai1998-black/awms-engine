@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft;
+using AMWUtil.Logger;
 
 namespace AWCSWebApp
 {
@@ -27,7 +28,8 @@ namespace AWCSWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            var logger = AMWLoggerManager.GetLogger("server", "event");
+            logger.LogInfo("################ START SERVER ################");
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowCors", builder =>
@@ -41,28 +43,43 @@ namespace AWCSWebApp
                     .WithExposedHeaders("x-custom-header");
                 });
             });
+            logger.LogInfo("services.AddCors");
 
             services.AddAuthorization();
+            logger.LogInfo("services.AddAuthorization");
+
             services.AddControllers();
+            logger.LogInfo("services.AddControllers");
+
             services.AddMvc().AddNewtonsoftJson();
+            logger.LogInfo("services.AddMvc");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var logger = AMWLoggerManager.GetLogger("server", "event");
             app.UseHttpsRedirection();
+            logger.LogInfo("app.UseHttpsRedirection");
 
             app.UseRouting();
+            logger.LogInfo("app.UseRouting");
 
             app.UseAuthorization();
+            logger.LogInfo("app.UseAuthorization");
 
             app.UseStaticFiles();
+            logger.LogInfo("app.UseStaticFiles");
 
             app.UseCors("AllowCors");
+            logger.LogInfo("app.UseCors");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            logger.LogInfo("app.UseEndpoints");
+            logger.LogInfo("################ START SUCCESS ################");
         }
     }
 }

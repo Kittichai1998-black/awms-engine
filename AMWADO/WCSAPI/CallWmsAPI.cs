@@ -85,6 +85,7 @@ namespace ADO.WCSAPI
 
             WorkQueueCriteria wq = new WorkQueueCriteria()
             {
+                queueID = buWork.ID.Value,
                 ioType = buWork.IOType,
                 warehouseCode = souWh.Code,
                 areaCode = souArea.Code,
@@ -96,7 +97,6 @@ namespace ADO.WCSAPI
                 seqGroup =buWork.SeqGroup,
                 seqItem = buWork.SeqIndex,
                 queueRefID = buWork.TrxRef,
-                queueID = buWork.ID.Value,
                 queueStatus= WorkQueueEventStatus.WARNING,
                 baseInfo = new WorkQueueCriteria.BaseInfo()
                 {
@@ -105,9 +105,10 @@ namespace ADO.WCSAPI
                     {
                         new WorkQueueCriteria.BaseInfo.PackInfo()
                         {
+                            itemNo = buWork.ItemNo,
                             code = buWork.SkuCode,
                             lot = buWork.SkuLot,
-                            Info2 = buWork.SkuGrade,
+                            grade = buWork.SkuGrade,
                             qty=buWork.SkuQty,
                             unit=buWork.SkuUnit,
                             baseQty=buWork.SkuQty,

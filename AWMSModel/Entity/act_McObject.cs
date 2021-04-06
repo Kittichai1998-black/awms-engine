@@ -55,6 +55,7 @@ namespace AMSModel.Entity
         public int DV_Pre_RowLevel;
         public int DV_Pre_PalletCount;
         public int DV_Pre_ShtDi;
+        public float DV_Pre_Battery;
 
         public bool IsOnline;
         public bool IsAuto;

@@ -1,1 +1,27 @@
-﻿
+﻿header {
+    padding: 5px;
+    margin-bottom: 10px;
+    box-shadow: rgba(0,0,0,0.4) 0px 1px 10px;
+    position: static;
+    top: 0px;
+}
+content > .container {
+    margin-bottom: 100px;
+}
+footer {
+    position: fixed;
+    bottom: 0px;
+    display: block;
+    width: 100%;
+    padding:5px;
+    background-color:#fff;
+}
+header .logo{
+    height:40px;
+    cursor:pointer;
+}
+
+.btn-light{
+    background-color:#fff;
+    border:none;
+}

@@ -107,6 +107,9 @@ namespace AWCSEngine.Engine.CommonEngine
             baseObj.SkuCode = wq.baseInfo.packInfos.First().code;
             baseObj.SkuQty = wq.baseInfo.packInfos.First().baseQty;
             baseObj.SkuUnit = wq.baseInfo.packInfos.First().baseUnit;
+            baseObj.SkuLot = wq.baseInfo.packInfos.First().lot;
+            baseObj.SkuGrade = wq.baseInfo.packInfos.First().grade;
+            baseObj.SkuItemNo = wq.baseInfo.packInfos.First().itemNo;
             baseObj.Info1 = wq.baseInfo.packInfos.First().Info1;
             baseObj.Info2 = wq.baseInfo.packInfos.First().Info2;
             baseObj.Info3 = wq.baseInfo.packInfos.First().Info3;

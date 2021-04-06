@@ -38,6 +38,7 @@ namespace AMSModel.Criteria
             public List<PackInfo> packInfos;//ข้อมูลสินค้าในพาเลท
             public class PackInfo
             {
+                public string itemNo;
                 public string code;
                 public decimal qty;
                 public string unit;
@@ -45,6 +46,7 @@ namespace AMSModel.Criteria
                 public string baseUnit;
                 public string batch;
                 public string lot;
+                public string grade;
                 public string orderNo;
                 public DateTime? prodDate;
 

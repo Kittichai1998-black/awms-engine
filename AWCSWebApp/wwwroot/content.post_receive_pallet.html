@@ -1,0 +1,120 @@
+﻿<div class="row mb-3">
+    <div class="col-12">
+        <h5>สแกนรับเข้าสินค้า ที่หน้าเกต</h5>
+    </div>
+</div>
+<div class="row mb-3">
+    <label for="lblGate" class="col-2 col-form-label">Gate</label>
+    <div class="col-10">
+        <input type="text" class="form-control" id="txtGate" placeholder="Gate">
+    </div>
+</div>
+<div class="row mb-3" id="divCameraShow" style="display:none">
+    <div class="col-12" style=" margin: auto; display: block; width: 300px; ">
+        <div style="width: 350px" id="reader"></div>
+    </div>
+</div>
+<div class="row mb-3">
+    <label for="txtQr" class="col-2 col-form-label">Produc QR</label>
+    <div class="col-8">
+        <input type="text" class="form-control" id="txtQr" placeholder="Product QR">
+    </div>
+    <div class="col-2">
+        <button id="btnPostQr" class="btn btn-primary form-control">ส่ง</button>
+    </div>
+</div>
+<hr />
+<div class="card" id="cardDetail">
+    <h5 class="card-header">Gate : <span id="lblCardGate">-</span></h5>
+    <div class="card-body">
+        <h6 class="card-title">Product QR : <span id="lblCardProdQR">-</span></h6>
+        <p class="card-text">Bagging Order : <span id="lblCardDocRef">-</span><br/>Time : <span id="lblCardCreateTime">-</span></p>
+        <button onclick="post_remove()" class="btn btn-danger float-end" id="btnCardRemove">Remove</button>
+    </div>
+</div>
+
+<script>
+    function onScanSuccess(qrCodeMessage) {
+        if (qrCodeMessage.trim().split(" ").length == 5) {
+            $('#txtQr').val(qrCodeMessage.trim());
+            $('#btnPostQR').click();
+        }
+    }
+
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: 250 });
+
+    $('#btnCameraShow').click(() => {
+        if ($('#divCameraShow').is(':visible')) {
+            $('#divCameraShow').hide();
+            html5QrcodeScanner.stop();
+        }
+        else {
+            $('#divCameraShow').show();
+            html5QrcodeScanner.render(onScanSuccess);
+        }
+    });
+
+    $('#btnPostQR').click(() => {
+        post_qr($('#txtQrCode').val());
+    });
+    $('#txtQr').keydown((e) => {
+        if (e.keyCode == 13)
+            post_qr($('#txtQr').val());
+    });
+    $('#txtGate').keydown((e) => {
+        if (e.keyCode == 13)
+            page_load();
+    });
+    $('#btnCheckGate').click(() => {
+        page_load();
+    });
+    function post_remove() {
+        post_qr($('#lblCardProdQR').text());
+    }
+
+
+    function post_qr(qrCode) {
+        if ($('#lblCardProdQR').text().toUpperCase() != $('#txtGate').val().toUpperCase() || confirm('ยืนยันลบข้อมูลพาเลทรับเข้า!'))
+            app.post('post_receive_pallet', { mcCode: $('#txtGate').val().toUpperCase(), qrCode: qrCode },
+                (data) => {
+                    page_load();
+                    $('#txtQr').val('');
+                })
+    }
+    function page_load() {
+        if ($('#txtGate').val() == '') {
+            $('#cardDetail').removeClass('text-dark');
+            $('#cardDetail').removeClass('bg-info');
+            $('#lblCardGate').text('-');
+            $('#lblCardProdQR').text('-');
+            $('#lblCardDocRef').text('-');
+            $('#lblCardCreateTime').text('-');
+        }
+        else {
+            app.get('get_receive_pallet', { gate: $('#txtGate').val().toUpperCase() },
+                (data) => {
+                    if (data.response) {
+                        $('#cardDetail').addClass('text-dark');
+                        $('#cardDetail').addClass('bg-info');
+                    } else {
+                        $('#cardDetail').removeClass('text-dark');
+                        $('#cardDetail').removeClass('bg-info');
+                    }
+                    $('#lblCardGate').text($('#txtGate').val().toUpperCase());
+                    $('#lblCardProdQR').text(data.response ? data.response.labelData : '-');
+                    $('#lblCardDocRef').text(data.response ? data.response.docRef : '-');
+                    $('#lblCardCreateTime').text(data.response ? data.response.createTime : '-');
+                    $('#txtQr').focus();
+                }, () => {
+                    $('#cardDetail').removeClass('text-dark');
+                    $('#cardDetail').removeClass('bg-info');
+                    $('#lblCardGate').text('-');
+                    $('#lblCardProdQR').text('-');
+                    $('#lblCardDocRef').text('-');
+                    $('#lblCardCreateTime').text('-');
+                });
+        }
+    }
+    //page_load();
+</script>

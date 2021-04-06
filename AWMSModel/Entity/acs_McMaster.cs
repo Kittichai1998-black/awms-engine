@@ -112,14 +112,17 @@ namespace AMSModel.Entity
         public int DW_Pre_Zone;
 
         public string DK_Pre_RowLevel;
-        public string DW_Pre_RowLevel;
+        public int DW_Pre_RowLevel;
 
         public string DK_Pre_PalletCount;
-        public string DW_Pre_PalletCount;
+        public int DW_Pre_PalletCount;
 
         public string DK_Pre_ShtDi;
-        public string DW_Pre_ShtDi;
+        public int DW_Pre_ShtDi;
 
+        public string DK_Pre_Battery;
+        public int DW_Pre_Battery;
+        
     }
 
 }

@@ -109,7 +109,12 @@ namespace AWCSEngine.Engine.McRuntime
                               McRuntimeController.GetInstant().GetMcRuntime(_mcShuFreeID_wh8_in.Value) :
                               McRuntimeController.GetInstant().ListMcRuntimeByWarehouse(this.Cur_Area.ID.Value)
                               .OrderBy(x => x.McObj.CommandActionTime)
-                              .FirstOrDefault(x => x.McWork4Receive == null && x.McWork4Work == null && x.Code.StartsWith("SHU"));// && x.McObj.Battery > 20);
+                              .FirstOrDefault(x =>
+                                  x.McWork4Receive == null && 
+                                  x.McWork4Work == null && 
+                                  x.McObj.DV_Pre_Battery > 15.0f &&
+                                  x.Code.StartsWith("SHU") &&
+                                  (x.McMst.Info1 ?? "").ToUpper() == "IN");// && x.McObj.Battery > 20);
 
                     // 1 ไม่พบรถในแถว พบรถที่ว่าง
                     if (_mcShuFree != null)

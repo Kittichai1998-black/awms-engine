@@ -13,6 +13,22 @@ namespace AWCSEngine.Engine.McRuntime
 {
     public abstract partial class BaseMcRuntime : BaseEngine<NullCriteria, NullCriteria>, IDisposable
     {
+        public void McWork_9_Remove()
+        {
+            if (this.McWork4Work != null)
+            {
+                this.McWork4Work.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
+                this.McWork4Work.Status = EntityStatus.REMOVE;
+                DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
+            }
+            if (this.McWork4Receive != null)
+            {
+                this.McWork4Receive.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
+                this.McWork4Receive.Status = EntityStatus.REMOVE;
+                DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Receive, this.BuVO);
+            }
+            this.McWork_0_Reload();
+        }
         public void McWork_0_Reload()
         {
             this.McWork4Work = McWorkADO.GetInstant().GetByCurMcObject(this.McMst.ID.Value, this.BuVO);
@@ -102,7 +118,7 @@ namespace AWCSEngine.Engine.McRuntime
             var baseInBays =
                 DataADO.GetInstant().SelectBy<act_BaseObject>(new SQLConditionCriteria[]
                 {
-                    new SQLConditionCriteria("ID",locInBays.Select(x=>x.ID.Value).ToArray(), SQLOperatorType.IN),
+                    new SQLConditionCriteria("Location_ID",locInBays.Select(x=>x.ID.Value).ToArray(), SQLOperatorType.IN),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                 }, this.BuVO);
             locInBays.RemoveAll(x => baseInBays.Any(y => y.Location_ID == x.ID));

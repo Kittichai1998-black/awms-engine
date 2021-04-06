@@ -1,0 +1,62 @@
+﻿<div class="row mb-3">
+    <div class="col-12">
+        <h5>สแกนรับ Shuttle หลังชาร์ทแบต</h5>
+    </div>
+</div>
+<div class="row mb-3">
+    <label for="lblGate" class="col-2 col-form-label">Gate</label>
+    <div class="col-8">
+        <input type="text" class="form-control" id="txtGate" placeholder="Gate">
+    </div>
+</div>
+<div class="row mb-3">
+    <label for="txtQr" class="col-2 col-form-label">Shuttle Code</label>
+    <div class="col-8">
+        <input type="text" class="form-control" id="txtQr" placeholder="Shuttle Code">
+    </div>
+    <div class="col-2">
+        <button id="btnPostQr" class="btn btn-primary form-control">ส่ง</button>
+    </div>
+</div>
+<hr />
+<div class="card" id="cardDetail">
+    <h5 class="card-header">Gate : <span id="lblCardGate">-</span></h5>
+    <div class="card-body">
+        <h6 class="card-title">SHU : <span id="lblCardShu">-</span></h6>
+        <p class="card-text">Online : <span id="lblCardIsOnline">-</span></p>
+    </div>
+</div>
+
+<script>
+
+    $('#btnPost').click(() => {
+        post_shu();
+    });
+    $('#txtShu').keydown((e) => {
+        if (e.keyCode == 13)
+            post_shu();
+    });
+    $('#txtGate').keydown((e) => {
+        if (e.keyCode == 13)
+            $('#txtQr').focus();
+    });
+
+
+    function post_shu() {
+        app.post('post_receive_shu',
+            { gateCode: $('#txtGate').val().toUpperCase(), shuCode: $('#txtShu').val().toUpperCase() },
+            (data) => {
+                $('#lblCardGate').text($('#txtGate').val().toUpperCase());
+                $('#lblCardShu').text($('#txtShu').val().toUpperCase());
+                $('#lblCardIsOnline').text('TRUE');
+                $('#txtShu').val('');
+            },
+            (data) => {
+                $('#lblCardGate').text('-');
+                $('#lblCardShu').text('-');
+                $('#lblCardIsOnline').text('-');
+                $('#txtShu').val('');
+            }
+        );
+    }
+</script>

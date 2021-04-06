@@ -72,7 +72,7 @@ namespace ADO.WCSPLC
                     }
                 }
 
-                if (!this.PlcDeviceName.StartsWith("SHU"))
+                if (!this.PlcDeviceName.StartsWith("SHU") || true)
                 {
                     this.IsCheckCCONN = true;
                     _OPCItemIDs.Add(this.PlcDeviceName + ".CCONN_READ");

@@ -31,8 +31,11 @@ namespace AMSModel.Entity
         public DateTime? ActualTime;
         public string TreeRoute;
         public string DocRef;
+        public string TrxRef;
         public string Remark;
         public McWorkEventStatus EventStatus;
+        public int QueueStatus;
+
         public List<TreeNode<long>> GetCur_TreeRoute()
         {
             return TreeRoute.Json<TreeNode<long>>().GetChildsByValue(this.Cur_Location_ID);

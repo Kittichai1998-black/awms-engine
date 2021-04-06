@@ -19,10 +19,10 @@ namespace AWCSWebApp.Controllers
 {
     [Route("v2")]
     [ApiController]
-    public class PublicApiController : BaseController
+    public partial class PublicApiController : BaseController
     {
-        [HttpPost("receive_order_qr")]
-        public dynamic receive_order(dynamic requirt)
+        [HttpPost("post_receive_order_qr")]
+        public dynamic post_receive_order(dynamic requirt)
         {
             var mapReq = this.ExecBlock<AMWRequestCreateGRDocList>("receive_order", x =>
             {
@@ -84,7 +84,7 @@ namespace AWCSWebApp.Controllers
 
             if (mapReq._result.status == 1)
             {
-                var res = receive_order(mapReq.response);
+                var res = post_receive_order(mapReq.response);
                 return res;
             }
             else
@@ -94,8 +94,8 @@ namespace AWCSWebApp.Controllers
 
         }
 
-        [HttpPost("receive_order")]
-        public dynamic receive_order(AMWRequestCreateGRDocList req)
+        [HttpPost("post_receive_order")]
+        public dynamic post_receive_order(AMWRequestCreateGRDocList req)
         {
             var res =
                 this.ExecBlock<dynamic>(
@@ -150,8 +150,8 @@ namespace AWCSWebApp.Controllers
 
 
 
-        [HttpPost("issue_order_qr")]
-        public dynamic issue_order_qr(dynamic request)
+        [HttpPost("post_issue_order_qr")]
+        public dynamic post_issue_order_qr(dynamic request)
         {
             var mapReq = this.ExecBlock<AMWRequestCreateGIDocList>("receive_order_qr", x =>
             {
@@ -203,7 +203,7 @@ namespace AWCSWebApp.Controllers
 
             if (mapReq._result.status == 1)
             {
-                var res = issue_order(mapReq.response);
+                var res = post_issue_order(mapReq.response);
                 return res;
             }
             else
@@ -213,8 +213,8 @@ namespace AWCSWebApp.Controllers
 
         }
 
-        [HttpPost("issue_order")]
-        public dynamic issue_order(AMWRequestCreateGIDocList req)
+        [HttpPost("post_issue_order")]
+        public dynamic post_issue_order(AMWRequestCreateGIDocList req)
         {
             List<act_BuWork> buWorks = new List<act_BuWork>();
             var res =
@@ -340,6 +340,7 @@ namespace AWCSWebApp.Controllers
                                             EndTime = null,
                                             WMS_WorkQueue_ID = null,
                                             DocRef = string.Join(",", bw.Select(x => x.DocRef).ToArray()),
+                                            TrxRef = string.Join(",", bw.Select(x => x.TrxRef).ToArray()),
                                             Remark = string.Join(",", bw.Select(x => x.DocRef).ToArray()),
                                             EventStatus = McWorkEventStatus.IN_QUEUE,
                                             Status = EntityStatus.ACTIVE
@@ -361,35 +362,23 @@ namespace AWCSWebApp.Controllers
             return res;
         }
 
-        [HttpGet("buwork")]
-        public dynamic get_buWork(string wh, IOType iotype, string sku, string lot, int max)
+        [HttpGet("get_order")]
+        public dynamic get_order(IOType io, string wh,int max)
         {
             var res =
-            this.ExecBlock<List<act_BuWork>>("get_buWork", (buVo) =>
+            this.ExecBlock<List<dynamic>>("get_buWork", (buVo) =>
             {
                 var warehouse = StaticValueManager.GetInstant().GetWarehouse(wh);
 
-                var buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
-                    new SQLConditionCriteria[]
-                    {
-                        new SQLConditionCriteria("IOType",iotype, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
-                        new SQLConditionCriteria("Des_Warehouse_ID",warehouse.ID.Value, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("SkuCode",sku, SQLOperatorType.EQUALS_OR_EMPTY),
-                        new SQLConditionCriteria("SkuLot",lot, SQLOperatorType.EQUALS_OR_EMPTY)
-                    },
-                    new SQLOrderByCriteria[] { new SQLOrderByCriteria("id", SQLOrderByType.DESC) },
-                    max, 0,
-                    buVo);
+                var dsBu = DashboardADO.GetInstant().Dashboard_ReportOrder(io, warehouse.ID.Value, max, buVo);
 
-                return buWorks;
+                return dsBu;
             });
             return res;
         }
 
-
-        [HttpPost("register_pallet")]
-        public dynamic post_register_pallet(dynamic request)
+        [HttpPost("post_receive_pallet")]
+        public dynamic post_receive_pallet(dynamic request)
         {
             string mcCode = ((string)request.mcCode).Trim();
             string qrCode = ((string)request.qrCode).Trim();
@@ -472,7 +461,86 @@ namespace AWCSWebApp.Controllers
             return res;
         }
 
+        [HttpGet("get_receive_pallet")]
+        public dynamic get_receive_pallet(string gate)
+        {
+            var res = this.ExecBlock<dynamic>("get_register_pallet", (buVO) =>
+            {
+                var mcGate = StaticValueManager.GetInstant().GetMcMaster(gate);
+                if (mcGate == null)
+                    throw new Exception($"รหัสเครื่องจักร '{gate}' ไม่ถูกต้อง!");
+
+                var bo = DataADO.GetInstant().SelectBy<act_BaseObject>(
+                    ListKeyValue<string, object>
+                    .New("Status", EntityStatus.ACTIVE)
+                    .Add("McObject_ID", mcGate.ID.Value), buVO).FirstOrDefault();
+
+                if (bo.BuWork_ID.HasValue)
+                {
+                    var bu = DataADO.GetInstant().SelectByID<act_BuWork>(bo.BuWork_ID.Value, buVO);
+                    return new { LabelData = bo.LabelData, DocRef = bu.DocRef, CreateTime = bo.CreateTime };
+                }
+                else
+                {
+                    return new { LabelData = bo.LabelData, DocRef = "", CreateTime = bo.CreateTime };
+                }
+            });
+            return res;
+        }
+
+        [HttpPost("post_closed_buwork")]
+        public dynamic post_closed_buwork(dynamic request)
+        {
+            string trxRef = (string)request.trxRef; ;
+            var res = this.ExecBlock<bool>("post_closed_buwork", (buVO) =>
+            {
+                DataADO.GetInstant().UpdateBy<act_BuWork>(
+                    new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("status",EntityStatus.INACTIVE,SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("trxRef",trxRef,SQLOperatorType.EQUALS)
+                    },
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
+                    }, buVO);
+
+                DataADO.GetInstant().UpdateBy<act_McWork>(
+                    new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("eventstatus",McWorkEventStatus.IN_QUEUE,SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("trxRef",trxRef,SQLOperatorType.EQUALS)
+                    },
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("eventstatus", McWorkEventStatus.REMOVE_QUEUE),
+                        new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
+                    }, buVO);
+
+                return true;
+            });
+
+            return res;
+        }
 
 
+        [HttpPost("post_receive_shu")]
+        public dynamic post_receive_shu(dynamic request)
+        {
+            var res = this.ExecBlock<dynamic>("post_receive_shu", (buVO) =>
+            {
+                string shuCode = (string)request.shuCode;
+                string gateCode = (string)request.gateCode;
+                var mcShu = StaticValueManager.GetInstant().GetMcMaster(shuCode);
+                var mcGate = StaticValueManager.GetInstant().GetMcMaster(gateCode);
+                var mcObjShu = DataADO.GetInstant().SelectByID<act_McObject>(mcShu.ID.Value, buVO);
+                var mcObjGate = DataADO.GetInstant().SelectByID<act_McObject>(mcGate.ID.Value, buVO);
+                if (mcObjShu.IsOnline)
+                {
+                    throw new Exception("Shuttle กำลังออนไลน์อยู่");
+                }
+                mcObjShu.IsOnline = true;
+                mcObjShu.Cur_Location_ID = mcObjGate.Cur_Location_ID;
+                DataADO.GetInstant().UpdateBy<act_McObject>(mcObjShu, buVO);
+                return mcObjShu;
+            });
+            return res;
+        }
     }
 }
