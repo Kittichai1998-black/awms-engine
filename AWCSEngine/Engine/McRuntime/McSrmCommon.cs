@@ -152,28 +152,26 @@ namespace AWCSEngine.Engine.McRuntime
                             this.PostCommand(McCommandType.CM_1,
                                 _srm_souLocCode,
                                 _srm_desLocCode,
-                                3, "0000000000", 1000,
-                                (srm) =>
-                                {
-                                    if (srm.McObj.DV_Pre_Status == 99)
-                                    {
-                                        DisplayController.Events_Write($"{this.Code} > exec 1.3-99");
-                                        var wh = this.StaticValue.GetWarehouse(srm.Cur_Area.Warehouse_ID);
-                                        _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(wh.Code,_srm_desLocCode.ToString("000000000")).ID.Value;
-                                        _mcShuFreeID_wh8_in = null;
-                                        this.PostCommand(McCommandType.CM_99);
-                                        return LoopResult.Break;
-                                    }
-                                    return LoopResult.Continue;
-                                }, ()=>this.StepTxt="1.3");
+                                3, "0000000000", 1000, null, ()=>this.StepTxt="1.3");
                         }
-                        //1.4 รถปิดอยู่และไม่อยู่ zone 1 / เปิดรถสั่งกลับ home เตรียมย้าย
+                        //1.4 วาง shuttle ที่ปลายทางเสร็จ / update location shuttle
+                        if (this.McObj.DV_Pre_Status == 99 && this.StepTxt == "1.3" && this.StepTxt != "1.4")
+                        {
+                            var desLoc = this.StaticValue.GetLocation(this.McWork4Receive.Des_Location_ID.Value);
+                            var _srm_desLocCode = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
+                            var wh = this.StaticValue.GetWarehouse(this.Cur_Area.Warehouse_ID);
+                            _mcShuFree.McObj.Cur_Location_ID = this.StaticValue.GetLocation(wh.Code, _srm_desLocCode.ToString("000000000")).ID.Value;
+                            this.PostCommand(McCommandType.CM_99, () => this.StepTxt = "1.4");
+                        }
+                        //1.5 รถปิดอยู่และไม่อยู่ zone 1 / เปิดรถสั่งกลับ home เตรียมย้าย
                         else if (_mcShuFree.McObj.DV_Pre_Status == 82 && _mcShuFree.McObj.DV_Pre_Zone != 1 && StepTxt != "1.4")
                         {
                             _mcShuFree.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                                 .New("Set_SouLoc", _mcShuFree.Cur_Location.Code.Get2<int>() % 1000000)
-                                .Add("Set_ShtDi", 1), ()=>this.StepTxt="1.4");
+                                .Add("Set_ShtDi", 1), ()=>this.StepTxt="1.5");
+                            _mcShuFreeID_wh8_in = null;
                         }
+
                     }
                 }
                 //2.พบ Shut ในแถว
