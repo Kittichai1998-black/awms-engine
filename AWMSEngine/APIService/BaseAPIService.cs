@@ -153,7 +153,8 @@ namespace AWMSEngine.APIService
                     if (this.IsAuthenAuthorize)
                         throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
-                this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.DataADO.GetInstant().CreateConnection());
+                //this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.DataADO.GetInstant().CreateConnection());
+                this.BuVO.SqlConnection_Open(ADO.WMSDB.DataADO.GetInstant().CreateConnection()));
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
 
 
@@ -250,7 +251,6 @@ namespace AWMSEngine.APIService
             finally
             {
                 this.RemoveKeyLock();
-                this.BuVO.SqlConnection_Close();
                 try
                 {
                     //response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
@@ -298,6 +298,7 @@ namespace AWMSEngine.APIService
                 }
 
 
+                this.BuVO.SqlConnection_Close();
             }
 
            

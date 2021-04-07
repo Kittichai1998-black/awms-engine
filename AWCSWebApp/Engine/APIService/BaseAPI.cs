@@ -19,7 +19,7 @@ namespace AWCSWebApp.Engine.APIService
             try
             {
                 buVO.Logger = AMWLoggerManager.GetLogger("api_log", api_name);
-                buVO.SqlConnection = DataADO.GetInstant().CreateConnection();
+                buVO.SqlConnection_Open(DataADO.GetInstant().CreateConnection());
                 buVO.SqlTransaction_Begin();
                 res.response = ChildExec(request,buVO);
                 buVO.SqlTransaction_Commit();
@@ -30,10 +30,11 @@ namespace AWCSWebApp.Engine.APIService
             {
                 res._result.status = 0;
                 res._result.message = ex.Message;
+                buVO.SqlTransaction_Rollback();
             }
             finally
             {
-                buVO.SqlTransaction_Rollback();
+                buVO.SqlConnection_Close();
             }
             return res;
         }

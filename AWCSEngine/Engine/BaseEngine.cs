@@ -21,9 +21,8 @@ namespace AWCSEngine.Engine
         public BaseEngine(string logref, VOCriteria buVO=null)
         {
             this.BuVO = buVO ?? new VOCriteria();
-            this.BuVO.Logger = AMWLoggerManager.GetLogger("Engine",this.BaseLogName() , logref);
-            this.BuVO.Logger.SubServiceName = this.GetType().Name;
-            this.BuVO.SqlConnection = ADO.WCSDB.DataADO.GetInstant().CreateConnection();
+            //this.BuVO.Logger = AMWLoggerManager.GetLogger("Engine",this.BaseLogName() , logref);
+            //this.BuVO.Logger.SubServiceName = this.GetType().Name;
         }
         public ResponseCriteria<TRes> Execute(TReq request)
         {
@@ -31,6 +30,7 @@ namespace AWCSEngine.Engine
             res._result = new ResponseCriteria<TRes>.Result();
             try
             {
+                this.BuVO.SqlConnection_Open(ADO.WCSDB.DataADO.GetInstant().CreateConnection());
                 res.response = this.ExecuteChild(request);
                 res._result.status = 1;
                 res._result.message = "SUCCESS";
@@ -55,6 +55,7 @@ namespace AWCSEngine.Engine
             }
             finally
             {
+                this.BuVO.SqlConnection_Close();
             }
             return res;
         }

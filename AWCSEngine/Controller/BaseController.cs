@@ -43,19 +43,5 @@ namespace AWCSEngine.Controller
             }
             return default(TResult);
         }
-
-        private void BeginTransaction()
-        {
-            this.BuVO.SqlConnection = ADO.WCSDB.DataADO.GetInstant().CreateConnection();
-            this.BuVO.SqlTransaction_Begin();
-        }
-        private void RollbackTransaction()
-        {
-            this.BuVO.SqlTransaction_Rollback();
-        }
-        private void CommitTransaction()
-        {
-            this.BuVO.SqlTransaction_Commit();
-        }
     }
 }

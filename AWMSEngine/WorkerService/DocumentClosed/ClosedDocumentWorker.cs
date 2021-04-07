@@ -37,7 +37,7 @@ namespace AWMSEngine.WorkerService.DocumentClosed
             {
                 if(docs.Count > 0)
                 {
-                    buVO.Set(AMSModel.Constant.StringConst.BusinessVOConst.KEY_DB_CONNECTION, DataADO.GetInstant().CreateConnection());
+                    buVO.SqlConnection_Open(DataADO.GetInstant().CreateConnection());
                     buVO.SqlTransaction_Begin();
                     var docIDs = docs.Select(doc => doc.ID.Value).ToList();
 
@@ -63,7 +63,7 @@ namespace AWMSEngine.WorkerService.DocumentClosed
                     LogingADO.GetInstant().PutDocumentAlertMessage(x, buVO);
                 });
                 buVO.SqlTransaction_Commit();
-
+                buVO.SqlConnection_Close();
             }
         }
     }

@@ -107,8 +107,9 @@ namespace AWCSWebApp.Controllers
                             var wh = StaticValueManager.GetInstant().GetWarehouseByName(record.LINE.warehouse);
                             if (wh == null)
                                 throw new Exception($"รหัสคลังสินค้า Name:'{record.LINE.warehouse}' ไม่ถูกต้อง!");
-
-                            var freeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, buVO);
+                            bool isDesc = wh.Code.In("W08");
+                            
+                            var freeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, isDesc,buVO);
                             int i_freeLocs = 0;
                             record.LINE.List_Pallet.ForEach(pallet =>
                             {
@@ -444,6 +445,7 @@ namespace AWCSWebApp.Controllers
                 act_BaseObject baseObj = new act_BaseObject()
                 {
                     ID = null,
+                    BuWork_ID = buWorks.ID.Value,
                     Code = baseCode,
                     Model = "N/A",
                     McObject_ID = mcObj.ID,

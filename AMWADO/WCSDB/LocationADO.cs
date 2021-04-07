@@ -19,14 +19,17 @@ namespace ADO.WCSDB
             public string Loc_Lv { get => this.Loc_BayLv.Substring(3, 3); }
             public int Slot;
         }
-        public List<acs_Location> List_FreeLocationBayLv(long whID, int slot,VOCriteria buVO)
+        public List<acs_Location> List_FreeLocationBayLv(long whID, int slot,bool bayDesc,VOCriteria buVO)
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("whID", whID);
             var loc_idles = this.Query<LocIDLE>("SP_LIST_IDLE_LOCATION_BayLv",
-                CommandType.StoredProcedure, parameters, buVO.Logger, buVO.SqlTransaction)
-                    .OrderBy(x => x.Loc_Bay)
-                    .OrderBy(x => x.Loc_Lv).ToList();
+                CommandType.StoredProcedure, parameters, buVO.Logger, buVO.SqlTransaction);
+
+            if (bayDesc)
+                loc_idles = loc_idles.OrderByDescending(x => x.Loc_Bay).OrderBy(x => x.Loc_Lv).ToList();
+            else
+                loc_idles = loc_idles.OrderBy(x => x.Loc_Bay).OrderBy(x => x.Loc_Lv).ToList();
 
             if (slot > loc_idles.Sum(x=>x.Slot))
                 throw new Exception($"เหลือพื้นที่ว่าง '{loc_idles.Sum(x => x.Slot)}' พื้นที่ไม่พอจัดเก็บ {slot}!");

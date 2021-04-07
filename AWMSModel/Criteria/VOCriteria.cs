@@ -107,6 +107,14 @@ namespace AMSModel.Criteria
                 this.SqlTransaction = null;
             }
         }
+        public void SqlConnection_Open(SqlConnection conn)
+        {
+            this.SqlConnection = conn;
+            if (conn != null && conn.State != System.Data.ConnectionState.Open)
+            {
+                conn.Open();
+            }
+        }
         public void SqlConnection_Close()
         {
             var conn = this.SqlConnection;
@@ -122,7 +130,7 @@ namespace AMSModel.Criteria
         public SqlConnection SqlConnection
         {
             get { return this.Get<SqlConnection>(BusinessVOConst.KEY_DB_CONNECTION); }
-            set { this.Set(BusinessVOConst.KEY_DB_CONNECTION, value); this.SqlTransaction = null; }
+            private set { this.Set(BusinessVOConst.KEY_DB_CONNECTION, value); this.SqlTransaction = null; }
         }
         public SqlTransaction SqlTransaction
         {

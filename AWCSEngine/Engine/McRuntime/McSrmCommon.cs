@@ -100,7 +100,11 @@ namespace AWCSEngine.Engine.McRuntime
                 //ON Work
                 var decArea = this.StaticValue.GetArea(this.McWork4Receive.Des_Area_ID);
                 var decLoc = this.StaticValue.GetLocation(this.McWork4Receive.Des_Location_ID.Value);
-                BaseMcRuntime _mcShuInRow = McRuntimeController.GetInstant().ListMcRuntimeByLocation(decArea.Warehouse_ID, null, decLoc.GetBay(), decLoc.GetLv()).FirstOrDefault();
+                BaseMcRuntime _mcShuInRow = McRuntimeController.GetInstant()
+                    .ListMcRuntimeByLocation(decArea.Warehouse_ID, null, decLoc.GetBay(), decLoc.GetLv())
+                    .FirstOrDefault(x =>
+                                  x.Code.StartsWith("SHU") &&
+                                  (x.McMst.Info1 ?? "").ToUpper() == "IN");
                 //1.ไม่พบ Shut ในแถว
                 if (_mcShuInRow == null)
                 {
@@ -119,9 +123,13 @@ namespace AWCSEngine.Engine.McRuntime
                     // 1 ไม่พบรถในแถว พบรถที่ว่าง
                     if (_mcShuFree != null)
                     {
+                        if (!_mcShuFreeID_wh8_in.HasValue)
+                        {
+                            _mcShuFreeID_wh8_in = _mcShuFree.ID;
+                            DisplayController.Events_Write(this.Code + " > Select SHU Free=" + _mcShuFree.Code);
+                        }
                         //1.1 รถว่าง พร้อมทำงาน แต่ zone ไม่ถูกต้อง
-                        if (_mcShuFree.EventStatus == McObjectEventStatus.IDEL &&
-                        _mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone != 1 && StepTxt != "1.1")
+                        if (_mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone != 1 && StepTxt != "1.1")
                         {
                             if (_mcShuFree.PostCommand(McCommandType.CM_62))
                             {
@@ -129,8 +137,7 @@ namespace AWCSEngine.Engine.McRuntime
                             }
                         }
                         //1.2 รถว่าง พร้อมทำงาน และ zone ถูกต้อง / สั่งปิดเครื่อง
-                        else if (_mcShuFree.EventStatus == McObjectEventStatus.IDEL &&
-                        _mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone == 1 && StepTxt != "1.2")
+                        else if (_mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone == 1 && StepTxt != "1.2")
                         {
                             _mcShuFree.PostCommand(McCommandType.CM_60, ()=>this.StepTxt="1.2");
                         }
@@ -211,10 +218,15 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 var decArea = this.StaticValue.GetArea(this.McWork4Work.Des_Area_ID);
                 var decLoc = this.StaticValue.GetLocation(this.McWork4Work.Des_Location_ID.Value);
-                BaseMcRuntime _mcShuInRow = McRuntimeController.GetInstant().ListMcRuntimeByLocation(decArea.Warehouse_ID, null, decLoc.GetBay(), decLoc.GetLv()).FirstOrDefault();
+
+                BaseMcRuntime _mcShuInRow = McRuntimeController.GetInstant()
+                    .ListMcRuntimeByLocation(decArea.Warehouse_ID, null, decLoc.GetBay(), decLoc.GetLv())
+                    .FirstOrDefault(x =>
+                                  x.Code.StartsWith("SHU") &&
+                                  (x.McMst.Info1 ?? "").ToUpper() == "IN");
 
                 //3.1 แถวถูก แต่ zone ไม่ถูก / สั่งรถหลบ
-                if(_mcShuInRow.McObj.DV_Pre_Zone != 2 && _mcShuInRow.McObj.DV_Pre_Status==90 && StepTxt != "3.1")
+                if (_mcShuInRow.McObj.DV_Pre_Zone != 2 && _mcShuInRow.McObj.DV_Pre_Status==90 && StepTxt != "3.1")
                 {
                     _mcShuInRow.PostCommand(McCommandType.CM_2, ()=>this.StepTxt="3.1");
                 }
@@ -231,7 +243,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.PostCommand(McCommandType.CM_1, souLocPLC, desLocPLC, 1, baseObj.Code, 1500,
                         (mc) =>
                         {
-                            if (mc.McObj.DV_Pre_Status == 99)
+                            /*if (mc.McObj.DV_Pre_Status == 99)
                             {
                                 DisplayController.Events_Write($"{this.Code} > exec 3.2-99");
                                 mc.PostCommand(McCommandType.CM_99);
@@ -241,11 +253,12 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.McWork_2_WorkingToWorked(loc.ID.Value);
                                 this.McWork_3_WorkedToReceive_NextMC(_mcShuInRow.ID);
                                 return LoopResult.Break;
-                            }
+                            }*/
 
-                            return LoopResult.Continue;
+                            return LoopResult.Break;
                         }, ()=>this.StepTxt="3.2");
                 }
+                //3.3 สั่งปิดงานรับเข้า
                 else if (this.McObj.DV_Pre_Status == 99 &&
                     _mcShuInRow.McObj.DV_Pre_Zone != 1 &&
                     _mcShuInRow.McObj.DV_Pre_Zone != 999 && StepTxt == "3.2" && StepTxt != "3.3")

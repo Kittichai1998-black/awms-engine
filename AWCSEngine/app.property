@@ -44,4 +44,4 @@ app.machine.online.fixed_code = RC8-1,RC8-2,PS8-1,SRM11,SHU11,SHU22
 
 runtime.active.api.ids = 
 #1,2
-runtime.active.work.ids = 2,5 
+runtime.active.work.ids = 2,5,6

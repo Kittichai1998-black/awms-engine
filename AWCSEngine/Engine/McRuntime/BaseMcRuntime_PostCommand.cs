@@ -111,7 +111,10 @@ namespace AWCSEngine.Engine.McRuntime
                 this.McObj.EventStatus = McObjectEventStatus.COMMAND_CONDITION;
                 //this.StepTxt = string.Empty;
                 if (callback_OnIDLE != null)
+                {
+                    //this._Callback_OnChanges.Clear();
                     this._Callback_OnChanges.Add(callback_OnIDLE);
+                }
 
                 if (callback_CommandSetted != null)
                     callback_CommandSetted();

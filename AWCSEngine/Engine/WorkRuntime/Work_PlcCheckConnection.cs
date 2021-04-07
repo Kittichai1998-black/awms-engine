@@ -36,7 +36,9 @@ namespace AWCSEngine.Engine.WorkRuntime
                         this.CheckConnects.Add(checkConn);
                     }
                     int icheck = plc.GetDevice<int>("CCONN_READ");
-                    if(checkConn.CCONN_READ != icheck)
+                    plc.SetDevice<int>("CCONN_WRITE", icheck);
+                    plc.IsConnect = true;
+                    /*if(checkConn.CCONN_READ != icheck)
                     {
                         plc.SetDevice<int>("CCONN_WRITE", icheck);
                         checkConn.CCONN_READ = icheck;
@@ -46,12 +48,10 @@ namespace AWCSEngine.Engine.WorkRuntime
                     else if((DateTime.Now - checkConn.LastChange).Seconds > 5)
                     {
                         plc.IsConnect = false;
-                    }
-                 }
+                    }*/
+                }
              }
 
-            //var i = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").GetDevice<int>("CCONN_READ");
-            //ADO.WCSPLC.PlcKepwareV6ADO.GetInstant("WH08.PLC#45").SetDevice<int>("CCONN_WRITE", i);
         }
 
         protected override void OnStop()
