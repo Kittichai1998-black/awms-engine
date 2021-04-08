@@ -21,8 +21,8 @@ namespace AWCSEngine.Engine
         public BaseEngine(string logref, VOCriteria buVO=null)
         {
             this.BuVO = buVO ?? new VOCriteria();
-            //this.BuVO.Logger = AMWLoggerManager.GetLogger("Engine",this.BaseLogName() , logref);
-            //this.BuVO.Logger.SubServiceName = this.GetType().Name;
+            this.BuVO.Logger = AMWLoggerManager.GetLogger("Engine", this.BaseLogName(), logref, false);
+            this.BuVO.Logger.SubServiceName = this.GetType().Name;
         }
         public ResponseCriteria<TRes> Execute(TReq request)
         {

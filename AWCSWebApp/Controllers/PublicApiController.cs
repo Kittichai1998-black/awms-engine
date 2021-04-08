@@ -217,7 +217,6 @@ namespace AWCSWebApp.Controllers
         [HttpPost("post_issue_order")]
         public dynamic post_issue_order(AMWRequestCreateGIDocList req)
         {
-            List<act_BuWork> buWorks = new List<act_BuWork>();
             var res =
                 this.ExecBlock<AMWRequestCreateGIDocList>(
                     "receive_order",
@@ -252,108 +251,103 @@ namespace AWCSWebApp.Controllers
                             } while (area == null);
                             
 
-                            var buWork = new act_BuWork()
+
+
+                            //////////////////////SELECT PALLET FOR PICK
+
+
+                            List<act_BaseObject> bObjs = DataADO.GetInstant().SelectBy<act_BaseObject>(
+                                ListKeyValue<string, object>
+                                    .New("Warehouse_ID", wh.ID.Value)
+                                    .Add("SkuCode", record.LINE.sku)
+                                    .Add("SkuGrade", record.LINE.grade)
+                                    .Add("SkuLot", record.LINE.lot)
+                                    //.Add("SkuStatus", record.LINE.status)
+                                    .Add("EventStatus", BaseObjectEventStatus.IDLE)
+                                    .Add("Status", EntityStatus.ACTIVE),
+                                buVO)
+                            .OrderByDescending(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetBay())
+                            .OrderByDescending(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetBank())
+                            .ToList();
+
+                            long seqGroup = DataADO.GetInstant().NextNum("McWorkSeqGroup", false, buVO);
+                            decimal dis_qty = record.LINE.qty;
+                            if (dis_qty > bObjs.Sum(x => x.SkuQty))
+                                throw new Exception($"จำนวนสินค้า '{record.LINE.sku} {record.LINE.lot} qty:{dis_qty}' ที่ต้องการเบิก มีมากกว่าจำนวนที่จัดเก็บ qty:{bObjs.Sum(x => x.SkuQty)}!");
+
+                            foreach (var bObj in bObjs)
                             {
-                                ID = null,
-                                TrxRef = record.LINE.api_ref,
-                                DocRef = record.LINE.doc_wms,
-                                Priority = record.LINE.Priority,
-                                SeqGroup = DataADO.GetInstant().NextNum("McWorkSeqGroup", false,buVO),
-                                SeqIndex = 0,
-                                IOType = IOType.OUTBOUND,
-                                SkuCode = record.LINE.sku,
-                                SkuGrade = record.LINE.grade,
-                                SkuLot = record.LINE.lot,
-                                SkuQty = record.LINE.qty,
-                                SkuUnit = record.LINE.unit,
-                                SkuStatus = record.LINE.status,
-                                Des_Warehouse_ID = wh.ID.Value,
-                                Des_Area_ID = area.ID.Value,
-                                Des_Location_ID = null,
-                                Remark = record.LINE.Dock_no,
-                                Status = EntityStatus.ACTIVE
-                            };
-                            buWork.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_BuWork>(buWork, buVO);
-                            buWorks.Add(buWork);
+                                if (dis_qty <= 0)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+
+                                    var buWork = new act_BuWork()
+                                    {
+                                        ID = null,
+                                        TrxRef = record.LINE.api_ref,
+                                        DocRef = record.LINE.doc_wms,
+                                        Priority = record.LINE.Priority,
+                                        SeqGroup = DataADO.GetInstant().NextNum("McWorkSeqGroup", false, buVO),
+                                        SeqIndex = 0,
+                                        IOType = IOType.OUTBOUND,
+                                        SkuCode = record.LINE.sku,
+                                        SkuGrade = record.LINE.grade,
+                                        SkuLot = record.LINE.lot,
+                                        SkuQty = record.LINE.qty,
+                                        SkuUnit = record.LINE.unit,
+                                        SkuStatus = record.LINE.status,
+                                        Des_Warehouse_ID = wh.ID.Value,
+                                        Des_Area_ID = area.ID.Value,
+                                        Des_Location_ID = null,
+                                        Remark = record.LINE.Dock_no,
+                                        Status = EntityStatus.INACTIVE
+                                    };
+                                    buWork.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_BuWork>(buWork, buVO);
+
+                                    act_McWork mcWork = new act_McWork()
+                                    {
+                                        ID = null,
+                                        Priority = 1,
+                                        BuWork_ID = buWork.ID.Value,
+                                        SeqGroup = seqGroup,
+                                        SeqItem = 10,
+                                        BaseObject_ID = bObj.ID.Value,
+                                        IOType = IOType.OUTBOUND,
+                                        QueueType = 2,
+                                        Cur_Warehouse_ID = bObj.Warehouse_ID,
+                                        Cur_Area_ID = bObj.Area_ID,
+                                        Cur_Location_ID = bObj.Location_ID,
+                                        Sou_Area_ID = bObj.Area_ID,
+                                        Sou_Location_ID = bObj.Location_ID,
+                                        Des_Area_ID = buWork.Des_Area_ID.Value,
+                                        Des_Location_ID = null,
+                                        ActualTime = DateTime.Now,
+                                        Cur_McObject_ID = null,
+                                        StartTime = DateTime.Now,
+                                        Rec_McObject_ID = null,
+                                        TreeRoute = "{}",
+                                        EndTime = null,
+                                        WMS_WorkQueue_ID = null,
+                                        DocRef = buWork.DocRef,
+                                        TrxRef = buWork.TrxRef,
+                                        Remark = buWork.Remark,
+                                        EventStatus = McWorkEventStatus.IN_QUEUE,
+                                        Status = EntityStatus.ACTIVE
+                                    };
+                                    DataADO.GetInstant().Insert<act_McWork>(mcWork, buVO);
+
+                                    bObj.BuWork_ID = buWork.ID.Value;
+                                    bObj.EventStatus = BaseObjectEventStatus.OUTBOUND;
+                                    DataADO.GetInstant().Insert<act_BaseObject>(bObj, buVO);
+
+                                    dis_qty -= bObj.SkuQty;
+                                }
+                            }
                         });
 
-                        buWorks
-                            .GroupBy(x => new
-                            {
-                                Des_Warehouse_ID = x.Des_Warehouse_ID,
-                                Des_Area_ID = x.Des_Area_ID,
-                                SkuCode = x.SkuCode,
-                                SkuGrade = x.SkuGrade,
-                                SkuLot = x.SkuLot,
-                                SkuStatus = x.SkuStatus,
-                            })
-                            .ToList()
-                            .ForEach(bw =>
-                            {
-                                List<act_BaseObject> bObjs = DataADO.GetInstant().SelectBy<act_BaseObject>(
-                                    ListKeyValue<string, object>
-                                        .New("Warehouse_ID", bw.Key.Des_Warehouse_ID)
-                                        .Add("SkuCode", bw.Key.SkuCode)
-                                        .Add("SkuGrade", bw.Key.SkuGrade)
-                                        .Add("SkuLot", bw.Key.SkuLot)
-                                        .Add("SkuStatus", bw.Key.SkuStatus)
-                                        .Add("EventStatus", BaseObjectEventStatus.IDLE)
-                                        .Add("Status", EntityStatus.ACTIVE),
-                                    buVO)
-                                .OrderByDescending(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetBay())
-                                .OrderByDescending(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetBank())
-                                .ToList();
-
-                                long seqGroup = DataADO.GetInstant().NextNum("McWorkSeqGroup", false, buVO);
-                                decimal dis_qty = bw.Sum(x => x.SkuQty);
-                                if (dis_qty > bObjs.Sum(x => x.SkuQty))
-                                    throw new Exception($"จำนวนสินค้า '{bw.Key.SkuCode} {bw.Key.SkuLot} qty:{dis_qty}' ที่ต้องการเบิก มีมากกว่าจำนวนที่จัดเก็บ qty:{bObjs.Sum(x => x.SkuQty)}!");
-                               
-                                foreach (var bObj in bObjs)
-                                {
-                                    if (dis_qty <= 0)
-                                    {
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        act_McWork mcWork = new act_McWork()
-                                        {
-                                            ID = null,
-                                            Priority = 1,
-                                            SeqGroup = seqGroup,
-                                            SeqItem = 10,
-                                            BaseObject_ID = bObj.ID.Value,
-                                            IOType = IOType.OUTBOUND,
-                                            QueueType = 2,
-                                            Cur_Warehouse_ID = bObj.Warehouse_ID,
-                                            Cur_Area_ID = bObj.Area_ID,
-                                            Cur_Location_ID = bObj.Location_ID,
-                                            Sou_Area_ID = bObj.Area_ID,
-                                            Sou_Location_ID = bObj.Location_ID,
-                                            Des_Area_ID = bw.Key.Des_Area_ID.Value,
-                                            Des_Location_ID = null,
-                                            ActualTime = DateTime.Now,
-                                            Cur_McObject_ID = null,
-                                            StartTime = DateTime.Now,
-                                            Rec_McObject_ID = null,
-                                            TreeRoute = "{}",
-                                            EndTime = null,
-                                            WMS_WorkQueue_ID = null,
-                                            DocRef = string.Join(",", bw.Select(x => x.DocRef).ToArray()),
-                                            TrxRef = string.Join(",", bw.Select(x => x.TrxRef).ToArray()),
-                                            Remark = string.Join(",", bw.Select(x => x.DocRef).ToArray()),
-                                            EventStatus = McWorkEventStatus.IN_QUEUE,
-                                            Status = EntityStatus.ACTIVE
-                                        };
-                                        DataADO.GetInstant().Insert<act_McWork>(mcWork, buVO);
-
-                                        bObj.EventStatus = BaseObjectEventStatus.OUTBOUND;
-                                        DataADO.GetInstant().Insert<act_BaseObject>(bObj, buVO);
-
-                                    }
-                                }
-                            });
 
 
 

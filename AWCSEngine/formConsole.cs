@@ -98,10 +98,11 @@ namespace AWCSEngine
                 {
                     this.chkMcList.Invoke((MethodInvoker)(() => {
                         Controller.McRuntimeController.GetInstant().ListMcRuntime()
+                        .OrderBy(x=>x.Code).ToList()
                         .ForEach(x =>
                         {
                             this.chkMcList.Items.Add(x.Code);
-                            this.chkMcList.SetItemChecked(this.chkMcList.Items.Count - 1, true);
+                            //this.chkMcList.SetItemChecked(this.chkMcList.Items.Count - 1, true);
                         });
                     }));
                 }

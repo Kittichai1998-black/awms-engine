@@ -6,6 +6,7 @@ using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Logger;
 using AWCSWebApp.GCLModel.Criteria;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,27 @@ namespace AWCSWebApp.Controllers
             var res = this.ExecBlock<List<acs_Area>>("list_area", (buVO) =>
             {
                 return StaticValueManager.GetInstant().Areas;
+            });
+
+            return res;
+        }
+        public DynamicParameters GetDapperParam()
+        {
+            Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+            this.Request.Query.Keys.ToList().ForEach(k =>
+            {
+                string val = this.Request.Query[k];
+                parameter.Add(string.IsNullOrWhiteSpace(val) ? "%" : val.Replace("*", "%"));
+            });
+            return parameter;
+        }
+        [HttpGet("get_inventory_pallet")]
+        public dynamic get_inventory_pallet()
+        {
+            var res = this.ExecBlock<List<dynamic>>("get_inventory_pallet", (buVO) =>
+            {
+                var res2 = DataADO.GetInstant().QuerySP<dynamic>("RP_Inventory_Pallet", GetDapperParam(), buVO);
+                return res2;
             });
 
             return res;

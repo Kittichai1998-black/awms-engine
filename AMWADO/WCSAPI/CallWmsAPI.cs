@@ -75,6 +75,9 @@ namespace ADO.WCSAPI
                     }
                 , buVO).First();
 
+            if (buWork == null)
+                throw new Exception($"ไม่พบ buWork สำหรับพาเลท '{req.barcode_pstos[0]}'");
+
             var souLoc = StaticValueManager.GetInstant().GetLocation(req.warehouseCode,req.locationCode);
             var souArea = StaticValueManager.GetInstant().GetArea(req.areaCode);
             var souWh = StaticValueManager.GetInstant().GetWarehouse(req.warehouseCode);
