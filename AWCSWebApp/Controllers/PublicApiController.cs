@@ -120,6 +120,7 @@ namespace AWCSWebApp.Controllers
                                     ID = null,
                                     ItemNo = itemNo,
                                     IOType = IOType.INBOUND,
+                                    Customer = record.LINE.customer,
                                     SkuCode = record.LINE.sku,
                                     SkuGrade = record.LINE.grade,
                                     SkuLot = record.LINE.lot,
@@ -219,7 +220,7 @@ namespace AWCSWebApp.Controllers
         {
             var res =
                 this.ExecBlock<AMWRequestCreateGIDocList>(
-                    "receive_order",
+                    "post_issue_order",
                     (buVO) => {
                         req.RECORD.ForEach(record =>
                         {
@@ -227,8 +228,8 @@ namespace AWCSWebApp.Controllers
                             if (wh == null)
                                 throw new Exception($"รหัสคลังสินค้า '{record.LINE.warehouse}' ไม่ถูกต้อง!");
 
-                            string stagingNo = record.LINE.staging==null?string.Empty: record.LINE.staging.Split(",").FirstOrDefault();
-                            string dockNo = record.LINE.Dock_no == null ? string.Empty: record.LINE.Dock_no.Split(",").FirstOrDefault();
+                            string stagingNo = record.LINE.staging == null ? string.Empty : record.LINE.staging.Split(",").FirstOrDefault();
+                            string dockNo = record.LINE.Dock_no == null ? string.Empty : record.LINE.Dock_no.Split(",").FirstOrDefault();
                             if (string.IsNullOrEmpty(stagingNo))
                                 throw new Exception("กรุณาระบุบ Staging ปลายทาง!");
                             
@@ -263,6 +264,7 @@ namespace AWCSWebApp.Controllers
                                     .Add("SkuGrade", record.LINE.grade)
                                     .Add("SkuLot", record.LINE.lot)
                                     //.Add("SkuStatus", record.LINE.status)
+                                    //.Add("Customer", record.LINE.customer)
                                     .Add("EventStatus", BaseObjectEventStatus.IDLE)
                                     .Add("Status", EntityStatus.ACTIVE),
                                 buVO)
@@ -274,6 +276,8 @@ namespace AWCSWebApp.Controllers
                             decimal dis_qty = record.LINE.qty;
                             if (dis_qty > bObjs.Sum(x => x.SkuQty))
                                 throw new Exception($"จำนวนสินค้า '{record.LINE.sku} {record.LINE.lot} qty:{dis_qty}' ที่ต้องการเบิก มีมากกว่าจำนวนที่จัดเก็บ qty:{bObjs.Sum(x => x.SkuQty)}!");
+
+                            List<act_BaseObject> _out_bObjs = new List<act_BaseObject>();
 
                             foreach (var bObj in bObjs)
                             {
@@ -296,13 +300,13 @@ namespace AWCSWebApp.Controllers
                                         SkuCode = record.LINE.sku,
                                         SkuGrade = record.LINE.grade,
                                         SkuLot = record.LINE.lot,
-                                        SkuQty = record.LINE.qty,
+                                        SkuQty = bObj.SkuQty,
                                         SkuUnit = record.LINE.unit,
                                         SkuStatus = record.LINE.status,
                                         Des_Warehouse_ID = wh.ID.Value,
                                         Des_Area_ID = area.ID.Value,
                                         Des_Location_ID = null,
-                                        Remark = record.LINE.Dock_no,
+                                        Remark = (stagingNo != area.Code ? stagingNo : string.Empty),
                                         Status = EntityStatus.INACTIVE
                                     };
                                     buWork.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_BuWork>(buWork, buVO);
@@ -341,11 +345,41 @@ namespace AWCSWebApp.Controllers
 
                                     bObj.BuWork_ID = buWork.ID.Value;
                                     bObj.EventStatus = BaseObjectEventStatus.OUTBOUND;
-                                    DataADO.GetInstant().Insert<act_BaseObject>(bObj, buVO);
+                                    DataADO.GetInstant().UpdateBy<act_BaseObject>(bObj, buVO);
 
+                                    _out_bObjs.Add(bObj);
                                     dis_qty -= bObj.SkuQty;
                                 }
                             }
+
+                            /*_out_bObjs.Select(
+                                x =>
+                                {
+                                    var loc = StaticValueManager.GetInstant().GetLocation(x.Location_ID);
+                                    return new { bank=loc.GetBank(), bay = loc.GetBay(), lv = loc.GetLv() };
+                                })
+                            .GroupBy(x =>new { bay=x.bay,lv=x.lv })
+                            .ToList().ForEach(x =>
+                            {
+
+                                List<acv_BaseObject> _notout_bObjs = DataADO.GetInstant().SelectBy<acv_BaseObject>(
+                                    new SQLConditionCriteria[]
+                                    {
+                                        new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS),
+                                        new SQLConditionCriteria("EventStatus", BaseObjectEventStatus.OUTBOUND,SQLOperatorType.NOTEQUALS),
+                                        new SQLConditionCriteria("isSto",1,SQLOperatorType.EQUALS),
+                                        new SQLConditionCriteria("Bay",x.Key.bay,SQLOperatorType.EQUALS),
+                                        new SQLConditionCriteria("Lv",x.Key.bay,SQLOperatorType.EQUALS),
+                                        new SQLConditionCriteria("Bank",x.Min(y=>y.bank),SQLOperatorType.LESS),
+                                    },
+                                    buVO);
+                                if (_notout_bObjs.Count > 0)
+                                {
+                                    var bays = string.Join(',', _notout_bObjs.GroupBy(x => "[" + x.Bay + ":" + x.Lv + "]").Select(x => x.Key).ToArray());
+                                    throw new Exception("ไม่สามารถเบิกได้ มีสินค้าขวางด้านหน้า [bay:lv]="+bays);
+                                }
+                            });*/
+                            
                         });
 
 
@@ -509,6 +543,19 @@ namespace AWCSWebApp.Controllers
                         new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
                     }, buVO);
 
+                var buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
+                    ListKeyValue<string, object>.New("trxRef", trxRef), buVO);
+
+                DataADO.GetInstant().UpdateBy<act_BaseObject>(
+                    new SQLConditionCriteria[]
+                    {
+                        new SQLConditionCriteria("buWork_ID",string.Join(",", buWorks.Select(x=>x.ID.Value).ToArray()), SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
+                    },
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("eventstatus",BaseObjectEventStatus.IDLE)
+                    }, buVO);
+
                 return true;
             });
 
@@ -521,9 +568,9 @@ namespace AWCSWebApp.Controllers
         {
             var res = this.ExecBlock<dynamic>("post_receive_shu", (buVO) =>
             {
-                string shuCode = (string)request.shuCode;
-                string gateCode = (string)request.gateCode;
-                var mcShu = StaticValueManager.GetInstant().GetMcMaster(shuCode);
+                string shu = (string)request.shu;
+                string gate = (string)request.gate;
+                /*var mcShu = StaticValueManager.GetInstant().GetMcMaster(shuCode);
                 var mcGate = StaticValueManager.GetInstant().GetMcMaster(gateCode);
                 var mcObjShu = DataADO.GetInstant().SelectByID<act_McObject>(mcShu.ID.Value, buVO);
                 var mcObjGate = DataADO.GetInstant().SelectByID<act_McObject>(mcGate.ID.Value, buVO);
@@ -533,8 +580,18 @@ namespace AWCSWebApp.Controllers
                 }
                 mcObjShu.IsOnline = true;
                 mcObjShu.Cur_Location_ID = mcObjGate.Cur_Location_ID;
-                DataADO.GetInstant().UpdateBy<act_McObject>(mcObjShu, buVO);
-                return mcObjShu;
+                DataADO.GetInstant().UpdateBy<act_McObject>(mcObjShu, buVO);*/
+                Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+                parameter.Add("SH_NAME", shu);
+                parameter.Add("SS_NAME", gate);
+                parameter.Add("rtFlag", gate, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+                parameter.Add("rtDesc", gate, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+                DataADO.GetInstant().QuerySP("SP_ShuttleBatteryFull", parameter, buVO);
+                var rtFlag = parameter.Get<string>("rtFlag");
+                var rtDesc = parameter.Get<string>("rtDesc");
+                if (rtFlag.ToUpper() != "Y")
+                    throw new Exception(rtDesc);
+                return new { desc = rtDesc };
             });
             return res;
         }

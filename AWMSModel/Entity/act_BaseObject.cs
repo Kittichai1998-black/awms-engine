@@ -14,6 +14,7 @@ namespace AMSModel.Entity
         public long? BuWork_ID;
         public string Code;
         public string Model;
+        public string Customer;
         public string SkuItemNo;
         public string SkuCode;
         public string SkuName;

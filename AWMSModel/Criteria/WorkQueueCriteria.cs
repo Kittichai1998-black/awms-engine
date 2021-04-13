@@ -42,6 +42,7 @@ namespace AMSModel.Criteria
                 public string code;
                 public decimal qty;
                 public string unit;
+                public string customer;
                 public decimal baseQty;
                 public string baseUnit;
                 public string batch;

@@ -4,8 +4,8 @@
         <h6 class="text-secondary">เพิ่มงานรับเข้า</h6>
     </div>
 </div>
-<div class="row mb-3">
-    <label for="txtQrCode" class="col-2 col-form-label">Bagging QR</label>
+<div class="row mb-3" hidden="hidden">
+    <label for="txtQrCode" class="col-2 col-form-label">BO.QR</label>
     <div class="col-8">
         <input type="text" class="form-control" id="txtQrCode" placeholder="Bagging QR">
     </div>
@@ -13,33 +13,108 @@
         <button id="btnPostQR" class="btn btn-primary form-control">ส่ง</button>
     </div>
 </div>
+<div class="row mb-3">
+    <div class="col-2">
+        <div class="form-floating">
+            <select class="form-select" id="ddlWH">
+            </select>
+            <label for="floatingSelect">คลังสินค้า</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtDocRef">
+            <label>BO</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtCus">
+            <label>ลูกค้า</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtGrade">
+            <label>เกรด</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtSku">
+            <label>รหัสสินค้า</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtLot">
+            <label>ลอท</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="txtQty" value="0">
+            <label>จำนวนต่อพาเลท</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtUnit" value="KG">
+            <label>หน่วยนับ</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="txtItemNoStart">
+            <label>ลำดับพาเลทแรก</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="txtItemNoEnd">
+            <label>ลำดับพาเลทสุดท้าย</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtStatus">
+            <label>สถานะ</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="txtDischarge">
+            <label>Discharge</label>
+        </div>
+    </div>
+    <div class="col-2">
+        <button id="btnPostQR2" class="btn btn-primary form-control">ส่ง</button>
+    </div>
+</div>
 <hr />
 <h6 class="text-secondary">งานที่อยู่ระหว่างรับเข้า</h6>
 <div class="row mb-3">
-    <label class="col-2 col-form-label" for="ddlWH">คลังสินค้า</label>
-    <div class="col-10">
-        <select class="form-select" id="ddlWH">
+    <label class="col-3 col-form-label" for="ddlWHView">แสดงคิวงาน คลังสินค้า</label>
+    <div class="col-9">
+        <select class="form-select" id="ddlWHView">
         </select>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-
-
         <table class="table table-sm">
             <thead class="table-dark">
                 <tr>
-                    <td>Bagging Order</td>
+                    <td>BO</td>
                     <td>ปลายทาง</td>
                     <td>รหัสสินค้า</td>
                     <td>เกรด</td>
                     <td>ลอท</td>
-                    <td>PLN No.</td>
-                    <td>จำนวนรับ</td>
-                    <td>จอง (PL)</td>
-                    <td>กำลังรับ (PL)</td>
-                    <td>เสร็จ (PL)</td>
-                    <td>ยกเลิก (PL)</td>
+                    <td>ลำดับพาเลท</td>
+                    <td>จำนวน(สินค้า)</td>
+                    <td>คิวรับ(พาเลท)</td>
+                    <td>รับแล้ว(พาเลท)</td>
+                    <td>ยกเลิก(พาเลท)</td>
                     <td></td>
                 </tr>
             </thead>
@@ -50,7 +125,24 @@
 </div>
 
 <script>
-
+    //{BO}|{!customer}|{GRADE}|{MAT}|{LOT}|{No.Start}{No.End}|{WAREHOUSE}|{!QTY Sum}|{UNIT}|{QTY_PALLET}|{STATUS}|{Dischart}
+    $('#btnPostQR2').click(() => {
+        var qr_map =
+                $('#txtDocRef').val() + '|' +
+                $('#txtCus').val() + '|' +
+                $('#txtGrade').val() + '|' +
+                $('#txtSku').val() + '|' +
+                $('#txtLot').val() + '|' +
+                $('#txtItemNoStart').val().padStart(4, "0") + $('#txtItemNoEnd').val().padStart(4, "0") + '|' +
+                $('#ddlWH').val() + '|' +
+                '0' + '|' +
+                $('#txtUnit').val() + '|' +
+                $('#txtQty').val() + '|' +
+                $('#txtStatus').val() + '|' +
+                $('#txtDischarge').val();
+        //alert(qr_map);
+        post_qr(qr_map);
+    });
     $('#btnPostQR').click(() => {
         post_qr($('#txtQrCode').val());
     });
@@ -63,11 +155,22 @@
         app.post('post_receive_order_qr', { qrCode: qrCode }, (data) => {
             page_load(false);
             $('#txtQrCode').val('');
-        })
+            $('#txtDocRef').val('');
+            $('#txtCus').val('');
+            $('#txtGrade').val('');
+            $('#txtSku').val('');
+            $('#txtLot').val('');
+            $('#txtItemNoStart').val('');
+            $('#txtItemNoEnd').val('');
+            $('#txtQty').val('');
+            $('#txtStatus').val('');
+            $('#txtDischarge').val('');
+            alert('เพิ่มคิวงานสำเร็จ')
+        });
     }
 
     function confirm_closed_buwork(trxRef) {
-        if (confirm('ยืนยันจบงาน? ยกเลิกรายการที่จองทั้งหมด!')) {
+        if (confirm('ยืนยันจบงาน? ยกเลิกรายการในคิวทั้งหมด!')) {
             app.post('post_closed_buwork', { trxRef: trxRef }, (data) => {
                 page_load(false);
             })
@@ -78,21 +181,22 @@
         app.get('list_warhouse', {},
             (data) => {
                 data.response.forEach((e) => {
-                    $('#ddlWH').append($('<option value="' + e.code + '">' + e.name + '</option>'));
+                    $('#ddlWHView').append($('<option value="' + e.id + '">' + e.name + '</option>'));
+                    $('#ddlWH').append($('<option value="' + e.name + '">' + e.name + '</option>'));
                 });
                 _callback && _callback();
             });
     }
 
     function page_load(isLoop) {
-        if ($('#ddlWH').val() != "") {
-            app.get('get_order', { io: 1, wh: $('#ddlWH').val(), max: 10 },
+        if ($('#ddlWHView').val() != "") {
+            app.get('get_sp', { _sp:'RP_Dashboard_Receive_Order', io: 1, whID: $('#ddlWHView').val(), max: 10 },
                 (data) => {
                     var tbody = $('#tbodyOrder');
                     tbody.html('');
                     data.response.forEach((v) => {
                         var tr = $('<tr ' +
-                            (v.AllocateCount + v.WorkingCount > 0 ? '' : 'style="background:#DDD;"') +
+                            (v.AllocateCount > 0 ? '' : 'style="background:#DDD;"') +
                             '>' +
                             '<td>' + v.DocRef + '</td>' +
                             '<td>' + v.DesName + '</td>' +
@@ -102,15 +206,12 @@
                             '<td>' + v.PalletMinMax + '</td>' +
                             '<td class="text-center">' + v.SumQty + '</td>' +
                             '<td class="text-center">' + v.AllocateCount + '</td>' +
-                            '<td class="text-center">' + v.WorkingCount + '</td>' +
                             '<td class="text-center">' + v.DoneCount + '</td>' +
                             '<td class="text-center">' + v.RejectCount + '</td>' +
                             '<td><button class="btn btn-danger" onclick="confirm_closed_buwork(\'' + v.TrxRef + '\')">จบงาน</button></td>' +
                             '</tr>');
                         tbody.append(tr);
                     });
-
-
                     if (isLoop)
                         setTimeout(() => { page_load(true); }, 5000);
                 },

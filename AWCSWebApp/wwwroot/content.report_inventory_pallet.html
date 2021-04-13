@@ -1,0 +1,93 @@
+﻿<div class="row mb-3">
+    <div class="col-12">
+        <h5>รายงานสินค้าคงคลัง แยกพาเลท</h5>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+
+        <table class="table table-sm">
+            <thead class="table-dark" style="position:static; top:0px;">
+                <tr>
+                    <td>คลังสินค้า</td>
+                    <td>ตำแหน่ง</td>
+                    <td>ตำแหน่ง(MC)</td>
+                    <td>สินค้า</td>
+                    <td>เกรด</td>
+                    <td>ลอท</td>
+                    <td>เลขพาเลท</td>
+                    <td>จำนวน</td>
+                    <td>สถานะ.สินค้า</td>
+                    <td>สถานะ.พาเลท</td>
+                </tr>
+                <tr>
+                    <td><input type="text" class="form-control" id="txtWh"></td>
+                    <td><input type="text" class="form-control" id="txtLoc"></td>
+                    <td><input type="text" class="form-control" id="txtLocMc"></td>
+                    <td><input type="text" class="form-control" id="txtSku"></td>
+                    <td><input type="text" class="form-control" id="txtGrade"></td>
+                    <td><input type="text" class="form-control" id="txtLot"></td>
+                    <td><input type="text" class="form-control" id="txtItemNo"></td>
+                    <td><input type="text" class="form-control" id="txtQty"></td>
+                    <td><input type="text" class="form-control" id="txtStsSto"></td>
+                    <td><input type="text" class="form-control" id="txtStsPl"></td>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7" class="text-end">Size:</td>
+                    <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
+                    <td colspan="1" class="text-end">Page:</td>
+                    <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+    $('input[id^=txt]').change(() => {
+        page_load();
+    });
+
+    function page_load() {
+        app.get('get_sp', {
+            _sp: 'rp_inventory_pallet',
+            wh: $('#txtWh').val(),
+            loc: $('#txtLoc').val(),
+            loc_mc: $('#txtLocMc').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            itemNo: $('#txtItemNo').val(),
+            qty: $('#txtQty').val(),
+            sts_sto: $('#txtStsSto').val(),
+            sts_pl: $('#txtStsPl').val(),
+            max: $('#txtMax').val(),
+            page: $('#txtPage').val(),
+        },
+            (data) => {
+                var tbody = $('#tbody');
+                tbody.html('');
+                data.response.forEach((v) => {
+                    var tr = $('<tr>' +
+                        '<td>' + v.wh + '</td>' +
+                        '<td>' + v.loc + '</td>' +
+                        '<td>' + v.loc_mc + '</td>' +
+                        '<td>' + v.sku + '</td>' +
+                        '<td>' + v.grade + '</td>' +
+                        '<td>' + v.lot + '</td>' +
+                        '<td>' + v.itemNo + '</td>' +
+                        '<td class="text-end">' + v.qty + '</td>' +
+                        '<td>' + v.sts_sto + '</td>' +
+                        '<td>' + v.sts_pl + '</td>' +
+                        '</tr>');
+                    tbody.append(tr);
+                });
+            }, () => {
+            });
+    }
+    page_load();
+</script>

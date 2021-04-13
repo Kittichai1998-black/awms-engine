@@ -14,6 +14,7 @@ namespace AMSModel.Entity
         public int Priority;
         public long SeqGroup;
         public int SeqIndex;
+        public string Customer;
         public string ItemNo;
         public string SkuCode;
         public string SkuLot;

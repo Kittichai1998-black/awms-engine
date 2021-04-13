@@ -97,6 +97,10 @@
                     if (data.response) {
                         $('#cardDetail').addClass('text-dark');
                         $('#cardDetail').addClass('bg-info');
+                        setTimeout(() => {
+                            $('#cardDetail').removeClass('text-dark');
+                            $('#cardDetail').removeClass('bg-info');
+                        }, 5000);
                     } else {
                         $('#cardDetail').removeClass('text-dark');
                         $('#cardDetail').removeClass('bg-info');

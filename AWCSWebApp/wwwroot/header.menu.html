@@ -1,37 +1,39 @@
 ﻿
 <div class="row">
     <div class="col-12">
-        <img src="/dist/img/amw_logo.png" class="logo" onclick="app.load_content('home')" />
-        <img src="/dist/img/pttgcl_logo.jpg" class="logo" onclick="app.load_content('home')" />
+        <img src="/dist/img/amw_logo.png" class="logo" onclick="window.location='/index.html'" />
+        <img src="/dist/img/pttgcl_logo.jpg" class="logo" onclick="window.location='/index.html'" />
         <div class="dropdown" style="display:inline-block">
             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="false">
-                งานรับ
+                1 งานรับ
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
-                <li><a class="dropdown-item" href="?post_receive_order">จัดการงานรับสินค้า</a></li>
-                <li><a class="dropdown-item" href="?post_receive_pallet">สแกนรับสินค้าที่หน้าเกต</a></li>
-                <li><a class="dropdown-item" href="?post_receive_shu">สแกนรับ Shuttle หลังชาร์ทแบต</a></li>
+                <li><a class="dropdown-item" href="?post_receive_order">1.1 จัดการงานรับสินค้า</a></li>
+                <li><a class="dropdown-item" href="?post_receive_pallet">1.2 สแกนรับสินค้าที่หน้าเกต</a></li>
+                <li><a class="dropdown-item" href="?post_receive_shu">1.3 สแกนรับ Shuttle หลังชาร์ทแบต</a></li>
             </ul>
         </div>
         <div class="dropdown" style="display:inline-block">
             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                งานเบิก
+                2 งานเบิก
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
-                <li><a class="dropdown-item" href="?post_issue_order">จัดการงานเบิกสินค้า</a></li>
+                <li><a class="dropdown-item" href="?post_issue_order">2.1 จัดการงานเบิกสินค้า</a></li>
+                <li><a class="dropdown-item" href="?monitor_issue_order">2.2 Monitor งานเบิกสินค้า</a></li>
             </ul>
         </div>
         <div class="dropdown" style="display:inline-block">
             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu3" data-bs-toggle="dropdown" aria-expanded="false">
-                รายงาน
+                3 รายงาน
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
-                <li><a class="dropdown-item" href="?report_receive_order')">รายงานการรับสินค้า</a></li>
-                <li><a class="dropdown-item" href="?report_issue_order">รายงานการเบิกสินค้า</a></li>
-                <li><a class="dropdown-item" href="?report_inventory">รายงานสินค้าคงคลัง</a></li>
+                <li><a class="dropdown-item" href="?report_receive_history">3.1 รายงานการรับสินค้า ย้อนหลัง</a></li>
+                <li><a class="dropdown-item" href="?report_issue_history">3.2 รายงานการเบิกสินค้า ย้อนหลัง</a></li>
+                <li><a class="dropdown-item" href="?report_inventory_pallet">3.3 รายงานสินค้าคงคลัง แยกพาเลท</a></li>
+                <li><a class="dropdown-item" href="?report_inventory_sum">3.4 รายงานสินค้าคงคลัง รวมพาเลท</a></li>
             </ul>
         </div>
-        <div class="dropdown" style="display:inline-block">
+        <!--<div class="dropdown" style="display:inline-block">
             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu4" data-bs-toggle="dropdown" aria-expanded="false">
                 SRAS
             </button>
@@ -40,6 +42,6 @@
                 <li><a class="dropdown-item" href="?sras_logging">Logging</a></li>
                 <li><a class="dropdown-item" href="?sras_monitor">Monitor</a></li>
             </ul>
-        </div>
+        </div>-->
     </div>
 </div>

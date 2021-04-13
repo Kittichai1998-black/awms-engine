@@ -113,6 +113,7 @@ namespace AWCSEngine.Engine.CommonEngine
             baseObj.Info1 = wq.baseInfo.packInfos.First().Info1;
             baseObj.Info2 = wq.baseInfo.packInfos.First().Info2;
             baseObj.Info3 = wq.baseInfo.packInfos.First().Info3;
+            baseObj.Customer = wq.baseInfo.packInfos.First().customer;
             baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
             baseObj.Status = EntityStatus.ACTIVE;
             ADO.WCSDB.DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);

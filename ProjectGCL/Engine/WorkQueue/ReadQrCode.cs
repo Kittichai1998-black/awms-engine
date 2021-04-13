@@ -13,7 +13,6 @@ using AMWUtil.Common;
 using AWMSEngine.Common;
 using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.Business.Document;
-using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria.SP.Request;
 using AWMSEngine.Engine.V2.Business.Received;
 using AMSModel.Constant.StringConst;

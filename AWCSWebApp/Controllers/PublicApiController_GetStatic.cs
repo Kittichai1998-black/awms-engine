@@ -45,8 +45,9 @@ namespace AWCSWebApp.Controllers
             Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
             this.Request.Query.Keys.ToList().ForEach(k =>
             {
+                if (k.StartsWith("_")) return;
                 string val = this.Request.Query[k];
-                parameter.Add(string.IsNullOrWhiteSpace(val) ? "%" : val.Replace("*", "%"));
+                parameter.Add(k, string.IsNullOrWhiteSpace(val) ? "%" : val.Replace("*", "%"));
             });
             return parameter;
         }
@@ -56,6 +57,17 @@ namespace AWCSWebApp.Controllers
             var res = this.ExecBlock<List<dynamic>>("get_inventory_pallet", (buVO) =>
             {
                 var res2 = DataADO.GetInstant().QuerySP<dynamic>("RP_Inventory_Pallet", GetDapperParam(), buVO);
+                return res2;
+            });
+
+            return res;
+        }
+        [HttpGet("get_sp")]
+        public dynamic get_sp()
+        {
+            var res = this.ExecBlock<List<dynamic>>("get_sp", (buVO) =>
+            {
+                var res2 = DataADO.GetInstant().QuerySP<dynamic>(this.Request.Query["_sp"], GetDapperParam(), buVO);
                 return res2;
             });
 

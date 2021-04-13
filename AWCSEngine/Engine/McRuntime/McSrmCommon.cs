@@ -267,7 +267,14 @@ namespace AWCSEngine.Engine.McRuntime
                     var desLocPLC = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
                     var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
 
-                    this.PostCommand(McCommandType.CM_99);
+                    this.PostCommand(McCommandType.CM_99,(mc)=> {
+                        if (mc.McObj.DV_Pre_Status == 90)
+                        {
+                            this.PostCommand(McCommandType.CM_10, 2052001, 2052001, 1, "0000000000", 1500, () => { });
+                            return LoopResult.Break;
+                        }
+                        return LoopResult.Continue;
+                    });
                     this.McWork_2_WorkingToWorked();
                     this.McWork_3_WorkedToReceive_NextMC(_mcShuInRow.ID);
                     this.StepTxt = "3.3";

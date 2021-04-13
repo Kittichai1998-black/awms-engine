@@ -1,0 +1,97 @@
+﻿<div class="row mb-3">
+    <label class="col-3 col-form-label" for="ddlWHView">คิวงานเบิก คลังสินค้า</label>
+    <div class="col-9">
+        <select class="form-select" id="ddlWHView">
+        </select>
+    </div>
+</div>
+<div class="row" id="divDashboard">
+    
+</div>
+
+<script>
+    //{DO}|{CUS}|{GRADE}|{SKU}|{LOT}|{WH}|{DOCK}|{QTY}|{KG}|{STATUS}
+    $('#ddlWHView').change(() => {
+        $('#divDashboard').html('');
+        if ($('#ddlWHView').val() == 1) {//WH08
+            add_card('802');
+            add_card('803');
+            add_card('804');
+            add_card('805');
+            add_card('806');
+            add_card('807');
+            add_card('808');
+        }
+        page_load(false);
+    });
+
+    function add_card(dock) {
+        var div_str = '<div id="doc_' + dock + '" class="col-3">' +
+            '<div class="card mb-3" >' +
+            '<h4 class="card-header text-center"><span rid="lblCardDock">' + dock + '</span></h4>' +
+            '<div class="card-body">' +
+            '<h5 class="card-title"><span rid="lblCardQty"></span></h5>' +
+            '<p class="card-text">' +
+            '<span rid="lblCardDocRef"></span><br />' +
+            '<span rid="lblCardSku"></span><br />' +
+            '<span rid="lblCardGrade"></span><br />' +
+            '<span rid="lblCardLot"></span>' +
+            //'Remark : <span rid="lblCardRemark"></span>' +
+            '</p>' +
+            '</div>' +
+            '</div >' +
+            '</div >';
+        $('#divDashboard').append($(div_str));
+    }
+    function upd_card(dock, data) {
+        if (data.totalQtyPl == 0) {
+            $('#doc_' + dock + ' [rid=lblCardQty]').text('');
+            $('#doc_' + dock + ' [rid=lblCardDocRef]').text('');
+            $('#doc_' + dock + ' [rid=lblCardSku]').text('');
+            $('#doc_' + dock + ' [rid=lblCardGrade]').text('');
+            $('#doc_' + dock + ' [rid=lblCardLot]').text('');
+            $('#doc_' + dock + ' .card').removeClass('text-white');
+            $('#doc_' + dock + ' .card').removeClass('bg-dark');
+        } else {
+            $('#doc_' + dock + ' [rid=lblCardQty]').text('PALLET : ' + data.doneQtyPl + ' / ' + data.totalQtyPl);
+            $('#doc_' + dock + ' [rid=lblCardDocRef]').text('DO : ' + data.docRef);
+            $('#doc_' + dock + ' [rid=lblCardSku]').text('MAT : ' + data.sku);
+            $('#doc_' + dock + ' [rid=lblCardGrade]').text('GRADE : ' + data.grade);
+            $('#doc_' + dock + ' [rid=lblCardLot]').text('LOT : ' + data.lot);
+            $('#doc_' + dock + ' .card').addClass('text-white');
+            $('#doc_' + dock + ' .card').addClass('bg-dark');
+        }
+        //$('#doc_' + dock + ' [rid=lblCardRemark]').text(data.remark);
+    }
+    
+    function ddlWH_load(_callback) {
+        app.get('list_warhouse', {},
+            (data) => {
+                data.response.forEach((e) => {
+                    $('#ddlWHView').append($('<option value="' + e.id + '">' + e.name + '</option>'));
+                });
+                $('#ddlWHView').change();
+                _callback && _callback();
+            });
+    }
+
+    function page_load(isLoop) {
+        if ($('#ddlWHView').val() != "") {
+            app.get('get_sp', { _sp: 'RP_Monitor_Issue_Order', whID: $('#ddlWHView').val() },
+                (data) => {
+                    data.response.forEach((v) => {
+                        upd_card(v.dock, v);
+                    });
+                    if (isLoop)
+                        setTimeout(() => { page_load(true); }, 5000);
+                },
+                () => {
+                    if (isLoop)
+                        setTimeout(() => { page_load(true); }, 5000);
+                }
+            );
+        }
+    }
+    ddlWH_load(() => { page_load(true); });
+
+</script>

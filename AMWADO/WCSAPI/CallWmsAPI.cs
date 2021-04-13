@@ -116,7 +116,7 @@ namespace ADO.WCSAPI
                             unit=buWork.SkuUnit,
                             baseQty=buWork.SkuQty,
                             baseUnit=buWork.SkuUnit,
-
+                            customer = buWork.Customer,
                         }
                     }
                 }

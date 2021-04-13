@@ -1,0 +1,77 @@
+﻿<div class="row mb-3">
+    <div class="col-12">
+        <h5>รายงานสินค้าคงคลัง รวมพาเลท</h5>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+
+        <table class="table table-sm">
+            <thead class="table-dark" style="position:static; top:0px;">
+                <tr>
+                    <td>คลังสินค้า</td>
+                    <td>สินค้า</td>
+                    <td>เกรด</td>
+                    <td>ลอท</td>
+                    <td>จำนวน(สินค้า)</td>
+                    <td>จำนวน(พาเลท)</td>
+                </tr>
+                <tr>
+                    <td><input type="text" class="form-control" id="txtWh"></td>
+                    <td><input type="text" class="form-control" id="txtSku"></td>
+                    <td><input type="text" class="form-control" id="txtGrade"></td>
+                    <td><input type="text" class="form-control" id="txtLot"></td>
+                    <td><input type="text" class="form-control" id="txtQtySto"></td>
+                    <td><input type="text" class="form-control" id="txtQtyPl"></td>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end">Size:</td>
+                    <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
+                    <td colspan="1" class="text-end">Page:</td>
+                    <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+    $('input[id^=txt]').change(() => {
+        page_load();
+    });
+
+    function page_load() {
+        app.get('get_sp', {
+            _sp:'rp_inventory_sum',
+            wh: $('#txtWh').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            qty_sto: $('#txtQtySto').val(),
+            qty_pl: $('#txtStsPl').val(),
+            max: $('#txtMax').val(),
+            page: $('#txtPage').val(),
+        },
+            (data) => {
+                var tbody = $('#tbody');
+                tbody.html('');
+                data.response.forEach((v) => {
+                    var tr = $('<tr>' +
+                        '<td>' + v.wh + '</td>' +
+                        '<td>' + v.sku + '</td>' +
+                        '<td>' + v.grade + '</td>' +
+                        '<td>' + v.lot + '</td>' +
+                        '<td class="text-end">' + v.qty_sto + '</td>' +
+                        '<td class="text-end">' + v.qty_pl + '</td>' +
+                        '</tr>');
+                    tbody.append(tr);
+                });
+            }, () => {
+            });
+    }
+    page_load();
+</script>

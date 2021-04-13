@@ -1,0 +1,88 @@
+﻿<div class="row mb-3">
+    <div class="col-12">
+        <h5>รายงานการรับสินค้าย้อนหลัง</h5>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+
+        <table class="table table-sm">
+            <thead class="table-dark" style="position:static; top:0px;">
+                <tr>
+                    <td>ว/ด/ป</td>
+                    <td>BO</td>
+                    <td>คลัง</td>
+                    <td>รหัสสินค้า</td>
+                    <td>เกรด</td>
+                    <td>ลอท</td>
+                    <td>เลขพาเลท</td>
+                    <td>จำนวน(สินค้า)</td>
+                    <td>จำนวน(พาเลท)</td>
+                </tr>
+                <tr>
+                    <td><input type="text" class="form-control" id="txtTime"></td>
+                    <td><input type="text" class="form-control" id="txtDocRef"></td>
+                    <td><input type="text" class="form-control" id="txtWh"></td>
+                    <td><input type="text" class="form-control" id="txtSku"></td>
+                    <td><input type="text" class="form-control" id="txtGrade"></td>
+                    <td><input type="text" class="form-control" id="txtLot"></td>
+                    <td><input type="text" class="form-control" id="txtItemNo"></td>
+                    <td><input type="text" class="form-control" id="txtQtySto" disabled="disabled"></td>
+                    <td><input type="text" class="form-control" id="txtQtyPl" disabled="disabled"></td>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="text-end">Size:</td>
+                    <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
+                    <td colspan="1" class="text-end">Page:</td>
+                    <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+    $('input[id^=txt]').change(() => {
+        page_load();
+    });
+
+    function page_load() {
+        app.get('get_sp', {
+            _sp: 'rp_buwork_history',
+            io:1,
+            time: $('#txtTime').val(),
+            docRef: $('#txtDocRef').val(),
+            wh: $('#txtWh').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            itemNo: $('#txtItemNo').val(),
+            max: $('#txtMax').val(),
+            page: $('#txtPage').val(),
+        },
+            (data) => {
+                var tbody = $('#tbody');
+                tbody.html('');
+                data.response.forEach((v) => {
+                    var tr = $('<tr>' +
+                        '<td>' + v.time + '</td>' +
+                        '<td>' + v.docRef + '</td>' +
+                        '<td>' + v.wh + '</td>' +
+                        '<td>' + v.sku + '</td>' +
+                        '<td>' + v.grade + '</td>' +
+                        '<td>' + v.lot + '</td>' +
+                        '<td>' + v.itemNo + '</td>' +
+                        '<td class="text-end">' + v.qtySto + '</td>' +
+                        '<td class="text-end">' + v.qtyPl + '</td>' +
+                        '</tr>');
+                    tbody.append(tr);
+                });
+            }, () => {
+            });
+    }
+    page_load();
+</script>
