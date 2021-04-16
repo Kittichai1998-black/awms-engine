@@ -269,6 +269,7 @@ namespace AWCSWebApp.Controllers
                                     .Add("Status", EntityStatus.ACTIVE),
                                 buVO)
                             .OrderByDescending(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetBay())
+                            .OrderBy(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetLv())
                             .OrderByDescending(x => StaticValueManager.GetInstant().GetLocation(x.Location_ID).GetBank())
                             .ToList();
 

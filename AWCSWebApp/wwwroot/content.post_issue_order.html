@@ -1,11 +1,11 @@
 ﻿<div class="row mb-3">
     <div class="col-12">
-        <h5>งานรับเข้าสินค้า</h5>
-        <h6 class="text-secondary">เพิ่มงานรับเข้า</h6>
+        <h5>งานเบิกสินค้า</h5>
+        <h6 class="text-secondary">เพิ่มงานเบิก</h6>
     </div>
 </div>
 <div class="row mb-3" hidden="hidden">
-    <label for="txtQrCode" class="col-2 col-form-label">BO.QR</label>
+    <label for="txtQrCode" class="col-2 col-form-label">DO.QR</label>
     <div class="col-8">
         <input type="text" class="form-control" id="txtQrCode" placeholder="Bagging QR">
     </div>
@@ -80,7 +80,7 @@
     </div>
 </div>
 <hr />
-<h6 class="text-secondary">งานที่อยู่ระหว่างรับเข้า</h6>
+<h6 class="text-secondary">งานที่อยู่ระหว่างเบิก</h6>
 <div class="row mb-3">
     <label class="col-3 col-form-label" for="ddlWHView">แสดงคิวงาน คลังสินค้า</label>
     <div class="col-9">
@@ -98,7 +98,6 @@
                     <td>รหัสสินค้า</td>
                     <td>เกรด</td>
                     <td>ลอท</td>
-                    <td>ลำดับพาเลท</td>
                     <td>จำนวน(สินค้า)</td>
                     <td>คิวเบิก(พาเลท)</td>
                     <td>เบิกแล้ว(พาเลท)</td>
@@ -187,7 +186,6 @@
                             '<td>' + v.SkuCode + '</td>' +
                             '<td>' + v.SkuGrade + '</td>' +
                             '<td>' + v.SkuLot + '</td>' +
-                            '<td>' + v.PalletMinMax + '</td>' +
                             '<td class="text-center">' + v.SumQty + '</td>' +
                             '<td class="text-center">' + v.AllocateCount + '</td>' +
                             '<td class="text-center">' + v.DoneCount + '</td>' +
