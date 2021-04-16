@@ -116,16 +116,16 @@
     //{DO}|{CUS}|{GRADE}|{SKU}|{LOT}|{WH}|{DOCK}|{QTY}|{KG}|{STATUS}
     $('#btnPostQR2').click(() => {
         var qr_map =
-            $('#txtDocRef').val() + '|' +
-            $('#txtCus').val() + '|' +
-            $('#txtGrade').val() + '|' +
-            $('#txtSku').val() + '|' +
-            $('#txtLot').val() + '|' +
-            $('#ddlWH').val() + '|' +
-            $('#txtDock').val() + '|' +
-            $('#txtQty').val() + '|' +
-            $('#txtUnit').val() + '|' +
-            $('#txtStatus').val();
+            $('#txtDocRef').val().toUpperCase() + '|' +
+            $('#txtCus').val().toUpperCase() + '|' +
+            $('#txtGrade').val().toUpperCase() + '|' +
+            $('#txtSku').val().toUpperCase() + '|' +
+            $('#txtLot').val().toUpperCase() + '|' +
+            $('#ddlWH').val().toUpperCase() + '|' +
+            $('#txtDock').val().toUpperCase() + '|' +
+            $('#txtQty').val().toUpperCase() + '|' +
+            $('#txtUnit').val().toUpperCase() + '|' +
+            $('#txtStatus').val().toUpperCase();
         //alert(qr_map);
         post_qr(qr_map);
     });

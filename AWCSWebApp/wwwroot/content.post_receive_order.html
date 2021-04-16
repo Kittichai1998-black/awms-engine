@@ -128,18 +128,18 @@
     //{BO}|{!customer}|{GRADE}|{MAT}|{LOT}|{No.Start}{No.End}|{WAREHOUSE}|{!QTY Sum}|{UNIT}|{QTY_PALLET}|{STATUS}|{Dischart}
     $('#btnPostQR2').click(() => {
         var qr_map =
-                $('#txtDocRef').val() + '|' +
-                $('#txtCus').val() + '|' +
-                $('#txtGrade').val() + '|' +
-                $('#txtSku').val() + '|' +
-                $('#txtLot').val() + '|' +
-                $('#txtItemNoStart').val().padStart(4, "0") + $('#txtItemNoEnd').val().padStart(4, "0") + '|' +
-                $('#ddlWH').val() + '|' +
-                '0' + '|' +
-                $('#txtUnit').val() + '|' +
-                $('#txtQty').val() + '|' +
-                $('#txtStatus').val() + '|' +
-                $('#txtDischarge').val();
+            $('#txtDocRef').val().toUpperCase() + '|' +
+            $('#txtCus').val().toUpperCase() + '|' +
+            $('#txtGrade').val().toUpperCase() + '|' +
+            $('#txtSku').val().toUpperCase() + '|' +
+            $('#txtLot').val().toUpperCase() + '|' +
+            $('#txtItemNoStart').val().padStart(4, "0") + $('#txtItemNoEnd').val().padStart(4, "0") + '|' +
+            $('#ddlWH').val().toUpperCase() + '|' +
+            '0' + '|' +
+            $('#txtUnit').val().toUpperCase() + '|' +
+            $('#txtQty').val().toUpperCase() + '|' +
+            $('#txtStatus').val().toUpperCase() + '|' +
+            $('#txtDischarge').val().toUpperCase();
         //alert(qr_map);
         post_qr(qr_map);
     });
