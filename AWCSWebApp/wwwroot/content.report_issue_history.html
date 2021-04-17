@@ -12,9 +12,11 @@
                     <td>ว/ด/ป</td>
                     <td>BO</td>
                     <td>คลัง</td>
+                    <td>ลูกค้า</td>
                     <td>รหัสสินค้า</td>
                     <td>เกรด</td>
                     <td>ลอท</td>
+                    <td>สถานะ</td>
                     <td>จำนวน(สินค้า)</td>
                     <td>จำนวน(พาเลท)</td>
                 </tr>
@@ -22,9 +24,11 @@
                     <td><input type="text" class="form-control" id="txtTime"></td>
                     <td><input type="text" class="form-control" id="txtDocRef"></td>
                     <td><input type="text" class="form-control" id="txtWh"></td>
+                    <td><input type="text" class="form-control" id="txtCus"></td>
                     <td><input type="text" class="form-control" id="txtSku"></td>
                     <td><input type="text" class="form-control" id="txtGrade"></td>
                     <td><input type="text" class="form-control" id="txtLot"></td>
+                    <td><input type="text" class="form-control" id="txtStatus"></td>
                     <td><input type="text" class="form-control" id="txtQtySto" disabled="disabled"></td>
                     <td><input type="text" class="form-control" id="txtQtyPl" disabled="disabled"></td>
                 </tr>
@@ -33,10 +37,11 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5" class="text-end">Size:</td>
+                    <td colspan="6" class="text-end">Size:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
                     <td colspan="1" class="text-end">Page:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                    <td><button id="btnExport" class="form-control btn btn-success">Export</button></td>
                 </tr>
             </tfoot>
         </table>
@@ -46,6 +51,40 @@
 <script>
     $('input[id^=txt]').change(() => {
         page_load();
+    });
+
+    $('#btnExport').click(() => {
+        app.get('get_sp', {
+            _sp: 'rp_buwork_history',
+            io: 2,
+            time: $('#txtTime').val(),
+            docRef: $('#txtDocRef').val(),
+            wh: $('#txtWh').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            itemNo: '',
+            max: 2000000000,
+            page: 1,
+        },
+            (data) => {
+                let headers = {
+                    rowid: "ลำดับ"
+                    , time: "วันทึ่"
+                    , wh: "คลัง"
+                    , docRef: "เลขที่ DO"
+                    , cus: "ลูกค้า"
+                    , sku: "SKU"
+                    , grade: "Grade"
+                    , lot: "LOT"
+                    , status: "สถานะ"
+                    , itemNo: "เลข Pallet"
+                    , qtySto: "จำนวน(สินค้า)"
+                    , qtyPl: "จำนวน(Pallet)"
+                }
+                //headers = {}
+                app.export_excel(data.response, headers, 'รายงานการเบิกสินค้าย้อนหลัง');
+            });
     });
 
     function page_load() {
@@ -70,9 +109,11 @@
                         '<td>' + v.time + '</td>' +
                         '<td>' + v.docRef + '</td>' +
                         '<td>' + v.wh + '</td>' +
+                        '<td>' + v.cus + '</td>' +
                         '<td>' + v.sku + '</td>' +
                         '<td>' + v.grade + '</td>' +
                         '<td>' + v.lot + '</td>' +
+                        '<td>' + v.status + '</td>' +
                         '<td class="text-end">' + v.qtySto + '</td>' +
                         '<td class="text-end">' + v.qtyPl + '</td>' +
                         '</tr>');

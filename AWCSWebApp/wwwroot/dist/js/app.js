@@ -51,5 +51,70 @@ app.get = (api, datas, _success, _error) => {
         });
 }
 
+app.export_excel = function export_excel(dataExport, headers = {}, title = "") {
+
+    console.log('dataExport', dataExport)
+    if (dataExport.length == 0) {
+        alert('ไม่พบข้อมูล');
+        return;
+    }
+    
+    var EXCEL_EXTENSION = '.xlsx';
+    const fileName = title + new Date().toISOString().substring(0, 19).replace("T", " ") + EXCEL_EXTENSION;
+
+    //const headers = headers;
+
+    if (typeof XLSX == 'undefined') XLSX = require('xlsx');
+    
+
+    
+
+    var wb = XLSX.utils.book_new();
+    var bSkipHeader = Object.keys(headers).length > 0;
+    var sOrigin = bSkipHeader ? 'A2' : 'A2';
+    //console.log('bSkipHeader', bSkipHeader)
+    
+    
+    if (bSkipHeader) {
+        dataExport.unshift(headers);
+        const arr = Object.keys(dataExport).map((key) => [key, dataExport[key]]);
+        var ws = XLSX.utils.json_to_sheet(dataExport, { origin: sOrigin, skipHeader: bSkipHeader });
+        ws['!cols'] = formatExcelCols(dataExport);
+        XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: 'A1' });
+        XLSX.utils.book_append_sheet(wb, ws, title);
+    } else {
+        var ws = XLSX.utils.json_to_sheet(dataExport, { origin: sOrigin });
+        const arr = Object.keys(dataExport).map((key) => [key, dataExport[key]]);
+        ws['!cols'] = formatExcelCols(arr);
+        XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: 'A1' });
+        XLSX.utils.book_append_sheet(wb, ws, title);
+    }
+    
+    
+    //XLSX.utils.sheet_add_aoa(ws, headers);
+
+    
+    XLSX.writeFile(wb, fileName);
+
+}
+
+function formatExcelCols(json) {
+    let widthArr = Object.keys(json[0]).map(key=> {
+        var n = key == 'rowid' ? 5 : 10;
+        return { width: key.length + n } // plus 2 to account for short object keys
+    })
+    for (let i = 0; i < json.length; i++) {
+        let value = Object.values(json[i]);
+        for (let j = 0; j < value.length; j++) {
+            if (value[j] !== null && value[j].length > widthArr[j].width) {
+                widthArr[j].width = value[j].length;
+            }
+        }
+    }
+    return widthArr
+}
+
+
+
 
 app.init();
