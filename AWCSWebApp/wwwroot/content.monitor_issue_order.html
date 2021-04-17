@@ -44,7 +44,7 @@
         $('#divDashboard').append($(div_str));
     }
     function upd_card(dock, data) {
-        if (data.totalQtyPl == 0) {
+        if (data==null) {
             $('#doc_' + dock + ' [rid=lblCardQty]').text('');
             $('#doc_' + dock + ' [rid=lblCardDocRef]').text('');
             $('#doc_' + dock + ' [rid=lblCardSku]').text('');
@@ -53,7 +53,7 @@
             $('#doc_' + dock + ' .card').removeClass('text-white');
             $('#doc_' + dock + ' .card').removeClass('bg-dark');
         } else {
-            $('#doc_' + dock + ' [rid=lblCardQty]').text('PALLET : ' + data.doneQtyPl + ' / ' + data.totalQtyPl);
+            $('#doc_' + dock + ' [rid=lblCardQty]').text('PALLET : ' + data.workQtyPl + ' / ' + data.totalQtyPl);
             $('#doc_' + dock + ' [rid=lblCardDocRef]').text('DO : ' + data.docRef);
             $('#doc_' + dock + ' [rid=lblCardSku]').text('MAT : ' + data.sku);
             $('#doc_' + dock + ' [rid=lblCardGrade]').text('GRADE : ' + data.grade);
@@ -79,6 +79,13 @@
         if ($('#ddlWHView').val() != "") {
             app.get('get_sp', { _sp: 'RP_Monitor_Issue_Order', whID: $('#ddlWHView').val() },
                 (data) => {
+                    upd_card("808", null);
+                    upd_card("807", null);
+                    upd_card("806", null);
+                    upd_card("805", null);
+                    upd_card("804", null);
+                    upd_card("803", null);
+                    upd_card("802", null);
                     data.response.forEach((v) => {
                         upd_card(v.dock, v);
                     });

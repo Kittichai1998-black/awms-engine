@@ -579,39 +579,68 @@ namespace AWCSWebApp.Controllers
         public dynamic post_closed_buwork(dynamic request)
         {
             string trxRef = (string)request.trxRef; ;
+            int io = (int)request.io; ;
             var res = this.ExecBlock<bool>("post_closed_buwork", (buVO) =>
             {
-                DataADO.GetInstant().UpdateBy<act_BuWork>(
-                    new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("status",EntityStatus.INACTIVE,SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("trxRef",trxRef,SQLOperatorType.EQUALS)
-                    },
-                    new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
-                    }, buVO);
+                ///////remove inbound
+                if(io == 1)
+                {
+                    DataADO.GetInstant().UpdateBy<act_BuWork>(
+                        new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("status",EntityStatus.INACTIVE,SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("trxRef",trxRef,SQLOperatorType.EQUALS)
+                        },
+                        new KeyValuePair<string, object>[] {
+                            new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
+                        }, buVO);
 
-                DataADO.GetInstant().UpdateBy<act_McWork>(
-                    new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("eventstatus",McWorkEventStatus.IN_QUEUE,SQLOperatorType.EQUALS),
+                    DataADO.GetInstant().UpdateBy<act_McWork>(
+                        new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("iotype",1,SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("eventstatus",McWorkEventStatus.IN_QUEUE,SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("trxRef",trxRef,SQLOperatorType.EQUALS)
+                        },
+                        new KeyValuePair<string, object>[] {
+                            new KeyValuePair<string, object>("eventstatus", McWorkEventStatus.REMOVE_QUEUE),
+                            new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
+                        }, buVO);
+                }
+                else if(io == 2)
+                {
+                    DataADO.GetInstant().UpdateBy<act_McWork>(
+                        new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("iotype",2,SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("queuestatus",0,SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("trxRef",trxRef,SQLOperatorType.EQUALS)
-                    },
-                    new KeyValuePair<string, object>[] {
+                        },
+                        new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("eventstatus", McWorkEventStatus.REMOVE_QUEUE),
                         new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
-                    }, buVO);
+                        }, buVO);
 
-                var buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
-                    ListKeyValue<string, object>.New("trxRef", trxRef), buVO);
+                    var mcWorks = DataADO.GetInstant().SelectBy<act_McWork>(
+                        ListKeyValue<string, object>.New("trxRef", trxRef).Add("Status", EntityStatus.REMOVE), buVO);
 
-                DataADO.GetInstant().UpdateBy<act_BaseObject>(
-                    new SQLConditionCriteria[]
-                    {
-                        new SQLConditionCriteria("buWork_ID",string.Join(",", buWorks.Select(x=>x.ID.Value).ToArray()), SQLOperatorType.IN),
-                        new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
-                    },
-                    new KeyValuePair<string, object>[] {
+                    DataADO.GetInstant().UpdateBy<act_BuWork>(
+                        new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("ID",string.Join(",", mcWorks.Select(x=>x.BuWork_ID).ToArray()), SQLOperatorType.IN),
+                            new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
+                        },
+                        new KeyValuePair<string, object>[] {
+                            new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
+                        }, buVO);
+
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(
+                        new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("ID",string.Join(",", mcWorks.Select(x=>x.BaseObject_ID).ToArray()), SQLOperatorType.IN),
+                            new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
+                        },
+                        new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("eventstatus",BaseObjectEventStatus.IDLE)
-                    }, buVO);
+                        }, buVO);
+                }
+
 
                 return true;
             });
