@@ -41,10 +41,11 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="8" class="text-end">Size:</td>
+                    <td colspan="7" class="text-end">Size:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
                     <td colspan="1" class="text-end">Page:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                    <td><button id="btnExport" class="form-control btn btn-success">Export</button></td>
                 </tr>
             </tfoot>
         </table>
@@ -53,56 +54,31 @@
 
 
     <script>
-        var dataExport = []
         $('input[id^=txt]').change(() => {
             page_load();
         });
 
         $('#btnExport').click(() => {
-            
-            if (dataExport.length == 0) {
-                alert('ไม่พบข้อมูล');
-                return;
-            }
-            console.log('dataExport', dataExport)
-            var EXCEL_EXTENSION = '.xlsx';
-            const fileName = 'Report_receive_historyExport_' + new Date().toISOString().substring(0, 19).replace("T", " ") + EXCEL_EXTENSION;
-
-            var Heading = [
-                ["ลำดับ", "วันที่", "คลัง", "เลขที่ BO", "ลูกค้า", "SKU", "Grade", "Lot", "สถานะ", "เลข Pallet", "จำนวน (สินค้า)", "จำนวน (Pallet)"],
-            ];
-
-            const headers = {
-                rowid: 'ลำดับ'
-                , time: 'วันที่'
-                , wh: 'คลัง'
-                , docRef: 'เลขที่ BO'
-                , cus: 'ลูกค้า'
-                , sku: 'SKU'
-                , grade: 'Grade'
-                , lot: 'Lot'
-                , status: 'สถานะ'
-                , itemNo: 'เลข Pallet'
-                , qtySto: 'จำนวน (สินค้า)'
-                , qtyPl: 'จำนวน (Pallet)'
-            };
-
-            if (typeof XLSX == 'undefined') XLSX = require('xlsx');
-            //var ws = XLSX.utils.json_to_sheet(dataExport);
-
-            dataExport.unshift(headers);
-
-            var wb = XLSX.utils.book_new();           
-            var ws = XLSX.utils.json_to_sheet(dataExport, { origin: 'A2', skipHeader: true });
-            XLSX.utils.sheet_add_aoa(ws, [
-                ["รายงานการรับสินค้าย้อนหลัง"]
-            ], { origin: 'A1' });
-            //XLSX.utils.sheet_add_aoa(ws, headers);
-            
-            XLSX.utils.book_append_sheet(wb, ws, "รายงานการรับสินค้าย้อนหลัง");
-            XLSX.writeFile(wb, fileName);
-
+            app.get('get_sp', {
+                _sp: 'rp_buwork_history',
+                io: 1,
+                time: $('#txtTime').val(),
+                docRef: $('#txtDocRef').val(),
+                wh: $('#txtWh').val(),
+                sku: $('#txtSku').val(),
+                grade: $('#txtGrade').val(),
+                lot: $('#txtLot').val(),
+                itemNo: $('#txtItemNo').val(),
+                max: 2000000000,
+                page: 1,
+            },
+                (data) => {
+                    app.export_excel(data.response, {
+                    }, 'รายงานการรับสินค้าย้อนหลัง');
+                });
         });
+
+        
 
         function page_load() {
         app.get('get_sp', {

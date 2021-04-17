@@ -51,5 +51,35 @@ app.get = (api, datas, _success, _error) => {
         });
 }
 
+app.export_excel = function export_excel(dataExport, headers = {}, title = "") {
+
+
+    if (dataExport.length == 0) {
+        alert('ไม่พบข้อมูล');
+        return;
+    }
+    console.log('dataExport', dataExport)
+    var EXCEL_EXTENSION = '.xlsx';
+    const fileName = title + new Date().toISOString().substring(0, 19).replace("T", " ") + EXCEL_EXTENSION;
+
+    //const headers = headers;
+
+    if (typeof XLSX == 'undefined') XLSX = require('xlsx');
+    //var ws = XLSX.utils.json_to_sheet(dataExport);
+
+    dataExport.unshift(headers);
+
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(dataExport, { origin: 'A2', skipHeader: Object.keys(headers).length > 0 });
+    XLSX.utils.sheet_add_aoa(ws, [
+        [title]
+    ], { origin: 'A1' });
+    //XLSX.utils.sheet_add_aoa(ws, headers);
+
+    XLSX.utils.book_append_sheet(wb, ws, title);
+    XLSX.writeFile(wb, fileName);
+
+}
+
 
 app.init();
