@@ -154,7 +154,7 @@
 
     function confirm_closed_buwork(trxRef) {
         if (confirm('ยืนยันจบงาน? ยกเลิกรายการในคิวทั้งหมด!')) {
-            app.post('post_closed_buwork', { trxRef: trxRef }, (data) => {
+            app.post('post_closed_buwork', { trxRef: trxRef,io:2 }, (data) => {
                 page_load(false);
             })
         }
