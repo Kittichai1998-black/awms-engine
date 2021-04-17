@@ -267,6 +267,9 @@ namespace AWCSEngine.Engine.McRuntime
                     var desLocPLC = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
                     var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
 
+                    //this.PostCommand(McCommandType.CM_99);
+
+                    //สั่งกลับ home เมื่อทำงานเสร็จ
                     this.PostCommand(McCommandType.CM_99,(mc)=> {
                         if (mc.McObj.DV_Pre_Status == 90)
                         {
