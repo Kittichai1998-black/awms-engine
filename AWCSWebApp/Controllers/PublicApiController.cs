@@ -29,6 +29,31 @@ namespace AWCSWebApp.Controllers
                 try
                 {
                     string[] qrDatas = ((string)requirt.qrCode).Split("|").Select(x => x.Trim()).ToArray();
+                    if (string.IsNullOrWhiteSpace(qrDatas[0]))
+                        throw new Exception("กรุณากรอก เลข BO");
+                    if (string.IsNullOrWhiteSpace(qrDatas[1]))
+                        throw new Exception("กรุณากรอก รหัสลูกค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[2]))
+                        throw new Exception("กรุณากรอก ข้อมูลเกรดสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[3]))
+                        throw new Exception("กรุณากรอก รหัสสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[4]))
+                        throw new Exception("กรุณากรอก ข้อมูลลอทสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[6]))
+                        throw new Exception("กรุณากรอก ข้อมูลคลังสินค้า");
+                    if (qrDatas[5].Length<4)
+                        throw new Exception("กรุณากรอก ข้อมูลพาเลทเริ่มต้น");
+                    if (qrDatas[5].Length < 8)
+                        throw new Exception("กรุณากรอก ข้อมูลพาเลทสุดท้าย");
+                    if (string.IsNullOrWhiteSpace(qrDatas[9]))
+                        throw new Exception("กรุณากรอก จำนวนสินค้าต่อพาเลท");
+                    if (string.IsNullOrWhiteSpace(qrDatas[8]))
+                        throw new Exception("กรุณากรอก หน่วยนับสินค้าในพาเลท");
+                    if (string.IsNullOrWhiteSpace(qrDatas[10]))
+                        throw new Exception("กรุณากรอก สถานะสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[11]))
+                        throw new Exception("กรุณากรอก Dischare");
+
                     string doc_wms = qrDatas[0];
                     string customer = qrDatas[1];
                     string grade = qrDatas[2];
@@ -36,15 +61,23 @@ namespace AWCSWebApp.Controllers
                     string lot = qrDatas[4];
                     int start_pallet = int.Parse(qrDatas[5].Substring(0,4));
                     int end_pallet = int.Parse(qrDatas[5].Substring(4));
+                    if (start_pallet > end_pallet)
+                        throw new Exception("พาเลทเริ่มต้น ต้อมมีค่าน้อยกว่าหรือเท่ากับ พาเลทสุดทาย");
+
                     string warehouse = qrDatas[6];
-                    decimal qty = decimal.Parse(qrDatas[7]);
                     string unit = qrDatas[8];
                     decimal qty_per_pallet = decimal.Parse(qrDatas[9]);
+                    if (qty_per_pallet <= 0)
+                        throw new Exception("จำนวนสินค้าต่อพาเลทต้องมากกว่า 0");
                     string storage_status = qrDatas[10];
                     string discharge = qrDatas[11];
                     List<string> list_pallet = new List<string>();
                     for (int i = start_pallet; i <= end_pallet; i++)
-                        list_pallet.Add($"{grade}  {lot}  {i:0000}");
+                        list_pallet.Add(string.Format("{0}{1}{2}{3}{4:0000}",
+                            grade, new string(' ', 9 - grade.Length),
+                            lot, new string(' ', 11 - lot.Length),
+                            i));
+                    decimal qty = qty_per_pallet * list_pallet.Count;
 
                     AMWRequestCreateGRDocList req = new AMWRequestCreateGRDocList()
                     {
@@ -78,7 +111,7 @@ namespace AWCSWebApp.Controllers
                 }
                 catch
                 {
-                    throw new Exception($"QRCode Format ไม่ถูกต้อง!");
+                    throw;// new Exception($"QRCode Format ไม่ถูกต้อง!");
                 }
             });
 
@@ -160,6 +193,27 @@ namespace AWCSWebApp.Controllers
                 try
                 {
                     string[] qrDatas = ((string)request.qrCode).Split("|").Select(x => x.Trim()).ToArray();
+                    if (string.IsNullOrWhiteSpace(qrDatas[0]))
+                        throw new Exception("กรุณากรอก เลขที่ DO");
+                    if (string.IsNullOrWhiteSpace(qrDatas[1]))
+                        throw new Exception("กรุณากรอก รหัสลูกค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[2]))
+                        throw new Exception("กรุณากรอก ข้อมูลเกรดสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[3]))
+                        throw new Exception("กรุณากรอก รหัสสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[4]))
+                        throw new Exception("กรุณากรอก ข้อมูลลอทสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[5]))
+                        throw new Exception("กรุณากรอก ข้อมูลคลังสินค้า");
+                    if (string.IsNullOrWhiteSpace(qrDatas[6]))
+                        throw new Exception("กรุณากรอก จุดเบิกปลายทาง");
+                    if (string.IsNullOrWhiteSpace(qrDatas[7]))
+                        throw new Exception("กรุณากรอก จำนวนขอเบิก");
+                    if (string.IsNullOrWhiteSpace(qrDatas[8]))
+                        throw new Exception("กรุณากรอก หน่วยนับสินค้าในพาเลท");
+                    if (string.IsNullOrWhiteSpace(qrDatas[9]))
+                        throw new Exception("กรุณากรอก สถานะสินค้า");
+
                     string doc_wms = qrDatas[0];
                     string customer = qrDatas[1];
                     string grade = qrDatas[2];
@@ -168,6 +222,8 @@ namespace AWCSWebApp.Controllers
                     string warehouse = qrDatas[5];
                     string staging = qrDatas[6];
                     decimal qty = decimal.Parse(qrDatas[7]);
+                    if (qty <= 0)
+                        throw new Exception("จำนวนสินค้าขอเบิกต้องมากกว่า 0");
                     string unit = qrDatas[8];
                     string storage_status = qrDatas[9];
 
@@ -199,7 +255,7 @@ namespace AWCSWebApp.Controllers
                 }
                 catch
                 {
-                    throw new Exception($"QRCode Format ไม่ถูกต้อง!");
+                    throw;// new Exception($"QRCode Format ไม่ถูกต้อง!");
                 }
             });
 
@@ -550,7 +606,7 @@ namespace AWCSWebApp.Controllers
                 DataADO.GetInstant().UpdateBy<act_BaseObject>(
                     new SQLConditionCriteria[]
                     {
-                        new SQLConditionCriteria("buWork_ID",string.Join(",", buWorks.Select(x=>x.ID.Value).ToArray()), SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("buWork_ID",string.Join(",", buWorks.Select(x=>x.ID.Value).ToArray()), SQLOperatorType.IN),
                         new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
                     },
                     new KeyValuePair<string, object>[] {

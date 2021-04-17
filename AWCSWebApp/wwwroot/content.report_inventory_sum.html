@@ -10,17 +10,21 @@
             <thead class="table-dark" style="position:static; top:0px;">
                 <tr>
                     <td>คลังสินค้า</td>
+                    <td>ลูกค้า</td>
                     <td>สินค้า</td>
                     <td>เกรด</td>
                     <td>ลอท</td>
+                    <td>สถานะ.สินค้า</td>
                     <td>จำนวน(สินค้า)</td>
                     <td>จำนวน(พาเลท)</td>
                 </tr>
                 <tr>
                     <td><input type="text" class="form-control" id="txtWh"></td>
+                    <td><input type="text" class="form-control" id="txtCus"></td>
                     <td><input type="text" class="form-control" id="txtSku"></td>
                     <td><input type="text" class="form-control" id="txtGrade"></td>
                     <td><input type="text" class="form-control" id="txtLot"></td>
+                    <td><input type="text" class="form-control" id="txtStatus"></td>
                     <td><input type="text" class="form-control" id="txtQtySto"></td>
                     <td><input type="text" class="form-control" id="txtQtyPl"></td>
                 </tr>
@@ -29,7 +33,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="3" class="text-end">Size:</td>
+                    <td colspan="5" class="text-end">Size:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
                     <td colspan="1" class="text-end">Page:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
@@ -62,9 +66,11 @@
                 data.response.forEach((v) => {
                     var tr = $('<tr>' +
                         '<td>' + v.wh + '</td>' +
+                        '<td>' + v.cus + '</td>' +
                         '<td>' + v.sku + '</td>' +
                         '<td>' + v.grade + '</td>' +
                         '<td>' + v.lot + '</td>' +
+                        '<td>' + v.status + '</td>' +
                         '<td class="text-end">' + v.qty_sto + '</td>' +
                         '<td class="text-end">' + v.qty_pl + '</td>' +
                         '</tr>');
