@@ -73,8 +73,22 @@
                 page: 1,
             },
                 (data) => {
-                    app.export_excel(data.response, {
-                    }, 'รายงานการรับสินค้าย้อนหลัง');
+                    let headers = {
+                        rowid: "ลำดับ"
+                        ,time: "วันทึ่"
+                        ,wh: "คลัง"
+                        ,docRef: "เลขที่ BO"
+                        ,cus: "ลูกค้า"
+                        ,sku: "SKU"
+                        ,grade: "Grade"
+                        ,lot: "LOT"
+                        ,status: "สถานะ"
+                        ,itemNo: "เลข Pallet"
+                        ,qtySto: "จำนวน(สินค้า)"
+                        ,qtyPl: "จำนวน(Pallet)"
+                    }
+                    //headers = {}
+                    app.export_excel(data.response, headers, 'รายงานการรับสินค้าย้อนหลัง');
                 });
         });
 

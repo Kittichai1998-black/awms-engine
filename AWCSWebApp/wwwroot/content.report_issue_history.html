@@ -37,10 +37,11 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="7" class="text-end">Size:</td>
+                    <td colspan="6" class="text-end">Size:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
                     <td colspan="1" class="text-end">Page:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                    <td><button id="btnExport" class="form-control btn btn-success">Export</button></td>
                 </tr>
             </tfoot>
         </table>
@@ -50,6 +51,40 @@
 <script>
     $('input[id^=txt]').change(() => {
         page_load();
+    });
+
+    $('#btnExport').click(() => {
+        app.get('get_sp', {
+            _sp: 'rp_buwork_history',
+            io: 2,
+            time: $('#txtTime').val(),
+            docRef: $('#txtDocRef').val(),
+            wh: $('#txtWh').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            itemNo: '',
+            max: 2000000000,
+            page: 1,
+        },
+            (data) => {
+                let headers = {
+                    rowid: "ลำดับ"
+                    , time: "วันทึ่"
+                    , wh: "คลัง"
+                    , docRef: "เลขที่ DO"
+                    , cus: "ลูกค้า"
+                    , sku: "SKU"
+                    , grade: "Grade"
+                    , lot: "LOT"
+                    , status: "สถานะ"
+                    , itemNo: "เลข Pallet"
+                    , qtySto: "จำนวน(สินค้า)"
+                    , qtyPl: "จำนวน(Pallet)"
+                }
+                //headers = {}
+                app.export_excel(data.response, headers, 'รายงานการเบิกสินค้าย้อนหลัง');
+            });
     });
 
     function page_load() {

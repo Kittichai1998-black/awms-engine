@@ -39,10 +39,11 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="7" class="text-end">Size:</td>
+                    <td colspan="6" class="text-end">Size:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
                     <td colspan="1" class="text-end">Page:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                    <td><button id="btnExport" class="form-control btn btn-success">Export</button></td>
                 </tr>
             </tfoot>
         </table>
@@ -52,6 +53,43 @@
 <script>
     $('input[id^=txt]').change(() => {
         page_load();
+    });
+
+    $('#btnExport').click(() => {
+        app.get('get_sp', {
+            _sp: 'rp_inventory_pallet',
+            wh: $('#txtWh').val(),
+            loc: $('#txtLoc').val(),
+            loc_mc: $('#txtLocMc').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            itemNo: $('#txtItemNo').val(),
+            qty: $('#txtQty').val(),
+            sts_sto: $('#txtStsSto').val(),
+            sts_pl: $('#txtStsPl').val(),
+            max: 2000000000,
+            page: 1,
+        },
+            (data) => {
+                let headers = {
+                    rowid: "ลำดับ"
+                    , wh: "คลัง"
+                    , loc: "ตำแหน่ง"
+                    , loc_mc: ">ตำแหน่ง(MC)"                    
+                    , cus: "ลูกค้า"
+                    , sku: "SKU"
+                    , grade: "Grade"
+                    , lot: "LOT"
+                    , itemNo: "เลข Pallet"
+                    , status: "สถานะ"
+                    , sts_sto: "สถานะ(สินค้า)"
+                    , qty: "จำนวน(สินค้า)"
+                    , sts_pl: "สถานะ(Pallet)"
+                }
+               // headers = {}
+                app.export_excel(data.response, headers, 'รายงานสินค้าคงคลัง แยกพาเลท');
+            });
     });
 
     function page_load() {

@@ -33,10 +33,11 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5" class="text-end">Size:</td>
+                    <td colspan="4" class="text-end">Size:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtMax" value="25"></td>
                     <td colspan="1" class="text-end">Page:</td>
                     <td colspan="1"><input type="number" class="form-control" id="txtPage" value="1"></td>
+                    <td><button id="btnExport" class="form-control btn btn-success">Export</button></td>
                 </tr>
             </tfoot>
         </table>
@@ -46,6 +47,35 @@
 <script>
     $('input[id^=txt]').change(() => {
         page_load();
+    });
+
+    $('#btnExport').click(() => {
+        app.get('get_sp', {
+            _sp: 'rp_inventory_sum',
+            wh: $('#txtWh').val(),
+            sku: $('#txtSku').val(),
+            grade: $('#txtGrade').val(),
+            lot: $('#txtLot').val(),
+            qty_sto: $('#txtQtySto').val(),
+            qty_pl: $('#txtStsPl').val(),
+            max: 2000000000,
+            page: 1,
+        },
+            (data) => {
+                let headers = {
+                    rowid: "ลำดับ"
+                    , wh: "คลัง"
+                    , cus: "ลูกค้า"
+                    , sku: "SKU"
+                    , grade: "Grade"
+                    , lot: "LOT"
+                    , status: "สถานะ"
+                    , qty_sto: "จำนวน(สินค้า)"
+                    , qty_pl: "จำนวน(Pallet)"
+                }
+                 //headers = {}
+                app.export_excel(data.response, headers, 'รายงานสินค้าคงคลัง รวมพาเลท');
+            });
     });
 
     function page_load() {
