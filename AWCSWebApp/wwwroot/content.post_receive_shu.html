@@ -10,12 +10,12 @@
     </div>
 </div>
 <div class="row mb-3">
-    <label for="txtQr" class="col-2 col-form-label">Shuttle Code</label>
+    <label for="txtShu" class="col-2 col-form-label">Shuttle Code</label>
     <div class="col-8">
-        <input type="text" class="form-control" id="txtQr" placeholder="Shuttle Code">
+        <input type="text" class="form-control" id="txtShu" placeholder="Shuttle Code">
     </div>
     <div class="col-2">
-        <button id="btnPostQr" class="btn btn-primary form-control">ส่ง</button>
+        <button id="btnPost" class="btn btn-primary form-control">ส่ง</button>
     </div>
 </div>
 <hr />
@@ -38,7 +38,7 @@
     });
     $('#txtGate').keydown((e) => {
         if (e.keyCode == 13)
-            $('#txtQr').focus();
+            $('#txtShu').focus();
     });
 
 
