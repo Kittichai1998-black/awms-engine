@@ -624,7 +624,8 @@ namespace AWCSWebApp.Controllers
                     DataADO.GetInstant().UpdateBy<act_BuWork>(
                         new SQLConditionCriteria[] {
                             new SQLConditionCriteria("ID",string.Join(",", mcWorks.Select(x=>x.BuWork_ID).ToArray()), SQLOperatorType.IN),
-                            new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
+                            new SQLConditionCriteria("status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS,SQLConditionType.OR),
+                            new SQLConditionCriteria("status",EntityStatus.INACTIVE,SQLOperatorType.EQUALS)
                         },
                         new KeyValuePair<string, object>[] {
                             new KeyValuePair<string, object>("status", EntityStatus.REMOVE)
