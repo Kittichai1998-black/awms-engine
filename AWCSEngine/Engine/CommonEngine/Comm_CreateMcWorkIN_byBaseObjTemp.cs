@@ -73,7 +73,7 @@ namespace AWCSEngine.Engine.CommonEngine
                 IOType = IOType.INBOUND,
                 QueueType = (int)IOType.INBOUND,//INBOUND
                 WMS_WorkQueue_ID = wq.queueID,
-                BuWork_ID = baseObj.BuWork_ID,
+                BuWork_ID = wq.queueID,
 
                 Priority = wq.priority,
                 SeqGroup = wq.seqGroup,
@@ -104,6 +104,7 @@ namespace AWCSEngine.Engine.CommonEngine
             };
             mcQ.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mcQ, this.BuVO);
 
+            baseObj.BuWork_ID = wq.queueID;
             baseObj.SkuCode = wq.baseInfo.packInfos.First().code;
             baseObj.SkuQty = wq.baseInfo.packInfos.First().baseQty;
             baseObj.SkuUnit = wq.baseInfo.packInfos.First().baseUnit;
