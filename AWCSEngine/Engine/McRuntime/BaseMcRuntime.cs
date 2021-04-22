@@ -292,6 +292,7 @@ namespace AWCSEngine.Engine.McRuntime
 
 
                 bool isNext = false;
+                int setComm = -1;
                 foreach (var act in this.RunCmdActions.Where(x => x.Seq == this.McObj.CommandAction_Seq))
                 {
                     var act_conditions = act.DKV_Condition.QryStrToKeyValues();
@@ -337,6 +338,8 @@ namespace AWCSEngine.Engine.McRuntime
                             else if (t_deviceVal == typeof(double))
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
 
+                            if (name.ToUpper() == "SET_COMM")
+                                setComm = val.Get2<int>();
                         });
 
                         string _log_set = $"{this.Code} > [DEVICE END] ({act.Seq}/{maxSeq})] {_act_sets}";
@@ -345,7 +348,26 @@ namespace AWCSEngine.Engine.McRuntime
                         isNext = true;
                         break;
                     }
+
+
+                    if (false && string.IsNullOrWhiteSpace(this.McMst.DK_Con_Comm) && isNext && setComm != -1)
+                    {
+                        var dk = this.McMst.DK_Con_Comm;
+                        var dv = this.PlcADO.GetDevice<int>(dk);
+                        if (dv == setComm)
+                        {
+                            this.PlcADO.SetDevice<int>(dk, 0);
+                            isNext = true;
+                            DisplayController.Events_Write($"{this.Code} > [DEVICE] Complete! Set_Comm = Con_Comm = {dv}");
+                        }
+                        else
+                        {
+                            isNext = false;
+                        }
+
+                    }
                 }
+
 
                 if (isNext)
                 {
