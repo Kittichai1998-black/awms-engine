@@ -33,8 +33,8 @@ namespace AWCSEngine.Engine.McRuntime
         public acs_McMaster McMst { get; private set; }
         public act_McObject McObj { get; private set; }
 
-        private string McWork4Work_BaseCode { get; set; }
-        private string McWork4Receive_BaseCode { get; set; }
+        private string McWork4Work_LabelData { get; set; }
+        private string McWork4Receive_LabelData { get; set; }
 
         private act_McWork _McWork4Work { get; set; }
         private act_McWork _McWork4Receive { get; set; }
@@ -44,10 +44,10 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 _McWork4Work = value;
                 if (_McWork4Work != null)
-                    this.McWork4Work_BaseCode =
-                        BaseObjectADO.GetInstant().GetByID(_McWork4Work.BaseObject_ID, this.BuVO).Code;
+                    this.McWork4Work_LabelData =
+                        BaseObjectADO.GetInstant().GetByID(_McWork4Work.BaseObject_ID, this.BuVO).LabelData;
                 else
-                    this.McWork4Work_BaseCode = null;
+                    this.McWork4Work_LabelData = null;
             }
         }
         public act_McWork McWork4Receive
@@ -57,10 +57,10 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 _McWork4Receive = value;
                 if (_McWork4Receive != null)
-                    this.McWork4Receive_BaseCode =
-                        BaseObjectADO.GetInstant().GetByID(_McWork4Receive.BaseObject_ID, this.BuVO).Code;
+                    this.McWork4Receive_LabelData =
+                        BaseObjectADO.GetInstant().GetByID(_McWork4Receive.BaseObject_ID, this.BuVO).LabelData;
                 else
-                    this.McWork4Receive_BaseCode = null;
+                    this.McWork4Receive_LabelData = null;
             }
         }
         //public act_BaseObject BaseObj { get; private set; }
@@ -187,6 +187,8 @@ namespace AWCSEngine.Engine.McRuntime
         {
             base.Execute(null);
         }
+
+        private string ErrorMessageOld = "";
         protected override NullCriteria ExecuteChild(NullCriteria request)
         {
             bool isError = false;
@@ -210,16 +212,27 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_NOT_FOUND);
                 }
+                this.ErrorMessageOld = "";
             }
             catch (AMWException ex)
             {
-                DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
+                if(ex.Message != this.ErrorMessageOld)
+                {
+                    this.ErrorMessageOld = ex.Message;
+                    DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
+                    DisplayController.Events_Write($"{this.Code} > {ex.StackTrace}");
+                }
                 this._5_MessageLog_OnRun(ex.Message);
                 isError = true;
             }
             catch (Exception ex)
             {
-                DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
+                if (ex.Message != this.ErrorMessageOld)
+                {
+                    this.ErrorMessageOld = ex.Message;
+                    DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
+                    DisplayController.Events_Write($"{this.Code} > {ex.StackTrace}");
+                }
                 this.Logger.LogError(ex.Message);
                 this._5_MessageLog_OnRun(ex.Message);
                 isError = true;
@@ -514,26 +527,34 @@ namespace AWCSEngine.Engine.McRuntime
                         , new string(' ', this.Code.Length)
                         , string.Join(" | ", deviceLogs_2.ToArray()));
 
-                string[] txt3 = new string[9];
-                txt3[0] = new string(' ', this.Code.Length);
-                string str_line3 = string.Format("{0} >> ", txt3[0]);
+                string[] txt3_2 = new string[9];
+                string[] txt3_1 = new string[9];
+                string str_line3 = string.Format("{0} >> ", new string(' ', this.Code.Length));
+                //string str_line4 = string.Format("{0} >> ", txt4[0]);
+                if (this.McWork4Work != null)
+                {
+                    txt3_1[1] = this.McWork4Work.ID.ToString();
+                    txt3_1[2] = this.McWork4Work_LabelData;
+                    txt3_1[3] = StaticValue.GetLocation(this.McWork4Work.Sou_Location_ID).Code;
+                    txt3_1[4] = this.McWork4Work.Des_Location_ID.HasValue ?
+                        StaticValue.GetLocation(this.McWork4Work.Des_Location_ID.Value).Code :
+                        StaticValue.GetArea(this.McWork4Work.Des_Area_ID).Code;
+                    txt3_1[5] = this.McWork4Work.EventStatus.ToString();
+                    str_line3 += string.Format("[Q.CUR <=] ID={0} | LABEL={1} | SOU={2} | DES={3} | STS={4}"
+                        , txt3_1[0], txt3_1[1], txt3_1[2], txt3_1[3], txt3_1[4]);
+                    str_line3 += " /// ";
+                }
                 if (this.McWork4Receive != null)
                 {
-                    txt3[1] = this.McWork4Receive.ID.ToString();
-                    txt3[2] = this.McWork4Receive_BaseCode;
-                    txt3[3] = StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID).Code;
-                    txt3[4] = this.McWork4Receive.EventStatus.ToString();
-                    str_line3 += string.Format("[Q.REC =>] ID={0} | PL={1} | CUR={2} | STS={3} "
-                        , txt3[1], txt3[2], txt3[3], txt3[4]);
-                }
-                else if (this.McWork4Work != null)
-                {
-                    txt3[5] = this.McWork4Work.ID.ToString();
-                    txt3[6] = this.McWork4Work_BaseCode;
-                    txt3[7] = StaticValue.GetLocation(this.McWork4Work.Cur_Location_ID).Code;
-                    txt3[8] = this.McWork4Work.EventStatus.ToString();
-                    str_line3 += string.Format("[Q.CUR <=] ID={0} | PL={1} | DES={2} | STS={3}"
-                        , txt3[5], txt3[6], txt3[7], txt3[8]);
+                    txt3_2[0] = this.McWork4Receive.ID.ToString();
+                    txt3_2[1] = this.McWork4Receive_LabelData;
+                    txt3_2[2] = StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID).Code;
+                    txt3_2[3] = this.McWork4Receive.Des_Location_ID.HasValue ?
+                        StaticValue.GetLocation(this.McWork4Receive.Des_Location_ID.Value).Code :
+                        StaticValue.GetArea(this.McWork4Receive.Des_Area_ID).Code;
+                    txt3_2[4] = this.McWork4Receive.EventStatus.ToString();
+                    str_line3 += string.Format("[Q.REC =>] ID={0} | LABEL={1} | SOU={2} | DES={3} | STS={4} "
+                        , txt3_2[0], txt3_2[1], txt3_2[2], txt3_2[3], txt3_2[4]);
                 }
 
 

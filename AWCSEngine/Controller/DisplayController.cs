@@ -71,6 +71,7 @@ namespace AWCSEngine.Controller
 
         private static object _Lock_Events = new object();
         private static List<string> _Events = new List<string>();
+
         public static void Events_Write(string msg)
         {
             lock (_Lock_Events)
