@@ -184,6 +184,8 @@ namespace AWCSEngine.Engine.McRuntime
                         _mcShuInRow.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                             .New("Set_SouLoc", _mcShuInRow.Cur_Location.Code.Get2<int>() % 1000000)
                             .Add("Set_ShtDi", 1), ()=>this.StepTxt="2.1");
+                        //--Clear Shuttle Free ที่เคยเลือก
+                        _mcShuFreeID_wh8_in = null;
                     }
                     //2.2 รถ สถานะพร้อมทำงาน แต่รถไม่อยู่ที่ home / สั่งกลับ home
                     else if (_mcShuInRow.McObj.DV_Pre_Status == 90 && _mcShuInRow.McObj.DV_Pre_Zone != 2 && StepTxt != "2.2")
