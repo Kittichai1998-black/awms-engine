@@ -189,6 +189,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
         protected override NullCriteria ExecuteChild(NullCriteria request)
         {
+            bool isError = false;
             try
             {
                 if (this.McObj != null)
@@ -214,17 +215,19 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
                 this._5_MessageLog_OnRun(ex.Message);
-                Thread.Sleep(5000);
+                isError = true;
             }
             catch (Exception ex)
             {
                 DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
                 this.Logger.LogError(ex.Message);
                 this._5_MessageLog_OnRun(ex.Message);
-                Thread.Sleep(5000);
+                isError = true;
             }
             finally
             {
+                if(isError)
+                    Thread.Sleep(5000);
             }
 
             return null;
