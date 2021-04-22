@@ -533,13 +533,13 @@ namespace AWCSEngine.Engine.McRuntime
                 //string str_line4 = string.Format("{0} >> ", txt4[0]);
                 if (this.McWork4Work != null)
                 {
-                    txt3_1[1] = this.McWork4Work.ID.ToString();
-                    txt3_1[2] = this.McWork4Work_LabelData;
-                    txt3_1[3] = StaticValue.GetLocation(this.McWork4Work.Sou_Location_ID).Code;
-                    txt3_1[4] = this.McWork4Work.Des_Location_ID.HasValue ?
+                    txt3_1[0] = this.McWork4Work.ID.ToString();
+                    txt3_1[1] = this.McWork4Work_LabelData;
+                    txt3_1[2] = StaticValue.GetLocation(this.McWork4Work.Sou_Location_ID).Code;
+                    txt3_1[3] = this.McWork4Work.Des_Location_ID.HasValue ?
                         StaticValue.GetLocation(this.McWork4Work.Des_Location_ID.Value).Code :
                         StaticValue.GetArea(this.McWork4Work.Des_Area_ID).Code;
-                    txt3_1[5] = this.McWork4Work.EventStatus.ToString();
+                    txt3_1[4] = this.McWork4Work.EventStatus.ToString();
                     str_line3 += string.Format("[Q.CUR <=] ID={0} | LABEL={1} | SOU={2} | DES={3} | STS={4}"
                         , txt3_1[0], txt3_1[1], txt3_1[2], txt3_1[3], txt3_1[4]);
                     str_line3 += " /// ";
@@ -548,12 +548,12 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     txt3_2[0] = this.McWork4Receive.ID.ToString();
                     txt3_2[1] = this.McWork4Receive_LabelData;
-                    txt3_2[2] = StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID).Code;
+                    txt3_2[2] = StaticValue.GetLocation(this.McWork4Receive.Sou_Location_ID).Code;
                     txt3_2[3] = this.McWork4Receive.Des_Location_ID.HasValue ?
                         StaticValue.GetLocation(this.McWork4Receive.Des_Location_ID.Value).Code :
                         StaticValue.GetArea(this.McWork4Receive.Des_Area_ID).Code;
                     txt3_2[4] = this.McWork4Receive.EventStatus.ToString();
-                    str_line3 += string.Format("[Q.REC =>] ID={0} | LABEL={1} | SOU={2} | DES={3} | STS={4} "
+                    str_line3 += string.Format("[Q.REC =>] ID={0} | LABEL={1} | SOU={2} | DES={3} | STS={4}"
                         , txt3_2[0], txt3_2[1], txt3_2[2], txt3_2[3], txt3_2[4]);
                 }
 
