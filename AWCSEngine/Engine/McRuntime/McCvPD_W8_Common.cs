@@ -69,24 +69,6 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 this.PostCommand(McCommandType.CM_3);
             }
-            //1
-            else if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
-            {
-                //1.1
-                if (this.McObj.DV_Pre_Status == 98 && this.StepTxt != "1.1")
-                {
-                    var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
-                    var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
-                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, ()=>this.StepTxt="1.1");
-                    this.McWork_1_ReceiveToWorking();
-                }
-                //1.2 เคสหลุด
-                else if((this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14) && this.StepTxt != "1.2")
-                {
-                    this.McWork_1_ReceiveToWorking();
-                    this.StepTxt = "1.2";
-                }
-            }
             //2
             else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
             {
@@ -136,6 +118,24 @@ namespace AWCSEngine.Engine.McRuntime
                         this.McWork_3_WorkedToReceive_NextMC(_srm11.ID);
                         this.StepTxt = "3.1";
                     }
+                }
+            }
+            //1
+            else if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
+            {
+                //1.1
+                if (this.McObj.DV_Pre_Status == 98 && this.StepTxt != "1.1")
+                {
+                    var souLoc = this.StaticValue.GetLocation(this.McWork4Receive.Cur_Location_ID);
+                    var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Receive.BaseObject_ID, this.BuVO);
+                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, 1500, () => this.StepTxt = "1.1");
+                    this.McWork_1_ReceiveToWorking();
+                }
+                //1.2 เคสหลุด
+                else if ((this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14) && this.StepTxt != "1.2")
+                {
+                    this.McWork_1_ReceiveToWorking();
+                    this.StepTxt = "1.2";
                 }
             }
 
