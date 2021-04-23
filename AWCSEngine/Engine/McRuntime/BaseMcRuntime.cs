@@ -196,6 +196,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj != null)
                 {
+                    this._0_Read_Database_Change();
                     if (this.McObj.IsOnline && this.PlcADO.IsConnect)
                     {
                         this._1_Read_Plc2McObj_OnRun();
@@ -245,6 +246,22 @@ namespace AWCSEngine.Engine.McRuntime
 
             return null;
 
+        }
+        private void _0_Read_Database_Change()
+        {
+            var _mcMst = DataADO.GetInstant().SelectByID<acs_McMaster>(this.McMst.ID.Value, this.BuVO);
+            var _mcObj = DataADO.GetInstant().SelectByID<act_McObject>(this.McObj.ID.Value, this.BuVO);
+
+            if (this.McObj.IsAuto != _mcObj.IsAuto)
+                this.SetAuto(_mcObj.IsAuto);
+            if (this.McObj.IsOnline != _mcObj.IsOnline)
+                this.SetOnline(_mcObj.IsOnline);
+            if (this.McMst.Info1 != _mcMst.Info1)
+                this.McMst.Info1 = _mcMst.Info1;
+            if (this.McMst.Info2 != _mcMst.Info2)
+                this.McMst.Info2 = _mcMst.Info2;
+            if (this.McMst.Info3 != _mcMst.Info3)
+                this.McMst.Info3 = _mcMst.Info3;
         }
 
         private void _1_Read_Plc2McObj_OnRun()
