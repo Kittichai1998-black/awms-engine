@@ -65,10 +65,13 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         if (mc.EventStatus == McObjectEventStatus.DONE)
                         {
-                            this.McWork_2_WorkingToWorked();
-                            this.McWork_3_WorkedToReceive_NextMC(mcGateOutFree.ID);
-                            this.mcGateOutFree = null;
-                            return LoopResult.Break;
+                            if(mcGateOutFree.McWork4Receive == null && mcGateOutFree.McWork4Work == null)
+                            {
+                                this.McWork_2_WorkingToWorked();
+                                this.McWork_3_WorkedToReceive_NextMC(mcGateOutFree.ID);
+                                this.mcGateOutFree = null;
+                                return LoopResult.Break;
+                            }
                         }
                         return LoopResult.Continue;
                     });
@@ -144,26 +147,29 @@ namespace AWCSEngine.Engine.McRuntime
                     _mcShuInRow.McObj.DV_Pre_Zone != 1 &&
                     _mcShuInRow.McObj.DV_Pre_Zone != 999 && StepTxt == "3.2" && StepTxt != "3.3")
                 {
-                    var desArea = this.StaticValue.GetArea(this.McWork4Work.Des_Area_ID);
-                    var desLoc = this.StaticValue.GetLocation(this.McWork4Work.Des_Location_ID.Value);
-                    var souLocPLC = this.StaticValue.GetLocation(this.McWork4Work.Sou_Location_ID).Code.Get2<int>();
-                    var desLocPLC = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
-                    var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
+                    if(_mcShuInRow.McWork4Receive == null && _mcShuInRow.McWork4Work == null)
+                    {
+                        var desArea = this.StaticValue.GetArea(this.McWork4Work.Des_Area_ID);
+                        var desLoc = this.StaticValue.GetLocation(this.McWork4Work.Des_Location_ID.Value);
+                        var souLocPLC = this.StaticValue.GetLocation(this.McWork4Work.Sou_Location_ID).Code.Get2<int>();
+                        var desLocPLC = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
+                        var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
 
-                    //this.PostCommand(McCommandType.CM_99);
+                        //this.PostCommand(McCommandType.CM_99);
 
-                    //สั่งกลับ home เมื่อทำงานเสร็จ
-                    this.PostCommand(McCommandType.CM_99, (mc) => {
-                        if (mc.McObj.DV_Pre_Status == 90)
-                        {
-                            this.PostCommand(McCommandType.CM_10, 2052001, 2052001, 1, "0000000000", 1500, () => { });
-                            return LoopResult.Break;
-                        }
-                        return LoopResult.Continue;
-                    });
-                    this.McWork_2_WorkingToWorked();
-                    this.McWork_3_WorkedToReceive_NextMC(_mcShuInRow.ID);
-                    this.StepTxt = "3.3";
+                        //สั่งกลับ home เมื่อทำงานเสร็จ
+                        this.PostCommand(McCommandType.CM_99, (mc) => {
+                            if (mc.McObj.DV_Pre_Status == 90)
+                            {
+                                this.PostCommand(McCommandType.CM_10, 2052001, 2052001, 1, "0000000000", 1500, () => { });
+                                return LoopResult.Break;
+                            }
+                            return LoopResult.Continue;
+                        });
+                        this.McWork_2_WorkingToWorked();
+                        this.McWork_3_WorkedToReceive_NextMC(_mcShuInRow.ID);
+                        this.StepTxt = "3.3";
+                    }
                 }
             }
             //1-2 SRM รอรับงาน

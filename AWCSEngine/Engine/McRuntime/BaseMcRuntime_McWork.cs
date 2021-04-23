@@ -54,13 +54,17 @@ namespace AWCSEngine.Engine.McRuntime
 
             DisplayController.Events_Write(this.Code + " > McWork_3_WorkedToReceive_NextMC : " + nextMc.Code);
         }
-        public void McWork_1_ReceiveToWorking()
+        public bool McWork_1_ReceiveToWorking()
         {
+            if (this.McWork4Work != null) return false;
+
             if (this.McWork4Receive.Cur_McObject_ID.HasValue)
             {
                 var oldMc = Controller.McRuntimeController.GetInstant().GetMcRuntime(this.McWork4Receive.Cur_McObject_ID.Value);
                 oldMc.McWork4Work = oldMc.McWork4Work = null;
             }
+            long q_id = this.McWork4Receive.ID.Value;
+            string q_label = this.McWork4Receive_LabelData;
             this.McWork4Work = this.McWork4Receive;
             this.McWork4Receive = null;
             this.McWork4Work.Cur_McObject_ID = this.ID;
@@ -75,7 +79,8 @@ namespace AWCSEngine.Engine.McRuntime
             baseObject.McObject_ID = null;
             DataADO.GetInstant().UpdateBy(baseObject, this.BuVO);
 
-            DisplayController.Events_Write(this.Code + " > McWork_1_ReceiveToWorking");
+            DisplayController.Events_Write(this.Code + " > McWork_1_ReceiveToWorking QID=" + q_id + " | LABEL=" + q_label);
+            return true;
         }
         public void McWork_2_WorkingToWorked(long? locID = null)
         {

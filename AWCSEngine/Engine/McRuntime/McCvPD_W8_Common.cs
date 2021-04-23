@@ -2,6 +2,7 @@
 using AMSModel.Constant.EnumConst;
 using AMSModel.Entity;
 using AMWUtil.Common;
+using AWCSEngine.Controller;
 using AWCSEngine.Engine.CommonEngine;
 using System;
 using System.Collections.Generic;
@@ -52,8 +53,11 @@ namespace AWCSEngine.Engine.McRuntime
                     }
                     else
                     {
+                        this.StepTxt = "0.1";
                         this.BuVO.SqlTransaction_Rollback();
-                        throw new Exception(bObj._result.message);
+                        DisplayController.Events_Write(this.Code + " > " + bObj._result.message);
+                        this.PostCommand(McCommandType.CM_14);
+                        //throw new Exception(bObj._result.message);
                     }
                 }
             }
@@ -86,17 +90,20 @@ namespace AWCSEngine.Engine.McRuntime
                     if (this.Code.In("RC8-2", "RC8-1"))
                     {
                         var mcSrm11 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM11");
-                        this.McWork_2_WorkingToWorked();
-                        this.McWork_3_WorkedToReceive_NextMC(mcSrm11.ID);
-                        this.StepTxt = "2.2";
+                        if(mcSrm11.McWork4Receive == null && mcSrm11.McWork4Work == null)
+                        {
+                            this.McWork_2_WorkingToWorked();
+                            this.McWork_3_WorkedToReceive_NextMC(mcSrm11.ID);
+                            this.StepTxt = "2.2";
+                        }
                     }
                     //ส่งงานให้ SRM Outbound
                     else if (this.Code.In("RC8-4", "RC8-5"))
                     {
-                        var mcSrm12 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM12");
-                        this.McWork_2_WorkingToWorked();
-                        this.McWork_3_WorkedToReceive_NextMC(mcSrm12.ID);
-                        this.StepTxt = "2.2";
+                        //var mcSrm12 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM12");
+                        //this.McWork_2_WorkingToWorked();
+                        //this.McWork_3_WorkedToReceive_NextMC(mcSrm12.ID);
+                        //this.StepTxt = "2.2";
                     }
                 }
             }
@@ -107,16 +114,20 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     if (this.Code.In("RC8-2", "RC8-1"))
                     {
-                        var _srm11 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM11");
-                        this.McWork_3_WorkedToReceive_NextMC(_srm11.ID);
-                        this.StepTxt = "3.1";
+
+                        var mcSrm11 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM11");
+                        if (mcSrm11.McWork4Receive == null && mcSrm11.McWork4Work == null)
+                        {
+                            this.McWork_3_WorkedToReceive_NextMC(mcSrm11.ID);
+                            this.StepTxt = "3.1";
+                        }
                     }
                     //ส่งงานให้ SRM Outbound
                     else if (this.Code.In("RC8-4", "RC8-5"))
                     {
-                        var _srm11 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM12");
-                        this.McWork_3_WorkedToReceive_NextMC(_srm11.ID);
-                        this.StepTxt = "3.1";
+                        //var _srm11 = Controller.McRuntimeController.GetInstant().GetMcRuntime("SRM12");
+                        //this.McWork_3_WorkedToReceive_NextMC(_srm11.ID);
+                        //this.StepTxt = "3.1";
                     }
                 }
             }

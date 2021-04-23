@@ -40,11 +40,12 @@ namespace AWCSEngine.Engine.WorkRuntime
 
                 this.BuVO.SqlTransaction_Begin();
                 var res =
-                new CommonEngine.Comm_CreateMcWorkIN_byBaseObjTemp(this.LogRefID, this.BuVO)
-                .Execute(new CommonEngine.Comm_CreateMcWorkIN_byBaseObjTemp.TReq()
-                {
-                    baseObjID = baseObj.ID.Value
-                });
+                    new CommonEngine.Comm_CreateMcWorkIN_byBaseObjTemp(this.LogRefID, this.BuVO)
+                    .Execute(new CommonEngine.Comm_CreateMcWorkIN_byBaseObjTemp.TReq()
+                    {
+                        baseObjID = baseObj.ID.Value
+                    });
+
                 if (res._result.status == 1)
                 {
                     this.BuVO.SqlTransaction_Commit();

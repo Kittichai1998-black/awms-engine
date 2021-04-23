@@ -37,7 +37,7 @@ namespace AWCSEngine.Engine.CommonEngine
                 }
                 else
                 {
-                    throw new Exception("พาเลทอยู่ระหว่างรับเข้า ไม่สามารถรับเข้าซ้ำได้");
+                    throw new Exception("ไม่สามารถรับเข้าซ้ำได้");
                 }
             }
 
