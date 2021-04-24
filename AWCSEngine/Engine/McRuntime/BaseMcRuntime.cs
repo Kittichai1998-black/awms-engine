@@ -196,7 +196,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj != null)
                 {
-                    this._0_Read_Database_Change();
+                    //this._0_Read_Database_Change();
                     if (this.McObj.IsOnline && this.PlcADO.IsConnect)
                     {
                         this._1_Read_Plc2McObj_OnRun();

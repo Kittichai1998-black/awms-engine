@@ -53,7 +53,6 @@ namespace AWCSEngine.Engine.McRuntime
                     }
                     else
                     {
-                        this.StepTxt = "0.1";
                         this.BuVO.SqlTransaction_Rollback();
                         DisplayController.Events_Write(this.Code + " > " + bObj._result.message);
                         this.PostCommand(McCommandType.CM_14);

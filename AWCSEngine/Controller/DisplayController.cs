@@ -12,7 +12,7 @@ namespace AWCSEngine.Controller
 {
     public static class DisplayController
     {
-        private static AMWLogger Logger = AMWLoggerManager.GetLogger("_event", "event");
+        private static AMWLogger Logger = AMWLoggerManager.GetLogger("_event." + AppName, "event");
         private static object _Lock_McLists = new object();
         private static List<string> _McLists = new List<string>();
         private static string _AppName { get; set; }

@@ -24,60 +24,10 @@ namespace AWCSEngine.Engine.McRuntime
         {
             if (this.Code == "SRM11")
                 this.OnRun_WH8_Inbound();
-            else if (this.Code == "SRM12")
-                this.OnRun_WH8_Outbound();
         }
 
         private BaseMcRuntime mcGateOutFree = null;
 
-
-        protected void OnRun_WH8_Outbound()
-        {
-            if (this.McWork4Receive != null && this.McWork4Receive.EventStatus == McWorkEventStatus.ACTIVE_RECEIVE)
-            {
-                if (this.McObj.DV_Pre_Status == 90)
-                {
-                    var decArea = this.StaticValue.GetArea(this.McWork4Receive.Des_Area_ID);
-                    var decLoc = this.StaticValue.GetLocation(this.McWork4Receive.Des_Location_ID.Value);
-                    mcGateOutFree = McRuntimeController.GetInstant().ListMcRuntimeByArea(decArea.ID.Value).FirstOrDefault(x => x.McObj.DV_Pre_Status != 00);//ไม่เท่ากับเต็ม
-                    if (mcGateOutFree != null)
-                    {
-                        var souLocPLC = (decLoc.Code.Get2<int>() % 1000000) + 47000000;
-                        var desLocPLC = mcGateOutFree.Code.Get2<int>();
-                        var baseOjc = BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
-                        this.PostCommand(McCommandType.CM_1, souLocPLC, desLocPLC, 1, baseOjc.Code, 1500, (mc) =>
-                        {
-                            if (mc.EventStatus == McObjectEventStatus.DONE)
-                            {
-                                this.McWork_1_ReceiveToWorking();
-                                return LoopResult.Break;
-                            }
-                            return LoopResult.Continue;
-                        });
-                    }
-                }
-            }
-            else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
-            {
-                if (this.McObj.DV_Pre_Status == 99)
-                {
-                    this.PostCommand(McCommandType.CM_99, (mc) =>
-                    {
-                        if (mc.EventStatus == McObjectEventStatus.DONE)
-                        {
-                            if(mcGateOutFree.McWork4Receive == null && mcGateOutFree.McWork4Work == null)
-                            {
-                                this.McWork_2_WorkingToWorked();
-                                this.McWork_3_WorkedToReceive_NextMC(mcGateOutFree.ID);
-                                this.mcGateOutFree = null;
-                                return LoopResult.Break;
-                            }
-                        }
-                        return LoopResult.Continue;
-                    });
-                }
-            }
-        }
 
         protected void OnRun_WH8_Inbound()
         {
