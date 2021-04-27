@@ -64,9 +64,11 @@ namespace AWCSEngine.Engine.CommonEngine
                     this.BuVO);
 
             
-            var desWh = this.StaticValue.GetWarehouse(wq.desWarehouseCode);
             var desArea = this.StaticValue.GetArea(wq.desAreaCode);
             var desLoc = this.StaticValue.GetLocation(wq.desWarehouseCode, wq.desLocationCode);
+
+            long? Change_Des_Location_ID = this.Get_Change_Des_Location(wq.queueRefID);
+
             act_McWork mcQ = new act_McWork()
             {
                 ID = null,
@@ -74,6 +76,7 @@ namespace AWCSEngine.Engine.CommonEngine
                 QueueType = (int)IOType.INBOUND,//INBOUND
                 WMS_WorkQueue_ID = wq.queueID,
                 BuWork_ID = wq.queueID,
+                TrxRef = wq.queueRefID,
 
                 Priority = wq.priority,
                 SeqGroup = wq.seqGroup,
@@ -91,14 +94,13 @@ namespace AWCSEngine.Engine.CommonEngine
                 Sou_Location_ID = bLocation.ID.Value,
 
                 Des_Area_ID = desArea.ID.Value,
-                Des_Location_ID = desLoc.ID,
+                Des_Location_ID = Change_Des_Location_ID ?? desLoc.ID,
 
                 ActualTime = DateTime.Now,
                 StartTime = DateTime.Now,
                 EndTime = null,
                 EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
                 Status = EntityStatus.ACTIVE,
-
 
                 TreeRoute = "{}"
             };
@@ -123,6 +125,33 @@ namespace AWCSEngine.Engine.CommonEngine
             return mcQ;
 
 
+        }
+  
+        private long? Get_Change_Des_Location(string queueRefID)
+        {
+
+            var locSlots = ADO.WCSDB.LocationADO.GetInstant().List_UseLocationBayLv_ByBuWork(queueRefID, this.BuVO)
+                .Where(x=>x.Slot_Use<x.Slot_Max).OrderByDescending(x => x.Loc_BayLv).ToList();
+
+            var shus = Controller.McRuntimeController.GetInstant().GetMcRuntimeByArea(locSlots.First().Area_ID)
+                .Where(x=>x.IsOnline && x.Code.StartsWith("SHU"))
+                .OrderBy(x=>x.McObj.CommandActionTime);
+
+
+            foreach(var shu in shus)
+            {
+                if (locSlots.Any(l => shu.Cur_Location.Code.EndsWith(l.Loc_Bay + l.Loc_Lv)))
+                    return shu.StempActionTime().Cur_Location.ID;
+                if((DateTime.Now- shu.McObj.CommandActionTime).Minutes > 5)
+                {
+                    var loc = locSlots.FirstOrDefault(l=> !shus.Where(s=>s!=shu)
+                                                            .Any(s=>s.Cur_Location.Code.EndsWith(l.Loc_Bay + l.Loc_Lv))) ;
+                    if (loc != null)
+                        return StaticValue.Locations.First(l => l.Area_ID==loc.Area_ID && l.Code.EndsWith(loc.Loc_BayLv)).ID;
+                }
+            }
+
+            return null;
         }
     }
 }

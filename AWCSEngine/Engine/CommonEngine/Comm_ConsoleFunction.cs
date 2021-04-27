@@ -47,6 +47,16 @@ namespace AWCSEngine.Engine.CommonEngine
             McRuntimeController.GetInstant().GetMcRuntime(machine).SetOnline(false);
             return "OK.";
         }
+        public string fn_batlow(string machine)
+        {
+            McRuntimeController.GetInstant().GetMcRuntime(machine).SetBatteryLow(true);
+            return "OK.";
+        }
+        public string fn_bathigh(string machine)
+        {
+            McRuntimeController.GetInstant().GetMcRuntime(machine).SetBatteryLow(false);
+            return "OK.";
+        }
         public string fn_loadstatic()
         {
             StaticValueManager.GetInstant().LoadAll();

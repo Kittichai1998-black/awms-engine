@@ -18,16 +18,19 @@ namespace AWCSEngine.Engine.McRuntime
         public McCvPD_W8_Common(acs_McMaster mcMst) : base(mcMst)
         {
         }
-
+        private static object _single_thread = new object();
         protected override void OnRun()
         {
-            if (this.Code == "RC8-2")
+            lock (_single_thread)
             {
-                this.Normal_OnRun();
-            }
-            else if(this.Code == "RC8-1")
-            {
-                this.RC8_1_OnRun();
+                if (this.Code == "RC8-2")
+                {
+                    this.Normal_OnRun();
+                }
+                else if (this.Code == "RC8-1")
+                {
+                    this.RC8_1_OnRun();
+                }
             }
         }
         private void RC8_1_OnRun()

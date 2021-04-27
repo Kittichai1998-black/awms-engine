@@ -56,8 +56,11 @@ namespace AWCSEngine.Engine.McRuntime
                 BaseMcRuntime _mcShuInRow = McRuntimeController.GetInstant()
                     .ListMcRuntimeByLocation(decArea.Warehouse_ID, null, decLoc.GetBay(), decLoc.GetLv())
                     .FirstOrDefault(x =>
+                                  x.IsOnline &&
                                   x.Code.StartsWith("SHU") &&
                                   (x.McMst.Info1 ?? "").ToUpper() == "IN");
+                if (_mcShuInRow == null || _mcShuInRow.McObj.IsBatteryLow)
+                    return;
 
                 //3.1 แถวถูก แต่ zone ไม่ถูก / สั่งรถหลบ
                 if (_mcShuInRow.McObj.DV_Pre_Zone != 2 && _mcShuInRow.McObj.DV_Pre_Status == 90 && StepTxt != "3.1")
@@ -74,23 +77,7 @@ namespace AWCSEngine.Engine.McRuntime
                     var desLocPLC = (desLoc.Code.Get2<int>() % 1000000) + 2000000;
                     var baseObj = ADO.WCSDB.BaseObjectADO.GetInstant().GetByID(this.McWork4Work.BaseObject_ID, this.BuVO);
 
-                    this.PostCommand(McCommandType.CM_1, souLocPLC, desLocPLC, 1, baseObj.Code, 1500,
-                        (mc) =>
-                        {
-                            /*if (mc.McObj.DV_Pre_Status == 99)
-                            {
-                                DisplayController.Events_Write($"{this.Code} > exec 3.2-99");
-                                mc.PostCommand(McCommandType.CM_99);
-                                //var _mcShuInRow = McRuntimeController.GetInstant().ListMcRuntimeByLocation(desArea.Warehouse_ID, null, desLoc.GetBay(), desLoc.GetLv()).FirstOrDefault();
-                                var wh = this.StaticValue.GetWarehouse(desArea.Warehouse_ID);
-                                var loc =this.StaticValue.GetLocation(wh.Code, desLocPLC.ToString("000000000"));
-                                this.McWork_2_WorkingToWorked(loc.ID.Value);
-                                this.McWork_3_WorkedToReceive_NextMC(_mcShuInRow.ID);
-                                return LoopResult.Break;
-                            }*/
-
-                            return LoopResult.Break;
-                        }, () => this.StepTxt = "3.2");
+                    this.PostCommand(McCommandType.CM_1, souLocPLC, desLocPLC, 1, baseObj.Code, 1500, () => this.StepTxt = "3.2");
                 }
                 //3.3 สั่งปิดงานรับเข้า
                 else if (this.McObj.DV_Pre_Status == 99 &&
@@ -111,7 +98,7 @@ namespace AWCSEngine.Engine.McRuntime
                         this.PostCommand(McCommandType.CM_99, (mc) => {
                             if (mc.McObj.DV_Pre_Status == 90)
                             {
-                                this.PostCommand(McCommandType.CM_10, 2052001, 2052001, 1, "0000000000", 1500, () => { });
+                                this.PostCommand(McCommandType.CM_2, () => { });
                                 return LoopResult.Break;
                             }
                             return LoopResult.Continue;

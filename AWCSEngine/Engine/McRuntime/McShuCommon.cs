@@ -22,23 +22,35 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            if(this.McWork4Receive !=null || this.McWork4Work != null)
-            {
-                var areaID = this.McWork4Receive != null ? this.McWork4Receive.Des_Area_ID :
-                    this.McWork4Work != null ? this.McWork4Work.Des_Area_ID : 0;
-                var area =this.StaticValue.GetArea(areaID);
-                var wh = this.StaticValue.GetWarehouse(area.Warehouse_ID);
-                if(wh.Code.ToLower() == "w08")
-                {
-                    if (this.McMst.Info1.ToLower() == "in")
-                        OnRun_w8_Inbound();
-                }
-            }
+            if (this.McMst.Info1.ToLower() == "in")
+                OnRun_w8_Inbound();
         }
 
         private void OnRun_w8_Inbound()
         {
-            if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
+            if(this.McObj.IsBatteryLow || (this.McWork4Work == null && this.McWork4Receive == null))
+            {
+                if(this.McObj.DV_Pre_Status == 80 && this.McObj.DV_Pre_Zone != 4)
+                {
+                    this.PostCommand(McCommandType.CM_72, () => this.StepTxt = "0.1");
+                }
+                else if(this.McObj.DV_Pre_Status == 80 && this.McObj.DV_Pre_Zone == 4)
+                {
+                    this.SetBatteryLow(true);
+                    this.PostCommand(McCommandType.CM_60, () => this.StepTxt = "0.2" );
+                }
+                else if(this.McObj.DV_Pre_Status == 82 && this.StepTxt == "0.2" && this.StepTxt != "0.3")
+                {
+                    ADO.WCSDB.McObjectADO.GetInstant().BatteryLow_CheckOut(this.ID, 1, 2, this.BuVO);
+                    this.StepTxt = "0.3";
+                }
+                else if (this.McObj.DV_Pre_Status == 90 && this.McObj.IsBatteryLow)
+                {
+                    this.SetBatteryLow(false);
+                    this.StepTxt = "0.4";
+                }
+            }
+            else if (this.McWork4Work != null && this.McWork4Work.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
             {
                 //5.1 จบงานรับเข้า กรณีงานค้าง
                 if (this.McObj.DV_Pre_Status == 99 && this.StepTxt != "5.1")

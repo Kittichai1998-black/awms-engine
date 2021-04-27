@@ -78,6 +78,7 @@ namespace AMWUtil.Logger
             {
                 _fileFullName = this.FileFullName.Replace("{Date}", DateTime.Now.ToString("yyyyMMdd"));
                 _fileName = _fileFullName.Split(new char[] { '\\', '/' }).Last();
+                _day = DateTime.Now.Day;
             }
 
             string _key = DateTime.Now.Day + "," + _fileName;
@@ -88,7 +89,7 @@ namespace AMWUtil.Logger
             object _lock = AMWLogger._LockFiles.First(x => x.Key == _key).Value;
             lock (_lock)
             {
-                using (var fw = new StreamWriter(this.FileFullName, true))
+                using (var fw = new StreamWriter(_fileFullName, true))
                 {
                     message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) > {6}",
                                             DateTime.Now,

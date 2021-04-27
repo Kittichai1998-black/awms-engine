@@ -23,7 +23,7 @@ namespace AWCSEngine.Engine.McRuntime
         //private McObjectEventStatus _McObjectEventStatus_Tmp { get; set; }
 
         private McObjectEventStatus _EventStatus_Temp = (McObjectEventStatus)9999;
-        private bool IsOnChanged = true;
+        //private bool IsOnChanged = true;
 
         protected abstract void OnStart();
         protected abstract void OnRun();
@@ -96,6 +96,11 @@ namespace AWCSEngine.Engine.McRuntime
                     throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_LOCATION_NOT_SET, this.Code);
                 return StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.Value);
             }
+        }
+        public BaseMcRuntime StempActionTime()
+        {
+            this.McObj.CommandActionTime = DateTime.Now;
+            return this;
         }
         //public List<string> DeviceLogs { get; set; }
         public List<string> DeviceNames { get; set; }
@@ -172,14 +177,18 @@ namespace AWCSEngine.Engine.McRuntime
         public void SetOnline(bool isOnline)
         {
             this.McObj.IsOnline = isOnline;
+            //if (isOnline && this.StepTxt.StartsWith("0.")) this.StepTxt = "";
             DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsOnline ? "Online" : "Offline")}");
-
         }
         public void SetAuto(bool isAuto)
         {
             this.McObj.IsAuto = isAuto;
             DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsAuto ? "Auto" : "Manual")}");
-
+        }
+        public void SetBatteryLow(bool isBatteryLow)
+        {
+            this.McObj.IsBatteryLow = isBatteryLow;
+            DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsBatteryLow ? $"Battery Low ({this.McObj.DV_Pre_Battery}%)" : $"Battery High({this.McObj.DV_Pre_Battery}%)")}");
         }
 
 
@@ -372,32 +381,33 @@ namespace AWCSEngine.Engine.McRuntime
                                 setComm = val.Get2<int>();
                         });
 
-                        string _log_set = $"{this.Code} > [DEVICE END] ({act.Seq}/{maxSeq})] {_act_sets}";
+                        string _log_set = $"{this.Code} > [DEVICE SET] ({act.Seq}/{maxSeq})] {_act_sets}";
                         DisplayController.Events_Write(_log_set);
                         this.Logger.LogInfo(_log_set);
                         isNext = true;
                         break;
                     }
 
-
-                    if (false && string.IsNullOrWhiteSpace(this.McMst.DK_Con_Comm) && isNext && setComm != -1)
-                    {
-                        var dk = this.McMst.DK_Con_Comm;
-                        var dv = this.PlcADO.GetDevice<int>(dk);
-                        if (dv == setComm)
-                        {
-                            this.PlcADO.SetDevice<int>(dk, 0);
-                            isNext = true;
-                            DisplayController.Events_Write($"{this.Code} > [DEVICE] Complete! Set_Comm = Con_Comm = {dv}");
-                        }
-                        else
-                        {
-                            isNext = false;
-                        }
-
-                    }
                 }
 
+                if (!string.IsNullOrWhiteSpace(this.McMst.DK_Con_Comm) && isNext && setComm != -1)
+                {
+                    Thread.Sleep(500);
+                    var dk = this.McMst.DK_Con_Comm;
+                    var dv = this.PlcADO.GetDevice<int>(dk);
+                    if (dv == setComm)
+                    {
+                        this.PlcADO.SetDevice<int>(dk, 0);
+                        isNext = true;
+                        DisplayController.Events_Write($"{this.Code} > [DEVICE COMMAND COMPLETE!] Set_Comm = {setComm} | Con_Comm = {dv}");
+                    }
+                    else
+                    {
+                        isNext = false;
+                        DisplayController.Events_Write($"{this.Code} > [DEVICE COMMAND NOT-COMPLETE?] Set_Comm = {setComm} | Con_Comm = {dv}");
+                    }
+
+                }
 
                 if (isNext)
                 {
@@ -422,12 +432,12 @@ namespace AWCSEngine.Engine.McRuntime
             else if (this.McObj.EventStatus == McObjectEventStatus.DONE)
             {
                 this.McObj.EventStatus = McObjectEventStatus.IDEL;
-                this.Logger.LogInfo("[" + this.McObj.EventStatus + "]");
+                //this.Logger.LogInfo("[" + this.McObj.EventStatus + "]");
             }
 
             if (this.McObj.EventStatus != this._EventStatus_Temp)
             {
-                DisplayController.Events_Write($"{this.Code} > [EVT.STATUS] {this.EventStatus}!");
+                //DisplayController.Events_Write($"{this.Code} > [EVT.STATUS] {this.EventStatus}!");
                 this._EventStatus_Temp = this.EventStatus;
             }
         }
@@ -440,7 +450,6 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     DataADO.GetInstant().UpdateBy<act_McObject>(this.McObj, this.BuVO);
                     this._McObj_TMP = this.McObj.Clone();
-                    this.IsOnChanged = true;
                 }
                 if (this.McWork4Work != null &&
                     this.McObj.Cur_Location_ID != this.McWork4Work.Cur_Location_ID)
@@ -449,7 +458,6 @@ namespace AWCSEngine.Engine.McRuntime
                     this.McWork4Work.Cur_Warehouse_ID = this.Cur_Area.ID.Value;
                     this.McWork4Work.Cur_Area_ID = this.Cur_Area.Warehouse_ID;
                     DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
-                    this.IsOnChanged = true;
                 }
             }
             catch (Exception ex)
@@ -508,13 +516,14 @@ namespace AWCSEngine.Engine.McRuntime
                         , GetTextStatus(this.McObj.DV_Pre_Status)                   //5
                         );
                 string str_line1_1 =
-                    string.Format("{0} >> [{1}] [{2}] | LOC={3} | STEP={4} | ERR={5}"
+                    string.Format("{0} >> [{1}] [{2}] [{3}] | LOC={4} | STEP={5} | ERR={6}"
                         , new string(' ', this.Code.Length)                         //0
                         , this.McObj.IsOnline ? "ON" : "OFF"                  //1
                         , this.McObj.IsAuto ? "AUTO" : "MANUL"                    //2
-                        , this.Cur_Location.Code                                    //3
-                        , this.StepTxt                                              //4
-                        , error                                                     //5
+                        , this.McObj.IsBatteryLow ? "BAT-L" : "BAT-H"          //3
+                        , this.Cur_Location.Code                                    //4
+                        , this.StepTxt                                              //5
+                        , error                                                     //6
                     );
 
 
@@ -576,7 +585,6 @@ namespace AWCSEngine.Engine.McRuntime
 
 
                 Controller.DisplayController.McLists_Write(this.Code, $"{str_line1}\n{str_line1_1}\n{str_line2_1}\n{str_line2_2}\n{str_line3}");
-                this.IsOnChanged = false;
             }
             
         }

@@ -19,6 +19,26 @@ namespace ADO.WCSDB
             public string Loc_Lv { get => this.Loc_BayLv.Substring(3, 3); }
             public int Slot;
         }
+        public class LocUse
+        {
+            public long Area_ID;
+            public string Loc_BayLv;
+            public string Loc_Bay { get => this.Loc_BayLv.Substring(0, 3); }
+            public string Loc_Lv { get => this.Loc_BayLv.Substring(3, 3); }
+            public int Slot_Use;
+            public int Slot_Max;
+        }
+
+
+        public List<LocUse> List_UseLocationBayLv_ByBuWork(string trxID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
+            parameters.Add("trxID", trxID);
+            var loc_uses = this.Query<LocUse>("SP_LIST_USE_LOCATION_BAYLV_ByBuWork",
+                CommandType.StoredProcedure, parameters, buVO.Logger, buVO.SqlTransaction).ToList();
+            return loc_uses;
+        }
+            
         public List<acs_Location> List_FreeLocationBayLv(long whID, int slot,bool bayDesc,VOCriteria buVO)
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
