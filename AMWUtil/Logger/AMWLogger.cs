@@ -79,6 +79,10 @@ namespace AMWUtil.Logger
                 _fileFullName = this.FileFullName.Replace("{Date}", DateTime.Now.ToString("yyyyMMdd"));
                 _fileName = _fileFullName.Split(new char[] { '\\', '/' }).Last();
                 _day = DateTime.Now.Day;
+                string _dir = _fileFullName.Substring(0,_fileFullName.LastIndexOf('/') );
+                if (!Directory.Exists(_dir)) {
+                    Directory.CreateDirectory(_dir);
+                }
             }
 
             string _key = DateTime.Now.Day + "," + _fileName;

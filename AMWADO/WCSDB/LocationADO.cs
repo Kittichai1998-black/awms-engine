@@ -33,7 +33,7 @@ namespace ADO.WCSDB
         public List<LocUse> List_UseLocationBayLv_ByBuWork(string trxID, VOCriteria buVO)
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
-            parameters.Add("trxID", trxID);
+            parameters.Add("@trxRef", trxID);
             var loc_uses = this.Query<LocUse>("SP_LIST_USE_LOCATION_BAYLV_ByBuWork",
                 CommandType.StoredProcedure, parameters, buVO.Logger, buVO.SqlTransaction).ToList();
             return loc_uses;

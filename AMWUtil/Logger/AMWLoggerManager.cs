@@ -85,8 +85,8 @@ namespace AMWUtil.Logger
                         logManager.LogFile = logManager.LogFile.Replace(m.Value, dicMapKey[m.Value]);
                 }
 
-                if (!Directory.Exists(logManager.LogUri))
-                    Directory.CreateDirectory(logManager.LogUri);
+                //if (!Directory.Exists(logManager.LogUri))
+                //    Directory.CreateDirectory(logManager.LogUri);
 
                 AMWLogger.ClearLockFiles();
                 string fileName = logManager.LogUri + logManager.LogFile;

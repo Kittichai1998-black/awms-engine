@@ -120,6 +120,10 @@ namespace AWCSEngine.Engine.McRuntime
                     .FirstOrDefault(x =>
                                   x.Code.StartsWith("SHU") &&
                                   (x.McMst.Info1 ?? "").ToUpper() == "IN");
+
+                if (_mcShuInRow != null && _mcShuInRow.McObj.IsBatteryLow)
+                    return;
+
                 //1.ไม่พบ Shut ในแถว
                 if (_mcShuInRow == null)
                 {
@@ -140,6 +144,7 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         _mcShuFreeID_wh8_in = null;
                         _mcShuFree = null;
+                        StepTxt = "0";
                     }
 
                     // 1 ไม่พบรถในแถว พบรถที่ว่าง
