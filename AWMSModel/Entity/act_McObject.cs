@@ -62,5 +62,9 @@ namespace AMSModel.Entity
         public bool IsAuto;
 
         public int McMaster_ID;
+
+        public int DisCharge;
+        public string ErrorCode;
+        public string PassFlg;
     }
 }

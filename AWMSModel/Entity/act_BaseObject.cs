@@ -30,5 +30,9 @@ namespace AMSModel.Entity
         public string LabelData;
         public string Options;
         public BaseObjectEventStatus EventStatus;
+
+        public int DisCharge;
+        public int ErrorCode;
+        public string PassFlag;
     }
 }

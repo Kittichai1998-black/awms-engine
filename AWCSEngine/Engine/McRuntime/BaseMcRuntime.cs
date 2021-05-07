@@ -33,6 +33,15 @@ namespace AWCSEngine.Engine.McRuntime
         public acs_McMaster McMst { get; private set; }
         public act_McObject McObj { get; private set; }
 
+        #region เพิ่มใหม่
+        public enum FlagTypeEnum
+        {
+            Fail,
+            Pass
+        }
+
+        #endregion
+
         private string McWork4Work_LabelData { get; set; }
         private string McWork4Receive_LabelData { get; set; }
 
@@ -79,6 +88,15 @@ namespace AWCSEngine.Engine.McRuntime
         public long ID { get => this.McObj.ID.Value; }
         public string Code { get => this.McMst.Code; }
         public McObjectEventStatus EventStatus { get => this.McObj.EventStatus; }
+        public acs_Warehouse Cur_Warehouse
+        {
+            get
+            {
+                if (this.McObj.Cur_Location_ID == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V0_MC_LOCATION_NOT_SET, this.Code);
+                return StaticValueManager.GetInstant().GetWarehouse(this.Cur_Area.Warehouse_ID);
+            }
+        }
         public acs_Area Cur_Area
         {
             get
