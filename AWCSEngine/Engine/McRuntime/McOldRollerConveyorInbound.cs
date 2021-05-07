@@ -139,7 +139,7 @@ namespace AWCSEngine.Engine.McRuntime
                     McObject_ID = this.ID,
                     Warehouse_ID = this.Cur_Area == null ? 0 : this.Cur_Area.Warehouse_ID,
                     Area_ID = this.Cur_Location == null ? 0 : this.Cur_Location.Area_ID,
-                    Location_ID = this.Cur_Location == null ? 0 : this.Cur_Location.ID,
+                    Location_ID = this.McObj != null && this.McObj.Cur_Location_ID != null ? this.McObj.Cur_Location_ID.GetValueOrDefault() : 0,
                     LabelData = this.McObj.DV_Pre_BarProd,
                     EventStatus = BaseObjectEventStatus.TEMP,
                     Status = EntityStatus.ACTIVE

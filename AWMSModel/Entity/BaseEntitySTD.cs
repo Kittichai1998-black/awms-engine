@@ -19,7 +19,6 @@ namespace AMSModel.Entity
         public int GetBank() { return Code.Length < 3 ? 0 : Code.Substring(0, 3).Get2<int>(); }
         public int GetBay() { return Code.Length < 6 ? 0 : Code.Substring(3, 3).Get2<int>(); }
         public int GetLv() { return Code.Length < 9 ? 0 : Code.Substring(6, 3).Get2<int>(); }
-        public long ID;
 
 
     }
