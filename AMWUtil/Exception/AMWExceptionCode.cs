@@ -39,7 +39,7 @@ namespace AMWUtil.Exception
         V0_STO_NOT_FOUND,
         [AMWExceptionCodeAttribute("V0105", DefaultMessage = "สินค้าเกินจำนวนรอรับเข้า จากเอกสารรับเข้า {0}")]
         V0_STO_OVER_DOC,
-        [AMWExceptionCodeAttribute("V0106", DefaultMessage = "ไม่พบเอกสารรับเข้า {0} ในรับบ")]
+        [AMWExceptionCodeAttribute("V0106", DefaultMessage = "ไม่พบเอกสารรับเข้า {0} ในระบบ")]
         V0_DOC_NOT_FOUND,
 
         [AMWExceptionCodeAttribute("V0107", DefaultMessage = "ไม่พบข้อมูล Location. {0}")]

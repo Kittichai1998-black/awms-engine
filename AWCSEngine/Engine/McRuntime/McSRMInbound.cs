@@ -34,7 +34,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         #region Declare variable
-        protected string LogCode => "SRMIN";
+        protected string LogCode => this.Code + "_";
         #endregion
 
         #region Methods

@@ -38,7 +38,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         #region Declare variable
-        protected string LogCode => "RCO";
+        protected string LogCode => this.Code + "_";
         private int dimentionEjectStatus { get; set; }
         private bool dimentionEjectFlg { get; set; }
         private int disCharge { get; set; }
@@ -68,19 +68,20 @@ namespace AWCSEngine.Engine.McRuntime
                     this.dimentionEjectFlg = true;
                     this.errCode = this.McObj.DV_Pre_Status;
                     this.cmdReject = (int) McCommandType.CM_5;
-                    this.PassFlg = (int)FlagTypeEnum.Fail;
+                    this.PassFlg = (int)PassFailFlag.Fail;
                     break;
 
                 case 137:
                     //Barcode scan Reject
                     this.errCode = this.McObj.DV_Pre_Status;
-                    this.PassFlg = (int)FlagTypeEnum.Fail;
+                    this.PassFlg = (int)PassFailFlag.Fail;
                     break;
 
                 case 98:
                     //อ่าน Barcode ได้
                     if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
                     {
+                        //ตรวจสอบข้อมูลรับเข้า
                         this.buWork = DataADO.GetInstant().SelectBy<act_BuWork>(
                         ListKeyValue<string, object>
                         .New("status", EntityStatus.ACTIVE)
@@ -89,10 +90,11 @@ namespace AWCSEngine.Engine.McRuntime
                         if(this.buWork == null)
                         {
                             this.cmdReject = (int)McCommandType.CM_11;
-                            this.PassFlg = (int)FlagTypeEnum.Fail;
+                            this.PassFlg = (int)PassFailFlag.Fail;
                         }
                         else
                         {
+                            //ตรวจสอบข้อมูลพาเลทซ้ำ
                             var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.BuVO);
                             if(bo!= null)
                             {
@@ -103,7 +105,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 else
                                 {
                                     this.cmdReject = (int)McCommandType.CM_10;
-                                    this.PassFlg = (int)FlagTypeEnum.Fail;
+                                    this.PassFlg = (int)PassFailFlag.Fail;
                                 }
                             }
 
@@ -116,12 +118,14 @@ namespace AWCSEngine.Engine.McRuntime
                     break;
             }
 
+            //ตรวจสอบ Discharge
             if(this.disCharge == 0)
             {
                 this.cmdReject = (int)McCommandType.CM_5;
-                this.PassFlg = (int)FlagTypeEnum.Fail;
+                this.PassFlg = (int)PassFailFlag.Fail;
             }
 
+            //ถ้าสแกนครั้งแรก สร้างข้อมูลรับเข้าพาเลทสินค้า
             if(this.baseObj == null)
             {
                 string baseCode;
@@ -150,9 +154,10 @@ namespace AWCSEngine.Engine.McRuntime
 
             if(!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.baseObj != null && this.buWork != null  && (this.cmdReject == 0 && this.errCode == 0))
             {
-                this.PassFlg = (int)FlagTypeEnum.Pass;
+                this.PassFlg = (int)PassFailFlag.Pass;
             }
 
+            //Update ข้อมูลรับเข้า ให้กับข้อมูลพาเลทสินค้า
             if (this.baseObj != null && this.baseObj.EventStatus == BaseObjectEventStatus.TEMP)
             {
                 this.baseObj.BuWork_ID = this.buWork == null ? null : this.buWork.ID;
@@ -172,12 +177,14 @@ namespace AWCSEngine.Engine.McRuntime
 
             this.BaseObject_ID = this.baseObj != null ? this.baseObj.ID : null;
 
+            //ถ้าไม่พบข้อผิดพลาด สั่งให้ทำงานต่อ
             if (this.PassFlg == 1)
             {
                 this.PostCommand(McCommandType.CM_1);
             }
             else
             {
+                //ถ้าพบข้อผิดพลาด ให้ Reject
                 if(this.cmdReject != 0)
                 {
                     McCommandType cmd = (McCommandType)this.cmdReject;
@@ -189,7 +196,7 @@ namespace AWCSEngine.Engine.McRuntime
                 }
             }
 
-            this.StepTxt = "1";
+            this.StepTxt = this.LogCode + "1";
             string msg = this.Code + " > Working | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + this.disCharge;
             msg += " | BuWork_ID =" + this.BuWork_ID + " | BaseObject_ID =" + this.BaseObject_ID + " | Status =" + (this.PassFlg == 0 ? "N" : "Y");
             msg += " | Error code =" + this.errCode + " | Command Reject =" + this.cmdReject;
