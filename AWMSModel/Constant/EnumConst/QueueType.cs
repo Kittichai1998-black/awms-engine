@@ -21,11 +21,13 @@ namespace AMSModel.Constant.EnumConst
         QT_5 = 5,
         [DisplayAttribute(Name = "คิวจัดเรียง เลื่อนพาเลทไปทาง Inbound")]
         QT_6 = 6,
-        [DisplayAttribute(Name = "คิว Count Pallet")]
+        [DisplayAttribute(Name = "คิว Count Pallet ทาง Inbound")]
         QT_7 = 7,
-        [DisplayAttribute(Name = "คิว Survey inbound เพื่อเอา Shuttle ไปหาช่องว่าง ว่าเก็บได้ไหม ")]
+        [DisplayAttribute(Name = "คิว Count Pallet ทาง OutBound")]
         QT_8 = 8,
         [DisplayAttribute(Name = "คิว Survey inbound เพื่อเอา Shuttle ไปหาช่องว่าง ว่าเก็บได้ไหม ")]
-        QT_9 = 9
+        QT_9 = 9,
+        [DisplayAttribute(Name = "คิว Survey inbound เพื่อเอา Shuttle ไปหาช่องว่าง ว่าเก็บได้ไหม ")]
+        QT_10 = 10
     }
 }
