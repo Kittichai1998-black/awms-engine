@@ -122,7 +122,10 @@ namespace AMSModel.Entity
 
         public string DK_Pre_Battery;
         public int DW_Pre_Battery;
-        
+
+        public int Warehouse_ID;
+
+
     }
 
 }

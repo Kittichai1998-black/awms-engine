@@ -42,18 +42,15 @@ namespace AWCSEngine.Engine.McRuntime
         #region Declare variable
         protected string LogCode => this.Code + "_";
         private act_McWork mcWork { get; set; }
+        private acs_McMaster _mcSRM { get; set; }
+        private act_BuWork buWork { get; set; }
+        private act_BaseObject baseObj { get; set; }
         #endregion
 
         #region Methods
         private void Mc_OnRun()
         {
-            var baseObj = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.BuVO);
-            if (baseObj == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND, this.McObj.DV_Pre_BarProd);
-
-            var buWork = DataADO.GetInstant().SelectByID<act_BuWork>(baseObj.BuWork_ID, this.BuVO);
-            if (buWork == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND, this.McObj.DV_Pre_BarProd);
+            if (this.McObj == null) { return; }
 
             switch (this.McObj.DV_Pre_Status)
             {
@@ -74,14 +71,49 @@ namespace AWCSEngine.Engine.McRuntime
                                 baseObj.McObject_ID = null;
                                 DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
 
-                                //ส่งงานให้ SRM
-                                var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
-                        ListKeyValue<string, object>
-                        .New("QueueType", QueueType.QT_1)
-                        .Add("IOType", IOType.INBOUND)
-                        .Add("Rec_McObject_ID", this.McObj.McMaster_ID)
-                        , this.BuVO).FirstOrDefault();
+                                var msg = "จบงาน Cy ";
 
+                                //ส่งงานให้ SRM
+                                 _mcSRM = this.findSRM(baseObj);
+                                if(_mcSRM != null)
+                                {
+                                    var mcSrm = Controller.McRuntimeController.GetInstant().GetMcRuntime(_mcSRM.Code);
+                                    //SRM จอดปกติ
+                                    if (mcSrm.McObj.DV_Pre_Status == 90)
+                                    {
+                                        this.mcWork.Rec_McObject_ID = mcSrm.ID;
+                                        this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_RECEIVE;
+                                        this.mcWork.ActualTime = DateTime.Now;
+
+                                        msg += " ส่งงานให้ SRM : " + mcSrm.Code ;
+                                        DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+                                    }
+                                }
+
+                                writeEventLog(baseObj, buWork, msg);
+
+                                break;
+
+                            case McWorkEventStatus.ACTIVE_WORKED:
+                                //ส่งงานให้ SRM
+                                 _mcSRM = this.findSRM(baseObj);
+                                var msg1 = "งานค้าง ยังไม่มี SRM มารับงาน ";
+                                if (_mcSRM != null)
+                                {
+                                    var mcSrm = Controller.McRuntimeController.GetInstant().GetMcRuntime(_mcSRM.Code);
+                                    //SRM จอดปกติ
+                                    if (mcSrm.McObj.DV_Pre_Status == 90)
+                                    {
+                                        this.mcWork.Rec_McObject_ID = mcSrm.ID;
+                                        this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_RECEIVE;
+                                        this.mcWork.ActualTime = DateTime.Now;
+
+                                        msg1 += " ส่งงานให้ SRM : " + mcSrm.Code;
+                                        DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+                                    }
+                                }
+
+                                writeEventLog(baseObj, buWork, msg1);
 
                                 break;
                         }
@@ -96,7 +128,15 @@ namespace AWCSEngine.Engine.McRuntime
 
                 case 98:
                     if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
-                    {                     
+                    {
+
+                         baseObj = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.BuVO);
+                        if (baseObj == null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND, this.McObj.DV_Pre_BarProd);
+
+                         buWork = DataADO.GetInstant().SelectByID<act_BuWork>(baseObj.BuWork_ID, this.BuVO);
+                        if (buWork == null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND, this.McObj.DV_Pre_BarProd);
 
                         this.mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
                         ListKeyValue<string, object>
@@ -124,7 +164,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
 
                                     this.PostCommand(McCommandType.CM_14);
-                                    writeEventLog(baseObj, null, "Reject จากจุดซ้อนพาเลท");
+                                    writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
                                     this.StepTxt = string.Empty;
                                 }
                             }
@@ -139,7 +179,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
                                 //สั่งให้ Conveyor เริ่มทำงานเก็บ
-                                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.WeiKG, () => writeEventLog(baseObj, null, "Conveyor เริ่มทำงานเก็บ"));
+                                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.WeiKG, () => writeEventLog(baseObj, buWork, "Conveyor เริ่มทำงานเก็บ"));
                             }
                             else
                             {
@@ -155,7 +195,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
                                     this.PostCommand(McCommandType.CM_13);
-                                    writeEventLog(baseObj, null, "Reject จากจุดซ้อนพาเลท");
+                                    writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
                                 }
                             }
                             
@@ -232,11 +272,15 @@ namespace AWCSEngine.Engine.McRuntime
             }
         }
 
-        private acs_McMaster findSRM()
+        private acs_McMaster findSRM(act_BaseObject _bo)
         {
-            acs_McMaster mcSrm;
+            var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
+                       ListKeyValue<string, object>
+                       .New("Warehouse_ID", (_bo!=null?_bo.Warehouse_ID:0))
+                       .Add("Info1", "IN")
+                       , this.BuVO).FirstOrDefault(x => x.Code.StartsWith("SRM"));
 
-            return mcSrm;
+            return mcSRM;
         }
         #endregion
 
