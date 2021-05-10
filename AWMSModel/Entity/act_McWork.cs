@@ -35,6 +35,8 @@ namespace AMSModel.Entity
         public string Remark;
         public McWorkEventStatus EventStatus;
         public int QueueStatus;
+        public int Keep_Flag;
+        public string MixLot;
 
         public List<TreeNode<long>> GetCur_TreeRoute()
         {
