@@ -5,6 +5,7 @@ using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWCSEngine.Controller;
+using AWCSEngine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,11 +135,11 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
                 {
-                    baseObj = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.BuVO);
+                    baseObj = BaseObjectADO.GetInstant().GetTempByWarehouse(this.Cur_Area.Warehouse_ID, this.BuVO);
                     if (baseObj == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND, this.McObj.DV_Pre_BarProd);
 
-                    buWork = DataADO.GetInstant().SelectByID<act_BuWork>(baseObj.BuWork_ID, this.BuVO);
+                    buWork = InboundUtil.GetBuWorkByObject(baseObj,this.BuVO);
                     if (buWork == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND, this.McObj.BaseObject_ID.ToString());
 
@@ -168,12 +169,8 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj.DV_Pre_Status == 98)
                 {
-                    this.mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
-                           ListKeyValue<string, object>
-                           .New("QueueType", QueueType.QT_1)
-                           .Add("IOType", IOType.INBOUND)
-                           .Add("Sou_Location_ID", this.McObj.Cur_Location_ID.GetValueOrDefault())
-                           , this.BuVO).FirstOrDefault();
+
+                    this.mcWork = InboundUtil.getMcWorkByQueueType(this.McObj, QueueType.QT_1, this.BuVO);
 
                     //ไม่มีคิวงาน
                     if (this.mcWork == null)
@@ -211,7 +208,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "1.1";
             try
             {
-                this.createWorkQueue(baseObj, buWork);
+                InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
                 writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
                 this.McNextStep = "2";
             }
@@ -391,78 +388,7 @@ namespace AWCSEngine.Engine.McRuntime
             DisplayController.Events_Write(msg);
         }
 
-        private void createWorkQueue(act_BaseObject _bo, act_BuWork _bu)
-        {
-            if(_bo != null)
-            {
-                _bo.EventStatus = BaseObjectEventStatus.INBOUND;
-                _bo.McObject_ID = this.ID;
-                DataADO.GetInstant().UpdateBy<act_BaseObject>(_bo, this.BuVO);
-
-                var bArea = this.StaticValue.GetArea(_bo.Area_ID);
-                var bWh = this.StaticValue.GetWarehouse(bArea.Warehouse_ID);
-                //var bLocation = this.StaticValue.GetLocation(_bo.Location_ID);
-
-                //หา Location ของ Mc
-                var bLocation = this.StaticValue.GetLocation(this.McObj.Cur_Location_ID.GetValueOrDefault());
-
-                var desLoc = this.StaticValue.GetLocation(_bu.Des_Location_ID.Value);
-                var desArea = this.StaticValue.GetArea(_bu.Des_Area_ID.Value);
-                var desWh = this.StaticValue.GetWarehouse(_bu.Des_Warehouse_ID.Value);
-
-                act_McWork mq = new act_McWork()
-                {
-                    ID = null,
-                    IOType = IOType.INBOUND,
-                    QueueType = (int)QueueType.QT_1,
-                    WMS_WorkQueue_ID = _bu.ID.Value,
-                    BuWork_ID = _bu.ID.Value,
-                    TrxRef = _bu.TrxRef,
-
-                    Priority = _bu.Priority,
-                    SeqGroup = _bu.SeqGroup,
-                    SeqItem = _bu.SeqIndex,
-
-                    BaseObject_ID = _bo.ID.Value,
-                    //Rec_McObject_ID = this.ID,
-                    Rec_McObject_ID = null,
-                    Cur_McObject_ID = null,
-
-                    Cur_Warehouse_ID = bWh.ID.Value,
-                    Cur_Area_ID = _bo.Area_ID,
-                    Cur_Location_ID = _bo.Location_ID,                   
-
-                    Sou_Area_ID = bArea.ID.Value,
-                    Sou_Location_ID = bLocation.ID.Value,
-
-                    Des_Area_ID = desArea.ID.Value,
-
-                    ActualTime = DateTime.Now,
-                    StartTime = DateTime.Now,
-                    EndTime = null,
-                    EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
-                    Status = EntityStatus.ACTIVE,
-
-                    TreeRoute = "{}"
-                };
-                mq.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mq, this.BuVO);
-
-                _bu.Status = EntityStatus.ACTIVE;
-                _bu.WMS_WorkQueue_ID = mq.ID;
-                DataADO.GetInstant().UpdateBy<act_BuWork>(_bu, this.BuVO);
-            }
-        }
-
-        private acs_McMaster findSRM(act_BaseObject _bo)
-        {
-            var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
-                       ListKeyValue<string, object>
-                       .New("Warehouse_ID", (_bo!=null?_bo.Warehouse_ID:0))
-                       .Add("Info1", "IN")
-                       , this.BuVO).FirstOrDefault(x => x.Code.StartsWith("SRM"));
-
-            return mcSRM;
-        }
+        
         #endregion
 
     }

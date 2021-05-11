@@ -4,6 +4,7 @@ using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWCSEngine.Controller;
+using AWCSEngine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -263,10 +264,7 @@ namespace AWCSEngine.Engine.McRuntime
             try
             {
                 //ตรวจสอบข้อมูลรับเข้า
-                this.buWork = DataADO.GetInstant().SelectBy<act_BuWork>(
-                ListKeyValue<string, object>
-                .New("status", EntityStatus.ACTIVE)
-                .Add("LabelData", this.McObj.DV_Pre_BarProd), this.BuVO).FirstOrDefault();
+                this.buWork = InboundUtil.GetBuWorkByLabel(this.McObj, this.Cur_Area, this.BuVO);
 
                 if (this.buWork == null)
                 {
@@ -276,7 +274,7 @@ namespace AWCSEngine.Engine.McRuntime
                 else
                 {
                     //ตรวจสอบข้อมูลพาเลทซ้ำ
-                    var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.BuVO);
+                    var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Warehouse.ID, this.BuVO);
                     if (bo != null)
                     {
                         if (bo.EventStatus == BaseObjectEventStatus.TEMP)
@@ -346,27 +344,7 @@ namespace AWCSEngine.Engine.McRuntime
                 //ถ้าสแกนครั้งแรก สร้างข้อมูลรับเข้าพาเลทสินค้า
                 if (this.baseObj == null)
                 {
-                    string baseCode;
-                    do
-                    {
-                        baseCode = (DataADO.GetInstant().NextNum("base_no", false, this.BuVO) % (Math.Pow(10, 10))).ToString("0000000000");
-                    } while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>(baseCode, this.BuVO) != null);
-
-                    baseObj = new act_BaseObject()
-                    {
-                        ID = null,
-                        BuWork_ID = this.buWork == null ? null : this.buWork.ID,
-                        Code = baseCode,
-                        Model = "N/A",
-                        McObject_ID = this.ID,
-                        Warehouse_ID = this.Cur_Area == null ? 0 : this.Cur_Area.Warehouse_ID,
-                        Area_ID = this.Cur_Location == null ? 0 : this.Cur_Location.Area_ID,
-                        Location_ID = this.McObj != null && this.McObj.Cur_Location_ID != null ? this.McObj.Cur_Location_ID.GetValueOrDefault() : 0,
-                        LabelData = this.McObj.DV_Pre_BarProd,
-                        EventStatus = BaseObjectEventStatus.TEMP,
-                        Status = EntityStatus.ACTIVE
-                    };
-                    baseObj.ID = DataADO.GetInstant().Insert<act_BaseObject>(baseObj, this.BuVO);
+                    this.baseObj = InboundUtil.createBaseObject(this.McObj, this.buWork, this.Cur_Area, this.Cur_Location, this.BuVO);
                 }
 
                 //Update ข้อมูลรับเข้า ให้กับข้อมูลพาเลทสินค้า
@@ -374,14 +352,6 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         this.baseObj.BuWork_ID = this.buWork == null ? null : this.buWork.ID;
                         this.baseObj.DisCharge = this.buWork == null ? 0 : this.buWork.DisCharge;
-                        this.baseObj.Customer = this.buWork == null ? null : this.buWork.Customer;
-                        this.baseObj.SkuCode = this.buWork == null ? null : this.buWork.SkuCode;
-                        this.baseObj.SkuGrade = this.buWork == null ? null : this.buWork.SkuGrade;
-                        this.baseObj.SkuLot = this.buWork == null ? null : this.buWork.SkuLot;
-                        this.baseObj.SkuItemNo = this.buWork == null ? null : this.buWork.ItemNo;
-                        this.baseObj.SkuQty = this.buWork == null ? 0 : this.buWork.SkuQty;
-                        this.baseObj.SkuUnit = this.buWork == null ? null : this.buWork.SkuUnit;
-                        this.baseObj.SkuStatus = this.buWork == null ? null : this.buWork.SkuStatus;
                         this.baseObj.ErrorCode = this.errCode;
                         this.baseObj.PassFlg = this.PassFlg == 0 ? "N" : "Y";
                         this.baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
@@ -449,12 +419,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "2.1";
             try
             {
-                this.mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
-                       ListKeyValue<string, object>
-                       .New("QueueType", QueueType.QT_1)
-                       .Add("IOType", IOType.INBOUND)
-                       .Add("Sou_Location_ID", this.McObj.Cur_Location_ID.GetValueOrDefault())
-                       , this.BuVO).FirstOrDefault();
+                this.mcWork = InboundUtil.getMcWorkByQueueType(this.McObj, QueueType.QT_1, this.BuVO);
 
                 //ไม่มีคิวงาน
                 if (this.mcWork == null)
@@ -518,7 +483,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                 if (baseObj != null && !String.IsNullOrWhiteSpace(baseObj.PassFlg) && baseObj.PassFlg.Equals("Y"))
                 {
-                    this.createWorkQueue(baseObj, buWork);
+                    InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
                     writeEventLog(baseObj, null, "สร้างคิวงาน Cv");
                     this.McNextStep = "4.1";
                 }
@@ -655,79 +620,6 @@ namespace AWCSEngine.Engine.McRuntime
             }
         }
 
-
-
-        private void createWorkQueue(act_BaseObject _bo, act_BuWork _bu)
-        {
-            if (_bo != null)
-            {
-                _bo.EventStatus = BaseObjectEventStatus.INBOUND;
-                _bo.McObject_ID = this.ID;
-                DataADO.GetInstant().UpdateBy<act_BaseObject>(_bo, this.BuVO);
-
-                var bArea = this.StaticValue.GetArea(_bo.Area_ID);
-                var bWh = this.StaticValue.GetWarehouse(bArea.Warehouse_ID);
-                //var bLocation = this.StaticValue.GetLocation(_bo.Location_ID);
-                //หา Location ของ Mc
-                var bLocation = this.StaticValue.GetLocation(this.McObj.Cur_Location_ID.GetValueOrDefault());
-
-                var desLoc = this.StaticValue.GetLocation(_bu.Des_Location_ID.Value);
-                var desArea = this.StaticValue.GetArea(_bu.Des_Area_ID.Value);
-                var desWh = this.StaticValue.GetWarehouse(_bu.Des_Warehouse_ID.Value);
-
-                act_McWork mq = new act_McWork()
-                {
-                    ID = null,
-                    IOType = IOType.INBOUND,
-                    QueueType = (int)QueueType.QT_1,
-                    WMS_WorkQueue_ID = _bu.ID.Value,
-                    BuWork_ID = _bu.ID.Value,
-                    TrxRef = _bu.TrxRef,
-
-                    Priority = _bu.Priority,
-                    SeqGroup = _bu.SeqGroup,
-                    SeqItem = _bu.SeqIndex,
-
-                    BaseObject_ID = _bo.ID.Value,
-                    //Rec_McObject_ID = this.ID,
-                    Rec_McObject_ID = null,
-                    Cur_McObject_ID = null,
-
-                    Cur_Warehouse_ID = bWh.ID.Value,
-                    Cur_Area_ID = _bo.Area_ID,
-                    Cur_Location_ID = _bo.Location_ID,
-
-                    Sou_Area_ID = bArea.ID.Value,
-                    Sou_Location_ID = bLocation.ID.Value,
-
-                    Des_Area_ID = desArea.ID.Value,
-
-                    ActualTime = DateTime.Now,
-                    StartTime = DateTime.Now,
-                    EndTime = null,
-                    EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
-                    Status = EntityStatus.ACTIVE,
-
-                    TreeRoute = "{}"
-                };
-                mq.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mq, this.BuVO);
-
-                _bu.Status = EntityStatus.ACTIVE;
-                _bu.WMS_WorkQueue_ID = mq.ID;
-                DataADO.GetInstant().UpdateBy<act_BuWork>(_bu, this.BuVO);
-            }
-        }
-
-        private acs_McMaster findSRM(act_BaseObject _bo)
-        {
-            var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
-                       ListKeyValue<string, object>
-                       .New("Warehouse_ID", (_bo != null ? _bo.Warehouse_ID : 0))
-                       .Add("Info1", "IN")
-                       , this.BuVO).FirstOrDefault(x => x.Code.StartsWith("SRM"));
-
-            return mcSRM;
-        }
 
         
         #endregion

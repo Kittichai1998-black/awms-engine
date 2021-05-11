@@ -71,5 +71,31 @@ namespace ADO.WCSDB
                 }, BuVO);
             return baseObjs;
         }
+
+        public act_BaseObject GetByLabel(string labelData, long? warehouse_id, VOCriteria BuVO)
+        {
+            var baseObj = ADO.WCSDB.DataADO.GetInstant()
+                .SelectBy<act_BaseObject>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("LabelData", labelData, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Warehouse_ID", warehouse_id, SQLOperatorType.EQUALS),
+                }, BuVO).FirstOrDefault();
+            return baseObj;
+        }
+
+        public act_BaseObject GetTempByWarehouse(long? warehouse_id, VOCriteria BuVO)
+        {
+            var baseObj = ADO.WCSDB.DataADO.GetInstant()
+                .SelectBy<act_BaseObject>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Warehouse_ID", warehouse_id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("EventStatus", BaseObjectEventStatus.TEMP, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                }, BuVO)
+                .OrderBy(x => x.ID)
+                .FirstOrDefault();
+            return baseObj;
+        }
     }
 }

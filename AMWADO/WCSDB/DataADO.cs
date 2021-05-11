@@ -188,6 +188,20 @@ namespace ADO.WCSDB
                 buVO)
                 .FirstOrDefault();
         }
+        public T SelectByIDActive<T>(object value, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                new SQLConditionCriteria[] { 
+                    new SQLConditionCriteria("ID", value, SQLOperatorType.EQUALS) ,
+                    new SQLConditionCriteria("Status",1, SQLOperatorType.EQUALS)
+                },
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO)
+                .FirstOrDefault();
+        }
         public T SelectByCodeActive<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
