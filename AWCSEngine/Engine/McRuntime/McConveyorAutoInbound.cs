@@ -261,7 +261,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj.DV_Pre_Status == 98)
                 {
-                    if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7)
+                    if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7 && this.mcWork.QueueStatus == 5)
                     {
                         writeEventLog(baseObj, buWork, " คิวงาน พร้อมเก็บ");
 

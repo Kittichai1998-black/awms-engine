@@ -544,7 +544,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "4.1";
             try
             {
-                if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7)
+                if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7 && this.mcWork.QueueStatus == 5)
                 {
                     writeEventLog(baseObj, buWork, "คิวงาน พร้อมเก็บ");
                     this.McNextStep = "5.1";
