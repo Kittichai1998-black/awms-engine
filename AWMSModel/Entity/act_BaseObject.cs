@@ -33,6 +33,6 @@ namespace AMSModel.Entity
 
         public int DisCharge;
         public int ErrorCode;
-        public string PassFlag;
+        public string PassFlg;
     }
 }

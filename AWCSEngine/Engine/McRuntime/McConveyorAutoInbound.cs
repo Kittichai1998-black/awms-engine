@@ -178,7 +178,7 @@ namespace AWCSEngine.Engine.McRuntime
                     //ไม่มีคิวงาน
                     if (this.mcWork == null)
                     {
-                        if (!String.IsNullOrWhiteSpace(baseObj.PassFlag) && baseObj.PassFlag.Equals("Y"))
+                        if (!String.IsNullOrWhiteSpace(baseObj.PassFlg) && baseObj.PassFlg.Equals("Y"))
                         {
                             writeEventLog(baseObj, buWork, "ไม่มีคิวงาน สร้างคิวงาน");
                             this.McNextStep = "1.1";
@@ -385,7 +385,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu,string _msg)
         {
             string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ?_bo.DisCharge : "");
-            msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlag : "");
+            msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
             msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") + " | Message =" + _msg;
 
             DisplayController.Events_Write(msg);

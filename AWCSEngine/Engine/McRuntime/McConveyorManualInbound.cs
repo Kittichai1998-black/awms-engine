@@ -155,7 +155,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu, string _msg)
         {
             string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
-            msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlag : "");
+            msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
             msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") + " | Message =" + _msg;
 
             DisplayController.Events_Write(msg);
@@ -383,7 +383,7 @@ namespace AWCSEngine.Engine.McRuntime
                         this.baseObj.SkuUnit = this.buWork == null ? null : this.buWork.SkuUnit;
                         this.baseObj.SkuStatus = this.buWork == null ? null : this.buWork.SkuStatus;
                         this.baseObj.ErrorCode = this.errCode;
-                        this.baseObj.PassFlag = this.PassFlg == 0 ? "N" : "Y";
+                        this.baseObj.PassFlg = this.PassFlg == 0 ? "N" : "Y";
                         this.baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
                         this.baseObj.Status = EntityStatus.ACTIVE;
                     DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
@@ -516,7 +516,7 @@ namespace AWCSEngine.Engine.McRuntime
             try
             {
 
-                if (baseObj != null && !String.IsNullOrWhiteSpace(baseObj.PassFlag) && baseObj.PassFlag.Equals("Y"))
+                if (baseObj != null && !String.IsNullOrWhiteSpace(baseObj.PassFlg) && baseObj.PassFlg.Equals("Y"))
                 {
                     this.createWorkQueue(baseObj, buWork);
                     writeEventLog(baseObj, null, "สร้างคิวงาน Cv");
