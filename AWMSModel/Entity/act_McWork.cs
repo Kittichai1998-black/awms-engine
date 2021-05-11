@@ -37,6 +37,7 @@ namespace AMSModel.Entity
         public int QueueStatus;
         public int Keep_Flag;
         public string MixLot;
+        public long? Mc_Ref_ID;
 
         public List<TreeNode<long>> GetCur_TreeRoute()
         {

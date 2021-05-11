@@ -338,7 +338,7 @@ namespace AWCSEngine.Engine.McRuntime
                 int _desLocCode = desLoc != null ? (desLoc.Code.Get2<int>() % 1000000) : 0;
 
                 // สั่ง SRM ย้ายพาเลท
-                this.PostCommand(McCommandType.CM_1, _souLocCode, _desLocCode, 3, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่งเครนเก็บพาเลทจากต้นทางไปปลายทาง"));
+                this.PostCommand(McCommandType.CM_1, _souLocCode, _desLocCode, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่งเครนเก็บพาเลทจากต้นทางไปปลายทาง"));
                 this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
                 this.mcWork.ActualTime = DateTime.Now;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
@@ -436,11 +436,15 @@ namespace AWCSEngine.Engine.McRuntime
                                    ListKeyValue<string, object>
                                    .New("QueueType", QueueType.QT_2)
                                    .Add("IOType", IOType.OUTBOUND)
-                                   .Add("QueueStatus", QueueStatus.QS_5)
+                                   .Add("Mc_Ref_ID", this.mcWork.Mc_Ref_ID)
                                    , this.BuVO).FirstOrDefault();
-                        _mcWorkOut.ActualTime = DateTime.Now;
-                        _mcWorkOut.MixLot = "Y";
-                        DataADO.GetInstant().UpdateBy<act_McWork>(_mcWorkOut, this.BuVO);
+                        if (_mcWorkOut != null)
+                        {
+                            _mcWorkOut.ActualTime = DateTime.Now;
+                            _mcWorkOut.MixLot = "Y";
+                            DataADO.GetInstant().UpdateBy<act_McWork>(_mcWorkOut, this.BuVO);
+                        }
+                        
 
                         return LoopResult.Break;
                     }, () => writeEventLog(baseObj, buWork, "จบงาน SRM ย้ายของ"));

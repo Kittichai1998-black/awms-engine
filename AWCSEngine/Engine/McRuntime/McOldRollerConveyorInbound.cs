@@ -59,7 +59,7 @@ namespace AWCSEngine.Engine.McRuntime
         {
             switch (this.McNextStep)
             {
-                case "จ":
+                case "0":
                     //Check pallet qr and dimention
                     step0();
                     break;
@@ -184,7 +184,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         /// <summary>
-        /// check base Object
+        /// สร้าง base Object
         /// </summary>
         private void step1()
         {
@@ -233,6 +233,8 @@ namespace AWCSEngine.Engine.McRuntime
                     this.baseObj.SkuStatus = this.buWork == null ? null : this.buWork.SkuStatus;
                     this.baseObj.ErrorCode = this.errCode;
                     this.baseObj.PassFlag = this.PassFlg == 0 ? "N" : "Y";
+                    this.baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
+                    this.baseObj.Status = EntityStatus.ACTIVE;
                     DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
                 }
 

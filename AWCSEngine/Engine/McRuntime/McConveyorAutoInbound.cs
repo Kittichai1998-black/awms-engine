@@ -60,18 +60,38 @@ namespace AWCSEngine.Engine.McRuntime
                     break;
 
                 case "1":
-                    //Create work queue
+                    //Check work queue
                     step1();
                     break;
 
+                case "1.1":
+                    //Create work queue
+                    step1_1();
+                    break;
+
+                case "1.2":
+                    //Reject พาเลท
+                    step1_2();
+                    break;
+
                 case "2":
-                    //Conveyor ทำงาน
+                    //Check คิวงาน พร้อมเก็บ
                     step2();
+                    break;
+
+                case "2.1":
+                    //สั่งให้ Conveyor เริ่มทำงานเก็บ
+                    step2_1();
+                    break;
+
+                case "2.2":
+                    //Reject คิวงาน
+                    step2_2();
                     break;
 
                 case "3":
                     //จบคิวงาน Conveyor
-                    step2();
+                    step3();
                     break;
 
                 default:
@@ -139,7 +159,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         /// <summary>
-        /// Create work queue
+        /// Check work queue
         /// </summary>
         private void step1()
         {
@@ -160,23 +180,18 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         if (!String.IsNullOrWhiteSpace(baseObj.PassFlag) && baseObj.PassFlag.Equals("Y"))
                         {
-                            this.createWorkQueue(baseObj, buWork);
-                            writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
-                            this.McNextStep = "2";
+                            writeEventLog(baseObj, buWork, "ไม่มีคิวงาน สร้างคิวงาน");
+                            this.McNextStep = "1.1";
                         }
                         else
                         {
-                            //Reject จากจุดซ้อนพาเลท
-                            baseObj.Status = EntityStatus.REMOVE;
-                            DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
-
-                            this.PostCommand(McCommandType.CM_14);
-                            writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
-                            this.McNextStep = "0";
+                            writeEventLog(baseObj, buWork, "ไม่มีคิวงาน แต่ Reject");
+                            this.McNextStep = "1.2";
                         }
                     }
                     else
                     {
+                        writeEventLog(baseObj, buWork, "มีคิวงาน");
                         this.McNextStep = "2";
                     }
 
@@ -186,12 +201,58 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
                 DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
             }
             
         }
 
+        private void step1_1()
+        {
+            this.StepTxt = "1.1";
+            try
+            {
+                this.createWorkQueue(baseObj, buWork);
+                writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
+                this.McNextStep = "2";
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
+            }
+        }
+
         /// <summary>
-        /// Conveyor ทำงาน
+        /// Reject จากจุดซ้อนพาเลท
+        /// </summary>
+        private void step1_2()
+        {
+            this.StepTxt = "1.2";
+            try
+            {
+                //Reject จากจุดซ้อนพาเลท
+                baseObj.Status = EntityStatus.REMOVE;
+                DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+
+                this.PostCommand(McCommandType.CM_14);
+                writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
+                this.McNextStep = "0";
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);                
+            }
+            finally
+            {
+                this.McNextStep = "0";
+            }
+        }
+
+
+        /// <summary>
+        /// Check คิวงาน พร้อมเก็บ
         /// </summary>
         private void step2()
         {
@@ -202,34 +263,16 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7)
                     {
-                        this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
-                        this.mcWork.ActualTime = DateTime.Now;
-                        DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+                        writeEventLog(baseObj, buWork, " คิวงาน พร้อมเก็บ");
 
-                        //สั่งให้ Conveyor เริ่มทำงานเก็บ
-                        this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "Conveyor เริ่มทำงานเก็บ"));
-
-                        writeEventLog(baseObj, buWork, "สั่งให้ Conveyor เริ่มทำงานเก็บ");
-                        this.McNextStep = "3";
+                        this.McNextStep = "2.1";
                     }
                     else
                     {
                         //พื้นที่จัดเก็บเต็ม
-                        if (this.mcWork.QueueStatus != 7)
-                        {
-                            //Reject พื้นที่จัดเก็บเต็ม
-                            baseObj.Status = EntityStatus.REMOVE;
-                            DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+                        writeEventLog(baseObj, buWork, "Reject คิวงาน ไม่พร้อมเก็บ");
 
-                            this.mcWork.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
-                            this.mcWork.Status = EntityStatus.REMOVE;
-                            DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
-
-                            this.PostCommand(McCommandType.CM_13);
-                            writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
-
-                            this.McNextStep = "0";
-                        }
+                        this.McNextStep = "2.2";
                     }
                 }
             }
@@ -237,8 +280,73 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
                 DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
             }
             
+        }
+
+        /// <summary>
+        /// สั่งให้ Conveyor เริ่มทำงานเก็บ
+        /// </summary>
+        private void step2_1()
+        {
+            this.StepTxt = "2.1";
+
+            try
+            {
+                this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
+                this.mcWork.ActualTime = DateTime.Now;
+                DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+
+                //สั่งให้ Conveyor เริ่มทำงานเก็บ
+                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "Conveyor เริ่มทำงานเก็บ"));
+
+                writeEventLog(baseObj, buWork, "สั่งให้ Conveyor เริ่มทำงานเก็บ");
+                this.McNextStep = "3";
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
+            }
+        }
+
+        /// <summary>
+        /// Reject คิวงาน
+        /// </summary>
+        private void step2_2()
+        {
+            this.StepTxt = "2.2";
+
+            try
+            {
+                if (this.mcWork.QueueStatus != 7)
+                {
+                    //Reject พื้นที่จัดเก็บเต็ม
+                    baseObj.Status = EntityStatus.REMOVE;
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+
+                    this.mcWork.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
+                    this.mcWork.Status = EntityStatus.REMOVE;
+                    DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+
+                    this.PostCommand(McCommandType.CM_13);
+                    writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
+
+                    this.McNextStep = "0";
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                
+            }
+            finally
+            {
+                this.McNextStep = "0";
+            }
         }
 
         /// <summary>

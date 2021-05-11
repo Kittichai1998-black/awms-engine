@@ -296,7 +296,9 @@ namespace AWCSEngine.Engine.McRuntime
                         this.baseObj.SkuStatus = this.buWork == null ? null : this.buWork.SkuStatus;
                         this.baseObj.ErrorCode = this.errCode;
                         this.baseObj.PassFlag = this.PassFlg == 0 ? "N" : "Y";
-                        DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
+                        this.baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
+                        this.baseObj.Status = EntityStatus.ACTIVE;
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
                     }
 
                     this.BaseObject_ID = this.baseObj != null ? this.baseObj.ID : null;
