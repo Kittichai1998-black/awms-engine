@@ -52,6 +52,7 @@ namespace AWCSEngine.Engine.McRuntime
         private long? BaseObject_ID { get; set; }
         private int disCharge { get; set; }
         private string McNextStep { get; set; }
+        private int[] dimentionErr = new int[] { 104, 105, 106, 107, 108,109 };
         #endregion
 
         #region Methods
@@ -62,8 +63,23 @@ namespace AWCSEngine.Engine.McRuntime
             switch (this.McNextStep)
             {
                 case "0":
-                    //Check cv status &  pallet qr
+                    //Check cv status 
                     step0();
+                    break;
+
+                case "0.1":
+                    //Check barcode 
+                    step0_1();
+                    break;
+
+                case "0.2":
+                    //Check dimention
+                    step0_2();
+                    break;
+
+                case "0.3":
+                    //Check Conveyor มีคำสั่งค้าง หรือ รอยืนยันจบงาน
+                    step0_3();
                     break;
 
                 case "1":
@@ -146,7 +162,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         /// <summary>
-        /// Check cv status &  pallet qr
+        /// Check conveyor status
         /// </summary>
         private void step0()
         {
@@ -156,16 +172,88 @@ namespace AWCSEngine.Engine.McRuntime
                 if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
                 {
                     //Sacn barcode และตรวจสอบ
-                    checkBarProd();
-                }else
+                    writeEventLog(baseObj, buWork, "Check pallet barcode");
+                    this.McNextStep = "0.1";
+
+                }
+                else if ((Array.IndexOf(dimentionErr, this.McObj.DV_Pre_Status) >= 0))
                 {
-                    clear();
+                    //Check dimention
+                    writeEventLog(baseObj, buWork, "Check dimention");
+                    this.McNextStep = "0.2";
+                }
+                else
+                {
+                    //Check Conveyor มีคำสั่งค้าง หรือ รอยืนยันจบงาน
+                    writeEventLog(baseObj, buWork, "clear conveyor");
+                    this.McNextStep = "0.3";
                 }
             }
             catch (Exception ex)
             {
                 string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
                 DisplayController.Events_Write(msg);
+            }
+        }
+
+        /// <summary>
+        /// Check pallet barcode
+        /// </summary>
+        private void step0_1()
+        {
+            this.StepTxt = "0.1";
+            try
+            {
+                checkBarProd();
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
+            }
+        }
+
+        /// <summary>
+        /// Check dimention
+        /// </summary>
+        private void step0_2()
+        {
+            this.StepTxt = "0.2";
+            try
+            {
+                this.errCode = this.McObj.DV_Pre_Status;
+                this.cmdReject = (int)McCommandType.CM_14;
+                this.PassFlg = (int)PassFailFlag.Fail;
+                writeEventLog(baseObj, buWork, "Reject dimention");
+                this.McNextStep = "2";
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
+            }
+        }
+
+        /// <summary>
+        /// Clear conveyor
+        /// </summary>
+        private void step0_3()
+        {
+            this.StepTxt = "0.3";
+            try
+            {
+                clear();
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                
+            }
+            finally{
+                this.McNextStep = "0";
             }
         }
 
@@ -213,7 +301,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.PassFlg = (int)PassFailFlag.Fail;
                 }
 
-                writeEventLog(baseObj, buWork, "Check Pallet Barcode and dimention");
+                writeEventLog(baseObj, buWork, "Check Pallet Barcode");
             }
             catch (Exception ex)
             {
@@ -449,7 +537,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         /// <summary>
-        /// Conveyor ทำงาน
+        /// Check คิวงาน พร้อมเก็บ
         /// </summary>
         private void step4_1()
         {
@@ -458,17 +546,12 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7)
                 {
-                    this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
-                    this.mcWork.ActualTime = DateTime.Now;
-                    DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
-
-                    //สั่งให้ Conveyor เริ่มทำงานเก็บ
-                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "Conveyor เริ่มทำงานเก็บ"));
+                    writeEventLog(baseObj, buWork, "คิวงาน พร้อมเก็บ");
                     this.McNextStep = "5.1";
                 }
                 else
                 {
-                    writeEventLog(baseObj, buWork, "Reject คิวงาน");
+                    writeEventLog(baseObj, buWork, "คิวงาน ไม่พร้อมเก็บ");
                     this.McNextStep = "4.2";
                 }
             }
@@ -517,12 +600,34 @@ namespace AWCSEngine.Engine.McRuntime
             }
         }
 
-        /// <summary>
-        /// จบคิวงาน Conveyor
-        /// </summary>
         private void step5_1()
         {
             this.StepTxt = "5.1";
+            try
+            {
+                this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
+                this.mcWork.ActualTime = DateTime.Now;
+                DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+
+                //สั่งให้ Conveyor เริ่มทำงานเก็บ
+                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "Conveyor เริ่มทำงานเก็บ"));
+                this.McNextStep = "6.1";
+            }
+            catch (Exception ex)
+            {
+                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
+            }
+        }
+
+
+        /// <summary>
+        /// จบคิวงาน Conveyor
+        /// </summary>
+        private void step6_1()
+        {
+            this.StepTxt = "6.1";
             try
             {
                 if (this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14)
@@ -546,6 +651,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
                 DisplayController.Events_Write(msg);
+                this.McNextStep = "0";
             }
         }
 

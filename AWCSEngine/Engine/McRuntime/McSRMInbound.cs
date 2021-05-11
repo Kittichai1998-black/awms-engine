@@ -64,7 +64,48 @@ namespace AWCSEngine.Engine.McRuntime
             switch (this.McNextStep)
             {
                 case "0":
+                    //Check คิวงาน
                     step0();
+                    break;
+
+                case "1":
+                    //ตรวจสอบข้อมูลพาเลท
+                    step1();
+                    break;
+
+                case "1.1":
+                    //ตรวจสอบต้นทางและปลายทางพร้อมทำงาน
+                    step1_1();
+                    break;
+
+                case "2.1":
+                    //SRM ทำคิวงานเก็บ
+                    step2_1();
+                    break;
+
+                case "2.2":
+                    //SRM ทำคิวงานย้ายรถ
+                    step2_2();
+                    break;
+
+                case "2.3":
+                    //SRM ทำคิวงานย้ายพาเลท
+                    step2_3();
+                    break;
+
+                case "3.1":
+                    //จบงาน SRM เก็บของ
+                    step3_1();
+                    break;
+
+                case "3.2":
+                    //จบงาน SRM ย้ายรถ
+                    step3_2();
+                    break;
+
+                case "3.3":
+                    //จบงาน SRM ย้ายของ
+                    step3_3();
                     break;
 
                 default:
@@ -193,8 +234,9 @@ namespace AWCSEngine.Engine.McRuntime
         /// <summary>
         /// ตรวจสอบข้อมูลพาเลท
         /// </summary>
-        private void step1(string nextStep)
+        private void step1(string nextStep = null)
         {
+            if (String.IsNullOrWhiteSpace(nextStep)) { nextStep = "1.1"; }
             this.StepTxt = "1";
             try
             {
