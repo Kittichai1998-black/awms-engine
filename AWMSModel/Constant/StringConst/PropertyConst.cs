@@ -52,6 +52,7 @@ namespace AMSModel.Constant.StringConst
         public const string APP_KEY_machine_code_pattle = "app.machine.online.pattle_code";
         public const string APP_KEY_machine_code_fixed = "app.machine.online.fixed_code";
         public const string APP_KEY_machine_checking = "app.machine.checking";
+        public const string APP_KEY_warehouse_id = "app.warehouse.id";
 
 
 

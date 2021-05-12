@@ -17,6 +17,9 @@ namespace AWCSEngine.Util
    public static class InboundUtil
     {
         public static string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
+        public static string AppWHID = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_warehouse_id)[PropertyConst.APP_KEY_warehouse_id];
+        public static int WarehouseID = AppWHID.Get2<int>();
+
         /// <summary>
         /// Create BaseObject
         /// </summary>
@@ -28,6 +31,8 @@ namespace AWCSEngine.Util
         /// <returns></returns>
         public static act_BaseObject createBaseObject(act_McObject _McObj, act_BuWork _buWork, acs_Area _CurArea, acs_Location _CurLocation, VOCriteria BuVO)
         {
+            if((_buWork != null && WarehouseID != _buWork.Des_Warehouse_ID) || _buWork == null) { return null; }
+
             string baseCode;
             do
             {
