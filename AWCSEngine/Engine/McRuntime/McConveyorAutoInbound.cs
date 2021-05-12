@@ -35,7 +35,7 @@ namespace AWCSEngine.Engine.McRuntime
         }
         protected override void OnStart()
         {
-            reset();
+            reset();            
         }
         protected override void OnEnd()
         {
@@ -48,6 +48,7 @@ namespace AWCSEngine.Engine.McRuntime
         private act_BuWork buWork { get; set; }
         private act_BaseObject baseObj { get; set; }
         private string McNextStep { get; set; }
+        private BaseMcRuntime _mcRCO { get; set; }
         #endregion
 
         #region Methods
@@ -133,17 +134,21 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "0";
             try
             {
-                if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
+                if (this.McObj.DV_Pre_Status == 98)
                 {
-                    baseObj = BaseObjectADO.GetInstant().GetTempByWarehouse(this.Cur_Area.Warehouse_ID, this.BuVO);
+                    writeEventLog(baseObj, buWork, " Check baseObject on " + InboundUtil.McChecking);
+
+                    //หา baseObject ลำดับแรกที่ถูกสร้างจาก RCO5-3
+                    _mcRCO = McRuntimeController.GetInstant().GetMcRuntime(InboundUtil.McChecking);
+                    baseObj = BaseObjectADO.GetInstant().GetCheckingTempByWarehouse(this.Cur_Area.Warehouse_ID, _mcRCO.McObj.ID, this.BuVO);
                     if (baseObj == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND, this.McObj.DV_Pre_BarProd);
+                        throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND,  _mcRCO.McObj.ID.ToString());
 
                     buWork = InboundUtil.GetBuWorkByObject(baseObj,this.BuVO);
                     if (buWork == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND, this.McObj.BaseObject_ID.ToString());
 
-                    writeEventLog(baseObj, buWork, " Check cv status &  pallet qr");
+                    
 
                     this.McNextStep = "1";
                 }else
@@ -153,7 +158,7 @@ namespace AWCSEngine.Engine.McRuntime
             }
             catch (Exception ex)
             {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
+                string msg = this.Code + " > Working step " + this.StepTxt + " | Checking  =" + InboundUtil.McChecking + " | McOject =" + this._mcRCO.McObj.ID.ToString() + " | error =" + ex.Message;
                 DisplayController.Events_Write(msg);
             }
            
@@ -363,7 +368,6 @@ namespace AWCSEngine.Engine.McRuntime
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
                         baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
-                        baseObj.McObject_ID = null;
                         DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
 
                         writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");

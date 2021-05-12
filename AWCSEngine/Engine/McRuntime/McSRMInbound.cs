@@ -155,16 +155,7 @@ namespace AWCSEngine.Engine.McRuntime
             DisplayController.Events_Write(msg);
         }
 
-        private acs_McMaster findPalletStand(act_BaseObject _bo)
-        {
-            var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
-                       ListKeyValue<string, object>
-                       .New("Warehouse_ID", (_bo != null ? _bo.Warehouse_ID : 0))
-                       .Add("Info1", "IN")
-                       , this.BuVO).FirstOrDefault(x => x.Code.StartsWith("PS"));
-
-            return mcSRM;
-        }
+        
 
         /// <summary>
         /// Check คิวงาน
@@ -251,6 +242,9 @@ namespace AWCSEngine.Engine.McRuntime
 
                 mcShuttle = McRuntimeController.GetInstant().GetMcRuntime(this.mcWork.Rec_McObject_ID.GetValueOrDefault());
                 mcConveyor = McRuntimeController.GetInstant().GetMcRuntimeByLocation(this.mcWork.Sou_Location_ID);
+
+                baseObj.McObject_ID = this.ID;
+                DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
 
                 writeEventLog(baseObj, buWork, "ตรวจสอบข้อมูลพาเลท");
                 this.McNextStep = nextStep;

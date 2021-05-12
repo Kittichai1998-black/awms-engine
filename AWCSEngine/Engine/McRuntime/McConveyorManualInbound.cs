@@ -259,6 +259,9 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
 
+        /// <summary>
+        /// 0.1
+        /// </summary>
         private void checkBarProd()
         {
             try
@@ -295,8 +298,13 @@ namespace AWCSEngine.Engine.McRuntime
                 //ตรวจสอบ Discharge
                 if (this.disCharge == 0)
                 {
-                    this.cmdReject = (int)McCommandType.CM_5;
+                    this.cmdReject = (int)McCommandType.CM_15;
                     this.PassFlg = (int)PassFailFlag.Fail;
+                }
+
+                if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.buWork != null && (this.cmdReject == 0 && this.errCode == 0))
+                {
+                    this.PassFlg = (int)PassFailFlag.Pass;
                 }
 
                 writeEventLog(baseObj, buWork, "Check Pallet Barcode");
@@ -337,6 +345,9 @@ namespace AWCSEngine.Engine.McRuntime
             }
         }
 
+        /// <summary>
+        /// 1
+        /// </summary>
         private void checkPallet()
         {
             try
@@ -387,10 +398,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "2";
             try
             {
-                if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.baseObj != null && this.buWork != null && (this.cmdReject == 0 && this.errCode == 0))
-                {
-                    this.PassFlg = (int)PassFailFlag.Pass;
-                }
+                
 
                 //ถ้าไม่พบข้อผิดพลาด สั่งให้ทำงานต่อ
                 if (this.PassFlg == 1)
@@ -604,7 +612,6 @@ namespace AWCSEngine.Engine.McRuntime
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
                         baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
-                        baseObj.McObject_ID = null;
                         DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
 
                         writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");

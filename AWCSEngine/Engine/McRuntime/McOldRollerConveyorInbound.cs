@@ -172,7 +172,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     }
                                 }
 
-                                this.disCharge = this.buWork.DisCharge;
+                                this.disCharge = this.buWork == null ? this.buWork.DisCharge : 0;
                                 this.BuWork_ID = this.buWork == null ? 0 : this.buWork.ID;
                             }
 
@@ -184,9 +184,17 @@ namespace AWCSEngine.Engine.McRuntime
                 //ตรวจสอบ Discharge
                 if (this.disCharge == 0)
                 {
-                    this.cmdReject = (int)McCommandType.CM_5;
+                    this.cmdReject = (int)McCommandType.CM_15;
                     this.PassFlg = (int)PassFailFlag.Fail;
                 }
+
+
+                if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.buWork != null && (this.cmdReject == 0 && this.errCode == 0))
+                {
+                    this.PassFlg = (int)PassFailFlag.Pass;
+                }
+
+
                 writeEventLog(baseObj, buWork, "Check Pallet Barcode and dimention");
             }
             catch(Exception ex)
@@ -242,6 +250,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "2";
             try
             {
+
                 //Update ข้อมูลพาเลทสินค้า
                 if (this.baseObj != null && this.baseObj.EventStatus == BaseObjectEventStatus.TEMP)
                 {
@@ -268,18 +277,13 @@ namespace AWCSEngine.Engine.McRuntime
         }
 
         /// <summary>
-        /// เช็ค base Object
+        /// ตรวจสอบข้อผิดพลาด
         /// </summary>
         private void step3()
         {
             this.StepTxt = "3";
             try
             {
-                if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.baseObj != null && this.buWork != null && (this.cmdReject == 0 && this.errCode == 0))
-                {
-                    this.PassFlg = (int)PassFailFlag.Pass;
-                }
-
                 //ถ้าไม่พบข้อผิดพลาด สั่งให้ทำงานต่อ
                 if (this.PassFlg == 1)
                 {
@@ -317,9 +321,8 @@ namespace AWCSEngine.Engine.McRuntime
             try
             {
                 //this.PostCommand(McCommandType.CM_1);
-                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่งเครนเก็บพาเลทจากต้นทางไปปลายทาง"));
+                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่ง RCO ทำงานต่อ"));
 
-                writeEventLog(baseObj, buWork, "สั่ง RCO ทำงานต่อ");
             }
             catch (Exception ex)
             {

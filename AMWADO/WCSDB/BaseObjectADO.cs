@@ -84,12 +84,13 @@ namespace ADO.WCSDB
             return baseObj;
         }
 
-        public act_BaseObject GetTempByWarehouse(long? warehouse_id, VOCriteria BuVO)
+        public act_BaseObject GetCheckingTempByWarehouse(long? warehouse_id, long? mcObj_id, VOCriteria BuVO)
         {
             var baseObj = ADO.WCSDB.DataADO.GetInstant()
                 .SelectBy<act_BaseObject>(
                 new SQLConditionCriteria[] {
                     new SQLConditionCriteria("Warehouse_ID", warehouse_id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("McObject_ID", mcObj_id, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("EventStatus", BaseObjectEventStatus.TEMP, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, BuVO)

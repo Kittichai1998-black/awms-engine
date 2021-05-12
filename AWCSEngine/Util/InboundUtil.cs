@@ -1,9 +1,11 @@
 ﻿using ADO.WCSDB;
 using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
 using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
+using AMWUtil.PropertyFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ namespace AWCSEngine.Util
 {
    public static class InboundUtil
     {
+        public static string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
         /// <summary>
         /// Create BaseObject
         /// </summary>
@@ -149,13 +152,35 @@ namespace AWCSEngine.Util
             
         }
 
-        public static acs_McMaster findSRM(act_BaseObject _bo, VOCriteria BuVO)
+        public static acs_McMaster findSRM(long? warehouse_id, VOCriteria BuVO)
         {
             var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
                        ListKeyValue<string, object>
-                       .New("Warehouse_ID", (_bo != null ? _bo.Warehouse_ID : 0))
+                       .New("Warehouse_ID", warehouse_id)
                        .Add("Info1", "IN")
                        , BuVO).FirstOrDefault(x => x.Code.StartsWith("SRM"));
+
+            return mcSRM;
+        }
+
+        public static acs_McMaster findPalletStand(long? warehouse_id, VOCriteria BuVO)
+        {
+            var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
+                       ListKeyValue<string, object>
+                       .New("Warehouse_ID", warehouse_id)
+                       .Add("Info1", "IN")
+                       , BuVO).FirstOrDefault(x => x.Code.StartsWith("PS"));
+
+            return mcSRM;
+        }
+
+        public static acs_McMaster findRCO(long? warehouse_id, VOCriteria BuVO)
+        {
+            var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
+                       ListKeyValue<string, object>
+                       .New("Warehouse_ID", warehouse_id)
+                       .Add("Info1", "IN")
+                       , BuVO).FirstOrDefault(x => x.Code.StartsWith("RCO"));
 
             return mcSRM;
         }
