@@ -5,6 +5,7 @@ using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWCSEngine.Controller;
+using AWCSEngine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,7 +128,7 @@ namespace AWCSEngine.Engine.McRuntime
             if (this.McObj.DV_Pre_Status == 22)
             {
                 //Check Pallet stand กรณีจัดเก็บแบบ Manual (RC8-2)
-                _mcPS = this.findPalletStand(baseObj);
+                _mcPS = InboundUtil.findPalletStand(baseObj.Warehouse_ID,this.BuVO);
                 if (_mcPS == null) { return; }
 
                 var ps = McRuntimeController.GetInstant().GetMcRuntime(_mcPS.Code);
