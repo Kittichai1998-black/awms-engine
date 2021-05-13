@@ -80,7 +80,11 @@ namespace AWCSEngine.Engine.McRuntime
 
                 case "0.3":
                     //Check Conveyor มีคำสั่งค้าง หรือ รอยืนยันจบงาน
-                    step0_3();
+                    if(this.McObj.DV_Pre_Status == 96 || this.McObj.DV_Pre_Status == 99)
+                    {
+                        step0_3();
+                    }
+                    
                     break;
 
                 case "1":
@@ -143,21 +147,22 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 //คำสั่งงานล่าสุดยังไม่เรียบร้อย
                 this.PostCommand(McCommandType.CM_3);
-                writeEventLog(baseObj, buWork, " ทำคำสั่งงานล่าสุดที่ยังไม่เรียบร้อย");
+                //writeEventLog(baseObj, buWork, " ทำคำสั่งงานล่าสุดที่ยังไม่เรียบร้อย");
             }
             else if (this.McObj.DV_Pre_Status == 99 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
             {
                 //ทำงานเสร็จแล้ว ยืนยันจบงาน
                 this.PostCommand(McCommandType.CM_99);
-                writeEventLog(baseObj, buWork, " จบงาน");
+                //writeEventLog(baseObj, buWork, " จบงาน");
             }
         }
 
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu, string _msg)
         {
-            string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
+            string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
+            msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
-            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") + " | Message =" + _msg;
+            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "");
 
             DisplayController.Events_Write(msg);
         }
@@ -173,20 +178,20 @@ namespace AWCSEngine.Engine.McRuntime
                 if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
                 {
                     //Sacn barcode และตรวจสอบ
-                    writeEventLog(baseObj, buWork, "Check pallet barcode");
+                    //writeEventLog(baseObj, buWork, "Check pallet barcode");
                     this.McNextStep = "0.1";
 
                 }
                 else if ((Array.IndexOf(dimentionErr, this.McObj.DV_Pre_Status) >= 0))
                 {
                     //Check dimention
-                    writeEventLog(baseObj, buWork, "Check dimention");
+                    //writeEventLog(baseObj, buWork, "Check dimention");
                     this.McNextStep = "0.2";
                 }
                 else
                 {
                     //Check Conveyor มีคำสั่งค้าง หรือ รอยืนยันจบงาน
-                    writeEventLog(baseObj, buWork, "clear conveyor");
+                    //writeEventLog(baseObj, buWork, "clear conveyor");
                     this.McNextStep = "0.3";
                 }
             }
@@ -226,7 +231,7 @@ namespace AWCSEngine.Engine.McRuntime
                 this.errCode = this.McObj.DV_Pre_Status;
                 this.cmdReject = (int)McCommandType.CM_14;
                 this.PassFlg = (int)PassFailFlag.Fail;
-                writeEventLog(baseObj, buWork, "Reject dimention");
+                //writeEventLog(baseObj, buWork, "Reject dimention");
                 this.McNextStep = "2";
             }
             catch (Exception ex)
@@ -277,7 +282,7 @@ namespace AWCSEngine.Engine.McRuntime
                 else
                 {
                     //ตรวจสอบข้อมูลพาเลทซ้ำ
-                    var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Warehouse.ID, this.BuVO);
+                    var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Area.Warehouse_ID, this.BuVO);
                     if (bo != null)
                     {
                         if (bo.EventStatus == BaseObjectEventStatus.TEMP)
@@ -307,7 +312,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.PassFlg = (int)PassFailFlag.Pass;
                 }
 
-                writeEventLog(baseObj, buWork, "Check Pallet Barcode");
+                //writeEventLog(baseObj, buWork, "Check Pallet Barcode");
             }
             catch (Exception ex)
             {
@@ -374,7 +379,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                 
 
-                writeEventLog(baseObj, buWork, "สร้าง BaseObject และ อัพเดตรายละเอียดจาก BuWork");
+                //writeEventLog(baseObj, buWork, "สร้าง BaseObject และ อัพเดตรายละเอียดจาก BuWork");
 
                 this.McNextStep = "2";
 
@@ -433,13 +438,13 @@ namespace AWCSEngine.Engine.McRuntime
                 if (this.mcWork == null)
                 {
                     //สร้างคิวงาน
-                    writeEventLog(baseObj, null, "ไม่มีคิวงาน");
+                    //writeEventLog(baseObj, null, "ไม่มีคิวงาน");
                     this.McNextStep = "3.1";
                 }
                 else
                 {
                     //สั่งให้เริ่มทำงานเก็บ
-                    writeEventLog(baseObj, null, "มีคิวงาน");
+                    //writeEventLog(baseObj, null, "มีคิวงาน");
                     this.McNextStep = "4.1";
                 }
 
@@ -469,7 +474,7 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     this.PostCommand(McCommandType.CM_14);
                 }
-                writeEventLog(baseObj, buWork, "Reject พาเลทสินค้า");
+                //writeEventLog(baseObj, buWork, "Reject พาเลทสินค้า");
                 this.McNextStep = "0";
             }
             catch (Exception ex)
@@ -492,12 +497,12 @@ namespace AWCSEngine.Engine.McRuntime
                 if (baseObj != null && !String.IsNullOrWhiteSpace(baseObj.PassFlg) && baseObj.PassFlg.Equals("Y"))
                 {
                     InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
-                    writeEventLog(baseObj, null, "สร้างคิวงาน Cv");
+                    //writeEventLog(baseObj, null, "สร้างคิวงาน Cv");
                     this.McNextStep = "4.1";
                 }
                 else
                 {
-                    writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
+                    //writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
                     this.McNextStep = "2.2";
                 }
 
@@ -519,12 +524,12 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7 && this.mcWork.QueueStatus == 5)
                 {
-                    writeEventLog(baseObj, buWork, "คิวงาน พร้อมเก็บ");
+                    //writeEventLog(baseObj, buWork, "คิวงาน พร้อมเก็บ");
                     this.McNextStep = "5.1";
                 }
                 else
                 {
-                    writeEventLog(baseObj, buWork, "คิวงาน ไม่พร้อมเก็บ");
+                    //writeEventLog(baseObj, buWork, "คิวงาน ไม่พร้อมเก็บ");
                     this.McNextStep = "4.2";
                 }
             }
@@ -557,12 +562,12 @@ namespace AWCSEngine.Engine.McRuntime
                     //Reject พื้นที่จัดเก็บเต็ม                   
 
                     this.PostCommand(McCommandType.CM_13);
-                    writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
+                    //writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
                 }
                 else
                 {
                     this.PostCommand(McCommandType.CM_14);
-                    writeEventLog(baseObj, buWork, "Reject จากคอมพิวเตอร์");
+                    //writeEventLog(baseObj, buWork, "Reject จากคอมพิวเตอร์");
                 }
                 this.McNextStep = "0";
             }
@@ -614,7 +619,7 @@ namespace AWCSEngine.Engine.McRuntime
                         baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
                         DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
 
-                        writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");
+                        //writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");
                         this.McNextStep = "0";
                     }
                 }

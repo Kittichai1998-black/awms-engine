@@ -136,7 +136,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 if (this.McObj.DV_Pre_Status == 98)
                 {
-                    writeEventLog(baseObj, buWork, " Check baseObject on " + InboundUtil.McChecking);
+                    //writeEventLog(baseObj, buWork, " Check baseObject on " + InboundUtil.McChecking);
 
                     //หา baseObject ลำดับแรกที่ถูกสร้างจาก RCO5-3
                     _mcRCO = McRuntimeController.GetInstant().GetMcRuntime(InboundUtil.McChecking);
@@ -182,18 +182,18 @@ namespace AWCSEngine.Engine.McRuntime
                     {
                         if (!String.IsNullOrWhiteSpace(baseObj.PassFlg) && baseObj.PassFlg.Equals("Y"))
                         {
-                            writeEventLog(baseObj, buWork, "ไม่มีคิวงาน สร้างคิวงาน");
+                            //writeEventLog(baseObj, buWork, "ไม่มีคิวงาน สร้างคิวงาน");
                             this.McNextStep = "1.1";
                         }
                         else
                         {
-                            writeEventLog(baseObj, buWork, "ไม่มีคิวงาน แต่ Reject");
+                            //writeEventLog(baseObj, buWork, "ไม่มีคิวงาน แต่ Reject");
                             this.McNextStep = "1.2";
                         }
                     }
                     else
                     {
-                        writeEventLog(baseObj, buWork, "มีคิวงาน");
+                        //writeEventLog(baseObj, buWork, "มีคิวงาน");
                         this.McNextStep = "2";
                     }
 
@@ -214,7 +214,7 @@ namespace AWCSEngine.Engine.McRuntime
             try
             {
                 InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
-                writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
+                //writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
                 this.McNextStep = "2";
             }
             catch (Exception ex)
@@ -238,7 +238,7 @@ namespace AWCSEngine.Engine.McRuntime
                 DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
 
                 this.PostCommand(McCommandType.CM_14);
-                writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
+                //writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
                 this.McNextStep = "0";
             }
             catch (Exception ex)
@@ -265,14 +265,14 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7 && this.mcWork.QueueStatus == 5)
                     {
-                        writeEventLog(baseObj, buWork, " คิวงาน พร้อมเก็บ");
+                        //writeEventLog(baseObj, buWork, " คิวงาน พร้อมเก็บ");
 
                         this.McNextStep = "2.1";
                     }
                     else
                     {
                         //พื้นที่จัดเก็บเต็ม
-                        writeEventLog(baseObj, buWork, "Reject คิวงาน ไม่พร้อมเก็บ");
+                        //writeEventLog(baseObj, buWork, "Reject คิวงาน ไม่พร้อมเก็บ");
 
                         this.McNextStep = "2.2";
                     }
@@ -303,7 +303,7 @@ namespace AWCSEngine.Engine.McRuntime
                 //สั่งให้ Conveyor เริ่มทำงานเก็บ
                 this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "Conveyor เริ่มทำงานเก็บ"));
 
-                writeEventLog(baseObj, buWork, "สั่งให้ Conveyor เริ่มทำงานเก็บ");
+                //writeEventLog(baseObj, buWork, "สั่งให้ Conveyor เริ่มทำงานเก็บ");
                 this.McNextStep = "3";
             }
             catch (Exception ex)
@@ -334,7 +334,7 @@ namespace AWCSEngine.Engine.McRuntime
                     DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
                     this.PostCommand(McCommandType.CM_13);
-                    writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
+                    //writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
 
                     this.McNextStep = "0";
                 }
@@ -370,7 +370,7 @@ namespace AWCSEngine.Engine.McRuntime
                         baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
                         DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
 
-                        writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");
+                        //writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");
                         this.McNextStep = "0";
                     }
                 }
@@ -385,9 +385,10 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu,string _msg)
         {
-            string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ?_bo.DisCharge : "");
+            string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
+            msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ?_bo.DisCharge : "");
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
-            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") + " | Message =" + _msg;
+            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") ;
 
             DisplayController.Events_Write(msg);
         }

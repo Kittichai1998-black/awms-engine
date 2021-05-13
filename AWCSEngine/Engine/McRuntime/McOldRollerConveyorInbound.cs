@@ -158,7 +158,7 @@ namespace AWCSEngine.Engine.McRuntime
                             else
                             {
                                 //ตรวจสอบข้อมูลพาเลทซ้ำ
-                                var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Warehouse.ID, this.BuVO);
+                                var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Area.Warehouse_ID, this.BuVO);
                                 if (bo != null)
                                 {
                                     if (bo.EventStatus == BaseObjectEventStatus.TEMP)
@@ -195,7 +195,7 @@ namespace AWCSEngine.Engine.McRuntime
                 }
 
 
-                writeEventLog(baseObj, buWork, "Check Pallet Barcode and dimention");
+                //writeEventLog(baseObj, buWork, "Check Pallet Barcode and dimention");
             }
             catch(Exception ex)
             {
@@ -205,7 +205,11 @@ namespace AWCSEngine.Engine.McRuntime
             finally
             {
                 this.StepTxt = "0";
-                this.McNextStep = "1";
+                if(this.McObj.DV_Pre_Status == 98)
+                {
+                    this.McNextStep = "1";
+                }
+                
 
             }
             
@@ -226,7 +230,7 @@ namespace AWCSEngine.Engine.McRuntime
                 if (this.baseObj == null)
                 {
                     this.baseObj = InboundUtil.createBaseObject(this.McObj, this.buWork, this.Cur_Area, this.Cur_Location, this.BuVO);
-                    writeEventLog(baseObj, buWork, "สร้าง BaseObject ");
+                    //writeEventLog(baseObj, buWork, "สร้าง BaseObject ");
                 }                
 
                 this.McNextStep = "2";
@@ -264,7 +268,7 @@ namespace AWCSEngine.Engine.McRuntime
                 }
 
                 this.BaseObject_ID = this.baseObj != null ? this.baseObj.ID : null;
-                writeEventLog(baseObj, buWork, "อัพเดตรายละเอียด BaseObject จาก BuWork");
+                //writeEventLog(baseObj, buWork, "อัพเดตรายละเอียด BaseObject จาก BuWork");
 
                 this.McNextStep = "3";
             }
@@ -352,7 +356,7 @@ namespace AWCSEngine.Engine.McRuntime
                 {
                     this.PostCommand(McCommandType.CM_15);
                 }
-                writeEventLog(baseObj, buWork, "Reject");
+                //writeEventLog(baseObj, buWork, "Reject");
             }
             catch (Exception ex)
             {
@@ -367,9 +371,10 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu, string _msg)
         {
-            string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
+            string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
+            msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
-            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") + " | Message =" + _msg;
+            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") ;
 
             DisplayController.Events_Write(msg);
         }

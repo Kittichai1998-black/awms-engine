@@ -149,9 +149,10 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu, string _msg)
         {
-            string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL  =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
+            string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
+            msg += " | LABEL  =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
-            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") + " | Message =" + _msg;
+            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "");
 
             DisplayController.Events_Write(msg);
         }
@@ -247,7 +248,7 @@ namespace AWCSEngine.Engine.McRuntime
                 baseObj.McObject_ID = this.ID;
                 DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
 
-                writeEventLog(baseObj, buWork, "ตรวจสอบข้อมูลพาเลท");
+                //writeEventLog(baseObj, buWork, "ตรวจสอบข้อมูลพาเลท");
                 this.McNextStep = nextStep;
 
             }
@@ -272,7 +273,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_RECEIVE;
                     this.mcWork.ActualTime = DateTime.Now;
                     DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
-                    writeEventLog(baseObj, buWork, "รอ SRM รับงานเก็บ");
+                    //writeEventLog(baseObj, buWork, "รอ SRM รับงานเก็บ");
 
                 }
                 
@@ -306,7 +307,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.mcWork.ActualTime = DateTime.Now;
                     DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
-                    writeEventLog(baseObj, buWork, "สั่งเครนเก็บสินค้า");
+                    //writeEventLog(baseObj, buWork, "สั่งเครนเก็บสินค้า");
 
                     this.McNextStep = "3.1";                   
 
@@ -348,7 +349,7 @@ namespace AWCSEngine.Engine.McRuntime
                 this.mcWork.ActualTime = DateTime.Now;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
-                writeEventLog(baseObj, buWork, "สั่งเครนย้าย Shuttle");
+                //writeEventLog(baseObj, buWork, "สั่งเครนย้าย Shuttle");
 
                 this.McNextStep = "3.2";
                 
@@ -380,7 +381,7 @@ namespace AWCSEngine.Engine.McRuntime
                 this.mcWork.ActualTime = DateTime.Now;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
-                writeEventLog(baseObj, buWork, "สั่งเครนย้ายพาเลท");
+                //writeEventLog(baseObj, buWork, "สั่งเครนย้ายพาเลท");
 
                 this.McNextStep = "3.3";
             }
@@ -415,7 +416,7 @@ namespace AWCSEngine.Engine.McRuntime
                         return LoopResult.Break;
                     }, () => mcConveyor.PostCommand(McCommandType.CM_99));
 
-                    writeEventLog(baseObj, buWork, "จบงาน SRM เก็บของ");
+                    //writeEventLog(baseObj, buWork, "จบงาน SRM เก็บของ");
                     this.McNextStep = "0";
                 }
             }
