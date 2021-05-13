@@ -408,6 +408,10 @@ namespace AWCSEngine.Engine.McRuntime
                         this.mcWork.ActualTime = DateTime.Now;
                         this.mcWork.QueueStatus = (int)QueueStatus.QS_6;
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+
+                        baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                        DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
+
                         return LoopResult.Break;
                     }, () => mcConveyor.PostCommand(McCommandType.CM_99));
 
@@ -439,6 +443,10 @@ namespace AWCSEngine.Engine.McRuntime
                         this.mcWork.ActualTime = DateTime.Now;
                         this.mcWork.QueueStatus = (int)QueueStatus.QS_4;
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+
+                        baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                        DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
+
                         return LoopResult.Break;
                     }, () => writeEventLog(baseObj, buWork, "จบงาน SRM ย้ายรถ"));
                     
@@ -468,6 +476,9 @@ namespace AWCSEngine.Engine.McRuntime
                         this.mcWork.QueueStatus = (int)QueueStatus.QS_9;
                         this.mcWork.ActualTime = DateTime.Now;
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
+
+                        baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                        DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
 
                         var _mcWorkOut = DataADO.GetInstant().SelectBy<act_McWork>(
                                    ListKeyValue<string, object>

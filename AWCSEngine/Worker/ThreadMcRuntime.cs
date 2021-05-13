@@ -3,6 +3,7 @@ using AMSModel.Constant.StringConst;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.PropertyFile;
+using AWCSEngine.Controller;
 using AWCSEngine.Worker.Model;
 using System;
 using System.Collections.Generic;
@@ -79,6 +80,7 @@ namespace AWCSEngine.Worker
 
         public void Abort()
         {
+            DisplayController.Events_Write("ThreadMcRuntime failed");
             this.McThreads.ForEach(x => { x.Abort(); });
         }
 

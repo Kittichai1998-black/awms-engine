@@ -89,6 +89,7 @@ namespace AWCSEngine.Worker
 
         public void Abort()
         {
+            DisplayController.Events_Write("ThreadWorkRuntime failed");
             this.Threads.ForEach(x => { if (x.IsAlive) x.Abort(); });
         }
     }
