@@ -51,7 +51,7 @@ namespace AWCSEngine.Engine.McRuntime
         private int PassFlg { get; set; }
         private long? BuWork_ID { get; set; }
         private long? BaseObject_ID { get; set; }
-        private int disCharge { get; set; }
+        private float disCharge { get; set; }
         private string McNextStep { get; set; }
         private int[] dimentionErr = new int[] { 104, 105, 106, 107, 108,109 };
         #endregion

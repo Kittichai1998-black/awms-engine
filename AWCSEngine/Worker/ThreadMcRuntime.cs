@@ -81,7 +81,11 @@ namespace AWCSEngine.Worker
         public void Abort()
         {
             DisplayController.Events_Write("ThreadMcRuntime failed");
-            this.McThreads.ForEach(x => { x.Abort(); });
+            if (this.McThreads != null)
+            {
+                this.McThreads.ForEach(x => { x.Abort(); });
+            }
+            
         }
 
     }

@@ -166,6 +166,7 @@ namespace AWCSWebApp.Controllers
                                     TrxRef = record.LINE.api_ref,
                                     DocRef = record.LINE.doc_wms,
                                     SkuStatus = record.LINE.status,
+                                    DisCharge = record.LINE.discharge.Get2<float>(),
                                     Status = EntityStatus.INACTIVE
                                 };
                                 i_freeLocs++;

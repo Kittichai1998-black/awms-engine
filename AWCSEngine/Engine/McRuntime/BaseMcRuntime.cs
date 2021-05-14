@@ -129,11 +129,11 @@ namespace AWCSEngine.Engine.McRuntime
             LoadDictionaryALL();
             try
             {
-                if (this.McMst.PlcCommuType == PlcCommunicationType.TEST)
+                if (this.McMst != null && this.McMst.PlcCommuType == PlcCommunicationType.TEST)
                     this.PlcADO = ADO.WCSPLC.PlcTestADO.GetInstant(this.McMst.PlcDeviceName);
-                else if (this.McMst.PlcCommuType == PlcCommunicationType.MX)
+                else if (this.McMst != null && this.McMst.PlcCommuType == PlcCommunicationType.MX)
                     this.PlcADO = ADO.WCSPLC.PlcMxADO.GetInstant(this.McMst.PlcDeviceName);
-                else if (this.McMst.PlcCommuType == PlcCommunicationType.KEPWARE_6)
+                else if (this.McMst != null && this.McMst.PlcCommuType == PlcCommunicationType.KEPWARE_6)
                     this.PlcADO = ADO.WCSPLC.PlcKepwareV6ADO.GetInstant(this.McMst.PlcDeviceName);
 
                 //this.PlcADO.Open();

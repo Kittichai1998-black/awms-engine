@@ -28,6 +28,6 @@ namespace AMSModel.Entity
         public string Remark;
         public long? WMS_WorkQueue_ID;
 
-        public int DisCharge;
+        public float DisCharge;
     }
 }

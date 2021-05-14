@@ -43,7 +43,7 @@ namespace AWCSEngine.Engine.McRuntime
         protected string LogCode => this.Code + "_";
         private int dimentionEjectStatus { get; set; }
         private bool dimentionEjectFlg { get; set; }
-        private int disCharge { get; set; }
+        private float disCharge { get; set; }
         private int errCode { get; set; }
         private int cmdReject { get; set; }
         private string palletLabelData { get; set; }
@@ -142,6 +142,10 @@ namespace AWCSEngine.Engine.McRuntime
                         this.PassFlg = (int)PassFailFlag.Fail;
                         break;
 
+                    case 96:
+                        this.PostCommand(McCommandType.CM_3);
+                        break;
+
                     case 98:
                         //อ่าน Barcode ได้
                         if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
@@ -179,6 +183,10 @@ namespace AWCSEngine.Engine.McRuntime
 
                         }
                         break;
+
+                    case 99:
+                        this.PostCommand(McCommandType.CM_99);
+                        break;
                 }
 
                 //ตรวจสอบ Discharge
@@ -205,9 +213,17 @@ namespace AWCSEngine.Engine.McRuntime
             finally
             {
                 this.StepTxt = "0";
-                if(this.McObj.DV_Pre_Status == 98)
+                if(this.McObj.DV_Pre_Status == 98 )
                 {
-                    this.McNextStep = "1";
+                    if ((!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd)))
+                    {
+                        this.McNextStep = "1";
+                    }
+                    else
+                    {
+                        this.McNextStep = "3";
+                    }
+                    
                 }
                 
 
@@ -325,8 +341,10 @@ namespace AWCSEngine.Engine.McRuntime
             try
             {
                 //this.PostCommand(McCommandType.CM_1);
-                this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่ง RCO ทำงานต่อ"));
-
+                //this.PostCommand(McCommandType.CM_1, 0, 0, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่ง RCO ทำงานต่อ"));
+                this.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>   
+                                    .New("Set_PalletID", baseObj.Code)
+                                    .Add("Set_Comm", 1));
             }
             catch (Exception ex)
             {

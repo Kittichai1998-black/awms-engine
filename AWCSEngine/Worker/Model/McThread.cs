@@ -24,7 +24,7 @@ namespace AWCSEngine.Worker.Model
         }
         public void WeekUpMcThread(ParameterizedThreadStart runMethod)
         {
-            if (this._McThread == null || !this._McThread.IsAlive)
+            if (this._McThread == null || (this._McThread != null && !this._McThread.IsAlive))
             {
                 this._McThread = new Thread(runMethod);
                 this._McThread.Start(this);
@@ -39,8 +39,11 @@ namespace AWCSEngine.Worker.Model
         }
         public void Abort()
         {
-            if (this._McThread.IsAlive)
+            if (this._McThread != null && this._McThread.IsAlive)
+            {
                 this._McThread.Abort();
+            }
+                
         }
     }
 }
