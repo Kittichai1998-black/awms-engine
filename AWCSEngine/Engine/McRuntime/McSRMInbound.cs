@@ -128,7 +128,13 @@ namespace AWCSEngine.Engine.McRuntime
             if (this.McObj.DV_Pre_Status == 22)
             {
                 //Check Pallet stand กรณีจัดเก็บแบบ Manual (RC8-2)
-                _mcPS = InboundUtil.findPalletStand(baseObj.Warehouse_ID,this.BuVO);
+                //_mcPS = InboundUtil.findPalletStand(baseObj.Warehouse_ID,this.BuVO);
+                _mcPS = DataADO.GetInstant().SelectBy<acs_McMaster>(
+                       ListKeyValue<string, object>
+                       .New("Warehouse_ID", baseObj.Warehouse_ID)
+                       .Add("Info1", "IN")
+                       , BuVO).FirstOrDefault(x => x.Code.StartsWith("PS"));
+
                 if (_mcPS == null) { return; }
 
                 var ps = McRuntimeController.GetInstant().GetMcRuntime(_mcPS.Code);
@@ -165,8 +171,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step0()
         {
             this.StepTxt = "0";
-            try
-            {
+            
                 // คิวเก็บ
                 this.mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
                            ListKeyValue<string, object>
@@ -215,13 +220,7 @@ namespace AWCSEngine.Engine.McRuntime
                     }
                 }
 
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -231,8 +230,7 @@ namespace AWCSEngine.Engine.McRuntime
         {
             if (String.IsNullOrWhiteSpace(nextStep)) { nextStep = "1.1"; }
             this.StepTxt = "1";
-            try
-            {
+            
                 if (this.mcWork == null) { return; }
                 baseObj = BaseObjectADO.GetInstant().GetByID(this.mcWork.BaseObject_ID, this.BuVO);
                 if (baseObj == null)
@@ -251,13 +249,7 @@ namespace AWCSEngine.Engine.McRuntime
                 //writeEventLog(baseObj, buWork, "ตรวจสอบข้อมูลพาเลท");
                 this.McNextStep = nextStep;
 
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -266,8 +258,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step1_1()
         {
             this.StepTxt = "1.1";
-            try
-            {
+            
                 if (mcConveyor != null && (Array.IndexOf(cvWorked, mcConveyor.McObj.DV_Pre_Status) >= 0))
                 {
                     this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_RECEIVE;
@@ -277,13 +268,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                 }
                 
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -292,8 +277,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step2_1()
         {
             this.StepTxt = "2.1";
-            try
-            {
+            
                 if(this.McObj.DV_Pre_Status == 90)
                 {
                     var souLoc = this.StaticValue.GetLocation(this.mcWork.Sou_Location_ID);
@@ -313,13 +297,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                     
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -328,8 +306,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step2_2()
         {
             this.StepTxt = "2.2";
-            try
-            {
+           
                 //var souLoc = this.StaticValue.GetLocation(this.mcWork.Sou_Location_ID);
                 //int _souLocCode = souLoc != null ? (souLoc.Code.Get2<int>()) : 0;
 
@@ -353,13 +330,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                 this.McNextStep = "3.2";
                 
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -368,8 +339,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step2_3()
         {
             this.StepTxt = "2.3";
-            try
-            {
+            
                 var souLoc = this.StaticValue.GetLocation(this.mcWork.Sou_Location_ID);
                 var desLoc = this.StaticValue.GetLocation(this.mcWork.Des_Location_ID.GetValueOrDefault());
                 int _souLocCode = souLoc != null ? (souLoc.Code.Get2<int>()) : 0;
@@ -384,13 +354,7 @@ namespace AWCSEngine.Engine.McRuntime
                 //writeEventLog(baseObj, buWork, "สั่งเครนย้ายพาเลท");
 
                 this.McNextStep = "3.3";
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -399,8 +363,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step3_1()
         {
             this.StepTxt = "3.1";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 99)
                 {
                     this.PostCommand(McCommandType.CM_99, (mc) =>
@@ -419,13 +382,7 @@ namespace AWCSEngine.Engine.McRuntime
                     //writeEventLog(baseObj, buWork, "จบงาน SRM เก็บของ");
                     this.McNextStep = "0";
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -434,8 +391,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step3_2()
         {
             this.StepTxt = "3.2";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 99)
                 {
                     this.PostCommand(McCommandType.CM_99, (mc) =>
@@ -453,13 +409,7 @@ namespace AWCSEngine.Engine.McRuntime
                     
                     this.McNextStep = "0";
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -468,8 +418,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step3_3()
         {
             this.StepTxt = "3.3";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 99)
                 {
                     this.PostCommand(McCommandType.CM_99, (mc) =>
@@ -500,13 +449,7 @@ namespace AWCSEngine.Engine.McRuntime
                     
                     this.McNextStep = "0";
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
         #endregion
     }

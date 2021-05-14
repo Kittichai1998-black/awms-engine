@@ -1,9 +1,11 @@
 ﻿using ADO.WCSDB;
 using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
+using AMWUtil.PropertyFile;
 using AWCSEngine.Controller;
 using AWCSEngine.Util;
 using System;
@@ -49,6 +51,7 @@ namespace AWCSEngine.Engine.McRuntime
         private act_BaseObject baseObj { get; set; }
         private string McNextStep { get; set; }
         private BaseMcRuntime _mcRCO { get; set; }
+        string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
         #endregion
 
         #region Methods
@@ -132,35 +135,33 @@ namespace AWCSEngine.Engine.McRuntime
         private void step0()
         {
             this.StepTxt = "0";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 98)
                 {
-                    //writeEventLog(baseObj, buWork, " Check baseObject on " + InboundUtil.McChecking);
-
-                    //หา baseObject ลำดับแรกที่ถูกสร้างจาก RCO5-3
-                    _mcRCO = McRuntimeController.GetInstant().GetMcRuntime(InboundUtil.McChecking);
-                    baseObj = BaseObjectADO.GetInstant().GetCheckingTempByWarehouse(this.Cur_Area.Warehouse_ID, _mcRCO.McObj.ID, this.BuVO);
-                    if (baseObj == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND,  _mcRCO.McObj.ID.ToString());
-
-                    buWork = InboundUtil.GetBuWorkByObject(baseObj,this.BuVO);
-                    if (buWork == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND, this.McObj.BaseObject_ID.ToString());
-
                     
+                    //หา baseObject ลำดับแรกที่ถูกสร้างจาก RCO5-3
+                    _mcRCO = McRuntimeController.GetInstant().GetMcRuntime(McChecking);
+                    baseObj = BaseObjectADO.GetInstant().GetCheckingTempByWarehouse(this.Cur_Area.Warehouse_ID, _mcRCO.McObj.ID, this.BuVO);
 
-                    this.McNextStep = "1";
-                }else
+                    if (baseObj != null)
+                    {
+                        buWork = DataADO.GetInstant().SelectByIDActive<act_BuWork>(baseObj.BuWork_ID, this.BuVO);
+                        if(buWork != null)
+                        {
+                            this.McNextStep = "1";
+                        }
+                    }
+
+                    writeEventLog(baseObj, buWork, " Check baseObject on " + InboundUtil.GetInstant().McChecking + " McObj.ID" + _mcRCO.McObj.ID);
+
+
+
+            }
+            else
                 {
                     clear();
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | Checking  =" + InboundUtil.McChecking + " | McOject =" + this._mcRCO.McObj.ID.ToString() + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-            }
+            
            
         }
 
@@ -170,12 +171,17 @@ namespace AWCSEngine.Engine.McRuntime
         private void step1()
         {
             this.StepTxt = "1";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 98)
                 {
 
-                    this.mcWork = InboundUtil.getMcWorkByQueueType(this.McObj, QueueType.QT_1, this.BuVO);
+                    //this.mcWork = InboundUtil.getMcWorkByQueueType(this.McObj, QueueType.QT_1, this.BuVO);
+                    this.mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                           ListKeyValue<string, object>
+                           .New("QueueType", QueueType.QT_1)
+                           .Add("IOType", IOType.INBOUND)
+                           .Add("Sou_Location_ID", this.McObj.Cur_Location_ID.GetValueOrDefault())
+                           , BuVO).FirstOrDefault();
 
                     //ไม่มีคิวงาน
                     if (this.mcWork == null)
@@ -198,31 +204,77 @@ namespace AWCSEngine.Engine.McRuntime
                     }
 
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
             
         }
 
         private void step1_1()
         {
             this.StepTxt = "1.1";
-            try
-            {
-                InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
+            
+                //InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
+                if(baseObj != null)
+                {
+                    baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
+                    baseObj.McObject_ID = this.McObj.ID;
+                    DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, BuVO);
+
+                    var bArea = StaticValueManager.GetInstant().GetArea(baseObj.Area_ID);
+                    var bWh = StaticValueManager.GetInstant().GetWarehouse(bArea.Warehouse_ID);
+
+                    //หา Location ของ Mc
+                    var bLocation = StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.GetValueOrDefault());
+
+                    var desLoc = StaticValueManager.GetInstant().GetLocation(buWork.Des_Location_ID.Value);
+                    var desArea = StaticValueManager.GetInstant().GetArea(buWork.Des_Area_ID.Value);
+                    var desWh = StaticValueManager.GetInstant().GetWarehouse(buWork.Des_Warehouse_ID.Value);
+
+                    act_McWork mq = new act_McWork()
+                    {
+                        ID = null,
+                        IOType = IOType.INBOUND,
+                        QueueType = (int)QueueType.QT_1,
+                        WMS_WorkQueue_ID = buWork.ID.Value,
+                        BuWork_ID = buWork.ID.Value,
+                        TrxRef = buWork.TrxRef,
+
+                        Priority = buWork.Priority,
+                        SeqGroup = buWork.SeqGroup,
+                        SeqItem = buWork.SeqIndex,
+
+                        BaseObject_ID = baseObj.ID.Value,
+                        //Rec_McObject_ID = this.ID,
+                        Rec_McObject_ID = null,
+                        Cur_McObject_ID = null,
+
+                        Cur_Warehouse_ID = bWh.ID.Value,
+                        Cur_Area_ID = baseObj.Area_ID,
+                        Cur_Location_ID = baseObj.Location_ID,
+
+                        Sou_Area_ID = bArea.ID.Value,
+                        Sou_Location_ID = bLocation.ID.Value,
+
+                        Des_Area_ID = desArea.ID.Value,
+
+                        ActualTime = DateTime.Now,
+                        StartTime = DateTime.Now,
+                        EndTime = null,
+                        EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
+                        Status = EntityStatus.ACTIVE,
+
+                        TreeRoute = "{}"
+                    };
+                    mq.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mq, BuVO);
+
+                    this.mcWork = mq;
+
+                    buWork.Status = EntityStatus.ACTIVE;
+                    buWork.WMS_WorkQueue_ID = mq.ID;
+                    DataADO.GetInstant().UpdateBy<act_BuWork>(buWork, BuVO);
+                }
                 //writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
                 this.McNextStep = "2";
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -231,8 +283,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step1_2()
         {
             this.StepTxt = "1.2";
-            try
-            {
+            
                 //Reject จากจุดซ้อนพาเลท
                 baseObj.Status = EntityStatus.REMOVE;
                 DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
@@ -240,16 +291,9 @@ namespace AWCSEngine.Engine.McRuntime
                 this.PostCommand(McCommandType.CM_14);
                 //writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
                 this.McNextStep = "0";
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);                
-            }
-            finally
-            {
-                this.McNextStep = "0";
-            }
+            
+
+            this.McNextStep = "0";
         }
 
 
@@ -259,8 +303,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step2()
         {
             this.StepTxt = "2";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 98)
                 {
                     if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7 && this.mcWork.QueueStatus == 5)
@@ -277,13 +320,7 @@ namespace AWCSEngine.Engine.McRuntime
                         this.McNextStep = "2.2";
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
             
         }
 
@@ -294,8 +331,7 @@ namespace AWCSEngine.Engine.McRuntime
         {
             this.StepTxt = "2.1";
 
-            try
-            {
+            
                 this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
                 this.mcWork.ActualTime = DateTime.Now;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
@@ -305,13 +341,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                 //writeEventLog(baseObj, buWork, "สั่งให้ Conveyor เริ่มทำงานเก็บ");
                 this.McNextStep = "3";
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                this.McNextStep = "0";
-            }
+            
         }
 
         /// <summary>
@@ -321,8 +351,7 @@ namespace AWCSEngine.Engine.McRuntime
         {
             this.StepTxt = "2.2";
 
-            try
-            {
+            
                 if (this.mcWork.QueueStatus != 7)
                 {
                     //Reject พื้นที่จัดเก็บเต็ม
@@ -338,17 +367,9 @@ namespace AWCSEngine.Engine.McRuntime
 
                     this.McNextStep = "0";
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-                
-            }
-            finally
-            {
-                this.McNextStep = "0";
-            }
+            
+
+            this.McNextStep = "0";
         }
 
         /// <summary>
@@ -357,8 +378,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void step3()
         {
             this.StepTxt = "3";
-            try
-            {
+            
                 if (this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14)
                 {
                     if (this.mcWork != null && this.mcWork.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
@@ -374,12 +394,7 @@ namespace AWCSEngine.Engine.McRuntime
                         this.McNextStep = "0";
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                string msg = this.Code + " > Working step " + this.StepTxt + " | LABEL =" + this.McObj.DV_Pre_BarProd + " | error =" + ex.Message;
-                DisplayController.Events_Write(msg);
-            }
+            
             
         }
 

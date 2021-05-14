@@ -14,11 +14,20 @@ using System.Threading.Tasks;
 
 namespace AWCSEngine.Util
 {
-   public static class InboundUtil
+   public class InboundUtil
     {
-        public static string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
-        public static string AppWHID = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_warehouse_id)[PropertyConst.APP_KEY_warehouse_id];
-        public static int WarehouseID = AppWHID.Get2<int>();
+        private static InboundUtil instant;
+        public static InboundUtil GetInstant()
+        {
+            if (instant == null)
+                instant = new InboundUtil();
+            return instant;
+        }
+
+        public  string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
+        public string WarehouseID = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_warehouse_id)[PropertyConst.APP_KEY_warehouse_id];
+        
+        //public static int WarehouseID = 1;
 
         /// <summary>
         /// Create BaseObject
@@ -29,9 +38,9 @@ namespace AWCSEngine.Util
         /// <param name="_CurLocation"></param>
         /// <param name="BuVO"></param>
         /// <returns></returns>
-        public static act_BaseObject createBaseObject(act_McObject _McObj, act_BuWork _buWork, acs_Area _CurArea, acs_Location _CurLocation, VOCriteria BuVO)
+        public  act_BaseObject createBaseObject(act_McObject _McObj, act_BuWork _buWork, acs_Area _CurArea, acs_Location _CurLocation, VOCriteria BuVO)
         {
-            if((_buWork != null && WarehouseID != _buWork.Des_Warehouse_ID) || _buWork == null) { return null; }
+            if((_buWork != null && WarehouseID != _buWork.Des_Warehouse_ID.ToString()) || _buWork == null) { return null; }
 
             string baseCode;
             do
@@ -66,18 +75,24 @@ namespace AWCSEngine.Util
             return baseObj;
         }
 
-        public static act_BuWork GetBuWorkByLabel(act_McObject _McObj, acs_Area _CurArea, VOCriteria BuVO)
+        public  act_BuWork GetBuWorkByLabel(act_McObject _McObj, acs_Area _CurArea, VOCriteria BuVO)
         {
-            var buWork = DataADO.GetInstant().SelectBy<act_BuWork>(
-                            ListKeyValue<string, object>
-                            .New("status", EntityStatus.ACTIVE)
-                            .Add("Des_Warehouse_ID", _CurArea.Warehouse_ID)
-                            .Add("LabelData", _McObj.DV_Pre_BarProd), BuVO)
-                .FirstOrDefault();
+
+            var buWork =
+                DataADO.GetInstant().SelectBy<act_BuWork>(
+                    new SQLConditionCriteria[]
+                    {
+                        new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                         new SQLConditionCriteria("Des_Warehouse_ID",  _CurArea.Warehouse_ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("LabelData", _McObj.DV_Pre_BarProd, SQLOperatorType.EQUALS)
+                    }
+                , BuVO).FirstOrDefault();
+
+
             return buWork;
         }
 
-        public static act_BaseObject GetBaseObjectByLabel(act_McObject _McObj, acs_Area _CurArea, VOCriteria BuVO)
+        public  act_BaseObject GetBaseObjectByLabel(act_McObject _McObj, acs_Area _CurArea, VOCriteria BuVO)
         {
             var baseObj = DataADO.GetInstant().SelectBy<act_BaseObject>(
                             ListKeyValue<string, object>
@@ -88,13 +103,13 @@ namespace AWCSEngine.Util
             return baseObj;
         }
 
-        public static act_BuWork GetBuWorkByObject(act_BaseObject _BaseObject, VOCriteria BuVO)
+        public  act_BuWork GetBuWorkByObject(act_BaseObject _BaseObject, VOCriteria BuVO)
         {
             var buWork = DataADO.GetInstant().SelectByIDActive<act_BuWork>(_BaseObject.BuWork_ID, BuVO);
             return buWork;
         }
 
-        public static act_McWork createWorkQueue(act_McObject _McObj, act_BaseObject _bo, act_BuWork _bu, VOCriteria BuVO)
+        public  act_McWork createWorkQueue(act_McObject _McObj, act_BaseObject _bo, act_BuWork _bu, VOCriteria BuVO)
         {
             if (_bo == null) { return null; }
             
@@ -157,7 +172,7 @@ namespace AWCSEngine.Util
             
         }
 
-        public static acs_McMaster findSRM(long? warehouse_id, VOCriteria BuVO)
+        public  acs_McMaster findSRM(long? warehouse_id, VOCriteria BuVO)
         {
             var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
                        ListKeyValue<string, object>
@@ -168,7 +183,7 @@ namespace AWCSEngine.Util
             return mcSRM;
         }
 
-        public static acs_McMaster findPalletStand(long? warehouse_id, VOCriteria BuVO)
+        public  acs_McMaster findPalletStand(long? warehouse_id, VOCriteria BuVO)
         {
             var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
                        ListKeyValue<string, object>
@@ -179,7 +194,7 @@ namespace AWCSEngine.Util
             return mcSRM;
         }
 
-        public static acs_McMaster findRCO(long? warehouse_id, VOCriteria BuVO)
+        public  acs_McMaster findRCO(long? warehouse_id, VOCriteria BuVO)
         {
             var mcSRM = DataADO.GetInstant().SelectBy<acs_McMaster>(
                        ListKeyValue<string, object>
@@ -190,7 +205,7 @@ namespace AWCSEngine.Util
             return mcSRM;
         }
 
-        public static act_McWork getMcWorkByQueueType(act_McObject _McObj, QueueType queueType, VOCriteria BuVO)
+        public  act_McWork getMcWorkByQueueType(act_McObject _McObj, QueueType queueType, VOCriteria BuVO)
         {
             var mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
                            ListKeyValue<string, object>
@@ -200,6 +215,8 @@ namespace AWCSEngine.Util
                            , BuVO).FirstOrDefault();
             return mcWork;
         }
+
+        
     }
 
 }
