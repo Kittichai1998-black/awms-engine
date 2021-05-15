@@ -2,6 +2,7 @@
 using ADO.WCSStaticValue;
 using AMSModel.Constant.EnumConst;
 using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.Exception;
@@ -29,388 +30,495 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            //Lock ให้ Thread ทำงานจนจบก่อนที่จะไปทำที่ Thread อื่น
-            //lock (_single_thread)
-            //{
-            //    this.Mc_OnRun();
-            //}
-            this.Mc_OnRun();
+            this.clear();
+
+            this.mainStep = this.StepTxt.Substring(0, 1);
+            switch (this.mainStep)
+            {
+                case "0":
+                    //Check สแกนบาร์โค๊ด
+                    writeEventLog("0. Check พาเลท และ สแกนบาร์โค๊ด");
+                    if (this.McObj.DV_Pre_Status == 98)
+                    {
+                        //หา baseObject ลำดับแรกที่ถูกสร้างจาก RCO5-3
+                        this.rco5_3McRunTime = McRuntimeController.GetInstant().GetMcRuntime(McChecking);
+                        var _mcRCO_McObjID = this.rco5_3McRunTime != null ? this.rco5_3McRunTime.McObj.ID : 0;
+
+                        if (_mcRCO_McObjID == 0)
+                        {
+                            writeEventLog("0.2.1 ไม่พบจุดสแกนบาร์โค๊ด");
+                            this.StepTxt = "0.0";
+                            break;
+                        }
+
+                        this.rc8_1BaseObject = ADO.WCSDB.DataADO.GetInstant()
+                                        .SelectBy<act_BaseObject>(
+                                        new SQLConditionCriteria[] {
+                                            new SQLConditionCriteria("Warehouse_ID", this.Cur_Area.Warehouse_ID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("McObject_ID", _mcRCO_McObjID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN)
+                                        }, BuVO)
+                                        .OrderBy(x => x.ID)
+                                        .FirstOrDefault();
+
+                        if (this.rc8_1BaseObject == null)
+                        {
+                            writeEventLog("0.2.2 ไม่พบข้อมูลพาเลทสินค้า");
+                            this.StepTxt = "0.0";
+                            break;
+                        }
+
+                        this.LabelData = this.rc8_1BaseObject.LabelData;
+
+                        if (String.IsNullOrWhiteSpace(this.LabelData))
+                        {
+                            writeEventLog("0.2.3 ไม่พบ Label สินค้า");
+                            this.StepTxt = "0.0";
+                            break;
+                        }
+
+                        if (!String.IsNullOrWhiteSpace(this.rc8_1BaseObject.PassFlg) && this.rc8_1BaseObject.PassFlg == "N")
+                        {
+                            writeEventLog("0.2.4 พบ Reject จากจุดซ้อนพาเลท");
+                            this.StepTxt = "4.2";
+                            break;
+                        }
+
+                        writeEventLog("0.1 พบพาเลทสินค้า " + this.LabelData);
+                        this.StepTxt = "1.1";
+                        break;
+
+
+                    }
+
+
+                    break;
+
+                case "1":
+                    switch (this.StepTxt)
+                    {
+                        case "1.1":
+                            //ตรวจสอบงานรับเข้า BuWork
+                            if (this.McObj.DV_Pre_Status == 98)
+                            {
+                                writeEventLog("1. ตรวจสอบงานรับเข้า BuWork");
+
+                                this.rc8_1BuWorkk = DataADO.GetInstant().SelectBy<act_BuWork>(
+                                new SQLConditionCriteria[]
+                                {
+                                    new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                    new SQLConditionCriteria("Des_Warehouse_ID",  this.Cur_Area.Warehouse_ID, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("LabelData",this.LabelData, SQLOperatorType.EQUALS)
+                                }
+                                , this.BuVO).FirstOrDefault();
+
+                                if (this.rc8_1BuWorkk == null)
+                                {
+                                    writeEventLog("1.2 ไม่พบข้อมูลรับเข้า " + this.LabelData);
+                                    this.StepTxt = "0.0";
+                                    break;
+                                }
+
+                                this.BuWork_ID = this.rc8_1BuWorkk != null ? this.rc8_1BuWorkk.ID : 0;
+                                this.disCharge = this.rc8_1BuWorkk == null ? this.rc8_1BuWorkk.DisCharge : 0;
+
+                                writeEventLog("1.1 ข้อมูลรับเข้า BuWork ID " + this.BuWork_ID);
+                                this.StepTxt = "3.1";
+                                break;
+
+                            }
+
+                            break;
+                    }
+
+
+                    break;
+
+                case "2":
+                    switch (this.StepTxt)
+                    {
+                        case "2.1":
+                            //สร้างข้อมูลพาเลท BaseObject
+                            if (this.rc8_1BuWorkk != null && this.rc8_1BaseObject == null)
+                            {
+                                writeEventLog("2. สร้างข้อมูลพาเลท BaseObject");
+                            }
+                            this.StepTxt = "0.0";
+
+                            break;
+                    }
+
+
+
+                    break;
+
+                case "3":
+                    switch (this.StepTxt)
+                    {
+                        case "3.1":
+                            //สร้างคิวงาน McWork
+                            if (this.rc8_1BuWorkk == null || this.rc8_1BaseObject == null)
+                            {
+                                this.StepTxt = "0.0";
+                                break;
+                            }
+
+                            if (this.rc8_1BuWorkk != null && this.rc8_1BaseObject != null && this.rc8_1McWork != null)
+                            {
+                                this.StepTxt = "4.1";
+                                break;
+                            }
+
+                            if (this.rc8_1BuWorkk != null && this.rc8_1BaseObject != null && this.rc8_1McWork == null)
+                            {
+                                writeEventLog("3. Check คิวงาน McWork");
+
+                                var bArea = StaticValueManager.GetInstant().GetArea(this.rc8_1BaseObject.Area_ID);
+                                if (bArea == null)
+                                {
+                                    writeEventLog("3.2.1 ไม่พบข้อมูล Area " + this.rc8_1BaseObject.Area_ID);
+                                    this.StepTxt = "0.0";
+                                    break;
+
+                                }
+
+                                var bWh = StaticValueManager.GetInstant().GetWarehouse(bArea.Warehouse_ID);
+                                if (bWh == null)
+                                {
+                                    writeEventLog("3.2.2 ไม่พบข้อมูล Warehouse " + bArea.Warehouse_ID);
+                                    this.StepTxt = "0.0";
+                                    break;
+
+                                }
+
+                                //หา Location ของ Mc
+                                var bLocation = StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.GetValueOrDefault());
+                                if (bLocation == null)
+                                {
+                                    writeEventLog("3.2.3 ไม่พบข้อมูล Sou_Location_ID " + this.McObj.Cur_Location_ID);
+                                    this.StepTxt = "0.0";
+                                    break;
+
+                                }
+
+                                var desLoc = StaticValueManager.GetInstant().GetLocation(this.rc8_1BuWorkk.Des_Location_ID.Value);
+                                if (desLoc == null)
+                                {
+                                    writeEventLog("3.2.4 ไม่พบข้อมูล Des_Location " + this.rc8_1BuWorkk.Des_Location_ID);
+                                    this.StepTxt = "0.0";
+                                    break;
+
+                                }
+
+                                var desArea = StaticValueManager.GetInstant().GetArea(this.rc8_1BuWorkk.Des_Area_ID.Value);
+                                if (desArea == null)
+                                {
+                                    writeEventLog("3.2.5 ไม่พบข้อมูล Des_Area " + this.rc8_1BuWorkk.Des_Area_ID);
+                                    this.StepTxt = "0.0";
+                                    break;
+
+                                }
+
+                                var desWh = StaticValueManager.GetInstant().GetWarehouse(this.rc8_1BuWorkk.Des_Warehouse_ID.Value);
+                                if (desWh == null)
+                                {
+                                    writeEventLog("3.2.6 ไม่พบข้อมูล Des_Warehouse " + this.rc8_1BuWorkk.Des_Warehouse_ID);
+                                    this.StepTxt = "0.0";
+                                    break;
+
+                                }
+
+                                this.rc8_1BaseObject.EventStatus = BaseObjectEventStatus.INBOUND;
+                                this.rc8_1BaseObject.McObject_ID = this.McObj.ID;
+                                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.rc8_1BaseObject, this.BuVO);
+                                writeEventLog("3.1.1 รับคิวงาน");
+
+                                this.rc8_1McWork = new act_McWork()
+                                {
+                                    ID = null,
+                                    IOType = IOType.INBOUND,
+                                    QueueType = (int)QueueType.QT_1,
+                                    WMS_WorkQueue_ID = this.rc8_1BuWorkk.ID.Value,
+                                    BuWork_ID = this.rc8_1BuWorkk.ID.Value,
+                                    TrxRef = this.rc8_1BuWorkk.TrxRef,
+
+                                    Priority = this.rc8_1BuWorkk.Priority,
+                                    SeqGroup = this.rc8_1BuWorkk.SeqGroup,
+                                    SeqItem = this.rc8_1BuWorkk.SeqIndex,
+
+                                    BaseObject_ID = rc8_1BaseObject.ID.Value,
+                                    //Rec_McObject_ID = this.ID,
+                                    Rec_McObject_ID = null,
+                                    Cur_McObject_ID = null,
+
+                                    Cur_Warehouse_ID = bWh.ID.Value,
+                                    Cur_Area_ID = this.rc8_1BaseObject.Area_ID,
+                                    Cur_Location_ID = this.rc8_1BaseObject.Location_ID,
+
+                                    Sou_Area_ID = bArea.ID.Value,
+                                    Sou_Location_ID = bLocation.ID.Value,
+
+                                    Des_Area_ID = desArea.ID.Value,
+
+                                    ActualTime = DateTime.Now,
+                                    StartTime = DateTime.Now,
+                                    EndTime = null,
+                                    EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
+                                    Status = EntityStatus.ACTIVE,
+
+                                    MixLot = "Y",
+
+                                    TreeRoute = "{}"
+                                };
+                                this.rc8_1McWork.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(this.rc8_1McWork, this.BuVO);
+
+                                writeEventLog("3.1.2 สร้างคิวงาน McWork");
+
+                                this.rc8_1BuWorkk.Status = EntityStatus.ACTIVE;
+                                this.rc8_1BuWorkk.WMS_WorkQueue_ID = this.rc8_1McWork.ID;
+                                DataADO.GetInstant().UpdateBy<act_BuWork>(this.rc8_1BuWorkk, this.BuVO);
+
+                                writeEventLog("3.1.3 อัพเดตคิวงาน BuWork");
+
+                                this.StepTxt = "4.1";
+                                break;
+
+                            }
+
+                            break;
+                    }
+
+
+
+
+                    break;
+
+                case "4":
+                    //Check ความพร้อมคิวงาน
+                    switch (this.StepTxt)
+                    {
+                        case "4.1":
+                            //Check ความพร้อมคิวงาน
+                            if (this.McObj.DV_Pre_Status == 98)
+                            {
+
+                                if (this.rc8_1McWork != null && this.rc8_1McWork.Des_Location_ID != 0 && this.rc8_1McWork.Rec_McObject_ID != 0)
+                                {
+                                    writeEventLog("4.1 Check ความพร้อมคิวงาน ปลายทาง " + this.rc8_1McWork.Des_Location_ID + " Shuttle ID " + this.rc8_1McWork.Rec_McObject_ID);
+                                    if (this.rc8_1McWork.QueueStatus >= 5)
+                                    {
+                                        if (this.rc8_1McWork.QueueStatus != 7)
+                                        {
+                                            writeEventLog(" คิวงาน พร้อมเก็บ");
+
+                                            this.StepTxt = "5.1";
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            //พื้นที่จัดเก็บเต็ม
+                                            writeEventLog("คิวงาน ไม่พร้อมเก็บ พื้นที่จัดเก็บเต็ม");
+
+                                            this.StepTxt = "5.2";
+                                            break;
+                                        }
+                                    }
+
+
+                                    
+
+                                }
+                            }
+                            break;
+
+                        case "4.2":
+                            //Reject จากจุดซ้อนพาเลท
+                            var mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                                    new SQLConditionCriteria[]
+                                                    {
+                                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                                            new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
+                                                    }
+                                                , this.BuVO).FirstOrDefault();
+
+                            if (mcWork == null)
+                            {
+                                //สั่ง Reject
+                                this.PostCommand(McCommandType.CM_14);
+
+                                if (this.rc8_1BaseObject != null)
+                                {
+                                    this.rc8_1BaseObject.Status = EntityStatus.REMOVE;
+                                    DataADO.GetInstant().UpdateBy<act_BaseObject>(this.rc8_1BaseObject, this.BuVO);
+                                }
+
+
+                                mcWork.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
+                                mcWork.Status = EntityStatus.REMOVE;
+                                DataADO.GetInstant().UpdateBy<act_McWork>(mcWork, this.BuVO);
+
+                                writeEventLog("4.2 สั่ง Reject");
+                            }
+                            this.StepTxt = "0.0";
+                            break;
+                    }
+
+
+
+                    break;
+
+                case "5":
+                    //เริ่มทำงาน
+                    switch (this.StepTxt)
+                    {
+                        case "5.1":
+                            if (this.McObj.DV_Pre_Status == 98)
+                            {
+                                if(this.rc8_1McWork != null)
+                                {
+                                    this.rc8_1McWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
+                                    this.rc8_1McWork.ActualTime = DateTime.Now;
+                                    DataADO.GetInstant().UpdateBy<act_McWork>(this.rc8_1McWork, this.BuVO);
+                                    writeEventLog("5.1.1 เริ่มงาน");
+                                }
+
+
+                                if(this.rc8_1BaseObject != null)
+                                {
+                                    //สั่งให้ Conveyor เริ่มทำงานเก็บ
+                                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, this.rc8_1BaseObject.Code, this.rc8_1BaseObject.SkuQty.Get2<int>(), () => writeEventLog("5.1.2 สั่งให้ Conveyor เริ่มทำงานเก็บ"));
+
+                                    this.StepTxt = "6.1";
+                                    break;
+
+                                    
+                                }
+                                this.StepTxt = "0.0";
+                                break;
+
+
+
+                            }
+                            
+                            break;
+
+                        case "5.2":
+                            //Reject จากคิวงาน
+                            if (this.rc8_1McWork != null && this.rc8_1McWork.QueueStatus == 7)
+                            {
+                                this.PostCommand(McCommandType.CM_13);
+                                writeEventLog("5.2.1 สั่ง Reject");
+
+                                //Reject พื้นที่จัดเก็บเต็ม
+                                if (this.rc8_1BaseObject != null)
+                                {
+                                    this.rc8_1BaseObject.Status = EntityStatus.REMOVE;
+                                    DataADO.GetInstant().UpdateBy<act_BaseObject>(this.rc8_1BaseObject, this.BuVO);
+                                    writeEventLog("5.2.2 Remove คิวงาน BaseObject");
+                                }
+                                    
+
+                                this.rc8_1McWork.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
+                                this.rc8_1McWork.Status = EntityStatus.REMOVE;
+                                DataADO.GetInstant().UpdateBy<act_McWork>(this.rc8_1McWork, this.BuVO);
+                                writeEventLog("5.2.3 Remove คิวงาน McWork");
+
+                                this.StepTxt = "0.0";
+                                break;
+
+                            }
+                            
+                            break;
+                    }
+                    break;
+
+                case "6":
+                    //จบงาน
+                    switch (this.StepTxt)
+                    {
+                        case "6.1":
+                            if (this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14)
+                            {
+                                if (this.rc8_1McWork != null && this.rc8_1McWork != null && this.rc8_1McWork.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
+                                {
+                                    this.rc8_1McWork.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+                                    this.rc8_1McWork.ActualTime = DateTime.Now;
+                                    DataADO.GetInstant().UpdateBy<act_McWork>(this.rc8_1McWork, this.BuVO);
+                                    writeEventLog("6.1.1 จบคิวงาน Conveyor");
+
+                                    if (this.rc8_1BaseObject != null)
+                                    {
+                                        this.rc8_1BaseObject.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                                        DataADO.GetInstant().UpdateBy(this.rc8_1BaseObject, this.BuVO);
+                                        writeEventLog("6.1.2 อัพเดต Location พาเลทสินค้า");
+                                    }
+
+                                    
+
+                                    
+                                    this.StepTxt = "0.0";
+                                    break;
+                                }
+                            }
+
+                            break;
+                    }
+
+                    break;
+            }
         }
         protected override void OnStart()
         {
-            reset();            
+            this.StepTxt = "0.0";
         }
         protected override void OnEnd()
         {
         }
 
-        #region Declare variable
-        protected string LogCode => this.Code + "_";
-        private act_McWork mcWork { get; set; }
-        private acs_McMaster _mcSRM { get; set; }
-        private act_BuWork buWork { get; set; }
-        private act_BaseObject baseObj { get; set; }
-        private string McNextStep { get; set; }
-        private BaseMcRuntime _mcRCO { get; set; }
+        #region Declare variable;
+        private act_McWork rc8_1McWork;
+        private acs_McMaster rc8_1McMaster;
+        private act_BuWork rc8_1BuWorkk;
+        private act_BaseObject rc8_1BaseObject;
+        private BaseMcRuntime rco5_3McRunTime;
+        private string LabelData;
         string McChecking = "RCO5-3";
+        string mainStep;
+        private long? BuWork_ID;
+        private long? BaseObject_ID;
+        private float disCharge;
         //string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
         #endregion
 
         #region Methods
-        private void Mc_OnRun()
+        private void writeEventLog(string _msg)
         {
-            switch (this.McNextStep)
-            {
-                case "0":
-                    //Check cv status &  pallet qr
-                    step0();
-                    break;
-
-                case "1":
-                    //Check work queue
-                    step1();
-                    break;
-
-                case "1.1":
-                    //Create work queue
-                    step1_1();
-                    break;
-
-                case "1.2":
-                    //Reject พาเลท
-                    step1_2();
-                    break;
-
-                case "2":
-                    //Check คิวงาน พร้อมเก็บ
-                    step2();
-                    break;
-
-                case "2.1":
-                    //สั่งให้ Conveyor เริ่มทำงานเก็บ
-                    step2_1();
-                    break;
-
-                case "2.2":
-                    //Reject คิวงาน
-                    step2_2();
-                    break;
-
-                case "3":
-                    //จบคิวงาน Conveyor
-                    step3();
-                    break;
-
-                default:
-                    //กำหนดให้ Step ถัดไป = Step ปัจจุบัน
-                    clear();
-                    this.McNextStep = this.StepTxt;
-                    break;
-            }
-        }
-
-        private void reset()
-        {
-            this.StepTxt = "0";
-            this.McNextStep = "0";
-        }
-
-        private void clear()
-        {
-            if (this.McObj.DV_Pre_Status == 96 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
-            {
-                //คำสั่งงานล่าสุดยังไม่เรียบร้อย
-                this.PostCommand(McCommandType.CM_3);
-                writeEventLog(this.baseObj, this.buWork, " ทำคำสั่งงานล่าสุดที่ยังไม่เรียบร้อย");
-            }
-            else if (this.McObj.DV_Pre_Status == 99 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
-            {
-                //ทำงานเสร็จแล้ว ยืนยันจบงาน
-                this.PostCommand(McCommandType.CM_99);
-                writeEventLog(this.baseObj, this.buWork, " จบงาน");
-            }
-        }
-
-        /// <summary>
-        /// Check cv status &  pallet qr
-        /// </summary>
-        private void step0()
-        {
-            this.StepTxt = "0";
-            
-                if (this.McObj.DV_Pre_Status == 98)
-                {
-
-                    //หา baseObject ลำดับแรกที่ถูกสร้างจาก RCO5-3
-                    this._mcRCO = McRuntimeController.GetInstant().GetMcRuntime(McChecking);
-                    this.baseObj = BaseObjectADO.GetInstant().GetCheckingTempByWarehouse(this.Cur_Area.Warehouse_ID, this._mcRCO.McObj.ID, this.BuVO);
-
-                    if (this.baseObj != null)
-                    {
-                        this.buWork = DataADO.GetInstant().SelectByIDActive<act_BuWork>(this.baseObj.BuWork_ID, this.BuVO);
-                        if(this.buWork != null)
-                        {
-                            this.McNextStep = "1";
-                        }
-                    }
-
-                    writeEventLog(this.baseObj, this.buWork, " Check baseObject on " + InboundUtil.GetInstant().McChecking + " McObj.ID" + _mcRCO.McObj.ID);
-
-
-
-            }
-            else
-                {
-                    clear();
-                }
-            
-           
-        }
-
-        /// <summary>
-        /// Check work queue
-        /// </summary>
-        private void step1()
-        {
-            this.StepTxt = "1";
-            
-                if (this.McObj.DV_Pre_Status == 98)
-                {
-
-                    //this.mcWork = InboundUtil.getMcWorkByQueueType(this.McObj, QueueType.QT_1, this.BuVO);
-                    this.mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
-                           ListKeyValue<string, object>
-                           .New("QueueType", QueueType.QT_1)
-                           .Add("IOType", IOType.INBOUND)
-                           //.Add("Sou_Location_ID", this.McObj.Cur_Location_ID.GetValueOrDefault())
-                           , this.BuVO).FirstOrDefault();
-
-                    //ไม่มีคิวงาน
-                    if (this.mcWork == null)
-                    {
-                        if (this.baseObj != null && !String.IsNullOrWhiteSpace(this.baseObj.PassFlg) && this.baseObj.PassFlg.Equals("Y"))
-                        {
-                            //writeEventLog(baseObj, buWork, "ไม่มีคิวงาน สร้างคิวงาน");
-                            this.McNextStep = "1.1";
-                        }
-                        else
-                        {
-                            //writeEventLog(baseObj, buWork, "ไม่มีคิวงาน แต่ Reject");
-                            this.McNextStep = "1.2";
-                        }
-                    }
-                    else
-                    {
-                        //writeEventLog(baseObj, buWork, "มีคิวงาน");
-                        this.McNextStep = "2";
-                    }
-
-                }
-            
-            
-        }
-
-        private void step1_1()
-        {
-            this.StepTxt = "1.1";
-            
-                //InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
-                if(this.baseObj != null)
-                {
-                    this.baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
-                    this.baseObj.McObject_ID = this.McObj.ID;
-                    DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, BuVO);
-
-                    var bArea = StaticValueManager.GetInstant().GetArea(this.baseObj.Area_ID);
-                    var bWh = StaticValueManager.GetInstant().GetWarehouse(bArea.Warehouse_ID);
-
-                    //หา Location ของ Mc
-                    var bLocation = StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.GetValueOrDefault());
-
-                    var desLoc = StaticValueManager.GetInstant().GetLocation(this.buWork.Des_Location_ID.Value);
-                    var desArea = StaticValueManager.GetInstant().GetArea(this.buWork.Des_Area_ID.Value);
-                    var desWh = StaticValueManager.GetInstant().GetWarehouse(this.buWork.Des_Warehouse_ID.Value);
-
-                    act_McWork mq = new act_McWork()
-                    {
-                        ID = null,
-                        IOType = IOType.INBOUND,
-                        QueueType = (int)QueueType.QT_1,
-                        WMS_WorkQueue_ID = this.buWork.ID.Value,
-                        BuWork_ID = this.buWork.ID.Value,
-                        TrxRef = this.buWork.TrxRef,
-
-                        Priority = this.buWork.Priority,
-                        SeqGroup = this.buWork.SeqGroup,
-                        SeqItem = this.buWork.SeqIndex,
-
-                        BaseObject_ID = baseObj.ID.Value,
-                        //Rec_McObject_ID = this.ID,
-                        Rec_McObject_ID = null,
-                        Cur_McObject_ID = null,
-
-                        Cur_Warehouse_ID = bWh.ID.Value,
-                        Cur_Area_ID = this.baseObj.Area_ID,
-                        Cur_Location_ID = this.baseObj.Location_ID,
-
-                        Sou_Area_ID = bArea.ID.Value,
-                        Sou_Location_ID = bLocation.ID.Value,
-
-                        Des_Area_ID = desArea.ID.Value,
-
-                        ActualTime = DateTime.Now,
-                        StartTime = DateTime.Now,
-                        EndTime = null,
-                        EventStatus = McWorkEventStatus.ACTIVE_RECEIVE,
-                        Status = EntityStatus.ACTIVE,
-
-                        TreeRoute = "{}"
-                    };
-                    mq.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mq, BuVO);
-
-                    this.mcWork = mq;
-
-                    this.buWork.Status = EntityStatus.ACTIVE;
-                    this.buWork.WMS_WorkQueue_ID = mq.ID;
-                    DataADO.GetInstant().UpdateBy<act_BuWork>(buWork, BuVO);
-                }
-                //writeEventLog(baseObj, buWork, "สร้างคิวงาน Cv");
-                this.McNextStep = "2";
-            
-        }
-
-        /// <summary>
-        /// Reject จากจุดซ้อนพาเลท
-        /// </summary>
-        private void step1_2()
-        {
-            this.StepTxt = "1.2";
-
-            //Reject จากจุดซ้อนพาเลท
-                this.baseObj.Status = EntityStatus.REMOVE;
-                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
-
-                this.PostCommand(McCommandType.CM_14);
-                //writeEventLog(baseObj, buWork, "Reject จากจุดซ้อนพาเลท");
-                this.McNextStep = "0";
-            
-
-            this.McNextStep = "0";
-        }
-
-
-        /// <summary>
-        /// Check คิวงาน พร้อมเก็บ
-        /// </summary>
-        private void step2()
-        {
-            this.StepTxt = "2";
-            
-                if (this.McObj.DV_Pre_Status == 98)
-                {
-                    if (this.mcWork.Des_Location_ID != 0 && this.mcWork.Rec_McObject_ID != 0 && this.mcWork.QueueStatus != 7 && this.mcWork.QueueStatus == 5)
-                    {
-                        //writeEventLog(baseObj, buWork, " คิวงาน พร้อมเก็บ");
-
-                        this.McNextStep = "2.1";
-                    }
-                    else
-                    {
-                        //พื้นที่จัดเก็บเต็ม
-                        //writeEventLog(baseObj, buWork, "Reject คิวงาน ไม่พร้อมเก็บ");
-
-                        this.McNextStep = "2.2";
-                    }
-                }
-            
-            
-        }
-
-        /// <summary>
-        /// สั่งให้ Conveyor เริ่มทำงานเก็บ
-        /// </summary>
-        private void step2_1()
-        {
-            this.StepTxt = "2.1";
-
-            
-                this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
-                this.mcWork.ActualTime = DateTime.Now;
-                DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
-
-                //สั่งให้ Conveyor เริ่มทำงานเก็บ
-                this.PostCommand(McCommandType.CM_1, 0, 0, 1, this.baseObj.Code, (int)this.baseObj.SkuQty, () => writeEventLog(this.baseObj, this.buWork, "Conveyor เริ่มทำงานเก็บ"));
-
-                //writeEventLog(baseObj, buWork, "สั่งให้ Conveyor เริ่มทำงานเก็บ");
-                this.McNextStep = "3";
-            
-        }
-
-        /// <summary>
-        /// Reject คิวงาน
-        /// </summary>
-        private void step2_2()
-        {
-            this.StepTxt = "2.2";
-
-            
-                if (this.mcWork.QueueStatus != 7)
-                {
-                //Reject พื้นที่จัดเก็บเต็ม
-                    this.baseObj.Status = EntityStatus.REMOVE;
-                    DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
-
-                    this.mcWork.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
-                    this.mcWork.Status = EntityStatus.REMOVE;
-                    DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
-
-                    this.PostCommand(McCommandType.CM_13);
-                    //writeEventLog(baseObj, buWork, "Reject พื้นที่จัดเก็บเต็ม");
-
-                    this.McNextStep = "0";
-                }
-            
-
-            this.McNextStep = "0";
-        }
-
-        /// <summary>
-        /// จบคิวงาน Conveyor
-        /// </summary>
-        private void step3()
-        {
-            this.StepTxt = "3";
-            
-                if (this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14)
-                {
-                    if (this.mcWork != null && this.mcWork.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
-                    {
-                        this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
-                        this.mcWork.ActualTime = DateTime.Now;
-                        DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
-
-                        this.baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
-                        DataADO.GetInstant().UpdateBy(this.baseObj, this.BuVO);
-
-                        //writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");
-                        this.McNextStep = "0";
-                    }
-                }
-            
-            
-        }
-
-        private void writeEventLog(act_BaseObject _bo, act_BuWork _bu,string _msg)
-        {
-            string msg =  "Working step " + this.StepTxt + " | Message =" + _msg;
-            msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ?_bo.DisCharge : "");
-            msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
-            msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") ;
+            string msg = " > Working step " + this.StepTxt + " | Message =" + _msg;
 
             DisplayController.Events_Write(this.Code, msg);
         }
 
-        
+        private void clear()
+        {
+            if (this.McObj.DV_Pre_Status == 96)
+            {
+                //คำสั่งงานล่าสุดยังไม่เรียบร้อย
+                writeEventLog(" ทำคำสั่งงานล่าสุดที่ยังไม่เรียบร้อย");
+                this.PostCommand(McCommandType.CM_3);
+
+            }
+            else if (this.McObj.DV_Pre_Status == 99)
+            {
+                //ทำงานเสร็จแล้ว ยืนยันจบงาน
+                writeEventLog(" ยืนยันจบงาน");
+                this.PostCommand(McCommandType.CM_99);
+
+            }
+        }
+
         #endregion
 
     }

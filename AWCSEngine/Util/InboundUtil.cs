@@ -24,9 +24,7 @@ namespace AWCSEngine.Util
             return instant;
         }
 
-        public  string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
-        public string WarehouseID = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_warehouse_id)[PropertyConst.APP_KEY_warehouse_id];
-        
+       
         //public static int WarehouseID = 1;
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace AWCSEngine.Util
         /// <returns></returns>
         public  act_BaseObject createBaseObject(act_McObject _McObj, act_BuWork _buWork, acs_Area _CurArea, acs_Location _CurLocation, VOCriteria BuVO)
         {
-            if((_buWork != null && WarehouseID != _buWork.Des_Warehouse_ID.ToString()) || _buWork == null) { return null; }
+            //if((_buWork != null && WarehouseID != _buWork.Des_Warehouse_ID.ToString()) || _buWork == null) { return null; }
 
             string baseCode;
             do
