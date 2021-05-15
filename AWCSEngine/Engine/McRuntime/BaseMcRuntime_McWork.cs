@@ -39,7 +39,7 @@ namespace AWCSEngine.Engine.McRuntime
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
             }
 
-            DisplayController.Events_Write(this.Code + " > McWork_0_Reload");
+            DisplayController.Events_Write(this.Code, "McWork_0_Reload");
         }
         public void McWork_3_WorkedToReceive_NextMC(long toMcID)
         {
@@ -52,7 +52,7 @@ namespace AWCSEngine.Engine.McRuntime
 
             DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
 
-            DisplayController.Events_Write(this.Code + " > McWork_3_WorkedToReceive_NextMC : " + nextMc.Code);
+            DisplayController.Events_Write(this.Code , "McWork_3_WorkedToReceive_NextMC : " + nextMc.Code);
         }
         public bool McWork_1_ReceiveToWorking()
         {
@@ -79,7 +79,7 @@ namespace AWCSEngine.Engine.McRuntime
             baseObject.McObject_ID = null;
             DataADO.GetInstant().UpdateBy(baseObject, this.BuVO);
 
-            DisplayController.Events_Write(this.Code + " > McWork_1_ReceiveToWorking QID=" + q_id + " | LABEL=" + q_label);
+            DisplayController.Events_Write(this.Code , "McWork_1_ReceiveToWorking QID=" + q_id + " | LABEL=" + q_label);
             return true;
         }
         public void McWork_2_WorkingToWorked(long? locID = null)
@@ -95,7 +95,7 @@ namespace AWCSEngine.Engine.McRuntime
             baseObject.McObject_ID = null;
             DataADO.GetInstant().UpdateBy(baseObject, this.BuVO);
 
-            DisplayController.Events_Write(this.Code + " > McWork_2_WorkingToWorked");
+            DisplayController.Events_Write(this.Code, "McWork_2_WorkingToWorked");
         }
         public void McWork_3_WorkedToKeep()
         {
@@ -104,7 +104,7 @@ namespace AWCSEngine.Engine.McRuntime
 
             DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
 
-            DisplayController.Events_Write(this.Code + " > McWork_3_WorkedToKeep");
+            DisplayController.Events_Write(this.Code , "McWork_3_WorkedToKeep");
         }
         public void McWork_4_WorkedToDone(string receiveZone = "in")
         {
@@ -145,7 +145,7 @@ namespace AWCSEngine.Engine.McRuntime
             }
             this.McWork4Work = null;
 
-            DisplayController.Events_Write(this.Code + " > McWork_4_WorkedToDone");
+            DisplayController.Events_Write(this.Code, "McWork_4_WorkedToDone");
         }
 
     }

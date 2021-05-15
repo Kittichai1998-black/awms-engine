@@ -76,7 +76,7 @@ namespace AWCSEngine.Engine.McRuntime
                                            .Add("Set_ShtDi", 2)))  /// HOME Zone out
                                 {
                                     // StepTxt = "2.1";
-                                    //DisplayController.Events_Write($"{this.Code} > exec 2.1");
+                                    //DisplayController.Events_Write(this.Code,$"exec 2.1");
                                 }
                                 Step_P = 1;
 
@@ -132,7 +132,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     .Add("Set_ShtDi", 2)))  /// HOME Zone out
                                 {
                                     // StepTxt = "2.1";
-                                    //DisplayController.Events_Write($"{this.Code} > exec 2.1");
+                                    //DisplayController.Events_Write(this.Code,$"exec 2.1");
                                 }
                             }
                             //2.2 รถ สถานะพร้อมทำงาน แต่รถไม่อยู่ที่ home / สั่งกลับ home
@@ -141,7 +141,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 if (SHU_Out.PostCommand(McCommandType.CM_12))  ///12	กลับ Home (ด้านหลัง) 
                                 {
                                     //StepTxt = "2.2";
-                                    // DisplayController.Events_Write($"{this.Code} > exec 2.2");
+                                    // DisplayController.Events_Write(this.Code,$"exec 2.2");
                                 }
                             }
                             //2.3 รถ สถานะพร้อมทำงาน และอยู่ home ด้านหน้า / รับงานให้ SRM
@@ -220,7 +220,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 if (SHU_Out.PostCommand(McCommandType.CM_72)) ////72	กลับตำแหน่ง Standby ฝั่ง (ด้านหลัง)
                                 {
                                     //StepTxt = "1.1";
-                                    //DisplayController.Events_Write($"{this.Code} > exec 1.1");
+                                    //DisplayController.Events_Write(this.Code,$"exec 1.1");
                                 }
                             }
                             //1.2 รถว่าง พร้อมทำงาน และ zone ถูกต้อง / สั่งปิดเครื่อง
@@ -235,7 +235,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 }))
                                 {
                                     //StepTxt = "1.2";
-                                    //DisplayController.Events_Write($"{this.Code} > exec 1.2");
+                                    //DisplayController.Events_Write(this.Code,$"exec 1.2");
                                 }
                             }
                             //1.3 รถว่าง รถถูกปิด / สั่งเครนเตรียมย้าย

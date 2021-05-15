@@ -57,7 +57,7 @@ namespace AWCSEngine.Engine.McRuntime
                     else
                     {
                         this.BuVO.SqlTransaction_Rollback();
-                        DisplayController.Events_Write(this.Code + " > " + bObj._result.message);
+                        DisplayController.Events_Write(this.Code ,bObj._result.message);
                         this.PostCommand(McCommandType.CM_14);
                         //throw new Exception(bObj._result.message);
                     }

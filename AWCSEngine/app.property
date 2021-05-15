@@ -6,7 +6,7 @@ database.mssql.connection.wcs = Server=10.56.2.76;Uid=sa;PASSWORD=GCLP@ssw0rd123
 
 
 
-logger.rootpath = D:/logs/{MachineName}/{Date}/
+logger.rootpath = E:/logs/{MachineName}/{Date}/
 logger.filename = {LogName}.{Date}.log
 
 ###################################

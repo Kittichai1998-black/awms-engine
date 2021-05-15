@@ -77,7 +77,7 @@ namespace AWCSEngine.Engine.McRuntime
         public string StepTxt
         {
             get => this.McObj.StepTxt;
-            set { this.McObj.StepTxt = value; DisplayController.Events_Write($"{this.Code} > step {value}"); }
+            set { this.McObj.StepTxt = value; DisplayController.Events_Write(this.Code,$"step {value}"); }
         }
         public long ID { get => this.McObj.ID.Value; }
         public string Code { get => this.McMst.Code; }
@@ -125,7 +125,7 @@ namespace AWCSEngine.Engine.McRuntime
 
         public void Initial()
         {
-            DisplayController.Events_Write("McThread mcEngine Initial");
+            DisplayController.Events_Write("System","McThread mcEngine Initial");
             this.Logger.LogInfo("########### BEGIN MACHINE ###########");
             LoadDictionaryALL();
             try
@@ -170,7 +170,7 @@ namespace AWCSEngine.Engine.McRuntime
             this.McObj.GetType().GetFields().ToList().ForEach(x => { if (x.Name.StartsWith("DV_")) { this.DeviceNames.Add(x.Name.Substring(3)); } });
             this.OnStart();
 
-            DisplayController.Events_Write($"{this.Code} > [START] {(this.McObj.IsOnline ? "Online" : "Offline")} | {(this.McObj.IsAuto ? "Auto" : "Manual")}");
+            DisplayController.Events_Write(this.Code,$"[START] {(this.McObj.IsOnline ? "Online" : "Offline")} | {(this.McObj.IsAuto ? "Auto" : "Manual")}");
 
             this._5_MessageLog_OnRun();
         }
@@ -181,19 +181,19 @@ namespace AWCSEngine.Engine.McRuntime
         public void SetOnline(bool isOnline)
         {
             this.McObj.IsOnline = isOnline;
-            DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsOnline ? "Online" : "Offline")}");
+            DisplayController.Events_Write(this.Code,$"[CONFIG] {(this.McObj.IsOnline ? "Online" : "Offline")}");
 
         }
         public void SetAuto(bool isAuto)
         {
             this.McObj.IsAuto = isAuto;
-            DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsAuto ? "Auto" : "Manual")}");
+            DisplayController.Events_Write(this.Code,$"[CONFIG] {(this.McObj.IsAuto ? "Auto" : "Manual")}");
 
         }
         public void SetBatteryLow(bool isBatteryLow)
         {
             this.McObj.IsBatteryLow = isBatteryLow;
-            DisplayController.Events_Write($"{this.Code} > [CONFIG] {(this.McObj.IsBatteryLow ? $"Battery Low ({this.McObj.DV_Pre_Battery}%)" : $"Battery High({this.McObj.DV_Pre_Battery}%)")}");
+            DisplayController.Events_Write(this.Code,$"[CONFIG] {(this.McObj.IsBatteryLow ? $"Battery Low ({this.McObj.DV_Pre_Battery}%)" : $"Battery High({this.McObj.DV_Pre_Battery}%)")}");
         }
 
 
@@ -226,13 +226,13 @@ namespace AWCSEngine.Engine.McRuntime
             }
             catch (AMWException ex)
             {
-                DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
+                DisplayController.Events_Write(this.Code,$"[ERROR] {ex.Message} ...(5000ms)");
                 this._5_MessageLog_OnRun(ex.Message);
                 Thread.Sleep(5000);
             }
             catch (Exception ex)
             {
-                DisplayController.Events_Write($"{this.Code} > [ERROR] {ex.Message} ...(5000ms)");
+                DisplayController.Events_Write(this.Code,$"[ERROR] {ex.Message} ...(5000ms)");
                 this.Logger.LogError(ex.Message);
                 this._5_MessageLog_OnRun(ex.Message);
                 Thread.Sleep(5000);
@@ -320,8 +320,8 @@ namespace AWCSEngine.Engine.McRuntime
 
                         var _act_sets_comp = _act_sets.QryStrToKeyValues();
                         int maxSeq = this.RunCmdActions.Max(x => x.Seq);
-                        string _log_con = $"{this.Code} > [DEVICE BEGIN] ({act.Seq}/{maxSeq}) {act.DKV_Condition}";
-                        DisplayController.Events_Write(_log_con);
+                        string _log_con = $"[DEVICE BEGIN] ({act.Seq}/{maxSeq}) {act.DKV_Condition}";
+                        DisplayController.Events_Write(this.Code, _log_con);
                         this.Logger.LogInfo(_log_con);
 
                         _act_sets_comp.ForEach(x2 => {
@@ -330,7 +330,7 @@ namespace AWCSEngine.Engine.McRuntime
                             string deviceKey = this.McMst.Get2<string>("DK_" + name);
                             var t_deviceVal = this.McObj.GetType().GetField("DV_" + name).FieldType;
 
-                            DisplayController.Events_Write($"{this.Code} > <setting> {deviceKey}={val}");
+                            DisplayController.Events_Write(this.Code,$"<setting> {deviceKey}={val}");
 
                             if (t_deviceVal == typeof(string))
                             {
@@ -350,8 +350,8 @@ namespace AWCSEngine.Engine.McRuntime
 
                         });
 
-                        string _log_set = $"{this.Code} > [DEVICE END] ({act.Seq}/{maxSeq})] {_act_sets}";
-                        DisplayController.Events_Write(_log_set);
+                        string _log_set = $"[DEVICE END] ({act.Seq}/{maxSeq})] {_act_sets}";
+                        DisplayController.Events_Write(this.Code,_log_set);
                         this.Logger.LogInfo(_log_set);
                         isNext = true;
                         break;
@@ -386,7 +386,7 @@ namespace AWCSEngine.Engine.McRuntime
 
             if (this.McObj.EventStatus != this._EventStatus_Temp)
             {
-                DisplayController.Events_Write($"{this.Code} > [EVT.STATUS] {this.EventStatus}!");
+                DisplayController.Events_Write(this.Code,$"[EVT.STATUS] {this.EventStatus}!");
                 this._EventStatus_Temp = this.EventStatus;
             }
         }

@@ -34,7 +34,7 @@ namespace AWCSEngine.Engine.WorkRuntime
             var baseObjTmps = ADO.WCSDB.BaseObjectADO.GetInstant().ListTemp(this.BuVO);
             baseObjTmps.ForEach(baseObj =>
             {
-                DisplayController.Events_Write($"Work > [CreateMcWork_byBaseObjTemp] Check Pallet(TEMP) '{baseObj.LabelData}' for McWork");
+                DisplayController.Events_Write("Work",$"[CreateMcWork_byBaseObjTemp] Check Pallet(TEMP) '{baseObj.LabelData}' for McWork");
                 var loc = this.StaticValue.GetLocation(baseObj.Location_ID);
                 var mc = McController.GetMcRuntimeByLocation(loc.ID.Value);
                 if (mc == null || mc.McWork4Receive != null || mc.McWork4Work != null) return;
@@ -50,7 +50,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                 if (res._result.status == 1)
                 {
                     this.BuVO.SqlTransaction_Commit();
-                    DisplayController.Events_Write($"Work > [CreateMcWork_byBaseObjTemp] Create McWork by Pallet(TEMP) '{baseObj.LabelData}'");
+                    DisplayController.Events_Write("Work", $"[CreateMcWork_byBaseObjTemp] Create McWork by Pallet(TEMP) '{baseObj.LabelData}'");
                 }
                 else
                 {
@@ -59,7 +59,7 @@ namespace AWCSEngine.Engine.WorkRuntime
                     DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
                     mc.PostCommand(McCommandType.CM_14);
                     mc.StepTxt = string.Empty;
-                    DisplayController.Events_Write($"Work > [CreateMcWork_byBaseObjTemp] Remove Pallet(TEMP) '{baseObj.LabelData}'");
+                    DisplayController.Events_Write("Work", $"[CreateMcWork_byBaseObjTemp] Remove Pallet(TEMP) '{baseObj.LabelData}'");
                 }
             });
         }

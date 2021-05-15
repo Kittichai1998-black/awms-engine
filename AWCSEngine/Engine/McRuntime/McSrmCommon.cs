@@ -153,7 +153,7 @@ namespace AWCSEngine.Engine.McRuntime
                         if (!_mcShuFreeID_wh8_in.HasValue)
                         {
                             _mcShuFreeID_wh8_in = _mcShuFree.ID;
-                            DisplayController.Events_Write(this.Code + " > Select SHU Free=" + _mcShuFree.Code);
+                            DisplayController.Events_Write(this.Code , "Select SHU Free=" + _mcShuFree.Code);
                         }
                         //1.1 รถว่าง พร้อมทำงาน แต่ zone ไม่ถูกต้อง
                         if (_mcShuFree.McObj.DV_Pre_Status == 90 && _mcShuFree.McObj.DV_Pre_Zone != 1 && StepTxt != "1.1")

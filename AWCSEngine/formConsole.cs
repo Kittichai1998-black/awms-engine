@@ -28,7 +28,19 @@ namespace AWCSEngine
         public formConsole()
         {
             InitializeComponent();
+            this.lisDisplayEvents.DoubleClick += Lis_DoubleClick;
+            this.lisDisplayMcLists.DoubleClick += Lis_DoubleClick;
+            this.lisDisplayCommand.DoubleClick += Lis_DoubleClick;
         }
+
+        private void Lis_DoubleClick(object sender, EventArgs e)
+        {
+            var lis = (ListBox)sender;
+            if (lis.SelectedIndex >= 0)
+                if (MessageBox.Show("Copy to Clipboard?", lis.Items[lis.SelectedIndex].ToString(), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    Clipboard.SetText(lis.Items[lis.SelectedIndex].ToString());
+        }
+
         private void formAdminConsole_Load(object sender, EventArgs e)
         {
             this.splitContainer2.SplitterDistance = (int)((float)this.Width * 0.6f);
@@ -112,6 +124,7 @@ namespace AWCSEngine
             catch (Exception ex)
             {
                 this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | System > [ERROR] {1}", DateTime.Now, ex.Message));
+                this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | System > [ERROR] {1}", DateTime.Now, ex.StackTrace));
                 this.lisDisplayEvents_Add("---------------------- Exception Exit ----------------------");
                 return;
             }

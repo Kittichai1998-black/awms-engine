@@ -72,18 +72,18 @@ namespace AWCSEngine.Controller
         private static object _Lock_Events = new object();
         private static List<string> _Events = new List<string>();
 
-        public static void Events_Write(string msg)
+        public static void Events_Write(string source_name,string msg)
         {
             lock (_Lock_Events)
             {
                 Logger.LogInfo(msg);
-                _Events.Add(msg);
+                _Events.Add(source_name+" > "+msg);
                 ADO.WCSDB.DataADO.GetInstant().Insert<acl_EventLog>(new acl_EventLog()
                 {
                     ActionTime = DateTime.Now,
                     AppName = AppName,
                     EventLog = msg,
-                    McCode = msg.Split(">",2)[0].Trim()
+                    McCode = source_name
                 }, null);
             }
         }
