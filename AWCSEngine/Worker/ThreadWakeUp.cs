@@ -71,7 +71,11 @@ namespace AWCSEngine.Worker
         public void Abort()
         {
             DisplayController.Events_Write("ThreadWakeUp failed");
-            this.Threads.ForEach(x => { if (x.IsAlive) x.Abort(); });
+            if(this.Threads != null)
+            {
+                this.Threads.ForEach(x => { if (x.IsAlive) x.Abort(); });
+            }
+            
         }
     }
 }

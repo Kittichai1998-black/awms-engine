@@ -49,7 +49,7 @@ namespace AWCSEngine.Engine.McRuntime
         private float disCharge { get; set; }
         private int errCode { get; set; }
         private int cmdReject { get; set; }
-        private string palletLabelData { get; set; }
+        private string labelData { get; set; }
         private act_BuWork buWork { get; set; }
         private act_BaseObject baseObj { get; set; }
         private int PassFlg { get; set; }
@@ -163,6 +163,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 {
                                     new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
                                     new SQLConditionCriteria("Des_Warehouse_ID",  this.Cur_Area.Warehouse_ID, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("LabelData",this.McObj.DV_Pre_BarProd, SQLOperatorType.EQUALS)
                                 }
                             , this.BuVO).FirstOrDefault();
@@ -369,23 +370,13 @@ namespace AWCSEngine.Engine.McRuntime
                 if (this.cmdReject != 0)
                 {
                     McCommandType cmd = (McCommandType)this.cmdReject;
-                    //this.PostCommand(cmd); 
-                    //this.PostCommand(McCommandType.CM_15);
-                    this.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
-                                    .New("Set_PalletID", baseObj.Code)
-                                    .Add("Set_Comm", 1));
-
-                    this.PostCommand(McCommandType.CM_15, ListKeyValue<string, object>
-                                    .New("Set_PalletID", baseObj.Code)
-                                    .Add("Set_Comm", 15));
+                    this.PostCommand(cmd);
+                    this.PostCommand(McCommandType.CM_15);
                 }
                 else
                 {
-                    //this.PostCommand(McCommandType.CM_15);
-                    this.PostCommand(McCommandType.CM_15, ListKeyValue<string, object>
-                                    .New("Set_PalletID", baseObj.Code)
-                                    .Add("Set_Comm", 15));
-                }
+                    this.PostCommand(McCommandType.CM_15);
+            }
                 //writeEventLog(baseObj, buWork, "Reject");
             
 

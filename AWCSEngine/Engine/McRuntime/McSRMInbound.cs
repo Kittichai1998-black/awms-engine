@@ -129,15 +129,15 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 //Check Pallet stand กรณีจัดเก็บแบบ Manual (RC8-2)
                 //_mcPS = InboundUtil.findPalletStand(baseObj.Warehouse_ID,this.BuVO);
-                _mcPS = DataADO.GetInstant().SelectBy<acs_McMaster>(
+                this._mcPS = DataADO.GetInstant().SelectBy<acs_McMaster>(
                        ListKeyValue<string, object>
-                       .New("Warehouse_ID", baseObj.Warehouse_ID)
+                       .New("Warehouse_ID", this.baseObj.Warehouse_ID)
                        .Add("Info1", "IN")
                        , BuVO).FirstOrDefault(x => x.Code.StartsWith("PS"));
 
-                if (_mcPS == null) { return; }
+                if (this._mcPS == null) { return; }
 
-                var ps = McRuntimeController.GetInstant().GetMcRuntime(_mcPS.Code);
+                var ps = McRuntimeController.GetInstant().GetMcRuntime(this._mcPS.Code);
                 if (ps.McObj.DV_Pre_Status == 1)
                 {
                     ps.PostCommand(McCommandType.CM_2, 0, 0, 1, "PL00000000", 1500, (mc) =>
@@ -182,7 +182,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                 if (this.mcWork != null)
                 {
-                    writeEventLog(baseObj, buWork, "สั่งให้ SRM ทำคิวงานเก็บ");
+                    writeEventLog(this.baseObj, this.buWork, "สั่งให้ SRM ทำคิวงานเก็บ");
                     step1("1.1");
                 }
                 else
@@ -199,7 +199,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                     if (this.mcWork != null)
                     {
-                        writeEventLog(baseObj, buWork, "สั่งให้ SRM ทำคิวงานย้ายรถ");
+                        writeEventLog(this.baseObj, this.buWork, "สั่งให้ SRM ทำคิวงานย้ายรถ");
                         step1("2.2");
                     }
                     else
@@ -214,7 +214,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                         if (this.mcWork != null)
                         {
-                            writeEventLog(baseObj, buWork, "สั่งให้ SRM ทำคิวงานย้ายพาเลท");
+                            writeEventLog(this.baseObj, this.buWork, "สั่งให้ SRM ทำคิวงานย้ายพาเลท");
                             step1("2.3");
                         }
                     }
@@ -232,19 +232,19 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "1";
             
                 if (this.mcWork == null) { return; }
-                baseObj = BaseObjectADO.GetInstant().GetByID(this.mcWork.BaseObject_ID, this.BuVO);
-                if (baseObj == null)
+                this.baseObj = BaseObjectADO.GetInstant().GetByID(this.mcWork.BaseObject_ID, this.BuVO);
+                if (this.baseObj == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_NOT_FOUND, this.mcWork.BaseObject_ID.ToString());
 
-                buWork = DataADO.GetInstant().SelectByID<act_BuWork>(this.mcWork.BuWork_ID, this.BuVO);
-                if (buWork == null)
+                this.buWork = DataADO.GetInstant().SelectByID<act_BuWork>(this.mcWork.BuWork_ID, this.BuVO);
+                if (this.buWork == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND, this.McObj.DV_Pre_BarProd);
 
-                mcShuttle = McRuntimeController.GetInstant().GetMcRuntime(this.mcWork.Rec_McObject_ID.GetValueOrDefault());
-                mcConveyor = McRuntimeController.GetInstant().GetMcRuntimeByLocation(this.mcWork.Sou_Location_ID);
+                this.mcShuttle = McRuntimeController.GetInstant().GetMcRuntime(this.mcWork.Rec_McObject_ID.GetValueOrDefault());
+                this.mcConveyor = McRuntimeController.GetInstant().GetMcRuntimeByLocation(this.mcWork.Sou_Location_ID);
 
-                baseObj.McObject_ID = this.ID;
-                DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+                this.baseObj.McObject_ID = this.ID;
+                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
 
                 //writeEventLog(baseObj, buWork, "ตรวจสอบข้อมูลพาเลท");
                 this.McNextStep = nextStep;
@@ -346,7 +346,7 @@ namespace AWCSEngine.Engine.McRuntime
                 int _desLocCode = desLoc != null ? (desLoc.Code.Get2<int>() % 1000000) : 0;
 
                 // สั่ง SRM ย้ายพาเลท
-                this.PostCommand(McCommandType.CM_1, _souLocCode, _desLocCode, 1, baseObj.Code, (int)baseObj.SkuQty, () => writeEventLog(baseObj, buWork, "สั่งเครนเก็บพาเลทจากต้นทางไปปลายทาง"));
+                this.PostCommand(McCommandType.CM_1, _souLocCode, _desLocCode, 1, this.baseObj.Code, (int)this.baseObj.SkuQty, () => writeEventLog(this.baseObj, this.buWork, "สั่งเครนเก็บพาเลทจากต้นทางไปปลายทาง"));
                 this.mcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
                 this.mcWork.ActualTime = DateTime.Now;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
@@ -401,8 +401,8 @@ namespace AWCSEngine.Engine.McRuntime
                         this.mcWork.QueueStatus = (int)QueueStatus.QS_4;
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
-                        baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
-                        DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
+                        this.baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                        DataADO.GetInstant().UpdateBy(this.baseObj, this.BuVO);
 
                         return LoopResult.Break;
                     }, () => writeEventLog(baseObj, buWork, "จบงาน SRM ย้ายรถ"));
@@ -427,8 +427,8 @@ namespace AWCSEngine.Engine.McRuntime
                         this.mcWork.ActualTime = DateTime.Now;
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
-                        baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
-                        DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
+                        this.baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                        DataADO.GetInstant().UpdateBy(this.baseObj, this.BuVO);
 
                         var _mcWorkOut = DataADO.GetInstant().SelectBy<act_McWork>(
                                    ListKeyValue<string, object>

@@ -251,6 +251,7 @@ namespace AWCSEngine.Engine.McRuntime
                                {
                                     new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
                                     new SQLConditionCriteria("Des_Warehouse_ID",  this.Cur_Area.Warehouse_ID, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("LabelData",this.McObj.DV_Pre_BarProd, SQLOperatorType.EQUALS)
                                }
                            , this.BuVO).FirstOrDefault();
@@ -420,7 +421,7 @@ namespace AWCSEngine.Engine.McRuntime
                            ListKeyValue<string, object>
                            .New("QueueType", QueueType.QT_1)
                            .Add("IOType", IOType.INBOUND)
-                           .Add("Sou_Location_ID", this.McObj.Cur_Location_ID.GetValueOrDefault())
+                           //.Add("Sou_Location_ID", this.McObj.Cur_Location_ID.GetValueOrDefault())
                            , BuVO).FirstOrDefault();
 
                 //ไม่มีคิวงาน
@@ -471,46 +472,46 @@ namespace AWCSEngine.Engine.McRuntime
             this.StepTxt = "3.1";
             
 
-                if (baseObj != null && !String.IsNullOrWhiteSpace(baseObj.PassFlg) && baseObj.PassFlg.Equals("Y"))
+                if (this.baseObj != null && !String.IsNullOrWhiteSpace(this.baseObj.PassFlg) && this.baseObj.PassFlg.Equals("Y"))
                 {
                     //InboundUtil.createWorkQueue(this.McObj, baseObj, buWork, this.BuVO);
-                    if (baseObj != null)
+                    if (this.baseObj != null)
                     {
-                        baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
-                        baseObj.McObject_ID = this.McObj.ID;
-                        DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, BuVO);
+                        this.baseObj.EventStatus = BaseObjectEventStatus.INBOUND;
+                        this.baseObj.McObject_ID = this.McObj.ID;
+                        DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
 
-                        var bArea = StaticValueManager.GetInstant().GetArea(baseObj.Area_ID);
+                        var bArea = StaticValueManager.GetInstant().GetArea(this.baseObj.Area_ID);
                         var bWh = StaticValueManager.GetInstant().GetWarehouse(bArea.Warehouse_ID);
 
                         //หา Location ของ Mc
                         var bLocation = StaticValueManager.GetInstant().GetLocation(this.McObj.Cur_Location_ID.GetValueOrDefault());
 
-                        var desLoc = StaticValueManager.GetInstant().GetLocation(buWork.Des_Location_ID.Value);
-                        var desArea = StaticValueManager.GetInstant().GetArea(buWork.Des_Area_ID.Value);
-                        var desWh = StaticValueManager.GetInstant().GetWarehouse(buWork.Des_Warehouse_ID.Value);
+                        var desLoc = StaticValueManager.GetInstant().GetLocation(this.buWork.Des_Location_ID.Value);
+                        var desArea = StaticValueManager.GetInstant().GetArea(this.buWork.Des_Area_ID.Value);
+                        var desWh = StaticValueManager.GetInstant().GetWarehouse(this.buWork.Des_Warehouse_ID.Value);
 
                         act_McWork mq = new act_McWork()
                         {
                             ID = null,
                             IOType = IOType.INBOUND,
                             QueueType = (int)QueueType.QT_1,
-                            WMS_WorkQueue_ID = buWork.ID.Value,
-                            BuWork_ID = buWork.ID.Value,
-                            TrxRef = buWork.TrxRef,
+                            WMS_WorkQueue_ID = this.buWork.ID.Value,
+                            BuWork_ID = this.buWork.ID.Value,
+                            TrxRef = this.buWork.TrxRef,
 
-                            Priority = buWork.Priority,
-                            SeqGroup = buWork.SeqGroup,
-                            SeqItem = buWork.SeqIndex,
+                            Priority = this.buWork.Priority,
+                            SeqGroup = this.buWork.SeqGroup,
+                            SeqItem = this.buWork.SeqIndex,
 
-                            BaseObject_ID = baseObj.ID.Value,
+                            BaseObject_ID = this.baseObj.ID.Value,
                             //Rec_McObject_ID = this.ID,
                             Rec_McObject_ID = null,
                             Cur_McObject_ID = null,
 
                             Cur_Warehouse_ID = bWh.ID.Value,
-                            Cur_Area_ID = baseObj.Area_ID,
-                            Cur_Location_ID = baseObj.Location_ID,
+                            Cur_Area_ID = this.baseObj.Area_ID,
+                            Cur_Location_ID = this.baseObj.Location_ID,
 
                             Sou_Area_ID = bArea.ID.Value,
                             Sou_Location_ID = bLocation.ID.Value,
@@ -525,13 +526,13 @@ namespace AWCSEngine.Engine.McRuntime
 
                             TreeRoute = "{}"
                         };
-                        mq.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mq, BuVO);
+                        mq.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_McWork>(mq, this.BuVO);
 
                         this.mcWork = mq;
 
-                        buWork.Status = EntityStatus.ACTIVE;
-                        buWork.WMS_WorkQueue_ID = mq.ID;
-                        DataADO.GetInstant().UpdateBy<act_BuWork>(buWork, BuVO);
+                        this.buWork.Status = EntityStatus.ACTIVE;
+                        this.buWork.WMS_WorkQueue_ID = mq.ID;
+                        DataADO.GetInstant().UpdateBy<act_BuWork>(this.buWork, this.BuVO);
                     }
                     //writeEventLog(baseObj, null, "สร้างคิวงาน Cv");
                     this.McNextStep = "4.1";
@@ -572,9 +573,9 @@ namespace AWCSEngine.Engine.McRuntime
         private void step4_2()
         {
             this.StepTxt = "4.2";
-            
-                baseObj.Status = EntityStatus.REMOVE;
-                DataADO.GetInstant().UpdateBy<act_BaseObject>(baseObj, this.BuVO);
+
+                this.baseObj.Status = EntityStatus.REMOVE;
+                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.baseObj, this.BuVO);
 
                 this.mcWork.EventStatus = McWorkEventStatus.REMOVE_QUEUE;
                 this.mcWork.Status = EntityStatus.REMOVE;
@@ -627,8 +628,8 @@ namespace AWCSEngine.Engine.McRuntime
                         this.mcWork.ActualTime = DateTime.Now;
                         DataADO.GetInstant().UpdateBy<act_McWork>(this.mcWork, this.BuVO);
 
-                        baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
-                        DataADO.GetInstant().UpdateBy(baseObj, this.BuVO);
+                        this.baseObj.Location_ID = this.McObj.Cur_Location_ID.GetValueOrDefault();
+                        DataADO.GetInstant().UpdateBy(this.baseObj, this.BuVO);
 
                         //writeEventLog(baseObj, buWork, "จบคิวงาน Conveyor");
                         this.McNextStep = "0";
