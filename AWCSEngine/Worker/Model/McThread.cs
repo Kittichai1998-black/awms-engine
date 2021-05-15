@@ -34,15 +34,15 @@ namespace AWCSEngine.Worker.Model
         }
         public void AddMc(acs_McMaster mcMst)
         {
-            DisplayController.Events_Write("McThread AddMc NameEngine " + mcMst.NameEngine);            
+            DisplayController.Events_Write("System","McThread AddMc NameEngine " + mcMst.NameEngine);            
             Type type = ClassType.GetClassType(typeof(BaseMcRuntime).Namespace + "." + mcMst.NameEngine);
-            DisplayController.Events_Write("McThread AddMc Type " + mcMst.NameEngine);
+            DisplayController.Events_Write("System", "McThread AddMc Type " + mcMst.NameEngine);
             var mcEngine = (BaseMcRuntime)Activator.CreateInstance(type, new object[] { mcMst });
-            DisplayController.Events_Write("McThread AddMc create mcEngine");
+            DisplayController.Events_Write("System", "McThread AddMc create mcEngine");
             McEngines.Add(mcEngine);
-            DisplayController.Events_Write("McThread AddMc add mcEngine");
+            DisplayController.Events_Write("System", "McThread AddMc add mcEngine");
             mcEngine.Initial();
-            DisplayController.Events_Write("McThread AddMc initial mcEngine");
+            DisplayController.Events_Write("System", "McThread AddMc initial mcEngine");
         }
         public void Abort()
         {

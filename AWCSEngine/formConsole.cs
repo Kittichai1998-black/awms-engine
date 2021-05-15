@@ -37,7 +37,7 @@ namespace AWCSEngine
         {
             var lis = (ListBox)sender;
             if (lis.SelectedIndex >= 0)
-                if (MessageBox.Show("Copy to Clipboard?", lis.Items[lis.SelectedIndex].ToString(), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show( lis.Items[lis.SelectedIndex].ToString(), "Copy to Clipboard?", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     Clipboard.SetText(lis.Items[lis.SelectedIndex].ToString());
         }
 
