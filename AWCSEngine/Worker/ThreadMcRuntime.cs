@@ -63,7 +63,7 @@ namespace AWCSEngine.Worker
             {
                 //DisplayController.Events_Write("ThreadMcRuntime AddMcMst2McThread");
                 mcCore = new McThread(index);
-                DisplayController.Events_Write("ThreadMcRuntime new McThread");
+                //DisplayController.Events_Write("ThreadMcRuntime new McThread");
                 this.McThreads.Add(mcCore);
                 //DisplayController.Events_Write("ThreadMcRuntime AddMcMst2McThread McThreads add");
             }
