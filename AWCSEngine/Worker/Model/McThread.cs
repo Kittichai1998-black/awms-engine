@@ -34,18 +34,7 @@ namespace AWCSEngine.Worker.Model
         }
         public void AddMc(acs_McMaster mcMst)
         {
-            DisplayController.Events_Write("McThread AddMc NameEngine " + mcMst.NameEngine);
-            //typeof(BaseMcRuntime).Namespace
-            Type mcBaseType = ClassType.GetClassType("AWCSEngine.Engine.McRuntime" + "." + mcMst.NameEngine);
-            if (mcBaseType != null)
-            {
-                DisplayController.Events_Write("McThread AddMc Namespace " + mcBaseType.Namespace);
-            }
-            else
-            {
-                DisplayController.Events_Write("McThread AddMc " + "typeof(BaseMcRuntime).Namespace failed");
-            }
-            
+            DisplayController.Events_Write("McThread AddMc NameEngine " + mcMst.NameEngine);            
             Type type = ClassType.GetClassType(typeof(BaseMcRuntime).Namespace + "." + mcMst.NameEngine);
             DisplayController.Events_Write("McThread AddMc Type " + mcMst.NameEngine);
             var mcEngine = (BaseMcRuntime)Activator.CreateInstance(type, new object[] { mcMst });
