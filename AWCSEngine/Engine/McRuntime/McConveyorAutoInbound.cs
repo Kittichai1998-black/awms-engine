@@ -30,10 +30,11 @@ namespace AWCSEngine.Engine.McRuntime
         protected override void OnRun()
         {
             //Lock ให้ Thread ทำงานจนจบก่อนที่จะไปทำที่ Thread อื่น
-            lock (_single_thread)
-            {
-                this.Mc_OnRun();
-            }
+            //lock (_single_thread)
+            //{
+            //    this.Mc_OnRun();
+            //}
+            this.Mc_OnRun();
         }
         protected override void OnStart()
         {

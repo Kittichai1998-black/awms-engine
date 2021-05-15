@@ -125,6 +125,7 @@ namespace AWCSEngine.Engine.McRuntime
 
         public void Initial()
         {
+            DisplayController.Events_Write("McThread mcEngine Initial");
             this.Logger.LogInfo("########### BEGIN MACHINE ###########");
             LoadDictionaryALL();
             try

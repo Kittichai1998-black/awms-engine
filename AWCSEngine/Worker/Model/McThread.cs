@@ -1,6 +1,7 @@
 ﻿using ADO.WCSDB;
 using AMSModel.Entity;
 using AMWUtil.Common;
+using AWCSEngine.Controller;
 using AWCSEngine.Engine;
 using AWCSEngine.Engine.McRuntime;
 using System;
@@ -19,6 +20,7 @@ namespace AWCSEngine.Worker.Model
         public List<BaseMcRuntime> McEngines { get; private set; }
         public McThread(int index)
         {
+            DisplayController.Events_Write("McThread start" + index);
             this.Index = index;
             this.McEngines = new List<BaseMcRuntime>();
         }
@@ -32,8 +34,10 @@ namespace AWCSEngine.Worker.Model
         }
         public void AddMc(acs_McMaster mcMst)
         {
+            DisplayController.Events_Write("McThread AddMc");
             Type type = ClassType.GetClassType(typeof(BaseMcRuntime).Namespace + "." + mcMst.NameEngine);
             var mcEngine = (BaseMcRuntime)Activator.CreateInstance(type, new object[] { mcMst });
+            DisplayController.Events_Write("McThread AddMc mcEngine");
             McEngines.Add(mcEngine);
             mcEngine.Initial();
         }

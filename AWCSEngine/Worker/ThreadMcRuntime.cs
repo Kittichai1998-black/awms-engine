@@ -35,10 +35,12 @@ namespace AWCSEngine.Worker
 
         public void Initial()
         {
+            //DisplayController.Events_Write("ThreadMcRuntime Initial");
             string pattle_codes = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_machine_code_pattle];
             string[] fix_codes = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_machine_code_fixed].Split(new char[] { ','});
             ADO.WCSStaticValue.StaticValueManager.GetInstant().McMasters.ForEach(x=>
             {
+                //DisplayController.Events_Write("ThreadMcRuntime Initial" + x.Code);
                 if ((!string.IsNullOrEmpty(pattle_codes) && Regex.IsMatch(x.Code, pattle_codes) ) || fix_codes.Contains(x.Code))
                     this.AddMcMst2McThread(x.ThreadIndex, x);
             });
@@ -46,6 +48,7 @@ namespace AWCSEngine.Worker
 
         public void WakeUpAll()
         {
+           // DisplayController.Events_Write("McThread WakeUpAll");
             List<string> wakeUpNames = new List<string>();
             foreach (var tCore in this.McThreads)
             {
@@ -58,8 +61,11 @@ namespace AWCSEngine.Worker
             McThread mcCore = this.McThreads.FirstOrDefault(x => x.Index == index);
             if (mcCore == null)
             {
+                //DisplayController.Events_Write("ThreadMcRuntime AddMcMst2McThread");
                 mcCore = new McThread(index);
+                DisplayController.Events_Write("ThreadMcRuntime new McThread");
                 this.McThreads.Add(mcCore);
+                //DisplayController.Events_Write("ThreadMcRuntime AddMcMst2McThread McThreads add");
             }
 
             mcCore.AddMc(mcMst);
@@ -67,6 +73,7 @@ namespace AWCSEngine.Worker
 
         public void Run(object _mcCore)
         {
+            //DisplayController.Events_Write("McThread Run");
             McThread mcCore = (McThread)_mcCore;
             while (true)
             {
