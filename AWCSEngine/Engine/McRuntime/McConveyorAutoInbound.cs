@@ -401,12 +401,12 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu,string _msg)
         {
-            string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
+            string msg =  "Working step " + this.StepTxt + " | Message =" + _msg;
             msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ?_bo.DisCharge : "");
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
             msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") ;
 
-            DisplayController.Events_Write(msg);
+            DisplayController.Events_Write(this.Code, msg);
         }
 
         

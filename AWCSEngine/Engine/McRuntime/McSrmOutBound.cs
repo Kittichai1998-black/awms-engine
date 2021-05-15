@@ -116,7 +116,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     {
                                         if (srm.McObj.DV_Pre_Status == 99)
                                         {
-                                            //DisplayController.Events_Write($"{this.Code} > exec 1.3-99");
+                                            //DisplayController.Events_Write(this.Code,$"exec 1.3-99");
                                             SHU_Out.McObj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
                                             var Shu_Obj = DataADO.GetInstant().SelectBy<act_McObject>("McMaster_ID", this.McWork_out.Rec_McObject_ID, null).FirstOrDefault();
                                             Shu_Obj.Cur_Location_ID = this.StaticValue.GetLocation(_srm_desLocCode.ToString("000000000")).ID.Value;
@@ -134,7 +134,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     {
 
                                         // StepTxt = "1.3";
-                                        //DisplayController.Events_Write($"{this.Code} > exec 1.3");
+                                        //DisplayController.Events_Write(this.Code,$"exec 1.3");
                                     }
                                 }
                                 else
@@ -220,7 +220,7 @@ namespace AWCSEngine.Engine.McRuntime
                                         .Add("Set_ShtDi", 1)))
                                     {
                                         // StepTxt = "2.1";
-                                        //DisplayController.Events_Write($"{this.Code} > exec 2.1");
+                                        //DisplayController.Events_Write(this.Code,$"exec 2.1");
                                     }
                                 }
                                 //2.2 รถ สถานะพร้อมทำงาน แต่รถไม่อยู่ที่ home / สั่งกลับ home
@@ -229,7 +229,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     if (SHU_Out2.PostCommand(McCommandType.CM_12))  ///12	กลับ Home (ด้านหลัง) 
                                     {
                                         //StepTxt = "2.2";
-                                        // DisplayController.Events_Write($"{this.Code} > exec 2.2");
+                                        // DisplayController.Events_Write(this.Code,$"exec 2.2");
                                     }
                                 }
                             }
@@ -306,7 +306,7 @@ namespace AWCSEngine.Engine.McRuntime
                                         {
 
                                             // StepTxt = "1.3";
-                                            //DisplayController.Events_Write($"{this.Code} > exec 1.3");
+                                            //DisplayController.Events_Write(this.Code,$"exec 1.3");
                                         }
                                         /*
                                                                                 //   if (this.PostCommand(McCommandType.CM_2, _srm_STLocCode, _srm_ENLocCode, 1, baseObj.Code, 1000))  //// สั่ง ASRS หยิบของ
@@ -315,7 +315,7 @@ namespace AWCSEngine.Engine.McRuntime
                                                                                     {
                                                                                         Step_P_sub_s = 1;
                                                                                     //StepTxt = "3.2";   ถึงตรงนี้  ****************************
-                                                                                    ///DisplayController.Events_Write($"{this.Code} > exec 3.2");
+                                                                                    ///DisplayController.Events_Write(this.Code,$"exec 3.2");
                                                                                      }
                                          */
 
@@ -384,7 +384,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     {
                                         //// Confrim 99 จบงานให้ SRM 
                                         //// UPDATE QueueStatus  ให้เป็น 9 งานเสร็จ
-                                        /// DisplayController.Events_Write($"{this.Code} > exec 3.2-99");
+                                        /// DisplayController.Events_Write(this.Code,$"exec 3.2-99");
                                         this.PostCommand(McCommandType.CM_99);
 
                                         cvy_Out.PostCommand(McCommandType.CM_99);

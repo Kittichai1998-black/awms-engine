@@ -169,7 +169,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 }
                             , this.BuVO).FirstOrDefault();
 
-                            DisplayController.Events_Write("Label " + (this.buWork != null ?this.buWork.LabelData : this.McObj.DV_Pre_BarProd));
+                            DisplayController.Events_Write(this.Code,"Label " + (this.buWork != null ?this.buWork.LabelData : this.McObj.DV_Pre_BarProd));
 
                             if (this.buWork == null)
                             {
@@ -386,14 +386,14 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu, string _msg)
         {
-            string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
+            string msg = " > Working step " + this.StepTxt + " | Message =" + _msg;
             msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
             msg += " | Checking Status =" + (_bo != null ? _bo.PassFlg : this.PassFlg) + " | Command reject =" + (McCommandType)this.cmdReject + " | Error =" + this.errCode;
             msg += " | Warehouse =" + this.Cur_Area.Warehouse_ID;
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") ;
            // msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "") ;
 
-            DisplayController.Events_Write(msg);
+            DisplayController.Events_Write(this.Code,msg);
         }
         #endregion
 

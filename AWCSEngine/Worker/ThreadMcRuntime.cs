@@ -48,7 +48,7 @@ namespace AWCSEngine.Worker
 
         public void WakeUpAll()
         {
-           // DisplayController.Events_Write("McThread WakeUpAll");
+           // DisplayController.Events_Write("System","McThread WakeUpAll");
             List<string> wakeUpNames = new List<string>();
             foreach (var tCore in this.McThreads)
             {
@@ -63,7 +63,7 @@ namespace AWCSEngine.Worker
             {
                 //DisplayController.Events_Write("ThreadMcRuntime AddMcMst2McThread");
                 mcCore = new McThread(index);
-                //DisplayController.Events_Write("ThreadMcRuntime new McThread");
+                DisplayController.Events_Write("System","ThreadMcRuntime new McThread");
                 this.McThreads.Add(mcCore);
                 //DisplayController.Events_Write("ThreadMcRuntime AddMcMst2McThread McThreads add");
             }
@@ -73,7 +73,7 @@ namespace AWCSEngine.Worker
 
         public void Run(object _mcCore)
         {
-            //DisplayController.Events_Write("McThread Run");
+            //DisplayController.Events_Write("System","McThread Run");
             McThread mcCore = (McThread)_mcCore;
             while (true)
             {
@@ -87,7 +87,7 @@ namespace AWCSEngine.Worker
 
         public void Abort()
         {
-            DisplayController.Events_Write("ThreadMcRuntime failed");
+            DisplayController.Events_Write("System", "ThreadMcRuntime failed");
             if (this.McThreads != null)
             {
                 this.McThreads.ForEach(x => { x.Abort(); });

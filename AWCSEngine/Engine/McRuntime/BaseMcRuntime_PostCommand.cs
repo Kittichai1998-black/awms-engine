@@ -90,7 +90,7 @@ namespace AWCSEngine.Engine.McRuntime
             if ((int)comm == 0)
             {
                 this.Logger.LogInfo("[CMD] > Clear!");
-                DisplayController.Events_Write(this.Code + " > [CMD] Clear!");
+                DisplayController.Events_Write(this.Code , "[CMD] Clear!");
                 this.McObj.Command_ID = null;
                 this.McObj.CommandAction_Seq = null;
                 this.McObj.CommandParameter = null;
@@ -103,7 +103,7 @@ namespace AWCSEngine.Engine.McRuntime
             {
                 this.Logger.LogInfo("[CMD] > Post " + comm.ToString() + " " +
                     (parameters == null ? string.Empty : parameters.Items.Select(x => x.Key + "=" + x.Value).JoinString('&')));
-                DisplayController.Events_Write(this.Code + " > [CMD] Post= "+ (int)comm+" : " + GetTextCommand((int)comm) + " // PST= "+ this.McObj.DV_Pre_Status+" : " + GetTextStatus(this.McObj.DV_Pre_Status));
+                DisplayController.Events_Write(this.Code,"[CMD] Post= "+ (int)comm+" : " + GetTextCommand((int)comm) + " // PST= "+ this.McObj.DV_Pre_Status+" : " + GetTextStatus(this.McObj.DV_Pre_Status));
                 this.McObj.Command_ID = StaticValueManager.GetInstant().GetMcCommand(this.McMst.ID.Value, comm).ID.Value;
                 this.McObj.CommandAction_Seq = 1;
                 this.McObj.CommandParameter = parameters == null ? string.Empty : parameters.ToQryStr();
