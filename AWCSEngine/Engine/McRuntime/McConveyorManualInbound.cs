@@ -56,6 +56,7 @@ namespace AWCSEngine.Engine.McRuntime
         private float disCharge { get; set; }
         private string McNextStep { get; set; }
         private int[] dimentionErr = new int[] { 104, 105, 106, 107, 108,109 };
+        private string labelData { get; set; }
         #endregion
 
         #region Methods
@@ -145,13 +146,13 @@ namespace AWCSEngine.Engine.McRuntime
 
         private void clear()
         {
-            if (this.McObj.DV_Pre_Status == 96 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
+            if (this.McObj.DV_Pre_Status == 96 )
             {
                 //คำสั่งงานล่าสุดยังไม่เรียบร้อย
                 this.PostCommand(McCommandType.CM_3);
                 //writeEventLog(baseObj, buWork, " ทำคำสั่งงานล่าสุดที่ยังไม่เรียบร้อย");
             }
-            else if (this.McObj.DV_Pre_Status == 99 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
+            else if (this.McObj.DV_Pre_Status == 99 )
             {
                 //ทำงานเสร็จแล้ว ยืนยันจบงาน
                 this.PostCommand(McCommandType.CM_99);
@@ -162,7 +163,7 @@ namespace AWCSEngine.Engine.McRuntime
         private void writeEventLog(act_BaseObject _bo, act_BuWork _bu, string _msg)
         {
             string msg = this.Code + " > Working step " + this.StepTxt + " | Message =" + _msg;
-            msg += " | LABEL =" + this.McObj.DV_Pre_BarProd + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
+            msg += " | LABEL =" + this.labelData + " | DisCharge =" + (_bo != null ? _bo.DisCharge : "");
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
             msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "");
 
@@ -176,14 +177,26 @@ namespace AWCSEngine.Engine.McRuntime
         {
             this.StepTxt = "0";
             
-                if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
+                if (this.McObj.DV_Pre_Status == 98 )
                 {
-                    //Sacn barcode และตรวจสอบ
-                    //writeEventLog(baseObj, buWork, "Check pallet barcode");
-                    this.McNextStep = "0.1";
+                //Sacn barcode และตรวจสอบ
+                //writeEventLog(baseObj, buWork, "Check pallet barcode");
+                //this.McNextStep = "0.1";
+                
+                this.baseObj = BaseObjectADO.GetInstant().GetCheckingTempByWarehouse(this.Cur_Area.Warehouse_ID, this.ID, this.BuVO);
 
+                if (this.baseObj != null && !String.IsNullOrWhiteSpace(this.baseObj.LabelData))
+                {
+                    this.labelData = this.baseObj.LabelData;
+                    this.McNextStep = "0.1";
+                    
                 }
-                else if ((Array.IndexOf(dimentionErr, this.McObj.DV_Pre_Status) >= 0))
+
+                //writeEventLog(this.baseObj, this.buWork, " Check baseObject on " + InboundUtil.GetInstant().McChecking + " McObj.ID" + this.ID);
+
+
+            }
+            else if ((Array.IndexOf(dimentionErr, this.McObj.DV_Pre_Status) >= 0))
                 {
                     //Check dimention
                     //writeEventLog(baseObj, buWork, "Check dimention");
@@ -252,7 +265,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
                                     new SQLConditionCriteria("Des_Warehouse_ID",  this.Cur_Area.Warehouse_ID, SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
-                                    new SQLConditionCriteria("LabelData",this.McObj.DV_Pre_BarProd, SQLOperatorType.EQUALS)
+                                    new SQLConditionCriteria("LabelData", this.labelData, SQLOperatorType.EQUALS)
                                }
                            , this.BuVO).FirstOrDefault();
 
@@ -264,7 +277,7 @@ namespace AWCSEngine.Engine.McRuntime
                 else
                 {
                     //ตรวจสอบข้อมูลพาเลทซ้ำ
-                    var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Area.Warehouse_ID, this.BuVO);
+                    var bo = BaseObjectADO.GetInstant().GetByLabel(this.labelData, this.Cur_Area.Warehouse_ID, this.BuVO);
                     if (bo != null)
                     {
                         if (bo.EventStatus == BaseObjectEventStatus.TEMP)
@@ -289,7 +302,7 @@ namespace AWCSEngine.Engine.McRuntime
                     this.PassFlg = (int)PassFailFlag.Fail;
                 }
 
-                if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd) && this.buWork != null && (this.cmdReject == 0 && this.errCode == 0))
+                if (!string.IsNullOrWhiteSpace(this.labelData) && this.buWork != null && (this.cmdReject == 0 && this.errCode == 0))
                 {
                     this.PassFlg = (int)PassFailFlag.Pass;
                 }
@@ -309,7 +322,7 @@ namespace AWCSEngine.Engine.McRuntime
         {
             this.StepTxt = "1";
             
-                if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
+                if (this.McObj.DV_Pre_Status == 98 && !string.IsNullOrWhiteSpace(this.labelData))
                 {
                     //pallet data
                     checkPallet();
@@ -345,7 +358,7 @@ namespace AWCSEngine.Engine.McRuntime
                         Warehouse_ID = this.Cur_Area == null ? 0 : this.Cur_Area.Warehouse_ID,
                         Area_ID = this.Cur_Location == null ? 0 : this.Cur_Location.Area_ID,
                         Location_ID = this.McObj != null && this.McObj.Cur_Location_ID != null ? this.McObj.Cur_Location_ID.GetValueOrDefault() : 0,
-                        LabelData = this.McObj.DV_Pre_BarProd,
+                        LabelData = this.labelData,
                         DisCharge = this.buWork == null ? 0 : this.buWork.DisCharge,
                         Customer = this.buWork == null ? null : this.buWork.Customer,
                         SkuCode = this.buWork == null ? null : this.buWork.SkuCode,
