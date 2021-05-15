@@ -167,7 +167,7 @@ namespace AWCSEngine.Engine.McRuntime
             msg += " | BuWork_ID =" + (_bo != null ? _bo.BuWork_ID : "") + " | BaseObject_ID =" + (_bo != null ? _bo.ID : "") + " | Checking Status =" + (_bo != null ? _bo.PassFlg : "");
             msg += " | WorkQueue_ID =" + (_bo != null ? _bu.WMS_WorkQueue_ID : "");
 
-            DisplayController.Events_Write(msg);
+            DisplayController.Events_Write(this.Code,msg);
         }
 
         /// <summary>

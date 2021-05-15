@@ -52,7 +52,8 @@ namespace AWCSEngine.Engine.McRuntime
         private act_BaseObject baseObj { get; set; }
         private string McNextStep { get; set; }
         private BaseMcRuntime _mcRCO { get; set; }
-        string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
+        string McChecking = "RCO5-3";
+        //string McChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY_machine_checking)[PropertyConst.APP_KEY_machine_checking];
         #endregion
 
         #region Methods
