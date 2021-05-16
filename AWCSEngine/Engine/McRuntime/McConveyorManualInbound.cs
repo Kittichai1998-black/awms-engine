@@ -36,7 +36,7 @@ namespace AWCSEngine.Engine.McRuntime
                 case "0":
                     //Check dimention และ สแกนบาร์โค๊ด
                     writeEventLog("0. Check dimention และ สแกนบาร์โค๊ด");
-                    if (this.McObj.DV_Pre_Status == 98)
+                    if (this.McObj.DV_Pre_Status == 98 )
                     {
 
                         this.rc8_2BaseObject = ADO.WCSDB.DataADO.GetInstant()
@@ -44,6 +44,7 @@ namespace AWCSEngine.Engine.McRuntime
                             new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Warehouse_ID", this.Cur_Area.Warehouse_ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("McObject_ID", this.ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("EventStatus", BaseObjectEventStatus.IDLE, SQLOperatorType.NOTEQUALS),
                         new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN)
                             }, BuVO)
                             .OrderBy(x => x.ID)
@@ -58,6 +59,7 @@ namespace AWCSEngine.Engine.McRuntime
                         }
 
                         this.StepTxt = "0.0";
+                        break;
                     }
 
                     if (dimentionErr.Contains(this.McObj.DV_Pre_Status))
@@ -94,7 +96,7 @@ namespace AWCSEngine.Engine.McRuntime
                                     this.cmdReject = (int)McCommandType.CM_11;
                                     this.PassFlg = (int)PassFailFlag.Fail;
 
-                                    Reject("1.2 ไม่พบข้อมูลรับเข้า" + this.McObj.DV_Pre_BarProd);
+                                    Reject("1.2 ไม่พบข้อมูลรับเข้า" + this.LabelData);
                                     break;
                                 }
 
@@ -137,27 +139,35 @@ namespace AWCSEngine.Engine.McRuntime
                                 if (bo != null && bo.EventStatus == BaseObjectEventStatus.TEMP)
                                 {
                                     this.rc8_2BaseObject = bo;
-                                    writeEventLog("2.1 ข้อมูลพาเลท BaseObject_ID " + this.rc8_2BaseObject.ID); ;
+                                    writeEventLog("2.1.1 ข้อมูลพาเลท BaseObject_ID " + this.rc8_2BaseObject.ID); ;
                                     this.StepTxt = "3.1";
                                     break;
                                 }
 
                                 if (bo != null)
                                 {
-                                    var mcWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                    this.rc8_2McWork = DataADO.GetInstant().SelectBy<act_McWork>(
                                                     new SQLConditionCriteria[]
                                                     {
                                                             new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
                                                             new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
                                                             new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("BaseObject_ID",  this.rc8_2BaseObject.ID, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("EventStatus",  22, SQLOperatorType.NOTEQUALS),
                                                             new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
                                                     }
                                                 , this.BuVO).FirstOrDefault();
-                                    if (mcWork == null)
+                                    if (this.rc8_2McWork == null)
                                     {
                                         this.cmdReject = (int)McCommandType.CM_10;
                                         this.PassFlg = (int)PassFailFlag.Fail;
-                                        Reject("2.2 ข้อมูลพาเลทซ้ำ " + this.rc8_2BuWork.LabelData);
+                                        Reject("2.2.1 ข้อมูลพาเลทซ้ำ " + this.rc8_2BuWork.LabelData);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        writeEventLog("2.1.2 ข้อมูลพาเลท McWork " + this.rc8_2McWork.ID); ;
+                                        this.StepTxt = "3.1";
                                         break;
                                     }
                                 }
@@ -166,7 +176,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 {
                                     this.cmdReject = (int)McCommandType.CM_15;
                                     this.PassFlg = (int)PassFailFlag.Fail;
-                                    Reject("2.3 ข้อมูลของคลังอื่น ไม่สร้างข้อมูลพาเลท " + this.rc8_2BuWork.LabelData);
+                                    Reject("2.2.2 ข้อมูลของคลังอื่น ไม่สร้างข้อมูลพาเลท " + this.rc8_2BuWork.LabelData);
                                     break;
                                 }
 
@@ -188,7 +198,7 @@ namespace AWCSEngine.Engine.McRuntime
                                         Warehouse_ID = this.Cur_Area == null ? 0 : this.Cur_Area.Warehouse_ID,
                                         Area_ID = this.Cur_Location == null ? 0 : this.Cur_Location.Area_ID,
                                         Location_ID = this.McObj != null && this.McObj.Cur_Location_ID != null ? this.McObj.Cur_Location_ID.GetValueOrDefault() : 0,
-                                        LabelData = this.McObj.DV_Pre_BarProd,
+                                        LabelData = this.LabelData,
                                         DisCharge = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.DisCharge,
                                         Customer = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.Customer,
                                         SkuCode = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuCode,
@@ -202,7 +212,7 @@ namespace AWCSEngine.Engine.McRuntime
                                         Status = EntityStatus.ACTIVE
                                     };
                                     this.rc8_2BaseObject.ID = DataADO.GetInstant().Insert<act_BaseObject>(this.rc8_2BaseObject, this.BuVO);
-                                    writeEventLog("2.4 สร้างข้อมูลพาเลท " + this.rc8_2BuWork.LabelData + " BaseObject_ID " + this.rc8_2BaseObject.ID);
+                                    writeEventLog("2.1.3 สร้างข้อมูลพาเลท " + this.rc8_2BuWork.LabelData + " BaseObject_ID " + this.rc8_2BaseObject.ID);
                                     this.StepTxt = "3.1";
                                     break;
                                 }
@@ -222,8 +232,26 @@ namespace AWCSEngine.Engine.McRuntime
                     switch (this.StepTxt)
                     {
                         case "3.1":
+                            if (this.rc8_2BuWork != null && this.rc8_2BaseObject != null)
+                            {
+                                this.rc8_2BaseObject.DisCharge = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.DisCharge;
+                                this.rc8_2BaseObject.Customer = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.Customer;
+                                this.rc8_2BaseObject.SkuCode = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuCode;
+                                this.rc8_2BaseObject.SkuGrade = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuGrade;
+                                this.rc8_2BaseObject.SkuLot = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuLot;
+                                this.rc8_2BaseObject.SkuItemNo = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.ItemNo;
+                                this.rc8_2BaseObject.SkuQty = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.SkuQty;
+                                this.rc8_2BaseObject.SkuUnit = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuUnit;
+                                this.rc8_2BaseObject.SkuStatus = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuStatus;
+
+                                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.rc8_2BaseObject, this.BuVO);
+                                writeEventLog("3.1.1 Update ข้อมูลพาเลท จาก BuWork");
+                            }
+
                             if (this.rc8_2BuWork != null && !string.IsNullOrWhiteSpace(this.rc8_2BuWork.LabelData) && this.rc8_2BaseObject != null && (this.cmdReject == 0 && this.errCode == 0))
                             {
+                                
+
                                 this.PassFlg = (int)PassFailFlag.Pass;
                             }
 
@@ -235,7 +263,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 break;
                             }
 
-                            writeEventLog("3.1 สั่งให้ทำงานต่อ");
+                            writeEventLog("3.1.2 สั่งให้ทำงานต่อ");
                             this.StepTxt = "4.1";
 
                             break;
@@ -251,6 +279,19 @@ namespace AWCSEngine.Engine.McRuntime
                     switch (this.StepTxt)
                     {
                         case "4.1":
+                            //Check คิวงาน McWork ยังไม่ถูกยกเลิก
+                            this.rc8_2McWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                                    new SQLConditionCriteria[]
+                                                    {
+                                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                                            new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("BaseObject_ID",  this.rc8_2BaseObject.ID, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("EventStatus",  22, SQLOperatorType.NOTEQUALS),
+                                                            new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
+                                                    }
+                                                , this.BuVO).FirstOrDefault();
+
                             //สร้างคิวงาน McWork
                             if (this.rc8_2BuWork == null || this.rc8_2BaseObject == null)
                             {
@@ -431,8 +472,20 @@ namespace AWCSEngine.Engine.McRuntime
                             //Check ความพร้อมคิวงาน
                             if (this.McObj.DV_Pre_Status == 98)
                             {
+                                this.rc8_2McWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                                    new SQLConditionCriteria[]
+                                                    {
+                                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                                            new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("BaseObject_ID",  this.rc8_2BaseObject.ID, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("EventStatus",  22, SQLOperatorType.NOTEQUALS),
+                                                            new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
+                                                    }
+                                                , this.BuVO).FirstOrDefault();
 
-                                if (this.rc8_2McWork != null && this.rc8_2McWork.Des_Location_ID != 0 && this.rc8_2McWork.Rec_McObject_ID != 0)
+                                if (this.rc8_2McWork != null && this.rc8_2McWork.Des_Location_ID != null && this.rc8_2McWork.Des_Location_ID != 0 
+                                    && this.rc8_2McWork.Rec_McObject_ID != null && this.rc8_2McWork.Rec_McObject_ID != 0)
                                 {
                                     writeEventLog("5.1 Check ความพร้อมคิวงาน ปลายทาง " + this.rc8_2McWork.Des_Location_ID + " Shuttle ID " + this.rc8_2McWork.Rec_McObject_ID);
                                     if (this.rc8_2McWork.QueueStatus >= 5)
@@ -474,6 +527,17 @@ namespace AWCSEngine.Engine.McRuntime
                         case "6.1":
                             if (this.McObj.DV_Pre_Status == 98)
                             {
+                                this.rc8_2McWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                                    new SQLConditionCriteria[]
+                                                    {
+                                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                                            new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("BaseObject_ID",  this.rc8_2BaseObject.ID, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("EventStatus",  22, SQLOperatorType.NOTEQUALS),
+                                                            new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
+                                                    }
+                                                , this.BuVO).FirstOrDefault();
                                 if (this.rc8_2McWork != null)
                                 {
                                     this.rc8_2McWork.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
@@ -485,8 +549,19 @@ namespace AWCSEngine.Engine.McRuntime
 
                                 if (this.rc8_2BaseObject != null)
                                 {
+                                    writeEventLog("6.1.2 BaseObject");
+                                    var boCode = this.rc8_2BaseObject.Code;
+                                    var boQty = this.rc8_2BaseObject.SkuQty;
+
+                                    writeEventLog("6.1.2 BaseObject code " + boCode + " qty " + boQty + " cmd " + McCommandType.CM_1);
+
+                                    if (boQty == 0)
+                                    {
+                                        boQty = 1500;
+                                    }
                                     //สั่งให้ Conveyor เริ่มทำงานเก็บ
-                                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, this.rc8_2BaseObject.Code, this.rc8_2BaseObject.SkuQty.Get2<int>(), () => writeEventLog("5.1.2 สั่งให้ Conveyor เริ่มทำงานเก็บ"));
+                                    writeEventLog("6.1.3 เริ่มงาน Conveyor");
+                                    this.PostCommand(McCommandType.CM_1, 0, 0, 1, boCode, 1500, () => writeEventLog("6.1.3 สั่งให้ Conveyor เริ่มทำงานเก็บ"));
 
                                     this.StepTxt = "7.1";
                                     break;
@@ -504,6 +579,18 @@ namespace AWCSEngine.Engine.McRuntime
 
                         case "6.2":
                             //Reject จากคิวงาน
+                            this.rc8_2McWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                                    new SQLConditionCriteria[]
+                                                    {
+                                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                                            new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("BaseObject_ID",  this.rc8_2BaseObject.ID, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("EventStatus",  22, SQLOperatorType.NOTEQUALS),
+                                                            new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
+                                                    }
+                                                , this.BuVO).FirstOrDefault();
+
                             if (this.rc8_2McWork != null && this.rc8_2McWork.QueueStatus == 7)
                             {
                                 this.PostCommand(McCommandType.CM_13);
@@ -539,6 +626,18 @@ namespace AWCSEngine.Engine.McRuntime
                         case "7.1":
                             if (this.McObj.DV_Pre_Status == 4 || this.McObj.DV_Pre_Status == 14)
                             {
+                                this.rc8_2McWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                                    new SQLConditionCriteria[]
+                                                    {
+                                                            new SQLConditionCriteria("Status", new EntityStatus[] { EntityStatus.ACTIVE, EntityStatus.INACTIVE }, SQLOperatorType.IN),
+                                                            new SQLConditionCriteria("QueueType",  QueueType.QT_1, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("IOType",  IOType.INBOUND, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("BaseObject_ID",  this.rc8_2BaseObject.ID, SQLOperatorType.EQUALS),
+                                                            new SQLConditionCriteria("EventStatus",  22, SQLOperatorType.NOTEQUALS),
+                                                            new SQLConditionCriteria("Sou_Location_ID",this.McObj.Cur_Location_ID.GetValueOrDefault(), SQLOperatorType.EQUALS)
+                                                    }
+                                                , this.BuVO).FirstOrDefault();
+
                                 if (this.rc8_2McWork != null && this.rc8_2McWork != null && this.rc8_2McWork.EventStatus == McWorkEventStatus.ACTIVE_WORKING)
                                 {
                                     this.rc8_2McWork.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
@@ -592,6 +691,7 @@ namespace AWCSEngine.Engine.McRuntime
         private string mainStep;
         private int[] dimentionErr = new int[] { 104, 105, 106, 107, 108,109 };
         private string LabelData;
+        private int[] cvWorked = new int[] { 4, 14 };
         int WarehouseID = 1; // For Test
         #endregion
 

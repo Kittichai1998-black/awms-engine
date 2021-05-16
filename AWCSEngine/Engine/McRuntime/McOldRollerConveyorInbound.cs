@@ -235,6 +235,15 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.PassFlg = (int)PassFailFlag.Pass;
                             }
 
+                            if (this.rco5_3BaseObject != null)
+                            {
+                                this.rco5_3BaseObject.BuWork_ID = this.rco5_3BuWork == null ? this.rco5_3BaseObject.BuWork_ID : this.rco5_3BuWork.ID;
+                                this.rco5_3BaseObject.ErrorCode = this.errCode;
+                                this.rco5_3BaseObject.PassFlg = this.PassFlg == 0 ? "N" : "Y";
+                                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.rco5_3BaseObject, this.BuVO);
+                                writeEventLog("3.1.1 อัพเดต PassFlg ให้ act_BaseObject");
+                            }
+
                             if (this.PassFlg != 1)
                             {
                                 
@@ -243,11 +252,13 @@ namespace AWCSEngine.Engine.McRuntime
                                 break;
                             }
 
-                            writeEventLog("3.1 สั่งให้ทำงานต่อ");
+                            
+
+                            writeEventLog("3.1.2 สั่งให้ทำงานต่อ");
                             this.StepTxt = "4.1";
                             break;
                     }
-                    
+
                     
 
 
@@ -264,10 +275,11 @@ namespace AWCSEngine.Engine.McRuntime
                                 var bo = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Area.Warehouse_ID, this.BuVO);
                                 if(bo != null)
                                 {
+                                    writeEventLog("4.1 สั่งเริ่มงาน");
                                     this.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
                                     .New("Set_PalletID", bo.Code)
                                     .Add("Set_Comm", 1));
-                                    writeEventLog("4. สั่งเริ่มงาน");
+                                    
                                     this.StepTxt = "0.0";
                                     break;
                                 }

@@ -27,6 +27,8 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
+            this.clear();
+
             this.mainStep = this.StepTxt.Substring(0, 1);
 
             switch (this.mainStep)
@@ -108,12 +110,43 @@ namespace AWCSEngine.Engine.McRuntime
                             {
                                 var souLoc = this.StaticValue.GetLocation(this.srmMcWork.Sou_Location_ID);
                                 var desLoc = this.StaticValue.GetLocation(this.srmMcWork.Des_Location_ID.GetValueOrDefault());
-                                this._souLocCode = souLoc != null ? (souLoc.Code.Get2<int>()) : 0;
-                                this._desLocCode = desLoc != null ? (desLoc.Code.Get2<int>() % 1000000) : 0;
 
-                                this.srmBaseObject = BaseObjectADO.GetInstant().GetByID(this.srmMcWork.BaseObject_ID, this.BuVO);
-                                this.boCode = this.srmBaseObject != null ? this.srmBaseObject.Code : null;
-                                this.boQty = this.srmBaseObject != null ? this.srmBaseObject.SkuQty.Get2<int>() : 0;
+                                this._souLocCode = souLoc != null ? (souLoc.Code.Get2<int>()) : 0;
+
+                                this._desLocCode = desLoc != null ? (desLoc.Code.Get2<int>() % 1000000) : 0;
+                                this._desLocCode += 2000000;
+
+                                writeEventLog("BaseObject_ID " + this.srmMcWork.BaseObject_ID  + " Location "  + " จาก" + this._souLocCode + " ไปยัง " + this._desLocCode);
+
+                                //this.srmBaseObject = BaseObjectADO.GetInstant().GetByID(this.srmMcWork.BaseObject_ID, this.BuVO);
+                                this.srmBaseObject = DataADO.GetInstant().SelectBy<act_BaseObject>(
+                                      ListKeyValue<string, object>.New("ID", this.srmMcWork.BaseObject_ID)
+                                      .Add("Status", 1)
+                                        , this.BuVO).FirstOrDefault();
+
+                                if (this.srmBaseObject == null)
+                                {
+                                    writeEventLog("BaseObject not found" );
+                                    this.StepTxt = "0.0";
+                                    break;
+                                }
+
+                                if (this.srmBaseObject != null)
+                                {
+                                    writeEventLog("BaseObject_ID " + this.srmBaseObject.ID);
+                                    this.boCode = this.srmBaseObject.Code;
+
+                                    this.srmBaseObject.McObject_ID = null;
+                                    DataADO.GetInstant().UpdateBy<act_BaseObject>(this.srmBaseObject, this.BuVO);
+                                    writeEventLog("BaseObject clear McObject_ID");
+                                    //this.boQty = this.srmBaseObject.SkuQty.Get2<int>();
+                                }
+
+                                if(this.boQty == 0)
+                                {
+                                    this.boQty = 1500;
+                                }
+                                
 
                                 writeEventLog("เตรียมย้าย Pallet " + this.boCode + " จาก" + this._souLocCode + " ไปยัง " + this._desLocCode);
 
@@ -177,7 +210,7 @@ namespace AWCSEngine.Engine.McRuntime
                             {
                                 this.srmBaseObject = BaseObjectADO.GetInstant().GetByID(this.srmMcWork.BaseObject_ID, this.BuVO);
                                 this.boCode = this.srmBaseObject != null ? this.srmBaseObject.Code : null;
-                                this.boQty = this.srmBaseObject != null ? this.srmBaseObject.SkuQty.Get2<int>() : 0;
+                               // this.boQty = this.srmBaseObject != null ? this.srmBaseObject.SkuQty.Get2<int>() : 0;
 
                                 writeEventLog("สั่งเครนย้าย Pallet " + this.boCode);
 
@@ -226,6 +259,10 @@ namespace AWCSEngine.Engine.McRuntime
                             if ((this.cvMcRuntime != null && cvWorked.Contains(this.cvMcRuntime.McObj.DV_Pre_Status)) && this.McObj.DV_Pre_Status == 90)
                             {
                                 writeEventLog("สั่งเครนเก็บพาเลท " + this.boCode);
+                                if (this.boQty == 0)
+                                {
+                                    this.boQty = 1500;
+                                }
 
                                 // สั่ง SRM ย้าย
                                 this.PostCommand(McCommandType.CM_1, this._souLocCode, this._desLocCode, 1, this.boCode, this.boQty, () => this.srmWorking());
@@ -269,6 +306,10 @@ namespace AWCSEngine.Engine.McRuntime
                                 if (this._desLocCode != 0 && this._souLocCode != 0 && !String.IsNullOrWhiteSpace(this.boCode))
                                 {
                                     writeEventLog("สั่ง SRM ย้ายพาเลท " + this.boCode);
+                                    if (this.boQty == 0)
+                                    {
+                                        this.boQty = 1500;
+                                    }
 
                                     // สั่ง SRM ย้ายพาเลท
                                     this.PostCommand(McCommandType.CM_1, this._souLocCode, this._desLocCode, 1, this.boCode, this.boQty
@@ -294,20 +335,29 @@ namespace AWCSEngine.Engine.McRuntime
                         case "3.1":
                             if (this.McObj.DV_Pre_Status == 99)
                             {
-                                this.PostCommand(McCommandType.CM_99, (mc) =>
-                                {
-                                    writeEventLog("จบงานเครน");
+                                //สั่งกลับ home เมื่อทำงานเสร็จ
+                                this.PostCommand(McCommandType.CM_99, (mc) => {
+                                    if (mc.McObj.DV_Pre_Status == 90)
+                                    {
+                                        this.PostCommand(McCommandType.CM_2, () => { });
+                                        return LoopResult.Break;
+                                    }
+                                    return LoopResult.Continue;
+                                });
 
-                                    return LoopResult.Break;
-                                }, () => this.srmWorked(QueueStatus.QS_6));
+                                this.cvMcRuntime.PostCommand(McCommandType.CM_99);    
 
                                 if(this.cvMcRuntime != null)
                                 {
                                     writeEventLog("จบงาน Conveyor");
                                     this.cvMcRuntime.PostCommand(McCommandType.CM_99);
                                 }
-                                
+
+                                this.srmWorked(QueueStatus.QS_6);
+                                writeEventLog("3.1 จบงานเครน");
+
                                 this.StepTxt = "0.0";
+                                break;
                             }
 
                             break;
@@ -315,31 +365,27 @@ namespace AWCSEngine.Engine.McRuntime
                         case "3.2":
                             if (this.McObj.DV_Pre_Status == 99)
                             {
-                                this.PostCommand(McCommandType.CM_99, (mc) =>
-                                {
-                                    writeEventLog("จบงาน SRM ย้ายรถ");
-
-                                    return LoopResult.Break;
-                                }, () => this.srmWorked(QueueStatus.QS_4));
+                                this.PostCommand(McCommandType.CM_99);
+                                this.srmWorked(QueueStatus.QS_4);
+                                writeEventLog("จบงาน SRM ย้ายรถ");
 
                                 this.StepTxt = "0.0";
+                                break;
                             }
                             break;
 
                         case "3.3":
                             if (this.McObj.DV_Pre_Status == 99)
                             {
-                                this.PostCommand(McCommandType.CM_99, (mc) =>
-                                {
-                                    writeEventLog("จบงาน SRM ย้ายของ");
+                                this.PostCommand(McCommandType.CM_99);
+                                this.srmWorked(QueueStatus.QS_9);
+                                writeEventLog("จบงาน SRM ย้ายของ");
 
-                                    return LoopResult.Break;
-                                }, () => this.srmWorked(QueueStatus.QS_9));
-
-                                writeEventLog("ส่งงานให้คิวเบิก");
                                 this.srmMove2Outbound();
+                                writeEventLog("ส่งงานให้คิวเบิก");
 
                                 this.StepTxt = "0.0";
+                                break;
                             }
 
                             break;
@@ -371,7 +417,7 @@ namespace AWCSEngine.Engine.McRuntime
         private int[] cvWorked = new int[] { 4, 14 };
         string mainStep;
         int _desLocCode = 0, _souLocCode = 0;
-        string boCode = null;
+        string boCode = "";
         int boQty = 0;
         #endregion
 
@@ -391,6 +437,13 @@ namespace AWCSEngine.Engine.McRuntime
                 this.srmMcWork.ActualTime = DateTime.Now;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.srmMcWork, this.BuVO);
             }
+
+            if (this.srmBaseObject != null)
+            {
+                this.srmBaseObject.McObject_ID = null;
+                this.srmBaseObject.ModifyTime =  DateTime.Now; ;
+                DataADO.GetInstant().UpdateBy<act_BaseObject>(this.srmBaseObject, this.BuVO);
+            }
             
         }
 
@@ -399,6 +452,7 @@ namespace AWCSEngine.Engine.McRuntime
             if (this.srmMcWork != null)
             {
                 this.srmMcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+                this.srmBaseObject.McObject_ID = null;
                 this.srmMcWork.ActualTime = DateTime.Now;
                 this.srmMcWork.QueueStatus = (int)qs;
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.srmMcWork, this.BuVO);
@@ -422,6 +476,24 @@ namespace AWCSEngine.Engine.McRuntime
                     _mcWorkOut.MixLot = "Y";
                     DataADO.GetInstant().UpdateBy<act_McWork>(_mcWorkOut, this.BuVO);
                 }
+            }
+        }
+
+        private void clear()
+        {
+            if (this.McObj.DV_Pre_Status == 96)
+            {
+                //คำสั่งงานล่าสุดยังไม่เรียบร้อย
+                writeEventLog(" ทำคำสั่งงานล่าสุดที่ยังไม่เรียบร้อย");
+                this.PostCommand(McCommandType.CM_3);
+
+            }
+            else if (this.McObj.DV_Pre_Status == 99)
+            {
+                //ทำงานเสร็จแล้ว ยืนยันจบงาน
+                writeEventLog(" ยืนยันจบงาน");
+                this.PostCommand(McCommandType.CM_99);
+
             }
         }
         #endregion
