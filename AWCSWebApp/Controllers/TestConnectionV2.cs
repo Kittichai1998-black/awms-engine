@@ -95,9 +95,9 @@ namespace AWCSWebApp.Controllers
         public dynamic _PostSet(string api_name, [FromBody] dynamic req)
         {
             if (Res_Json.ContainsKey(api_name.ToLower()))
-                Res_Json[api_name.ToLower()] = ObjectUtil.Json(req);
+                Res_Json[api_name.ToLower()] = ObjectUtil.Json<string>(req);
             else
-                Res_Json.Add(api_name.ToLower(), ObjectUtil.Json(req));
+                Res_Json.Add(api_name.ToLower(), ObjectUtil.Json<string>(req));
             return new { _result = new { status = 1, message = "success..." } };
         }
 
@@ -108,12 +108,12 @@ namespace AWCSWebApp.Controllers
             {
                 string endpoint = req._enpoint;
                 var res = AMWUtil.DataAccess.Http.RESTFulAccess.SendJson<dynamic>(null, endpoint, RESTFulAccess.HttpMethod.POST, req._request);
-                GenLogLine("TO_SCE", api_name, ObjectUtil.Json(req), res);
+                GenLogLine("TO_SCE", api_name, ObjectUtil.Json<string>(req), res);
                 return res;
             }
             catch(Exception ex)
             {
-                GenLogLine("TO_WCS", api_name, ObjectUtil.Json(req), ex.Message);
+                GenLogLine("TO_WCS", api_name, ObjectUtil.Json<string>(req), ex.Message);
                 return new { _result = new { status = 0, code = "U0000", message = ex.Message } };
             }
         }
