@@ -1,0 +1,52 @@
+﻿
+<div>
+    <button id="btnLoadLog">Load Log</button>
+</div>
+<script>
+
+    $('#btnPost').click(() => {
+        post_shu();
+    });
+    $('#txtShu').keydown((e) => {
+        if (e.keyCode == 13)
+            post_shu();
+    });
+    $('#txtGate').keydown((e) => {
+        if (e.keyCode == 13)
+            $('#txtShu').focus();
+    });
+
+
+    function post_shu() {
+        app.post('post_receive_shu',
+            { gate: $('#txtGate').val().toUpperCase(), shu: 'SHU'+$('#txtShu').val().toUpperCase() },
+            (data) => {
+
+                $('#txtShu').val('');
+
+                if (data.response) {
+                    $('#cardDetail').addClass('text-dark');
+                    $('#cardDetail').addClass('bg-info');
+                    $('#lblCardGate').text($('#txtGate').val().toUpperCase());
+                    $('#lblCardShu').text($('#txtShu').val().toUpperCase());
+                    $('#lblCardIsOnline').text(data.response.desc);
+                    setTimeout(() => {
+                        $('#cardDetail').removeClass('text-dark');
+                        $('#cardDetail').removeClass('bg-info');
+                    }, 5000);
+                } else {
+                    $('#cardDetail').removeClass('text-dark');
+                    $('#cardDetail').removeClass('bg-info');
+                }
+            },
+            (data) => {
+                $('#lblCardGate').text('-');
+                $('#lblCardShu').text('-');
+                $('#lblCardIsOnline').text('-');
+                $('#txtShu').val('');
+                $('#cardDetail').removeClass('text-dark');
+                $('#cardDetail').removeClass('bg-info');
+            }
+        );
+    }
+</script>

@@ -9,7 +9,7 @@ namespace AWCSWebApp.GCLModel.Criterie
     {
         public string API_REF;
         public DateTime Date_time;
-        public List<TResult> _result;
+        public TResult _result;
         public class TResult
         {
             public int status;

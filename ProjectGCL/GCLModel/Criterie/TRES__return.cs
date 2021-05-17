@@ -5,9 +5,15 @@ using System.Threading.Tasks;
 
 namespace AWCSWebApp.GCLModel.Criterie
 {
-    public class TRES_return
+    public class TRES__return
     {
         public string API_REF;
         public DateTime Date_time;
+        public TResult _result;
+        public class TResult
+        {
+            public int status;
+            public string message;
+        }
     }
 }
