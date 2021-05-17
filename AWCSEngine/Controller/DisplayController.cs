@@ -76,8 +76,8 @@ namespace AWCSEngine.Controller
         {
             lock (_Lock_Events)
             {
-                Logger.LogInfo(msg);
-                _Events.Add(source_name+" > "+msg);
+                Logger.LogInfo(source_name + " > " + msg);
+                _Events.Add(source_name + " > " + msg);
                 ADO.WCSDB.DataADO.GetInstant().Insert<acl_EventLog>(new acl_EventLog()
                 {
                     ActionTime = DateTime.Now,
