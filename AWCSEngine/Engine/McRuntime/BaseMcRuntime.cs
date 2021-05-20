@@ -303,6 +303,7 @@ namespace AWCSEngine.Engine.McRuntime
 
 
                 bool isNext = false;
+                int setComm = -1;
                 foreach (var act in this.RunCmdActions.Where(x => x.Seq == this.McObj.CommandAction_Seq))
                 {
                     var act_conditions = act.DKV_Condition.QryStrToKeyValues();
