@@ -349,6 +349,9 @@ namespace AWCSEngine.Engine.McRuntime
                             else if (t_deviceVal == typeof(double))
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
 
+                            if (name.ToUpper() == "SET_COMM")
+                                setComm = val.Get2<int>();
+
                         });
 
                         string _log_set = $"[DEVICE END] ({act.Seq}/{maxSeq})] {_act_sets}";
@@ -357,6 +360,25 @@ namespace AWCSEngine.Engine.McRuntime
                         isNext = true;
                         break;
                     }
+                }
+
+                if (!string.IsNullOrWhiteSpace(this.McMst.DK_Con_Comm) && isNext && setComm != -1)
+                {
+                    Thread.Sleep(500);
+                    var dk = this.McMst.DK_Con_Comm;
+                    var dv = this.PlcADO.GetDevice<int>(dk);
+                    if (dv == setComm)
+                    {
+                        this.PlcADO.SetDevice<int>(dk, 0);
+                        isNext = true;
+                        DisplayController.Events_Write(this.Code, $" [DEVICE COMMAND COMPLETE!] Set_Comm = {setComm} | Con_Comm = {dv}");
+                    }
+                    else
+                    {
+                        isNext = false;
+                        DisplayController.Events_Write(this.Code, $" [DEVICE COMMAND NOT-COMPLETE?] Set_Comm = {setComm} | Con_Comm = {dv}");
+                    }
+
                 }
 
                 if (isNext)
