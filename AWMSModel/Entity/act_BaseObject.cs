@@ -31,7 +31,7 @@ namespace AMSModel.Entity
         public string Options;
         public BaseObjectEventStatus EventStatus;
 
-        public float DisCharge;
+        public float? DisCharge;
         public int ErrorCode;
         public string PassFlg;
     }
