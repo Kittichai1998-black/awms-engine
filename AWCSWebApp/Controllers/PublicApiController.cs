@@ -193,15 +193,15 @@ namespace AWCSWebApp.Controllers
                             /*if (rtFlag.ToUpper() != "1")
                                 throw new Exception(rtDesc);*/
 
-                            if (rtFlag.Equals("1"))
-                            {
+                            //if (rtFlag.Equals("1"))
+                            //{
                                var _buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
                                                  ListKeyValue<string, object>.New("TrxRef", record.LINE.api_ref)   
                                                  , buVO);
 
                                 buWorks.AddRange(_buWorks);
 
-                            }
+                            //}
 
                             //int i_freeLocs = 0;
                             //record.LINE.List_Pallet.ForEach(pallet =>
@@ -235,10 +235,12 @@ namespace AWCSWebApp.Controllers
                             //});
                         });
 
-                        return buWorks.Select(x=>new { 
-                            pallet = x.LabelData,
-                            location = StaticValueManager.GetInstant().GetLocation(x.Des_Location_ID.Value).Name 
-                        });
+                        //return buWorks.Select(x=>new { 
+                        //    pallet = x.LabelData,
+                        //    location = StaticValueManager.GetInstant().GetLocation(x.Des_Location_ID.Value).Name 
+                        //});
+
+                        return buWorks;
                     });
             return res;
         }

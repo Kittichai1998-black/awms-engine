@@ -74,7 +74,7 @@ namespace AWCSEngine.Util
                 Area_ID = _CurLocation == null ? 0 : _CurLocation.Area_ID,
                 Location_ID = _McObj != null && _McObj.Cur_Location_ID != null ? _McObj.Cur_Location_ID.GetValueOrDefault() : 0,
                 LabelData = _McObj.DV_Pre_BarProd,                
-                DisCharge = _buWork == null ? 0 : _buWork.DisCharge,
+                DisCharge = _buWork == null ? "0" : _buWork.DisCharge,
                 Customer = _buWork == null ? null : _buWork.Customer,
                 SkuCode = _buWork == null ? null : _buWork.SkuCode,
                 SkuGrade = _buWork == null ? null : _buWork.SkuGrade,

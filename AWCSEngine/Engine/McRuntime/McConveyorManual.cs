@@ -91,7 +91,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.disCharge = this.rc8_2BuWork.DisCharge;
                                 this.BuWork_ID = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.ID;
 
-                                if (this.rc8_2BuWork != null && this.rc8_2BuWork.DisCharge == 0)
+                                if (this.rc8_2BuWork != null && ( this.rc8_2BuWork.DisCharge == "0" || String.IsNullOrWhiteSpace(this.rc8_2BuWork.DisCharge)))
                                 {
                                     this.cmdReject = (int)McCommandType.CM_15;
                                     this.PassFlg = (int)PassFailFlag.Fail;
@@ -195,7 +195,7 @@ namespace AWCSEngine.Engine.McRuntime
                                         Area_ID = this.Cur_Location == null ? 0 : this.Cur_Location.Area_ID,
                                         Location_ID = this.McObj != null && this.McObj.Cur_Location_ID != null ? this.McObj.Cur_Location_ID.GetValueOrDefault() : 0,
                                         LabelData = this.LabelData,
-                                        DisCharge = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.DisCharge,
+                                        DisCharge = this.rc8_2BuWork == null ? "0" : this.rc8_2BuWork.DisCharge,
                                         Customer = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.Customer,
                                         SkuCode = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuCode,
                                         SkuGrade = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuGrade,
@@ -230,7 +230,7 @@ namespace AWCSEngine.Engine.McRuntime
                         case "3.1":
                             if (this.rc8_2BuWork != null && this.rc8_2BaseObject != null)
                             {
-                                this.rc8_2BaseObject.DisCharge = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.DisCharge;
+                                this.rc8_2BaseObject.DisCharge = this.rc8_2BuWork == null ? "0" : this.rc8_2BuWork.DisCharge;
                                 this.rc8_2BaseObject.Customer = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.Customer;
                                 this.rc8_2BaseObject.SkuCode = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuCode;
                                 this.rc8_2BaseObject.SkuGrade = this.rc8_2BuWork == null ? null : this.rc8_2BuWork.SkuGrade;
@@ -763,7 +763,7 @@ namespace AWCSEngine.Engine.McRuntime
         private int PassFlg;
         private long? BuWork_ID;
         private long? BaseObject_ID;
-        private float? disCharge;
+        private string disCharge;
         private string mainStep;
         private int[] dimentionErr = new int[] { 104, 105, 106, 107, 108, 109 };
         private string LabelData;
