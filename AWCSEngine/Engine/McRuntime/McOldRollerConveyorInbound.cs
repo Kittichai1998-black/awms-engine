@@ -28,7 +28,7 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            this.clear();
+            //this.clear();
 
             this.mainStep = this.StepTxt.Substring(0, 1);
             writeEventLog(this.StepTxt + " Status " + this.McObj.DV_Pre_Status + " Label " + this.McObj.DV_Pre_BarProd);
@@ -49,7 +49,7 @@ namespace AWCSEngine.Engine.McRuntime
                             this.errCode = this.McObj.DV_Pre_Status;
                             this.cmdReject = (int)McCommandType.CM_15;
                             this.PassFlg = (int)PassFailFlag.Fail;
-                            writeEventLog("2.1 Dimention Reject " + this.McObj.DV_Pre_Status);
+                            writeEventLog("0.1 Dimention Reject " + this.McObj.DV_Pre_Status);
                             this.StepTxt = "2.1";
                             break;
 
@@ -58,7 +58,7 @@ namespace AWCSEngine.Engine.McRuntime
                             this.errCode = this.McObj.DV_Pre_Status;
                             this.cmdReject = (int)McCommandType.CM_15;
                             this.PassFlg = (int)PassFailFlag.Fail;
-                            writeEventLog("2.1 Eject by Barcode scan " + this.McObj.DV_Pre_Status);
+                            writeEventLog("0.2 Eject by Barcode scan " + this.McObj.DV_Pre_Status);
                             this.StepTxt = "2.1";
                             break;
 
@@ -66,7 +66,7 @@ namespace AWCSEngine.Engine.McRuntime
                             //อ่าน Barcode ได้
                             if (!string.IsNullOrWhiteSpace(this.McObj.DV_Pre_BarProd))
                             {
-                                writeEventLog("Status " + this.McObj.DV_Pre_Status + " Label " + this.McObj.DV_Pre_BarProd);
+                                writeEventLog("0.3 Status " + this.McObj.DV_Pre_Status + " Label " + this.McObj.DV_Pre_BarProd);
                                 this.StepTxt = "1.1";
                                 break;
                             }
@@ -84,7 +84,7 @@ namespace AWCSEngine.Engine.McRuntime
                             this.rco5_3BuWork = this.getRCO5_3BuWork();
                             //this.rco5_3BaseObject = BaseObjectADO.GetInstant().GetByLabel(this.McObj.DV_Pre_BarProd, this.Cur_Area.Warehouse_ID, this.BuVO);
                             //this.rco5_3BaseObject = this.getRCO5_3BaseObjectByLabel(this.McObj.DV_Pre_BarProd);
-                            if (this.rco5_3BuWork == null || (this.rco5_3BuWork != null && (this.rco5_3BuWork.DisCharge == 0 || this.rco5_3BuWork.DisCharge == null)))
+                            if (this.rco5_3BuWork == null || (this.rco5_3BuWork != null && (this.rco5_3BuWork.DisCharge == "0" || String.IsNullOrWhiteSpace(this.rco5_3BuWork.DisCharge))))
                             {
                                 this.cmdReject = (int)McCommandType.CM_11;
                                 this.PassFlg = (int)PassFailFlag.Fail;
@@ -184,7 +184,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 Area_ID = this.Cur_Location == null ? 0 : this.Cur_Location.Area_ID,
                                 Location_ID = this.McObj != null && this.McObj.Cur_Location_ID != null ? this.McObj.Cur_Location_ID.GetValueOrDefault() : 0,
                                 LabelData = this.McObj.DV_Pre_BarProd,
-                                DisCharge = this.rco5_3BuWork == null ? 0 : this.rco5_3BuWork.DisCharge,
+                                DisCharge = this.rco5_3BuWork == null ? "0" : this.rco5_3BuWork.DisCharge,
                                 Customer = this.rco5_3BuWork == null ? null : this.rco5_3BuWork.Customer,
                                 SkuCode = this.rco5_3BuWork == null ? null : this.rco5_3BuWork.SkuCode,
                                 SkuGrade = this.rco5_3BuWork == null ? null : this.rco5_3BuWork.SkuGrade,
@@ -201,7 +201,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                             if (this.rco5_3BuWork != null && this.rco5_3BaseObject != null)
                             {
-                                this.rco5_3BaseObject.DisCharge = this.rco5_3BuWork == null ? 0 : this.rco5_3BuWork.DisCharge;
+                                this.rco5_3BaseObject.DisCharge = this.rco5_3BuWork == null ? "0" : this.rco5_3BuWork.DisCharge;
                                 this.rco5_3BaseObject.Customer = this.rco5_3BuWork == null ? null : this.rco5_3BuWork.Customer;
                                 this.rco5_3BaseObject.SkuCode = this.rco5_3BuWork == null ? null : this.rco5_3BuWork.SkuCode;
                                 this.rco5_3BaseObject.SkuGrade = this.rco5_3BuWork == null ? null : this.rco5_3BuWork.SkuGrade;
@@ -220,6 +220,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 this.rco5_3BaseObject.ErrorCode = this.errCode;
                                 this.rco5_3BaseObject.PassFlg = this.PassFlg == 0 ? "N" : "Y";
                                 DataADO.GetInstant().UpdateBy<act_BaseObject>(this.rco5_3BaseObject, this.BuVO);
+                                writeEventLog("2.1.3 Update ข้อมูลพาเลท จาก จุดซ้อนพาเลท");
                             }
 
                             this.StepTxt = "3.3";
@@ -270,7 +271,20 @@ namespace AWCSEngine.Engine.McRuntime
                             break;
 
                         case "3.2":
-                            this.PostCommand(McCommandType.CM_10);
+                            //this.PostCommand(McCommandType.CM_10);
+                            this.PostCommand(McCommandType.CM_1, ListKeyValue<string, object>
+                                    .New("Set_PalletID", "A000000020")
+                                    .Add("Set_Comm", 1));
+
+                            //this.PostCommand(McCommandType.CM_10, (mc) => {
+                            //    if (mc.McObj.DV_Pre_Status == 110)
+                            //    {
+                            //        this.PostCommand(McCommandType.CM_1);
+                            //        return LoopResult.Break;
+                            //    }
+                            //    return LoopResult.Continue;
+                            //});
+
                             this.cmdReject = 0;
                             this.PassFlg = 0;
                             this.errCode = 0;

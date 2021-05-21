@@ -141,38 +141,98 @@ namespace AWCSWebApp.Controllers
                             if (wh == null)
                                 throw new Exception($"รหัสคลังสินค้า Name:'{record.LINE.warehouse}' ไม่ถูกต้อง!");
                             bool isDesc = wh.Code.In("W08");
-                            
+
+                            int start_pallet = record.LINE.start_pallet != null ? (int)record.LINE.start_pallet : 0;
+                            int end_pallet = record.LINE.end_pallet != null ? (int)record.LINE.end_pallet : 0;
+                            int qty = (end_pallet - start_pallet) + 1;
+                            qty = qty < 0 ? 0 : qty;
+
                             var freeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, isDesc,buVO);
-                            int i_freeLocs = 0;
-                            record.LINE.List_Pallet.ForEach(pallet =>
+                            
+
+                            var _freeLocs = freeLocs.FirstOrDefault();
+
+                            string _bay_level = "";
+                            if (_freeLocs != null)
                             {
-                                pallet = pallet.Trim();
-                                var itemNo = pallet.Substring(pallet.LastIndexOf(' ') + 1);
-                                var buWork = new act_BuWork()
-                                {
-                                    ID = null,
-                                    ItemNo = itemNo,
-                                    IOType = IOType.INBOUND,
-                                    Customer = record.LINE.customer,
-                                    SkuCode = record.LINE.sku,
-                                    SkuGrade = record.LINE.grade,
-                                    SkuLot = record.LINE.lot,
-                                    SkuQty = record.LINE.qty_per_pallet,
-                                    SkuUnit = record.LINE.unit,
-                                    Des_Warehouse_ID = wh.ID.Value,
-                                    Des_Area_ID = freeLocs[i_freeLocs].Area_ID,
-                                    Des_Location_ID = freeLocs[i_freeLocs].ID.Value,
-                                    LabelData = pallet,
-                                    TrxRef = record.LINE.api_ref,
-                                    DocRef = record.LINE.doc_wms,
-                                    SkuStatus = record.LINE.status,
-                                    DisCharge = record.LINE.discharge.Get2<float>(),
-                                    Status = EntityStatus.INACTIVE
-                                };
-                                i_freeLocs++;
-                                buWork.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_BuWork>(buWork, buVO);
-                                buWorks.Add(buWork);
-                            });
+                                var _BAY = _freeLocs.Code.Substring(3, 3); //// BAY
+                                var _LEVEL = _freeLocs.Code.Substring(6, 3);////  LEVEL
+                                _bay_level = _BAY + _LEVEL;
+                            }
+
+
+                            var Area_ID = _freeLocs != null ? _freeLocs.Area_ID : 0;
+                            string rtFlag = "", rtDesc = "";
+
+                            Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+                            parameter.Add("IOType", IOType.INBOUND);
+                            parameter.Add("TrxRef", record.LINE.api_ref);
+                            parameter.Add("DocRef", record.LINE.doc_wms);
+                            parameter.Add("Priority", 0);
+                            parameter.Add("Customer", record.LINE.customer);
+                            parameter.Add("SkuCode", record.LINE.sku);
+                            parameter.Add("SkuGrade", record.LINE.grade);
+                            parameter.Add("SkuLot", record.LINE.lot);
+                            parameter.Add("SkuQty", record.LINE.qty_per_pallet);
+                            parameter.Add("SkuUnit", record.LINE.unit);
+                            parameter.Add("SkuStatus", record.LINE.status);
+                            parameter.Add("BuQty", qty);
+                            parameter.Add("ItemNoStart", record.LINE.start_pallet);
+                            parameter.Add("ItemNoEnd", record.LINE.end_pallet);
+                            parameter.Add("Des_Warehouse_ID", wh.ID.Value);
+                            parameter.Add("Des_Area_ID", Area_ID);
+                            parameter.Add("Remark", "");
+                            parameter.Add("DisCharge", record.LINE.discharge.Get2<float>());
+                            parameter.Add("Bay_Level_Keep", _bay_level);
+                            parameter.Add("rtFlag", rtFlag, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+                            parameter.Add("rtDesc", rtDesc, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+                            DataADO.GetInstant().QuerySP("SP_CREATEBUWORK", parameter, buVO);
+                            rtFlag = parameter.Get<string>("rtFlag");
+                            rtDesc = parameter.Get<string>("rtDesc");
+
+                            /*if (rtFlag.ToUpper() != "1")
+                                throw new Exception(rtDesc);*/
+
+                            if (rtFlag.Equals("1"))
+                            {
+                               var _buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
+                                                 ListKeyValue<string, object>.New("TrxRef", record.LINE.api_ref)   
+                                                 , buVO);
+
+                                buWorks.AddRange(_buWorks);
+
+                            }
+
+                            //int i_freeLocs = 0;
+                            //record.LINE.List_Pallet.ForEach(pallet =>
+                            //{
+                            //    pallet = pallet.Trim();
+                            //    var itemNo = pallet.Substring(pallet.LastIndexOf(' ') + 1);
+                            //    var buWork = new act_BuWork()
+                            //    {
+                            //        ID = null,
+                            //        ItemNo = itemNo,
+                            //        IOType = IOType.INBOUND,
+                            //        Customer = record.LINE.customer,
+                            //        SkuCode = record.LINE.sku,
+                            //        SkuGrade = record.LINE.grade,
+                            //        SkuLot = record.LINE.lot,
+                            //        SkuQty = record.LINE.qty_per_pallet,
+                            //        SkuUnit = record.LINE.unit,
+                            //        Des_Warehouse_ID = wh.ID.Value,
+                            //        Des_Area_ID = freeLocs[i_freeLocs].Area_ID,
+                            //        Des_Location_ID = freeLocs[i_freeLocs].ID.Value,
+                            //        LabelData = pallet,
+                            //        TrxRef = record.LINE.api_ref,
+                            //        DocRef = record.LINE.doc_wms,
+                            //        SkuStatus = record.LINE.status,
+                            //        DisCharge = record.LINE.discharge.Get2<float>(),
+                            //        Status = EntityStatus.INACTIVE
+                            //    };
+                            //    i_freeLocs++;
+                            //    buWork.ID = ADO.WCSDB.DataADO.GetInstant().Insert<act_BuWork>(buWork, buVO);
+                            //    buWorks.Add(buWork);
+                            //});
                         });
 
                         return buWorks.Select(x=>new { 

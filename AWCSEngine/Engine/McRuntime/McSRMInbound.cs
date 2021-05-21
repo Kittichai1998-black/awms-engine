@@ -27,7 +27,7 @@ namespace AWCSEngine.Engine.McRuntime
 
         protected override void OnRun()
         {
-            this.clear();
+            //this.clear();
             writeEventLog(this.StepTxt + " Status " + this.McObj.DV_Pre_Status);
             this.mainStep = this.StepTxt.Substring(0, 1);
 
@@ -113,11 +113,11 @@ namespace AWCSEngine.Engine.McRuntime
                             //if ((this.cvMcRuntime != null && cvWorked.Contains(this.cvMcRuntime.McObj.DV_Pre_Status)) && this.McObj.DV_Pre_Status == 90)
                             if (this.McObj.DV_Pre_Status == 90)
                             {
-                                if(this.srmMcWorkReceive == null || this.srmBaseObjectReceive == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
+                                //if(this.srmMcWorkReceive == null || this.srmBaseObjectReceive == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 var Locat_CV = DataADO.GetInstant().SelectBy<acs_Location>(
                                                  ListKeyValue<string, object>.New("ID", this.srmMcWorkReceive.Sou_Location_ID)   // location ของ cv
@@ -156,18 +156,31 @@ namespace AWCSEngine.Engine.McRuntime
                             // ------------ สั่ง SRM ย้าย Shuttle
                             if (this.McObj.DV_Pre_Status == 90)
                             {
-                                if (this.srmMcWorkShuttle == null || this.srmBaseObjectShuttle == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
+                                //if (this.srmMcWorkShuttle == null || this.srmBaseObjectShuttle == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 this._souLocCode = 0;
                                 this._desLocCode = 0;
 
-                                var desLoc = this.StaticValue.GetLocation(this.srmMcWorkShuttle.Des_Location_ID.GetValueOrDefault());
+                                acs_Location desLoc;
+
+                                //var desLoc = this.StaticValue.GetLocation(this.srmMcWorkShuttle.Des_Location_ID.GetValueOrDefault());
+                                //var desLoc4 = this.StaticValue.GetLocation(this.srmMcWorkShuttle.Cur_Location_ID);
                                 var _mcShuttle = DataADO.GetInstant().SelectBy<act_McObject>("McMaster_ID", this.srmMcWorkShuttle.Rec_McObject_ID.GetValueOrDefault(), null).FirstOrDefault();
-                                
+
+                               if (this.srmMcWorkShuttle.QueueType == 4)
+                                {
+                                    //เบิก MixLot
+                                    desLoc = this.StaticValue.GetLocation(this.srmMcWorkShuttle.Cur_Location_ID);
+                                }
+                                else
+                                {
+                                    desLoc = this.StaticValue.GetLocation(this.srmMcWorkShuttle.Des_Location_ID.GetValueOrDefault());
+                                }
+
                                 if (desLoc != null )
                                 {
                                     this._desLocCode = desLoc != null ? (desLoc.Code.Get2<int>() % 1000000) : 0;
@@ -202,11 +215,11 @@ namespace AWCSEngine.Engine.McRuntime
                             // ------------ สั่ง SRM ย้าย Pallet กรณี คิวย้าย
                             if (this.McObj.DV_Pre_Status == 90)
                             {
-                                if (this.srmMcWorkPallet == null || this.srmBaseObjectPallet == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
+                                //if (this.srmMcWorkPallet == null || this.srmBaseObjectPallet == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 this._souLocCode = 0;
                                 this._desLocCode = 0;
@@ -257,15 +270,16 @@ namespace AWCSEngine.Engine.McRuntime
                             if (this.McObj.DV_Pre_Status == 90)
                             {
 
-                                if (this.srmMcWorkReceive == null || this.srmBaseObjectReceive == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
+                                //if (this.srmMcWorkReceive == null || this.srmBaseObjectReceive == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 if (this.srmMcWorkReceive != null)
                                 {
                                     this.srmMcWorkReceive.EventStatus = McWorkEventStatus.ACTIVE_WORKING;
+                                    this.srmMcWorkReceive.QueueStatus = 14;
                                     this.srmMcWorkReceive.ActualTime = DateTime.Now;
                                     DataADO.GetInstant().UpdateBy<act_McWork>(this.srmMcWorkReceive, this.BuVO);
                                 }
@@ -301,11 +315,11 @@ namespace AWCSEngine.Engine.McRuntime
                                 {
                                     //writeEventLog("สั่งเครนย้าย Shuttle");
 
-                                    if (this.srmMcWorkShuttle == null || this.srmBaseObjectShuttle == null)
-                                    {
-                                        this.StepTxt = "0.0";
-                                        break;
-                                    }
+                                    //if (this.srmMcWorkShuttle == null || this.srmBaseObjectShuttle == null)
+                                    //{
+                                    //    this.StepTxt = "0.0";
+                                    //    break;
+                                    //}
 
                                     //// สั่ง SRM ย้าย Shuttle
                                     //this.PostCommand(McCommandType.CM_1,
@@ -350,11 +364,11 @@ namespace AWCSEngine.Engine.McRuntime
                                 
                                 if (this._desLocCode != 0 && this._souLocCode != 0 )
                                 {
-                                    if (this.srmMcWorkPallet == null || this.srmBaseObjectPallet == null)
-                                    {
-                                        this.StepTxt = "0.0";
-                                        break;
-                                    }
+                                    //if (this.srmMcWorkPallet == null || this.srmBaseObjectPallet == null)
+                                    //{
+                                    //    this.StepTxt = "0.0";
+                                    //    break;
+                                    //}
 
 
                                     // สั่ง SRM ย้ายพาเลท
@@ -405,23 +419,11 @@ namespace AWCSEngine.Engine.McRuntime
                         case "3.1": //---คิวเก็บ -> QueueType = 1 , QueueStatus = 5
                             if (this.McObj.DV_Pre_Status == 99)
                             {
-                                if (this.srmMcWorkReceive == null || this.srmBaseObjectReceive == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
-
-                                //สั่งกลับ home เมื่อทำงานเสร็จ
-                                this.PostCommand(McCommandType.CM_99, (mc) => {
-                                    if (mc.McObj.DV_Pre_Status == 90)
-                                    {
-                                        this.PostCommand(McCommandType.CM_2, () => { });
-                                        return LoopResult.Break;
-                                    }
-                                    return LoopResult.Continue;
-                                });
-                                writeEventLog("3.1.1 จบงาน SRM");
-
+                                //if (this.srmMcWorkReceive == null || this.srmBaseObjectReceive == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 if (this.cvMcRuntime != null)
                                 {
@@ -438,18 +440,38 @@ namespace AWCSEngine.Engine.McRuntime
                                 }
 
                                 //this.srmWorked(QueueStatus.QS_6);
-                                
-                                if (this.srmMcWorkReceive != null)
+                                var srmMcWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                     ListKeyValue<string, object>.New("QueueStatus", 14)
+                                     .Add("QueueType", QueueType.QT_1)
+                                       , this.BuVO).FirstOrDefault();
+
+                                if (srmMcWork != null)
                                 {
-                                    this.srmMcWorkReceive.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
-                                    this.srmMcWorkReceive.ActualTime = DateTime.Now;
-                                    this.srmMcWorkReceive.QueueStatus = 6;
-                                    DataADO.GetInstant().UpdateBy<act_McWork>(this.srmMcWorkReceive, this.BuVO);
-                                    writeEventLog("3.1.4 อัพเดตคิวงาน " + this.srmMcWorkReceive.ID + " Type " + this.srmMcWorkReceive.QueueType + "Status " + this.srmMcWorkReceive.QueueStatus);
+                                    //srmMcWork.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+                                    srmMcWork.ActualTime = DateTime.Now;
+                                    srmMcWork.QueueStatus = 6;
+                                    DataADO.GetInstant().UpdateBy<act_McWork>(srmMcWork, this.BuVO);
+                                    writeEventLog("3.1.4 อัพเดตคิวงาน " + srmMcWork.ID + " Type " + srmMcWork.QueueType + "Status " + srmMcWork.QueueStatus);
                                 }
 
+                                //สั่งกลับ home เมื่อทำงานเสร็จ
+                                this.PostCommand(McCommandType.CM_99, (mc) => {
+                                    if (mc.McObj.DV_Pre_Status == 90)
+                                    {
+                                        this.PostCommand(McCommandType.CM_2, () => { });
+                                        writeEventLog("3.1.1 จบงาน SRM");
+                                        this.StepTxt = "0.0";
+                                        return LoopResult.Break;
+                                    }
+                                    return LoopResult.Continue;
+                                });
+                                
 
-                                this.StepTxt = "0.0";
+
+                                
+
+
+                                
                                 break;
                             }
 
@@ -458,11 +480,11 @@ namespace AWCSEngine.Engine.McRuntime
                         case "3.2": // คิวย้ายรถ ->  QueueStatus = 3
                             if (this.McObj.DV_Pre_Status == 99)
                             {
-                                if (this.srmMcWorkShuttle == null || this.srmBaseObjectShuttle == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
+                                //if (this.srmMcWorkShuttle == null || this.srmBaseObjectShuttle == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 this.PostCommand(McCommandType.CM_99);
                                 writeEventLog("3.2.1 จบงาน SRM");
@@ -477,7 +499,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                                 if (this.srmMcWorkShuttle!= null)
                                 {
-                                    this.srmMcWorkShuttle.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+                                    //this.srmMcWorkShuttle.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
                                     this.srmMcWorkShuttle.ActualTime = DateTime.Now;
                                     this.srmMcWorkShuttle.QueueStatus = 4;
                                     DataADO.GetInstant().UpdateBy<act_McWork>(this.srmMcWorkShuttle, this.BuVO);
@@ -492,11 +514,11 @@ namespace AWCSEngine.Engine.McRuntime
                         case "3.3": // คิวย้ายของ -> QueueType = 4 , QueueStatus = 5
                             if (this.McObj.DV_Pre_Status == 99)
                             {
-                                if (this.srmMcWorkPallet == null || this.srmBaseObjectPallet == null)
-                                {
-                                    this.StepTxt = "0.0";
-                                    break;
-                                }
+                                //if (this.srmMcWorkPallet == null || this.srmBaseObjectPallet == null)
+                                //{
+                                //    this.StepTxt = "0.0";
+                                //    break;
+                                //}
 
                                 this.PostCommand(McCommandType.CM_99);
                                 writeEventLog("3.3.1 จบงาน SRM");
@@ -530,7 +552,7 @@ namespace AWCSEngine.Engine.McRuntime
 
                                 if (this.srmMcWorkPallet != null)
                                 {
-                                    this.srmMcWorkPallet.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
+                                    //this.srmMcWorkPallet.EventStatus = McWorkEventStatus.ACTIVE_WORKED;
                                     this.srmMcWorkPallet.ActualTime = DateTime.Now;
                                     this.srmMcWorkPallet.QueueStatus = 9;
                                     DataADO.GetInstant().UpdateBy<act_McWork>(this.srmMcWorkPallet, this.BuVO);
@@ -637,6 +659,16 @@ namespace AWCSEngine.Engine.McRuntime
                                       //.Add("IOType", IOType.INBOUND)
                                       .Add("Status", 1)
                                         , this.BuVO).FirstOrDefault();
+            return srmMcWork;
+        }
+
+        private act_McWork getMcWorkMoveShuttleOutbound()
+        {
+            var srmMcWork = DataADO.GetInstant().SelectBy<act_McWork>(
+                                      ListKeyValue<string, object>.New("QueueStatus", QueueStatus.QS_3)
+                                      .Add("QueueType", QueueType.QT_4)
+                                      .Add("Status", 1)
+                                      , this.BuVO).FirstOrDefault(x => moveShuttleQ.Contains(x.QueueType));
             return srmMcWork;
         }
         #endregion

@@ -481,13 +481,14 @@ namespace AWCSEngine.Engine.McRuntime
 
                 string str_line1 =
                     string.Format(
-                        "{0} >> [{1}] CMD={2} : {3} | PSTS={4} : {5}"
+                        "{0} - {1} >> [{2}] CMD={3} : {4} | PSTS={5} : {6}"
                         , this.Code                                                 //0
-                        , this.EventStatus.ToString().Substring(0, 4)               //1
-                        , this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0  //2
-                        , GetTextCommand(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0) //3
-                        , this.McObj.DV_Pre_Status                                  //4
-                        , GetTextStatus(this.McObj.DV_Pre_Status)                   //5
+                        , this.ID                                                   //1
+                        , this.EventStatus.ToString().Substring(0, 4)               //2
+                        , this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0  //3
+                        , GetTextCommand(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0) //4
+                        , this.McObj.DV_Pre_Status                                  //5
+                        , GetTextStatus(this.McObj.DV_Pre_Status)                   //6
                         );
                 string str_line1_1 =
                     string.Format("{0} >> [{1}] [{2}] | LOC={3} | STEP={4} | ERR={5}"
