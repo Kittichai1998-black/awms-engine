@@ -14,11 +14,11 @@ using AMWUtil.Common;
 using AMSModel.Criteria.SP.Request;
 using AMSModel.Constant.StringConst;
 using AWMSEngine.Engine.V2.Business.Document;
-using GCLModel.Criteria;
 using AWMSEngine.Engine.V2.Business.Received;
 using AWMSEngine.Engine.V2.Business.Issued;
 using static AWMSEngine.Engine.V2.Business.WorkQueue.ASRSProcessQueue.TReq;
 using System.Text.RegularExpressions;
+using ProjectGCL.GCLModel.Criteria;
 
 namespace ProjectGCL.Engine.Document
 {

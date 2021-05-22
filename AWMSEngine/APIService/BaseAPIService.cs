@@ -30,6 +30,7 @@ namespace AWMSEngine.APIService
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
         public FinalDatabaseLogCriteria FinalDBLog { get => (FinalDatabaseLogCriteria)this.BuVO.GetDynamic(BusinessVOConst.KEY_FINAL_DB_LOG); }
         public bool IsAuthenAuthorize { get; set; }
+        private bool IsLogging { get; set; }
 
         public AMWLogger Logger { get; set; }
 
@@ -40,13 +41,21 @@ namespace AWMSEngine.APIService
             this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
-
+            this.IsLogging = true;
+        }
+        public BaseAPIService(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isLogging = true)
+        {
+            this.IsAuthenAuthorize = isAuthenAuthorize;
+            this.ControllerAPI = controllerAPI;
+            this.APIServiceID = apiServiceID;
+            this.IsLogging = isLogging;
         }
         public BaseAPIService()
         {
             this.IsAuthenAuthorize = false;
             this.ControllerAPI = null;
             this.APIServiceID = 0;
+            this.IsLogging = true;
         }
 
         public void BeginTransaction()
@@ -133,7 +142,7 @@ namespace AWMSEngine.APIService
                     tokenInfo.SignatureEncode = tk[2];
                     tokenInfo.HeadDecode = EncryptUtil.Base64Decode(tk[0]).Json<TokenCriteria.TokenHead>();
                     tokenInfo.BodyDecode = EncryptUtil.Base64Decode(tk[1]).Json<TokenCriteria.TokenBody>();
-                    this.Logger = AMWLoggerManager.GetLogger(tokenInfo.BodyDecode.ucode, this.GetType().Name);
+                    this.Logger = AMWLoggerManager.GetLogger(tokenInfo.BodyDecode.ucode, this.GetType().Name,this.IsLogging);
                 }
                 else if (getKey != null && !string.IsNullOrWhiteSpace(getKey.apikey))
                 {
@@ -144,7 +153,7 @@ namespace AWMSEngine.APIService
                             }, this.BuVO).FirstOrDefault();
 
                     if (apiKeyInfo != null)
-                        this.Logger = AMWLoggerManager.GetLogger(apiKeyInfo.APIKey, this.GetType().Name, apiKeyInfo.IsLogging);
+                        this.Logger = AMWLoggerManager.GetLogger(apiKeyInfo.APIKey, this.GetType().Name, apiKeyInfo.IsLogging&&this.IsLogging);
                 }
 
                 if (tokenInfo == null && apiKeyInfo == null)
@@ -189,15 +198,16 @@ namespace AWMSEngine.APIService
 
                 if (apiKeyInfo == null || apiKeyInfo.IsLogging)
                 {
-                    dbLogID = ADO.WMSDB.LogingADO.GetInstant().BeginAPIService(
-                        this.APIServiceID,
-                        this.GetType().Name,
-                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
-                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
-                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
-                        System.Environment.MachineName,
-                        this.RequestVO,
-                        this.BuVO);
+                    if (this.IsLogging)
+                        dbLogID = ADO.WMSDB.LogingADO.GetInstant().BeginAPIService(
+                            this.APIServiceID,
+                            this.GetType().Name,
+                            this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
+                            this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
+                            System.Environment.MachineName,
+                            this.RequestVO,
+                            this.BuVO);
                 }
 
                 //-----------VALIDATE PERMISSION

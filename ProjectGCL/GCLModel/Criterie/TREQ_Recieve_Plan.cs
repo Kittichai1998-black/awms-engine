@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWCSWebApp.GCLModel.Criterie
+namespace ProjectGCL.GCLModel.Criterie
 {
     public class TREQ_Recieve_Plan
     {
@@ -13,6 +13,7 @@ namespace AWCSWebApp.GCLModel.Criterie
             public List<TLine> LINE;
             public class TLine
             {
+                public bool IsFromAMS = false;
                 public string API_REF;
                 public DateTime API_DATE_TIME;
                 public string WMS_DOC;
@@ -31,8 +32,8 @@ namespace AWCSWebApp.GCLModel.Criterie
                     public string LOT_Barcode;
                     public string NO_Barcode;
                     public string SKU;
-                    public DateTime MFG;
-                    public DateTime EXP;
+                    public DateTime? MFG;
+                    public DateTime? EXP;
                     public string UD_CODE;
                     public string LOT;
                     public decimal QTY_Pallet;

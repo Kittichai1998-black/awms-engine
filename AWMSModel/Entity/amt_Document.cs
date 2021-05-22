@@ -18,12 +18,14 @@ namespace AMSModel.Entity
         public long? Sou_Branch_ID;
         public long? Sou_Warehouse_ID;
         public long? Sou_AreaMaster_ID;
+        public long? Sou_AreaLocationMaster_ID;
 
         public long? Des_Customer_ID;
         public long? Des_Supplier_ID;
         public long? Des_Branch_ID;
         public long? Des_Warehouse_ID;
         public long? Des_AreaMaster_ID;
+        public long? Des_AreaLocationMaster_ID;
 
         public long? Transport_ID;
         public DocumentProcessTypeID DocumentProcessType_ID;

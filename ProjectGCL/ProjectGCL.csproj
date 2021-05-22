@@ -5,6 +5,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="APIService\Document\**" />
+    <Compile Remove="APIService\Received\**" />
+    <Compile Remove="Engine\Document\**" />
+    <Compile Remove="Engine\Received\**" />
+    <Compile Remove="Engine\WorkQueue\**" />
+    <Content Remove="APIService\Document\**" />
+    <Content Remove="APIService\Received\**" />
+    <Content Remove="Engine\Document\**" />
+    <Content Remove="Engine\Received\**" />
+    <Content Remove="Engine\WorkQueue\**" />
+    <EmbeddedResource Remove="APIService\Document\**" />
+    <EmbeddedResource Remove="APIService\Received\**" />
+    <EmbeddedResource Remove="Engine\Document\**" />
+    <EmbeddedResource Remove="Engine\Received\**" />
+    <EmbeddedResource Remove="Engine\WorkQueue\**" />
+    <None Remove="APIService\Document\**" />
+    <None Remove="APIService\Received\**" />
+    <None Remove="Engine\Document\**" />
+    <None Remove="Engine\Received\**" />
+    <None Remove="Engine\WorkQueue\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AMWADO\ADO.csproj" />
     <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
     <ProjectReference Include="..\AWMSEngine\AWMSEngine.csproj" />

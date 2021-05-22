@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWCSWebApp.GCLModel.Criterie
+namespace ProjectGCL.GCLModel.Criterie
 {
     public class TRES__return
     {

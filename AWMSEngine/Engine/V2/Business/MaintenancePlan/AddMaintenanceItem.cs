@@ -19,14 +19,14 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
         }
         protected override amt_MaintenanceResult ExecuteEngine(TReq reqVO)
         {
-            ADO.WMSDB.DataADO.GetInstant().Insert<amt_MaintenanceResultItem>(BuVO, new amt_MaintenanceResultItem()
+            ADO.WMSDB.DataADO.GetInstant().Insert<amt_MaintenanceResultItem>( new amt_MaintenanceResultItem()
             {
                 MaintenanceResult_ID = reqVO.MaintenanceResult_ID,
                 ServiceResult = reqVO.ServiceResult,
                 ServiceBy = reqVO.ServiceBy,
                 EventStatus = reqVO.EventStatus,
                 Status = reqVO.EventStatus == MaintenancePlanEventStatus.CLOSED ? EntityStatus.DONE : EntityStatus.ACTIVE,
-            });
+            }, BuVO);
 
             if (reqVO.EventStatus == MaintenancePlanEventStatus.CLOSED)
             {

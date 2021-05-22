@@ -156,7 +156,7 @@ namespace AWMSEngine.Engine.Business
 
             if (baseMasterData.Count <= 0)
             {
-                ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(new ams_BaseMaster()
                 {
                     Code = reqVO.newbstoCode,
                     Name = "Pallet",
@@ -167,7 +167,7 @@ namespace AWMSEngine.Engine.Business
                     UnitType_ID = 2,
                     WeightKG = 30
 
-                });
+                }, this.BuVO);
             }
             var newbstoBaseMaster = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.newbstoCode, BuVO);
 

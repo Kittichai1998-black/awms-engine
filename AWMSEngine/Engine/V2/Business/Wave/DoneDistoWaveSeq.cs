@@ -436,7 +436,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         Status = EntityStatus.ACTIVE
                     };
 
-                    var resID = ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, newBase);
+                    var resID = ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>( newBase, this.BuVO);
                     newBase.ID = resID;
 
                     var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == _base.UnitType_ID);

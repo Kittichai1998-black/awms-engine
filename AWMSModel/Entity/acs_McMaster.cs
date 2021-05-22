@@ -7,6 +7,7 @@ namespace AMSModel.Entity
 {
     public class acs_McMaster : BaseEntitySTD
     {
+        public string GroupName;
         public string NameEngine;
         public int ThreadIndex;
         public string Info1;

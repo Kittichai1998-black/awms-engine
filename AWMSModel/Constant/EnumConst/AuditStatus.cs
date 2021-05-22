@@ -17,6 +17,7 @@ namespace AMSModel.Constant.EnumConst
         ACM = 8,//GCL
         HOLD = 9,
         BLOCK = 10,//DOH
-        UR = 11//DOH
+        UR = 11,//DOH
+        UD = 12//GCL
     }
 }

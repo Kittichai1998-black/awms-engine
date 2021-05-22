@@ -60,7 +60,7 @@ namespace AWMSEngine.Engine.V2.General
                     Status = EntityStatus.ACTIVE
                 };
 
-                var idbase = ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(BuVO, newBase);
+                var idbase = ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>( newBase, BuVO);
                 _base = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_BaseMaster>(idbase, BuVO);
                 if (_base == null)
                 {

@@ -392,7 +392,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))
                 {
-                    var desLocations = ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, this.BuVO);
+                    var desLocations = ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, null, this.BuVO);
                     res = desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
                 }
                 else

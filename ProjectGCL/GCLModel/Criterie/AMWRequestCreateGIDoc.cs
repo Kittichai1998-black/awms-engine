@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace GCLModel.Criteria
+namespace ProjectGCL.GCLModel.Criteria
 {
     public class AMWRequestCreateGIDoc
     {
