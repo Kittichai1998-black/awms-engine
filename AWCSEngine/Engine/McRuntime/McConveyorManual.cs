@@ -88,7 +88,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 }
 
 
-                                this.disCharge = this.rc8_2BuWork.DisCharge;
+                                this.disCharge = this.rc8_2BuWork == null ? "0" : this.rc8_2BuWork.DisCharge  ;
                                 this.BuWork_ID = this.rc8_2BuWork == null ? 0 : this.rc8_2BuWork.ID;
 
                                 if (this.rc8_2BuWork != null && ( this.rc8_2BuWork.DisCharge == "0" || String.IsNullOrWhiteSpace(this.rc8_2BuWork.DisCharge)))

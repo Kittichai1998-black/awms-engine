@@ -155,14 +155,14 @@ namespace AWCSEngine.Engine.McRuntime
 
                                 }
 
-                                var desLoc = StaticValueManager.GetInstant().GetLocation(this.rc8_1BuWorkk.Des_Location_ID.Value);
-                                if (desLoc == null)
-                                {
-                                    writeEventLog("3.2.4 ไม่พบข้อมูล Des_Location " + this.rc8_1BuWorkk.Des_Location_ID);
-                                    this.StepTxt = "0.0";
-                                    break;
+                                //var desLoc = StaticValueManager.GetInstant().GetLocation(this.rc8_1BuWorkk.Des_Location_ID.Value);
+                                //if (desLoc == null)
+                                //{
+                                //    writeEventLog("3.2.4 ไม่พบข้อมูล Des_Location " + this.rc8_1BuWorkk.Des_Location_ID);
+                                //    this.StepTxt = "0.0";
+                                //    break;
 
-                                }
+                                //}
 
                                 var desArea = StaticValueManager.GetInstant().GetArea(this.rc8_1BuWorkk.Des_Area_ID.Value);
                                 if (desArea == null)

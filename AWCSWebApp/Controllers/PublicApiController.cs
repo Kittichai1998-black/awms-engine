@@ -147,24 +147,43 @@ namespace AWCSWebApp.Controllers
                             int qty = (end_pallet - start_pallet) + 1;
                             qty = qty < 0 ? 0 : qty;
 
-                            var freeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, isDesc,buVO);
+                            //var _rfreeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, isDesc,buVO);
+
+
+                            var _rfreeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, isDesc,buVO);
+                            var res_freeLocs = _rfreeLocs.GroupBy(
+                                x => x.Code.Substring(3, 6) 
+                                ).ToList();
+                            var freeLocs = res_freeLocs;
                             string prefix = ":";
                             string _bay_level = "";
-                            foreach (acs_Location freeLoc in freeLocs)
+
+                            foreach (var freeLoc in freeLocs)
                             {
                                 if (freeLoc != null)
                                 {
-                                    var _BAY = freeLoc.Code.Substring(3, 3); //// BAY
-                                    var _LEVEL = freeLoc.Code.Substring(6, 3);////  LEVEL
-                                    _bay_level +=  _BAY + _LEVEL + prefix;
+                                    //var _BAY = freeLoc.Code.Substring(3, 3); //// BAY
+                                    //var _LEVEL = freeLoc.Code.Substring(6, 3);////  LEVEL
+                                    _bay_level += freeLoc.Key + prefix;
                                 }
                             }
 
 
-                            var _freeLocs = freeLocs.FirstOrDefault();
+                            //foreach (acs_Location freeLoc in freeLocs)
+                            //{
+                            //    if (freeLoc != null)
+                            //    {
+                            //        var _BAY = freeLoc.Code.Substring(3, 3); //// BAY
+                            //        var _LEVEL = freeLoc.Code.Substring(6, 3);////  LEVEL
+                            //        _bay_level += _BAY + _LEVEL + prefix;
+                            //    }
+                            //}
 
 
-                            var Area_ID = _freeLocs != null ? _freeLocs.Area_ID : 0;
+                            var _freeLocsx = _rfreeLocs.FirstOrDefault();
+
+
+                            var Area_ID = _freeLocsx != null ? _freeLocsx.Area_ID : 0;
                             string rtFlag = "", rtDesc = "";
 
                             Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
