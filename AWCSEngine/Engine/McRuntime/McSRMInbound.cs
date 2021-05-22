@@ -275,7 +275,7 @@ namespace AWCSEngine.Engine.McRuntime
                                 //    this.StepTxt = "0.0";
                                 //    break;
                                 //}
-
+                                //--- เพิ่ม QueueStatus เพื่อป้องกัน Converyor ทำงาน ก่อนเครน
                                 if (this.srmMcWorkReceive != null)
                                 {
                                     this.srmMcWorkReceive.EventStatus = McWorkEventStatus.ACTIVE_WORKING;

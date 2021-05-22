@@ -148,17 +148,20 @@ namespace AWCSWebApp.Controllers
                             qty = qty < 0 ? 0 : qty;
 
                             var freeLocs = LocationADO.GetInstant().List_FreeLocationBayLv(wh.ID.Value, record.LINE.List_Pallet.Count, isDesc,buVO);
-                            
+                            string prefix = ":";
+                            string _bay_level = "";
+                            foreach (acs_Location freeLoc in freeLocs)
+                            {
+                                if (freeLoc != null)
+                                {
+                                    var _BAY = freeLoc.Code.Substring(3, 3); //// BAY
+                                    var _LEVEL = freeLoc.Code.Substring(6, 3);////  LEVEL
+                                    _bay_level +=  _BAY + _LEVEL + prefix;
+                                }
+                            }
+
 
                             var _freeLocs = freeLocs.FirstOrDefault();
-
-                            string _bay_level = "";
-                            if (_freeLocs != null)
-                            {
-                                var _BAY = _freeLocs.Code.Substring(3, 3); //// BAY
-                                var _LEVEL = _freeLocs.Code.Substring(6, 3);////  LEVEL
-                                _bay_level = _BAY + _LEVEL;
-                            }
 
 
                             var Area_ID = _freeLocs != null ? _freeLocs.Area_ID : 0;
@@ -548,64 +551,78 @@ namespace AWCSWebApp.Controllers
                     },
                     buVo).FirstOrDefault();
 
-                //////////////////ตรวจสอบงานรับเข้า
-                var buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
-                    new SQLConditionCriteria[]
-                    {
-                        new SQLConditionCriteria("LabelData",qrCode, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("Status", new EntityStatus[]{ EntityStatus.ACTIVE , EntityStatus.INACTIVE}, SQLOperatorType.IN)
-                    },
-                    buVo).FirstOrDefault();
-                if (buWorks == null)
-                    throw new Exception($"ไม่พบเลขที่ QR '{qrCode}' ในงานรับเข้า!");
+                    string rtFlag = "", rtDesc = "";
+                    Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+                    parameter.Add("sLabelData", qrCode);
+                    parameter.Add("sStation_keep", mcCode);
+                    parameter.Add("rtFlag", rtFlag, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+                    parameter.Add("rtDesc", rtDesc, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+                    DataADO.GetInstant().QuerySP("SP_CreateBaseObject", parameter, buVo);
+                    rtFlag = parameter.Get<string>("rtFlag");
+                    rtDesc = parameter.Get<string>("rtDesc");
 
-                /////////////////////////////////////ตรวจสอบพาเลทซ้ำ ถ้ามีซ้ำและยังไม่รับเข้าให้ให้ลบ แต่ถ้าอยู่ระหว่างรับเข้าให้ error
-                var bo = BaseObjectADO.GetInstant().GetByLabel(qrCode, buVo);
-                if (bo != null)
-                {
-                    //มีซ้ำ ลบ
-                    if (bo.EventStatus == BaseObjectEventStatus.TEMP)
-                    {
-                        bo.Status = EntityStatus.REMOVE;
-                        DataADO.GetInstant().UpdateBy<act_BaseObject>(bo, buVo);
-                        return bo;
-                    }
-                    //อยู่ระหว่างรับเข้า
-                    else
-                        throw new Exception($"พาเลท '{bo.LabelData}' อยู่ระหว่างรับเข้า ไม่สามารถรับเข้าซ้ำได้");
-                }
+                ////////////////////ตรวจสอบงานรับเข้า
+                //var buWorks = DataADO.GetInstant().SelectBy<act_BuWork>(
+                //    new SQLConditionCriteria[]
+                //    {
+                //        new SQLConditionCriteria("LabelData",qrCode, SQLOperatorType.EQUALS),
+                //        new SQLConditionCriteria("Status", new EntityStatus[]{ EntityStatus.ACTIVE , EntityStatus.INACTIVE}, SQLOperatorType.IN)
+                //    },
+                //    buVo).FirstOrDefault();
+                //if (buWorks == null)
+                //    throw new Exception($"ไม่พบเลขที่ QR '{qrCode}' ในงานรับเข้า!");
 
-                ////////////////////////ตรวจสอบงานบนเครื่องจักร Gate
-                bo = ADO.WCSDB.BaseObjectADO.GetInstant().GetByMcObject(mcObj.ID.Value, buVo);
-                if (bo != null)
-                    throw new Exception($"Gate '{mcMst.Code}' อยู่ระหว่างรับเข้า พาเลท '{bo.LabelData}'!");
+                ///////////////////////////////////////ตรวจสอบพาเลทซ้ำ ถ้ามีซ้ำและยังไม่รับเข้าให้ให้ลบ แต่ถ้าอยู่ระหว่างรับเข้าให้ error
+                //var bo = BaseObjectADO.GetInstant().GetByLabel(qrCode, buVo);
+                //if (bo != null)
+                //{
+                //    //มีซ้ำ ลบ
+                //    if (bo.EventStatus == BaseObjectEventStatus.TEMP)
+                //    {
+                //        bo.Status = EntityStatus.REMOVE;
+                //        DataADO.GetInstant().UpdateBy<act_BaseObject>(bo, buVo);
+                //        return bo;
+                //    }
+                //    //อยู่ระหว่างรับเข้า
+                //    else
+                //        throw new Exception($"พาเลท '{bo.LabelData}' อยู่ระหว่างรับเข้า ไม่สามารถรับเข้าซ้ำได้");
+                //}
 
-                string baseCode;
-                do
-                {
-                    baseCode = (DataADO.GetInstant().NextNum("base_no", false, buVo) % (Math.Pow(10, 10))).ToString("0000000000");
-                } while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>(baseCode, buVo) != null);
+                //////////////////////////ตรวจสอบงานบนเครื่องจักร Gate
+                //bo = ADO.WCSDB.BaseObjectADO.GetInstant().GetByMcObject(mcObj.ID.Value, buVo);
+                //if (bo != null)
+                //    throw new Exception($"Gate '{mcMst.Code}' อยู่ระหว่างรับเข้า พาเลท '{bo.LabelData}'!");
 
-                var curLoc = StaticValueManager.GetInstant().GetLocation(mcObj.Cur_Location_ID.Value);
-                var curArea = StaticValueManager.GetInstant().GetArea(curLoc.Area_ID);
-                var curWH = StaticValueManager.GetInstant().GetWarehouse(curArea.Warehouse_ID);
+                //string baseCode;
+                //do
+                //{
+                //    baseCode = (DataADO.GetInstant().NextNum("base_no", false, buVo) % (Math.Pow(10, 10))).ToString("0000000000");
+                //} while (DataADO.GetInstant().SelectByCodeActive<act_BaseObject>(baseCode, buVo) != null);
 
-                act_BaseObject baseObj = new act_BaseObject()
-                {
-                    ID = null,
-                    BuWork_ID = buWorks.ID.Value,
-                    Code = baseCode,
-                    Model = "N/A",
-                    McObject_ID = mcObj.ID,
-                    Warehouse_ID = curWH.ID.Value,
-                    Area_ID = curArea.ID.Value,
-                    Location_ID = curLoc.ID.Value,
-                    LabelData = qrCode,
-                    EventStatus = BaseObjectEventStatus.TEMP,
-                    Status = EntityStatus.ACTIVE
-                };
+                //var curLoc = StaticValueManager.GetInstant().GetLocation(mcObj.Cur_Location_ID.Value);
+                //var curArea = StaticValueManager.GetInstant().GetArea(curLoc.Area_ID);
+                //var curWH = StaticValueManager.GetInstant().GetWarehouse(curArea.Warehouse_ID);
 
-                baseObj.ID = DataADO.GetInstant().Insert<act_BaseObject>(baseObj, buVo);
+                //act_BaseObject baseObj = new act_BaseObject()
+                //{
+                //    ID = null,
+                //    BuWork_ID = buWorks.ID.Value,
+                //    Code = baseCode,
+                //    Model = "N/A",
+                //    McObject_ID = mcObj.ID,
+                //    Warehouse_ID = curWH.ID.Value,
+                //    Area_ID = curArea.ID.Value,
+                //    Location_ID = curLoc.ID.Value,
+                //    LabelData = qrCode,
+                //    EventStatus = BaseObjectEventStatus.TEMP,
+                //    Status = EntityStatus.ACTIVE
+                //};
+
+                //baseObj.ID = DataADO.GetInstant().Insert<act_BaseObject>(baseObj, buVo);
+                act_BaseObject baseObj = DataADO.GetInstant().SelectBy<act_BaseObject>(
+                                                ListKeyValue<string, object>.New("LabelData", qrCode)
+                                                .Add("McObject_ID", mcMst.ID.Value)
+                                                , buVo).FirstOrDefault(x=>x.Status == EntityStatus.INACTIVE || x.Status == EntityStatus.ACTIVE);
                 return baseObj;
             });
             return res;
