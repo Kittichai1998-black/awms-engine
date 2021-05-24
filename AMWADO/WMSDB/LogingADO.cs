@@ -75,7 +75,6 @@ namespace ADO.WMSDB
             buVO.Logger.LogInfo("PutAPIPostBackEvent : " + d);
             //return 0;
             var id = DataADO.GetInstant().Insert<aml_APIPostEvent>(
-                buVO,
                 new aml_APIPostEvent()
                 {
                     ID = null,
@@ -93,7 +92,8 @@ namespace ADO.WMSDB
                     ResultStatus = apiEvt.ResultStatus,
                     StartTime = apiEvt.StartTime,
                     EndTime = apiEvt.EndTime,
-                });
+                },
+                buVO);
             return id.Value;
         }
     }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWCSWebApp.GCLModel.Criterie
+namespace ProjectGCL.GCLModel.Criterie
 {
-    public class TREQ_Confirm_Putaway
+    public class TREQ_Receive_Confirm
     {
         public TRecord RECORD;
         public class TRecord

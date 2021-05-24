@@ -8,6 +8,8 @@ namespace AMSModel.Entity
     public class amv_DocumentItem : IEntityModel
     {
         public long? ID;
+        public DocumentTypeID DocumentType_ID;
+        public DocumentProcessTypeID DocumentProcessType_ID;
         public long? ParentDocumentItem_ID;
         public long? Document_ID;
         public long? SKUMaster_ID;

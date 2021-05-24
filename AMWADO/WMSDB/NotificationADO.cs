@@ -38,7 +38,7 @@ namespace ADO.WMSDB
 
         public amt_NotifyPost InsertNotifyPost(amt_NotifyPost notifyPost, VOCriteria buVO)
         {
-            var notiUser = DataADO.GetInstant().Insert<amt_NotifyPost>(buVO, notifyPost);
+            var notiUser = DataADO.GetInstant().Insert<amt_NotifyPost>(notifyPost, buVO);
             notifyPost.ID = notiUser;
             return notifyPost;
         }

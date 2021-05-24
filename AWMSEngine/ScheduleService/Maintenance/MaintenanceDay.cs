@@ -110,7 +110,7 @@ namespace AWMSEngine.ScheduleService.Maintenance
                     Warehouse_ID = item.Warehouse_ID
                 };
 
-                ADO.WMSDB.DataADO.GetInstant().Insert(buVO, newJob);
+                ADO.WMSDB.DataADO.GetInstant().Insert(newJob, buVO);
 
                 res.Add(newJob);
             });

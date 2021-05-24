@@ -28,6 +28,17 @@ namespace ADO.WMSDB
             var res = this.Query<SPOutCountItemInLocation>("SP_LOCATION_COUNT_ITEM", System.Data.CommandType.StoredProcedure, parameters, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+
+        public List<SPGetFreeBayLvNotBook> ListFreeBayLvNotBook(long whID,VOCriteria buVO)
+        {
+            Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
+            parameters.Add("whID", whID);
+
+            var res = this.Query<SPGetFreeBayLvNotBook>("SP_GET_FREE_BAY_LV_NOT_BOOK", 
+                System.Data.CommandType.StoredProcedure, 
+                parameters, buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
         public List<SPOutCountItemInLocation> CountItemInLocation(
             string warehouseCode, string areaCode, string bank, int? bay, int level, VOCriteria buVO)
         {
@@ -39,16 +50,21 @@ namespace ADO.WMSDB
                 throw new AMWException(buVO.Logger, AMWExceptionCode.V1001, "ไม่พบรหัส Area '" + areaCode + "'");
             return CountItemInLocation(wm.ID.Value, am.ID.Value, null, null, bank, bay, level, buVO);
         }
+        public List<SPOutAreaLineCriteria> ListDestinationArea(IOType ioType, long souAreaID, long desWhID, VOCriteria buVO)
+        {
+            return this.ListDestinationArea(ioType, souAreaID, null, desWhID, buVO);
+        }
         public List<SPOutAreaLineCriteria> ListDestinationArea(IOType ioType, long souAreaID, VOCriteria buVO)
         {
-            return this.ListDestinationArea(ioType, souAreaID, null, buVO);
+            return this.ListDestinationArea(ioType, souAreaID, null,null, buVO);
         }
-        public List<SPOutAreaLineCriteria> ListDestinationArea(IOType ioType, long souAreaID, long? souLocationID, VOCriteria buVO)
+        public List<SPOutAreaLineCriteria> ListDestinationArea(IOType ioType, long souAreaID, long? souLocationID, long? desWhID, VOCriteria buVO)
         {
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             datas.Add("ioType", ioType);
             datas.Add("souAreaID", souAreaID);
             datas.Add("souLocationID", souLocationID);
+            datas.Add("desWhID", desWhID);
             var res = this.Query<SPOutAreaLineCriteria>("SP_AREA_DES_LIST_BY_SOU", System.Data.CommandType.StoredProcedure, datas, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }

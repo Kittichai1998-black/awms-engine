@@ -14,7 +14,6 @@ namespace AWMSEngine.Engine.V2.General
         }
         protected override TRes ExecuteEngine(Dictionary<string, string> reqVO)
         {
-            
             if (reqVO.ContainsKey("spnames"))
             {
                 Dictionary<string, dynamic> datas = new Dictionary<string, dynamic>();

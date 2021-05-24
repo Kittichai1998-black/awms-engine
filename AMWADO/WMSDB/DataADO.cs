@@ -205,6 +205,16 @@ namespace ADO.WMSDB
                 null,
                 buVO).FirstOrDefault();
         }
+        public List<T> SelectBy<T>(ListKeyValue<string,object> datas, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                datas.Items.Select(x => new SQLConditionCriteria() { field = x.Key, value = x.Value, operatorType = SQLOperatorType.EQUALS }).ToArray(),
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
+        }
         public List<T> SelectBy<T>(string field, object value, VOCriteria buVO)
              where T : IEntityModel
         {
@@ -349,6 +359,13 @@ namespace ADO.WMSDB
             return comm;
         }
 
+        public long? UpdateBy<T>(ListKeyValue<string,object> wheres, ListKeyValue<string,object> values, VOCriteria buVO)
+             where T : BaseEntityID
+        {
+            var _wheres = wheres.Items.Select(x => new SQLConditionCriteria(x.Key, x.Value, SQLOperatorType.EQUALS)).ToArray();
+            var _values = wheres.Items.Select(x => new KeyValuePair<string, object>(x.Key, x.Value)).ToArray();
+            return UpdateBy<T>(_wheres, _values, buVO);
+        }
         public long? UpdateBy<T>(T model, VOCriteria buVO)
              where T : BaseEntityID
         {
@@ -444,7 +461,7 @@ namespace ADO.WMSDB
             return res;
         }
 
-        public long? Insert<T>(VOCriteria buVO, T data)
+        public long? Insert<T>(T data, VOCriteria buVO)
              where T : IEntityModel
         {
             var d = AMWUtil.Common.ObjectUtil.ObjectToKeyValue<T>(data);

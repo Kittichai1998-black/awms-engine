@@ -159,6 +159,13 @@ namespace AWCSEngine.Engine.McRuntime
                 DataADO.GetInstant().UpdateBy<act_McWork>(this.McWork4Work, this.BuVO);
             }
 
+            if(this.McMst.GroupName != formConsole.AppName)
+            {
+                this.McMst.GroupName = formConsole.AppName;
+                DataADO.GetInstant().UpdateByID<acs_McMaster>(this.McMst.ID.Value, ListKeyValue<string, object>.New("GroupName", this.McMst.GroupName), this.BuVO);
+            }
+
+
             string mcMstStr = this.McMst.Json();
             this.Logger.LogInfo("McMst > " + mcMstStr);
             string mcObjStr = this.McObj.Json();
