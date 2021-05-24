@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
 import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress } from '@material-ui/core';
-import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle} from '@material-ui/core';
+import {Button,IconButton,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,Tooltip} from '@material-ui/core';
 // import ToastAlert from '../../../../components/function/ToastAlert';
 import GCLService from '../../../../components/function/GCLService';
 import Alert from '@material-ui/lab/Alert';
-import {AddCircleOutline,CloseSharp,Save} from '@material-ui/icons'
+import {AddCircleOutline,CloseSharp,Save, Cancel} from '@material-ui/icons'
 import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
@@ -39,7 +39,7 @@ const MonitorReceive=(props)=>{
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isOpenModalAddReceive,setIsOpenModalAddReceive] = useState(false);
   const [toast,setToast] = useState({msg:null,open:false,type:null});
-  const [cloasing,setCloasing] = useState({isLoading:false,id:null});
+  const [cloasing,setCloasing] = useState([]);
   let intervalGetSPReportAPI=null
 
   useEffect(() => {
@@ -80,13 +80,15 @@ const MonitorReceive=(props)=>{
   };
 
   const onCloase=(wms_doc)=>{
-    setCloasing({isLoading:true,id:wms_doc});
+    setCloasing([...cloasing,wms_doc]);
     GCLService.post('/v2/Recieve_PLAN_Close_Front',{wms_doc}).then(res=>{
-      setCloasing({isLoading:false,id:null});
+      const indexLoading = cloasing.indexOf(wms_doc);
+      if (indexLoading > -1)cloasing.splice(indexLoading, 1);
+      setCloasing(cloasing);
       if(!res.data._result.status) {
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
         return ;
-      }
+      }        
       setToast({msg:"Success",open:true,type:'success'})
     })
   }
@@ -126,13 +128,17 @@ const MonitorReceive=(props)=>{
                     const value = row[column.id];
                     if(column.id=='action'){
                       return (
-                        <TableCell>
-                          <Button variant="contained" color="secondary" size="small" startIcon={<CloseSharp />} onClick={()=>onCloase(row.wms_doc)} disabled={cloasing.id==row.wms_doc && cloasing.isLoading}> {cloasing.id==row.wms_doc && cloasing.isLoading ? <CircularProgress size={20} /> : 'Closed'} </Button>
+                        <TableCell align={column.align} style={{padding:10}}>                          
+                          <Tooltip key={column.id+index} title="Closed">
+                            <Button variant="contained" color="secondary" size="small" onClick={()=>onCloase(row.wms_doc)} disabled={cloasing.length>0}>
+                              {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<Cancel />} Closed
+                            </Button>
+                          </Tooltip>
                         </TableCell>
                       );
                     }
                     return (
-                      <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                      <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
                         {column.format && typeof value === 'number' ? column.format(value) : value}
                       </TableCell>
                     );
