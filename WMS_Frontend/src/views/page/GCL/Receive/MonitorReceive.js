@@ -26,9 +26,7 @@ const tableHaderColumns = [
 const useStyles = makeStyles({
   root: {
     width: '100%',
-  },
-  container: {
-    maxHeight: 440,
+    padding:15
   },
 });
 
@@ -128,12 +126,10 @@ const MonitorReceive=(props)=>{
                     const value = row[column.id];
                     if(column.id=='action'){
                       return (
-                        <TableCell align={column.align} style={{padding:10}}>                          
-                          <Tooltip key={column.id+index} title="Closed">
+                        <TableCell align={column.align} style={{padding:10}}>
                             <Button variant="contained" color="secondary" size="small" onClick={()=>onCloase(row.wms_doc)} disabled={cloasing.length>0}>
                               {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<Cancel />} Closed
                             </Button>
-                          </Tooltip>
                         </TableCell>
                       );
                     }
