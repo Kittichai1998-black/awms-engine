@@ -447,14 +447,11 @@ namespace AMWUtil.Common
             return newVal;
         }
         public static T ObjectToModel<T>(object obj)
-            where T : class
         {
             return DynamicToModel<T>(obj);
         }
         public static T DynamicToModel<T>(dynamic obj)
-            where T : class
         {
-            if (obj == null) return null;
             string jsonX = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonX);
         }

@@ -13,11 +13,11 @@ namespace ProjectGCL.GCLModel.Criterie
             public List<TLine> LINE;
             public class TLine
             {
-
+                public bool IsFromAMS = false;
                 public string API_REF;
                 public DateTime API_DATE_TIME;
                 public string DOC_STATUS;
-                public string PICK_GROUP;
+                public long PICK_GROUP;
                 public string WMS_DOC;
                 public string CUSTOMER_CODE;
                 public string ACTIVIT_YTYPE;

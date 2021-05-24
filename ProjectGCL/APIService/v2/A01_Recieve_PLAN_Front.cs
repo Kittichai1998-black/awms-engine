@@ -70,7 +70,7 @@ namespace ProjectGCL.APIService.v2
                     Pallet_Detail = req_pallets
                 }
             };
-            Engine.v2.ReceivePlanEngine exec = new Engine.v2.ReceivePlanEngine();
+            Engine.v2.SCE01_CreateReceivePlanEngine exec = new Engine.v2.SCE01_CreateReceivePlanEngine();
             return exec.Execute(this.Logger, this.BuVO, req);
         }
     }

@@ -48,7 +48,6 @@ namespace ADO.WMSDB
 
         public void SP_Receive_Close(IOType ioType,string trxRef, VOCriteria buVO)
         {
-
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("@iType", IOType.INBOUND);
             parameters.Add("@sTrxRef", trxRef);
@@ -61,6 +60,25 @@ namespace ADO.WMSDB
             if (status != 1)
             {
                 throw new Exception(message);
+            }
+        }
+
+        public void SP_CreateBaseObject(string sLabelData, string sStation_keep, VOCriteria buVO)
+        {
+
+            Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
+            parameters.Add("@sLabelData", sLabelData);
+            parameters.Add("@sStation_keep", sStation_keep);
+            parameters.Add("@message", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            parameters.Add("@rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            parameters.Add("@rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_CreateBaseObject]", parameters, buVO);
+            string rtFlag = parameters.Get<string>("@rtFlag");
+            string rtDesc = parameters.Get<string>("@rtDesc");
+
+            if (rtFlag != "Y")
+            {
+                throw new Exception(rtDesc);
             }
         }
     }

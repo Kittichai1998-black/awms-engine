@@ -66,6 +66,7 @@ namespace AWMSEngine.WorkerService
                 }
                 catch (Exception ex)
                 {
+                    buVO.SqlTransaction_Rollback();
                     this.Logger.LogError(prefixLog + ex.Message);
                     //this.Logger.LogError(prefixLog + ex.StackTrace);
                 }
