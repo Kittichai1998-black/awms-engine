@@ -50,7 +50,8 @@ namespace AWCSEngine.Engine.McRuntime
                             this.cmdReject = (int)McCommandType.CM_15;
                             this.PassFlg = (int)PassFailFlag.Fail;
                             writeEventLog("0.1 Dimention Reject " + this.McObj.DV_Pre_Status);
-                            this.StepTxt = "2.1";
+                            this.PostCommand(McCommandType.CM_15);
+                            this.StepTxt = "1.1";
                             break;
 
                         case 137:
@@ -147,10 +148,14 @@ namespace AWCSEngine.Engine.McRuntime
                                 
                             }
 
-                            //--------Pass
-                            this.cmdReject = 0;
-                            this.PassFlg = 1;
-                            this.errCode = 0;
+                            if (this.McObj.DV_Pre_Status == 98)
+                            {
+                                //--------Pass
+                                this.cmdReject = 0;
+                                this.PassFlg = 1;
+                                this.errCode = 0;
+                            }
+                            
 
                             this.StepTxt = "2.1";
                             break;
@@ -223,7 +228,16 @@ namespace AWCSEngine.Engine.McRuntime
                                 writeEventLog("2.1.3 Update ข้อมูลพาเลท จาก จุดซ้อนพาเลท");
                             }
 
-                            this.StepTxt = "3.3";
+                            if (this.PassFlg == 1)
+                            {
+                                this.StepTxt = "3.3";
+                            }
+                            else
+                            {
+                                this.StepTxt = "3.2";
+                            }
+
+                            
                             
                             break;
                     }

@@ -49,4 +49,4 @@ app.warehouse.id = 1
 
 runtime.active.api.ids = 
 #1,2,5
-runtime.active.work.ids = 2,6
+runtime.active.work.ids = 2,6 ,8
