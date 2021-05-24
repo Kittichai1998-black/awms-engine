@@ -145,7 +145,7 @@ const MonitorReceive=(props)=>{
             {dataTable.length<=0 &&
               <TableRow>
                 <TableCell colSpan='11'>
-                  <Alert severity='info'>ไม่พบรายการ</Alert>
+                  <Alert severity='info'>Empty Data</Alert>
                 </TableCell>
               </TableRow>
             }
