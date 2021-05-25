@@ -356,7 +356,10 @@ namespace AWCSEngine.Engine.McRuntime
                             else if (t_deviceVal == typeof(double))
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
 
-                            if (name.ToUpper() == "SET_COMM")
+                            //if (name.ToUpper() == "SET_COMM")
+                            //    setComm = val.Get2<int>();
+
+                            if (name.ToUpper().Contains("SET_COMM"))
                                 setComm = val.Get2<int>();
 
                         });
