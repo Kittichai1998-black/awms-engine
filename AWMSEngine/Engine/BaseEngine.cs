@@ -24,6 +24,11 @@ namespace AWMSEngine.Engine
     public abstract class BaseEngine<TReq, TRes>
         where TRes : class
     {
+        public TReq ConverRequest(dynamic req)
+        {
+            TReq _req = ObjectUtil.DynamicToModel<TReq>(req);
+            return _req;
+        }
         protected abstract TRes ExecuteEngine(TReq reqVO);
 
         protected BaseController BaseController

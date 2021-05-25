@@ -35,6 +35,9 @@ namespace ProjectGCL.WorkerService
                 buVO)
                 .ToList();
 
+            if (wcsWq.Count == 0) return;
+            buVO.SqlTransaction_Begin();
+
             wcsWq.ForEach(wq =>
             {
                 var baseMst =
@@ -119,10 +122,13 @@ namespace ProjectGCL.WorkerService
                 StorageObjectADO.GetInstant().PutV2(psto, buVO);
                 DocumentADO.GetInstant().CreateDocItemSto(doci.ID.Value, psto.id.Value, psto.qty, psto.unitID, psto.baseQty, psto.baseUnitID, buVO);
             });
+
+            buVO.SqlTransaction_Commit();
         }
 
         private void WorkedToClosed(VOCriteria buVO)
         {
+
             var docis = 
                 ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
                 new SQLConditionCriteria[]
@@ -131,7 +137,9 @@ namespace ProjectGCL.WorkerService
                     new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("eventStatus",DocumentEventStatus.WORKED, SQLOperatorType.EQUALS)
                 }, buVO);
-            
+            if (docis.Count == 0) return;
+
+            buVO.SqlTransaction_Begin();
 
             docis.ForEach(doci =>
             {
@@ -167,8 +175,11 @@ namespace ProjectGCL.WorkerService
 
                 try
                 {
-                    //Send Receive Confirm
-                    ADOGCL.SceAPI.GetInstant().Receive_Confirm(_req_sce, buVO);
+                    if(doci.Options.QryStrGetValue("_is_from_ams") == "SCE")
+                    {
+                        //Send Receive Confirm
+                        ADOGCL.SceAPI.GetInstant().Receive_Confirm(_req_sce, buVO);
+                    }
 
                     //closing document item
                     DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
@@ -202,6 +213,9 @@ namespace ProjectGCL.WorkerService
                         buVO);
                 }
             });
+
+
+            buVO.SqlTransaction_Commit();
         }
 
     }

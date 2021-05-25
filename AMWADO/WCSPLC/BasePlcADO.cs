@@ -11,6 +11,7 @@ namespace ADO.WCSPLC
         where T : BasePlcADO<T>
     {
         private static Dictionary<string,T> instants;
+        public long PlcLostTicks { get; set; }
 
         protected BasePlcADO()
         {

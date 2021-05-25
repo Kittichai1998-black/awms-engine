@@ -9,7 +9,7 @@ namespace ProjectGCL.GCLModel.Entity
     {
         public string ApiRef;
         public TMode Mode;
-        public string LocCode;
+        public string LocName;
         public string ShuCode;
         public string Result;
 

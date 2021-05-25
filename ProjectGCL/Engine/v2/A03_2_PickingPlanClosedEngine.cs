@@ -4,13 +4,11 @@ using AMWUtil.Common;
 using AWMSEngine.Engine;
 using ProjectGCL.GCLModel.Criterie;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class ReceivePlanClosedEngine : BaseEngine<ReceivePlanClosedEngine.TReq,TRES__return>
+    public class A03_2_PickingPlanClosedEngine : BaseEngine<A03_2_PickingPlanClosedEngine.TReq, TRES__return>
     {
 
         public class TReq
@@ -27,10 +25,10 @@ namespace ProjectGCL.Engine.v2
 
             //จบงาน REJECTED ที่ยังไม่ได้รับเข้า
             ADO.WMSDB.DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
-                ListKeyValue<string, object>.New("Document_ID", doc.ID).Add("EventStatus",DocumentEventStatus.NEW),
+                ListKeyValue<string, object>.New("Document_ID", doc.ID).Add("EventStatus", DocumentEventStatus.NEW),
                 ListKeyValue<string, object>.New("EventStatus", DocumentEventStatus.WORKED),
                 this.BuVO);
-            ADO.WMSDB.WcsADO.GetInstant().SP_Receive_Close(IOType.INBOUND, doc.Code,this.BuVO);
+            ADO.WMSDB.WcsADO.GetInstant().SP_Receive_Close(IOType.INBOUND, doc.Code, this.BuVO);
 
             return new TRES__return { };
 

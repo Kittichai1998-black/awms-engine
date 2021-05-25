@@ -36,19 +36,16 @@ namespace AWCSEngine.Engine.WorkRuntime
                         this.CheckConnects.Add(checkConn);
                     }
                     int icheck = plc.GetDevice<int>("CCONN_READ");
-                    plc.SetDevice<int>("CCONN_WRITE", icheck);
-                    plc.IsConnect = true;
-                    /*if(checkConn.CCONN_READ != icheck)
+                    /*plc.SetDevice<int>("CCONN_WRITE", icheck);
+                    plc.IsConnect = true;*/
+                    if(checkConn.CCONN_READ != icheck)
                     {
                         plc.SetDevice<int>("CCONN_WRITE", icheck);
                         checkConn.CCONN_READ = icheck;
                         checkConn.LastChange = DateTime.Now;
                         plc.IsConnect = true;
                     }
-                    else if((DateTime.Now - checkConn.LastChange).Seconds > 5)
-                    {
-                        plc.IsConnect = false;
-                    }*/
+                    plc.PlcLostTicks = DateTime.Now.Ticks - checkConn.LastChange.Ticks;
                 }
              }
 

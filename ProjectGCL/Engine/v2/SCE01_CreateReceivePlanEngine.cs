@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class ReceivePlanEngine :AWMSEngine.Engine.BaseEngine<TREQ_Recieve_Plan,TRES__return>
+    public class SCE01_CreateReceivePlanEngine : AWMSEngine.Engine.BaseEngine<TREQ_Recieve_Plan,TRES__return>
     {
         protected override TRES__return ExecuteEngine(TREQ_Recieve_Plan reqVO)
         {
@@ -139,8 +139,8 @@ namespace ProjectGCL.Engine.v2
                 Ref2 = req_pl.NO_Barcode,
                 Ref3 = req_pl.UD_CODE,
                 Ref4 = req.CUSTOMER_CODE,
-                Options = $"sap_lot={req_pl.LOT}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
-                AuditStatus = EnumUtil.GetValueEnum<AuditStatus>(req_pl.UD_CODE),
+                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&sap_lot={req_pl.LOT}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
+                AuditStatus = AuditStatus.PASSED,
                 EventStatus = DocumentEventStatus.NEW,
                 Status = EntityStatus.ACTIVE
             };
@@ -179,7 +179,7 @@ namespace ProjectGCL.Engine.v2
                 Ref2 = req_pl.NO_Barcode,
                 Ref3 = req_pl.UD_CODE,
                 Ref4 = req.CUSTOMER_CODE,
-                Options = $"sap_lot={req_pl.LOT}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
+                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&sap_lot={req_pl.LOT}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
                 AuditStatus = AuditStatus.PASSED,
                 EventStatus = _doci.EventStatus,
                 Status = _doci.Status
