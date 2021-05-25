@@ -8,6 +8,7 @@ namespace ADO.WCSPLC
 {
     public interface IPlcADO
     {
+        public long PlcLostTicks { get; set; }
         public string PlcDeviceName { get;  }
         public void Open();
         public void Close();
