@@ -98,7 +98,7 @@ const ScanReceiveGateMapping=(props)=>{
                     onChange={(event)=>setProductQR(event.target.value)}
                     onKeyPress={(event)=>{if(event.key === "Enter")onPost()}}
                 />
-                <Button variant="contained" color="primary" fullWidth startIcon={isLoading?<CircularProgress/>:<Save/>} onClick={onPost}>POST</Button>
+                <Button variant="contained" color="primary" fullWidth startIcon={isLoading?<CircularProgress color='inherit' size={30}/>:<Save/>} onClick={onPost}>POST</Button>
             </form >
         </div>
     </Paper>

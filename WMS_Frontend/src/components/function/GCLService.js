@@ -16,7 +16,7 @@ export default class GCLService {
             },
             params: {token: localStorage.getItem("Token"), ...qryString},
         };
-        return Axios(config).then(res=>res).catch(err=>{ return {_result: {status: 0, message: err.response}} })
+        return Axios(config).then(res=>res).catch(err=>{ return {data:{_result: {status: 0, message: err.message||'Network Error'}}} })
     }
 
     static async post(urlPath,data,qryString=null){
@@ -29,7 +29,7 @@ export default class GCLService {
             params: {token: localStorage.getItem("Token"), ...qryString},
             data: {token: localStorage.getItem("Token"), ...data}
         };
-        return Axios(config).then(res=>res).catch(err=>{ return {_result: {status: 0, message: err.response}} })
+        return Axios(config).then(res=>res).catch(err=>{ return {data:{_result: {status: 0, message: err.message||'Network Error'}}} })
     }
 
     static getScanReceiveGateMappingData(){

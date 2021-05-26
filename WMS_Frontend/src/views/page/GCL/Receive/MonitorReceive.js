@@ -46,7 +46,7 @@ const MonitorReceive=(props)=>{
             window.loading.onLoaded();
             if(GCLService.isMockData)return setDataTable(GCLService.mockDataGCL.monitorReceive)
             if(!res.data._result.status) {
-              setToast({msg:"โหลดข้อมูลไม่สำเร็จ : "+res.data._result.message ,open:true,type:'error'})
+              setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
               return ;
             }
             setDataTable(res.data.datas)
@@ -54,7 +54,7 @@ const MonitorReceive=(props)=>{
             intervalGetSPReportAPI=setInterval(()=>{
                 GCLService.get('/v2/GetSPReportAPI',{spname:'Recieve_PLAN_Load_Front'}).then(res=>{
                   if(!res.data._result.status) {
-                    setToast({msg:"โหลดข้อมูลไม่สำเร็จ : "+res.data._result.message ,open:true,type:'error'})
+                    setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
                     return ;
                   }
                   setDataTable(res.data.datas)
@@ -77,6 +77,16 @@ const MonitorReceive=(props)=>{
     setPage(0);
   };
 
+  const onAddReceiveSuccess=()=>{
+    GCLService.get('/v2/GetSPReportAPI',{spname:'Recieve_PLAN_Load_Front'}).then(res=>{
+      if(!res.data._result.status) {
+        setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
+        return ;
+      }
+      setDataTable(res.data.datas)
+    })
+  }
+
   const onCloase=(wms_doc)=>{
     setCloasing([...cloasing,wms_doc]);
     GCLService.post('/v2/Recieve_PLAN_Close_Front',{wms_doc}).then(res=>{
@@ -93,7 +103,7 @@ const MonitorReceive=(props)=>{
 
   return (
     <Paper className={classes.root}>
-      <AddReceiveModal open={isOpenModalAddReceive} handleClose={()=>setIsOpenModalAddReceive(false)} handleSetToast={setToast} />
+      <AddReceiveModal open={isOpenModalAddReceive} handleClose={()=>setIsOpenModalAddReceive(false)} handleSetToast={setToast} handleOnSuccess={onAddReceiveSuccess} />
       <div style={{display:'flex',flexDirection:'row-reverse', marginBottom:10}}>
         <Button
             variant="contained"
@@ -174,7 +184,7 @@ const MonitorReceive=(props)=>{
 }
 
 // model add
-const AddReceiveModal=({open,handleClose,handleSetToast=()=>{}})=>{
+const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=()=>{}})=>{
   const classes = useStyles();
   const [wms_doc,setWmsDoc]=useState("")
   const [customer,setCustomer]=useState("")
@@ -205,6 +215,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{}})=>{
         return ;
       }
       handleSetToast({msg:"Success",open:true,type:'success'})
+      handleOnSuccess()
       handleClose()
     })
     event.preventDefault()
