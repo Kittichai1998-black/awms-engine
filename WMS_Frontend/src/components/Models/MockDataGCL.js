@@ -24,4 +24,21 @@ const monitorReceive = [
     {status:"test3", wms_doc:"wms_doc3", customer:"customer", grade:"grade", lot:"Lot", no_pallet:"no_pallet", qty:3500.254, unit:"Unit", waiting_pallet:6844, received_pallet:89545},
   ];
 
-  export default {monitorReceive}
+  const shuttleResult=[
+    {id:1,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:2,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:3,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:4,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:5,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:5,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:7,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:8,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:9,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:10,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:11,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:12,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:13,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+    {id:14,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
+  ]
+
+  export default {monitorReceive,shuttleResult}

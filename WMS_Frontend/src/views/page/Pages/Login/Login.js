@@ -143,12 +143,16 @@ const Login = props => {
 
                 const receiveIndex=res.data.webGroups.findIndex(v=>v.Name=="Receive")
                 const issueIndex=res.data.webGroups.findIndex(v=>v.Name=="Issue")
+                const wareHouseIndex=res.data.webGroups.findIndex(v=>v.Name=="WareHouse")
                 if(receiveIndex>=0)res.data.webGroups[receiveIndex].WebPages.push(
                     {GroupID: 2, Icon: "List_open",PathLV1: "receive",PathLV2: "monitorreceive",PathLV3: null,Visible: true,pageDesc: null,pageName: "Monitor Receive",pageSeq:8, subIcon: null},
                     {GroupID: 2, Icon: "List_open",PathLV1: "receive",PathLV2: "scanreceivegatemapping",PathLV3: null,Visible: true,pageDesc: null,pageName: "Scan Receive Gate Mapping",pageSeq:9, subIcon: null}
                 )
                 if(issueIndex>=0)res.data.webGroups[issueIndex].WebPages.push(
                     {GroupID: 3, Icon: "List_open",PathLV1: "issue",PathLV2: "pickingmonitor",PathLV3: null,Visible: true,pageDesc: null,pageName: "Picking Monitor",pageSeq:8, subIcon: null},
+                )
+                if(wareHouseIndex>=0)res.data.webGroups[wareHouseIndex].WebPages.push(
+                    {GroupID: 10, Icon: "List_open",PathLV1: "warehouse",PathLV2: "scanshuttlecheckin",PathLV3: null,Visible: true,pageDesc: null,pageName: "Scan Shuttle Check-In",pageSeq:11, subIcon: null},
                 )
 
                 localStorage.setItem("MenuItems", JSON.stringify(res.data.webGroups));

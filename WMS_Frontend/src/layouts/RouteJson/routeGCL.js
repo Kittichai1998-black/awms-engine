@@ -86,6 +86,11 @@ const PickingMonitor = Loadable({
   loading: Loading
 });
 
+const ScanShuttleCheckIn = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ScanShuttleCheckIn"),
+  loading: Loading
+});
+
 const routes = [
 
   { path: "/monitor/location", name: "Monitor Location", compoment: Monitor_Location, exact: true, child: true },
@@ -113,6 +118,7 @@ const routes = [
   { path: "/receive/monitorreceive", name: "Monitor Receive", compoment: MonitorReceive, exact: true, child: true },
   { path: "/receive/scanreceivegatemapping", name: "Scan Receive Gate Mapping", compoment: ScanReceiveGateMapping, exact: true, child: true },
   { path: "/issue/pickingmonitor", name: "Picking Monitor", compoment: PickingMonitor, exact: true, child: true },
+  { path: "/warehouse/scanshuttlecheckin", name: "Scan Shuttle Check-In", compoment: ScanShuttleCheckIn, exact: true, child: true },
 ];
 
 export default routes;
