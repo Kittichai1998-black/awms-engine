@@ -27,8 +27,8 @@ namespace AWCSEngine.Engine.WorkRuntime
 
         private void OnRun_Outbound_Process()
         {
-            CallStoreOutbound.GetInstant().SP_PROCESSOUTBOUND();
-
+            CallStoreOutbound.GetInstant().SP_PROCESSINBOUND();
+            //CallStoreOutbound.GetInstant().SP_PROCESSOUTBOUND();
 
         }  
              

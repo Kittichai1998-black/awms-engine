@@ -310,6 +310,7 @@ namespace AWCSEngine.Engine.McRuntime
 
 
                 bool isNext = false;
+                int setComm = -1;
                 foreach (var act in this.RunCmdActions.Where(x => x.Seq == this.McObj.CommandAction_Seq))
                 {
                     var act_conditions = act.DKV_Condition.QryStrToKeyValues();
@@ -355,6 +356,12 @@ namespace AWCSEngine.Engine.McRuntime
                             else if (t_deviceVal == typeof(double))
                                 this.PlcADO.SetDevice<double>(deviceKey, val.Get2<double>());
 
+                            //if (name.ToUpper() == "SET_COMM")
+                            //    setComm = val.Get2<int>();
+
+                            if (name.ToUpper().Contains("SET_COMM"))
+                                setComm = val.Get2<int>();
+
                         });
 
                         string _log_set = $"[DEVICE END] ({act.Seq}/{maxSeq})] {_act_sets}";
@@ -363,6 +370,25 @@ namespace AWCSEngine.Engine.McRuntime
                         isNext = true;
                         break;
                     }
+                }
+
+                if (!string.IsNullOrWhiteSpace(this.McMst.DK_Con_Comm) && isNext && setComm != -1)
+                {
+                    Thread.Sleep(500);
+                    var dk = this.McMst.DK_Con_Comm;
+                    var dv = this.PlcADO.GetDevice<int>(dk);
+                    if (dv == setComm)
+                    {
+                        this.PlcADO.SetDevice<int>(dk, 0);
+                        isNext = true;
+                        DisplayController.Events_Write(this.Code, $" [DEVICE COMMAND COMPLETE!] Set_Comm = {setComm} | Con_Comm = {dv}");
+                    }
+                    else
+                    {
+                        isNext = false;
+                        DisplayController.Events_Write(this.Code, $" [DEVICE COMMAND NOT-COMPLETE?] Set_Comm = {setComm} | Con_Comm = {dv}");
+                    }
+
                 }
 
                 if (isNext)
@@ -465,13 +491,14 @@ namespace AWCSEngine.Engine.McRuntime
 
                 string str_line1 =
                     string.Format(
-                        "{0} >> [{1}] CMD={2} : {3} | PSTS={4} : {5}"
+                        "{0} - {1} >> [{2}] CMD={3} : {4} | PSTS={5} : {6}"
                         , this.Code                                                 //0
-                        , this.EventStatus.ToString().Substring(0, 4)               //1
-                        , this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0  //2
-                        , GetTextCommand(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0) //3
-                        , this.McObj.DV_Pre_Status                                  //4
-                        , GetTextStatus(this.McObj.DV_Pre_Status)                   //5
+                        , this.ID                                                   //1
+                        , this.EventStatus.ToString().Substring(0, 4)               //2
+                        , this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0  //3
+                        , GetTextCommand(this.RunCmd != null ? (int)this.RunCmd.McCommandType : 0) //4
+                        , this.McObj.DV_Pre_Status                                  //5
+                        , GetTextStatus(this.McObj.DV_Pre_Status)                   //6
                         );
                 string str_line1_1 =
                     string.Format("{0} >> [{1}] [{2}] | LOC={3} | STEP={4} | ERR={5}"

@@ -6,6 +6,7 @@ using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
 using AMWUtil.PropertyFile;
+using AWCSEngine.Controller;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,23 @@ namespace AWCSEngine.Util
             return instant;
         }
 
-       
+        public static int AppWHID
+        {
+            get
+            {
+                return formConsole.AppWHID;
+            }
+        }
+
+        public static string AppWHAutoChecking
+        {
+            get
+            {
+                return formConsole.AppWHAutoChecking;
+            }
+        }
+
+
         //public static int WarehouseID = 1;
 
         /// <summary>
@@ -36,7 +53,7 @@ namespace AWCSEngine.Util
         /// <param name="_CurLocation"></param>
         /// <param name="BuVO"></param>
         /// <returns></returns>
-        public  act_BaseObject createBaseObject(act_McObject _McObj, act_BuWork _buWork, acs_Area _CurArea, acs_Location _CurLocation, VOCriteria BuVO)
+        public act_BaseObject createBaseObject(act_McObject _McObj, act_BuWork _buWork, acs_Area _CurArea, acs_Location _CurLocation, VOCriteria BuVO)
         {
             //if((_buWork != null && WarehouseID != _buWork.Des_Warehouse_ID.ToString()) || _buWork == null) { return null; }
 
@@ -57,7 +74,7 @@ namespace AWCSEngine.Util
                 Area_ID = _CurLocation == null ? 0 : _CurLocation.Area_ID,
                 Location_ID = _McObj != null && _McObj.Cur_Location_ID != null ? _McObj.Cur_Location_ID.GetValueOrDefault() : 0,
                 LabelData = _McObj.DV_Pre_BarProd,                
-                DisCharge = _buWork == null ? 0 : _buWork.DisCharge,
+                DisCharge = _buWork == null ? "0" : _buWork.DisCharge,
                 Customer = _buWork == null ? null : _buWork.Customer,
                 SkuCode = _buWork == null ? null : _buWork.SkuCode,
                 SkuGrade = _buWork == null ? null : _buWork.SkuGrade,
@@ -214,7 +231,49 @@ namespace AWCSEngine.Util
             return mcWork;
         }
 
-        
+        public int getBaseObjectQty(act_BaseObject _baseObject)
+        {
+            int _qty = 1500;
+            try
+            {
+                if (_baseObject != null)
+                {
+                    if (_baseObject.SkuQty != 0)
+                    {
+                        _qty = (int)_baseObject.SkuQty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayController.Events_Write("System", ex.Message);
+                _qty = 1500;
+            }
+            return _qty;
+        }
+
+        public string getBaseObjectCode(act_BaseObject _baseObject)
+        {
+            string _code = "0000000000";
+            try
+            {
+                if (_baseObject != null)
+                {
+                    if (String.IsNullOrWhiteSpace(_baseObject.Code))
+                    {
+                        _code = _baseObject.Code;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayController.Events_Write("System", ex.Message);
+                _code = "0000000000";
+            }
+            return _code;
+        }
+
+
     }
 
 }

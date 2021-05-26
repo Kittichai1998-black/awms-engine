@@ -13,5 +13,12 @@ namespace ADO.WCSDB
           
         
         }
+
+        public void SP_PROCESSINBOUND()
+        {
+            this.Query<dynamic>("SP_PROCESSINBOUND", System.Data.CommandType.StoredProcedure, null, null);
+
+
+        }
     }
 }

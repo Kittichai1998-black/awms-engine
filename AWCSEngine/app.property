@@ -1,6 +1,9 @@
 ﻿database.mssql.connection.wms = Server=10.56.2.76;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=AMS_GCL_QAS;Max Pool Size=400;Connect Timeout=600;
 database.mssql.connection.wcs = Server=10.56.2.76;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=ACS_GCL_QAS;Max Pool Size=400;Connect Timeout=600;
 
+#database.mssql.connection.wms = Server=191.20.2.88;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=AMS_GCL_QAS;Max Pool Size=400;Connect Timeout=600;
+#database.mssql.connection.wcs = Server=191.20.2.88;Uid=sa;PASSWORD=GCLP@ssw0rd123;database=ACS_GCL_QAS;Max Pool Size=400;Connect Timeout=600;
+
 #database.mssql.connection.wms = Server=localhost\SQLEXPRESS;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_GCL_QAS;Max Pool Size=400;Connect Timeout=600;
 #database.mssql.connection.wcs = Server=localhost\SQLEXPRESS;Uid=sa;PASSWORD=@mwte@mp@55;database=ACS_GCL_QAS;Max Pool Size=400;Connect Timeout=600;
 
@@ -35,13 +38,15 @@ thread.worker.api.create_queue_move.dir_out=1D:/wcsapi/create_queue_move/out/
 thread.worker.wakeup.delay=5000
 thread.worker.wakeup.count=2
 
-######################################
+###################################### ,SHU11,SHU22
 
 app.name = W8-INBOUND
 app.machine.online.pattle_code = 
-app.machine.online.fixed_code = RC8-1,RC8-2,PS8-1,SRM11,SHU11,SHU22
+app.machine.online.fixed_code = RC8-1,RC8-2,PS8-1,SRM11,RCO5-3
+app.machine.checking = RCO5-3
+app.warehouse.id = 1
 
 
 runtime.active.api.ids = 
-#1,2
-runtime.active.work.ids = 2,5,6
+#1,2,5
+runtime.active.work.ids = 2,6 ,8

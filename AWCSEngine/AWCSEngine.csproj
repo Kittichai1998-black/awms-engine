@@ -4,6 +4,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <Win32Resource></Win32Resource>
+    <ApplicationIcon>Resources\conveyorbelt_116577.ico</ApplicationIcon>
+    <PackageId>AWCSEngine_INBOUND</PackageId>
+    <Authors>KIG</Authors>
+    <Company>AMW</Company>
+    <Product>AWCSEngine Inound</Product>
+    <Description>AWCS Inbound Control</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -27,6 +34,21 @@
       <HintPath>..\..\..\..\Desktop\SyncOPC\SyncOPC\bin\Debug\Interop.OPCAutomation.dll</HintPath>
       <Private>true</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

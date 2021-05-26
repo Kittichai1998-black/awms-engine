@@ -25,6 +25,9 @@ namespace AWCSEngine
     public partial class formConsole : Form
     {
         public static string AppName;
+        public static int AppWHID;
+        public static string AppWHAutoChecking;
+
         public formConsole()
         {
             InitializeComponent();
@@ -46,6 +49,12 @@ namespace AWCSEngine
             this.splitContainer2.SplitterDistance = (int)((float)this.Width * 0.6f);
             AppName = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_name];
             this.Text = AppName;
+
+            AppWHID = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_warehouse_id].Get2<int>();
+            this.lisDisplayCommand.Items.Add(string.Format("{0:hh:mm:ss:fff} | Warehouse ID : {1}", DateTime.Now, AppWHID));
+
+            AppWHAutoChecking = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_machine_checking];
+            this.lisDisplayCommand.Items.Add(string.Format("{0:hh:mm:ss:fff} | จุดสแกนบาร์โค๊ดจัดเก็บ Auto : {1}", DateTime.Now, AppWHAutoChecking));
 
 
             this.lisDisplayCommand.Items.Add("{machine} {command} {p1} {p2} {p3}");
@@ -85,6 +94,8 @@ namespace AWCSEngine
 
             try
             {
+                
+
 
                 this.lisDisplayEvents_Add(string.Format("{0:hh:mm:ss:fff} | {1}", DateTime.Now, "System > (" + (int)(_ini++ / _maxinit * 100.0f) + "%) Database.Initial Connecting..."));
                 StaticValueManager.GetInstant().LoadAll();
