@@ -66,6 +66,11 @@ const GI_WorkQueue = Loadable({
   loading: Loading
 });
 
+// const GR_Detail = Loadable({
+//   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
+//   loading: Loading
+// });
+
 const MonitorReceive = Loadable({
   loader: () => import("../../views/page/GCL/Receive/MonitorReceive"),
   loading: Loading
@@ -75,17 +80,17 @@ const ScanReceiveGateMapping = Loadable({
   loader: () => import("../../views/page/GCL/Receive/ScanReceiveGateMapping"),
   loading: Loading
 });
-// const GR_Detail = Loadable({
-//   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
-//   loading: Loading
-// });
+
+const PickingMonitor = Loadable({
+  loader: () => import("../../views/page/GCL/Issue/PickingMonitor"),
+  loading: Loading
+});
+
 const routes = [
 
   { path: "/monitor/location", name: "Monitor Location", compoment: Monitor_Location, exact: true, child: true },
   { path: "/receive/mappingreceive", name: "GR HH", compoment: GR_PalletByHH, exact: true, child: true },
   { path: "/receive/registsht", name: "regis SH", compoment: RegistShuttle, exact: true, child: true },
-  { path: "/receive/monitorreceive", name: "Monitor Receive", compoment: MonitorReceive, exact: true, child: true },
-  { path: "/receive/scanreceivegatemapping", name: "Scan Receive Gate Mapping", compoment: ScanReceiveGateMapping, exact: true, child: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/search", name: "GR Search", compoment: GR_Search, exact: true },
@@ -104,6 +109,10 @@ const routes = [
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
   { path: "/setting/registsht", name: "PK Search", compoment: RegistShuttle, exact: true },
+
+  { path: "/receive/monitorreceive", name: "Monitor Receive", compoment: MonitorReceive, exact: true, child: true },
+  { path: "/receive/scanreceivegatemapping", name: "Scan Receive Gate Mapping", compoment: ScanReceiveGateMapping, exact: true, child: true },
+  { path: "/issue/pickingmonitor", name: "Picking Monitor", compoment: PickingMonitor, exact: true, child: true },
 ];
 
 export default routes;
