@@ -14,7 +14,7 @@ const tableHaderColumns = [
     {id: 'result',label: 'Result', minWidth: 170},
   ];
 
-const ScanShuttleCheckIn=(props)=>{
+const ScanShuttleCheckOut=(props)=>{
   const [dataTable, setDataTable] = useState([]);
   const [isLoadingdataTable, setIsLoadingdataTable] = useState(false);
   const [page, setPage] = useState(0);
@@ -22,9 +22,8 @@ const ScanShuttleCheckIn=(props)=>{
   const [isLoading,setIsLoading]=useState(false)
   const [toast,setToast] = useState({msg:null,open:false,type:null});
 
-  const [gate_code,setGateCode]=useState("")
+  const [gate_code,setGateCode]=useState(props.gate_code||"")
   const [shuttle,setShuttle]=useState("")
-  const textFieldForshuttle = useRef(null);
 
   useEffect(() => {
     loadDataTable()
@@ -36,7 +35,7 @@ const ScanShuttleCheckIn=(props)=>{
 
   const loadDataTable=async()=>{
     setIsLoadingdataTable(true)
-    GCLService.post('/v2/Shuttle_ActionResult_Front',{mode:1}).then(res=>{
+    GCLService.post('/v2/Shuttle_ActionResult_Front',{mode:2}).then(res=>{
       setIsLoadingdataTable(false)
       if(GCLService.isMockData)return setDataTable(GCLService.mockDataGCL.shuttleResult)
       if(!res.data._result.status) {
@@ -57,9 +56,11 @@ const ScanShuttleCheckIn=(props)=>{
   };
 
   const onPost=()=>{
-    if(gate_code=="" && shuttle=="")return;
+    if(shuttle=="")return;
     setIsLoading(true)
-    GCLService.post('/v2/Shuttle_CheckIn_Front',{mode:1, location:gate_code, shuttle:shuttle}).then(res=>{
+    let reqData={mode:2, shuttle:shuttle}
+    if(gate_code!="")reqData.location=gate_code
+    GCLService.post('/v2/Shuttle_CheckIn_Front',reqData).then(res=>{
       setIsLoading(false)
       if(!res.data._result.status) {
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
@@ -80,29 +81,14 @@ const ScanShuttleCheckIn=(props)=>{
             <TextField 
                 style={{marginBottom:20}}
                 type="text"
-                id="gate_code" 
-                label="Gate" 
-                fullWidth required 
-                value={gate_code} 
-                InputProps={{
-                    startAdornment: (<InputAdornment position="start"><BrightnessHigh /> </InputAdornment>),
-                }}
-                disabled={isLoading}
-                onChange={(event)=>setGateCode(event.target.value)}
-                onKeyPress={(event)=>{if(event.key === "Enter")textFieldForshuttle.current.focus()}}
-            />
-            <TextField 
-                style={{marginBottom:20}}
-                type="text"
                 id="shuttle" 
                 label="Shuttle" 
                 fullWidth required 
-                value={shuttle} 
-                inputRef={textFieldForshuttle}
+                value={shuttle}
+                autoComplete='off'
                 InputProps={{
                     startAdornment: (<InputAdornment position="start"><Extension /> </InputAdornment>),
                 }}
-                disabled={gate_code==null || gate_code=="" || isLoading}
                 onChange={(event)=>setShuttle(event.target.value)}
                 onKeyPress={(event)=>{if(event.key === "Enter")onPost()}}
             />
@@ -119,8 +105,7 @@ const ScanShuttleCheckIn=(props)=>{
                         <TableCell
                         key={column.id}
                         align={column.align}
-                        style={{ minWidth: column.minWidth, backgroundColor:'#DDD',padding:10 }}
-                        >
+                        style={{ minWidth: column.minWidth, backgroundColor:'#DDD',padding:10 }} >
                         {column.label}
                         </TableCell>
                     ))}
@@ -136,7 +121,7 @@ const ScanShuttleCheckIn=(props)=>{
                     }
                     {dataTable.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                     return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                         {tableHaderColumns.map((column) => {
                             const value = row[column.id];
                             return (
@@ -145,13 +130,13 @@ const ScanShuttleCheckIn=(props)=>{
                             </TableCell>
                             );
                         })}
-                        </TableRow>
+                      </TableRow>
                     );
                     })}
                     {(dataTable.length<=0 && !isLoadingdataTable) &&
                     <TableRow>
                         <TableCell colSpan='11' align='center'>
-                          <Alert severity='info'>Empty Data</Alert>
+                          <Alert severity='info' >Empty Data</Alert>
                         </TableCell>
                     </TableRow>
                     }
@@ -181,4 +166,4 @@ const ScanShuttleCheckIn=(props)=>{
   )
 }
 
-export default ScanShuttleCheckIn
+export default ScanShuttleCheckOut

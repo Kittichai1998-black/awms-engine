@@ -153,6 +153,7 @@ const Login = props => {
                 )
                 if(wareHouseIndex>=0)res.data.webGroups[wareHouseIndex].WebPages.push(
                     {GroupID: 10, Icon: "List_open",PathLV1: "warehouse",PathLV2: "scanshuttlecheckin",PathLV3: null,Visible: true,pageDesc: null,pageName: "Scan Shuttle Check-In",pageSeq:11, subIcon: null},
+                    {GroupID: 10, Icon: "List_open",PathLV1: "warehouse",PathLV2: "scanshuttlecheckout",PathLV3: null,Visible: true,pageDesc: null,pageName: "Scan Shuttle Check-Out",pageSeq:12, subIcon: null},
                 )
 
                 localStorage.setItem("MenuItems", JSON.stringify(res.data.webGroups));
