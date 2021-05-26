@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class SCE01_CreateReceivePlanEngine : AWMSEngine.Engine.BaseEngine<TREQ_Recieve_Plan,TRES__return>
+    public class SCE01_CreateReceivePlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Recieve_Plan,TRES__return>
     {
         protected override TRES__return ExecuteEngine(TREQ_Recieve_Plan reqVO)
         {
@@ -79,27 +79,28 @@ namespace ProjectGCL.Engine.v2
             var des_wh = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Name == req.TO_WH_ID);
             if (des_wh == null) throw new Exception("TO_WH_ID ไม่ถูกต้อง");
 
-            var sou_area = StaticValueManager.GetInstant().AreaMasters.First(x => x.Code.EndsWith("PALLET_STACKER"));
+            //var sou_area = StaticValueManager.GetInstant().AreaMasters.First(x => x.Code == "STCK");
 
-            var route_loc = AreaADO.GetInstant().ListDestinationArea(IOType.INBOUND, sou_area.ID.Value, des_wh.ID.Value, this.BuVO)
-                .OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
-            if (route_loc == null) throw new Exception("ไม่พบ Route Area ปลายทาง");
-            if (route_loc.Des_AreaLocationMaster_ID == null) throw new Exception("ไม่พบ Route Area ปลายทาง ไม่ได้ตั้งค่า Location");
+            //var route_loc = AreaADO.GetInstant().ListDestinationArea(IOType.INBOUND, sou_area.ID.Value, des_wh.ID.Value, this.BuVO)
+            //    .OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+            //if (route_loc == null) throw new Exception("ไม่พบ Route Area ปลายทาง");
+            //if (route_loc.Des_AreaLocationMaster_ID == null) throw new Exception("ไม่พบ Route Area ปลายทาง ไม่ได้ตั้งค่า Location");
 
             doc = new amt_Document()
             {
+                Code = "PA" + ADO.WMSDB.DataADO.GetInstant().NextNum("PA_DOC", false, BuVO).ToString("000000000"),
                 DocumentType_ID = DocumentTypeID.PUTAWAY,
                 DocumentProcessType_ID = DocumentProcessTypeID.FG_TRANSFER_WM,
                 ActionTime = req.API_DATE_TIME,
                 DocumentDate = DateTime.Now,
 
-                Sou_Warehouse_ID = route_loc.Sou_Warehouse_ID,
-                Sou_AreaMaster_ID = route_loc.Sou_AreaMaster_ID,
-                Sou_AreaLocationMaster_ID = route_loc.Sou_AreaLocationMaster_ID,
+                Sou_Warehouse_ID = null,
+                Sou_AreaMaster_ID = null,
+                Sou_AreaLocationMaster_ID = null,
 
-                Des_Warehouse_ID = route_loc.Des_Warehouse_ID,
-                Des_AreaMaster_ID = route_loc.Des_AreaMaster_ID,
-                Des_AreaLocationMaster_ID = route_loc.Des_AreaLocationMaster_ID,
+                Des_Warehouse_ID = des_wh.ID,
+                Des_AreaMaster_ID = null,
+                Des_AreaLocationMaster_ID = null,
 
                 Ref1 = req.API_REF,
                 Ref2 = req.WMS_DOC,
@@ -205,17 +206,17 @@ namespace ProjectGCL.Engine.v2
         {
             var unit = StaticValueManager.GetInstant().UnitTypes.First(x => x.ID == docis.First().UnitType_ID);
             var des_wh = StaticValueManager.GetInstant().Warehouses.First(x => x.ID == doc.Des_Warehouse_ID);
-            var des_loc = DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(doc.Sou_AreaLocationMaster_ID, this.BuVO);
+            //var des_area = DataADO.GetInstant().SelectByID<ams_AreaMaster>(doc.Des_AreaMaster_ID, this.BuVO);
             var bay_level_keep = doc.Options.QryStrGetValue("_book_bay_lv").Replace(',', ':') + ":";
 
             if (Pallet_Status.In("N"))
             {
                 docis.ForEach(doci =>
                 {
-                    WcsADO.GetInstant().SP_CREATEBUWORK(doci.ID.Value.ToString(), doc.Code, doci.Ref3, doci.Code, doci.Ref1, doci.Ref2,
-                        doci.Quantity.Value, unit.Code, doci.AuditStatus.ToString(), doci.Quantity.Value,
-                        doci.Ref2.Get2<int>(), doci.Get2<int>(),
-                        des_wh.Code, des_loc.Code, "", bay_level_keep, this.BuVO);
+                    WcsADO.GetInstant().SP_CREATEBUWORK(doci.ID.Value,doc.Code, doc.Code, doci.Ref3, doci.Code, doci.Ref1, doci.Ref2,
+                        doci.Quantity.Value, unit.Code, doci.Ref3.ToString(), doci.Quantity.Value,
+                        doci.Ref2.Get2<int>(), doci.Ref2.Get2<int>(),
+                        des_wh.Code, doci.Options.QryStrGetValue("to_location"), des_wh.Code.Last()+".1", "",bay_level_keep, this.BuVO);
                 });
             }
         }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class A01_2_ReceivePlanClosedEngine : BaseEngine<A01_2_ReceivePlanClosedEngine.TReq,TRES__return>
+    public class A01_2_ReceivePlanClosed_Engine : BaseEngine<A01_2_ReceivePlanClosed_Engine.TReq,TRES__return>
     {
 
         public class TReq

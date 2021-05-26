@@ -10,8 +10,9 @@ namespace AWMSEngine.APIService.V2.Data
 {
     public class SelectDataSPReportAPI : BaseAPIService
     {
-        public SelectDataSPReportAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isLogging = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize, false)
+        public SelectDataSPReportAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
+            this.IsLogging = false;
         }
 
         protected override dynamic ExecuteEngineManual()

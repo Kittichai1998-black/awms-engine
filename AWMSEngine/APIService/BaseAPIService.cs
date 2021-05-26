@@ -30,7 +30,7 @@ namespace AWMSEngine.APIService
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
         public FinalDatabaseLogCriteria FinalDBLog { get => (FinalDatabaseLogCriteria)this.BuVO.GetDynamic(BusinessVOConst.KEY_FINAL_DB_LOG); }
         public bool IsAuthenAuthorize { get; set; }
-        private bool IsLogging { get; set; }
+        protected bool IsLogging { get; set; }
 
         public AMWLogger Logger { get; set; }
 
@@ -49,13 +49,6 @@ namespace AWMSEngine.APIService
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
             this.IsLogging = isLogging;
-        }
-        public BaseAPIService()
-        {
-            this.IsAuthenAuthorize = false;
-            this.ControllerAPI = null;
-            this.APIServiceID = 0;
-            this.IsLogging = true;
         }
 
         public void BeginTransaction()
@@ -118,8 +111,13 @@ namespace AWMSEngine.APIService
                 this.BuVO = new VOCriteria();
                 this.BuVO.Set(BusinessVOConst.KEY_BASE_CONTROLLER, this.ControllerAPI);
 
+                getKey = new TGetKey();
+                getKey.token = this.ControllerAPI.Request.Headers["token"].ToString().Trim();
+                getKey.apikey = this.ControllerAPI.Request.Headers["apikey"].ToString().Trim();
                 //------GET token || apikey
-                if (request != null)
+                if (request != null &&
+                    string.IsNullOrWhiteSpace(getKey.token) &&
+                    string.IsNullOrWhiteSpace(getKey.apikey))
                 {
                     getKey = ObjectUtil.Cast2<TGetKey>(request);
                     if (this.ControllerAPI.Request.Headers.ContainsKey("token") && !string.IsNullOrWhiteSpace(this.ControllerAPI.Request.Headers["token"].ToString()))

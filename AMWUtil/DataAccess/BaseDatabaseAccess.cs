@@ -30,7 +30,7 @@ namespace AMWUtil.DataAccess
                     return string.Format("@{0}=NULL", x);
                 if (v is bool)
                     return string.Format("@{0}={1}", x, (bool)v ? 1 : 0);
-                return string.Format("@{0}='{1}'", x, v.Json());
+                return string.Format("@{0}={1}", x, v.Json());
             }));
         }
 
@@ -46,6 +46,11 @@ namespace AMWUtil.DataAccess
             DateTime dt = DateTime.Now;
             try
             {
+                if (logger != null)
+                    logger.LogDebug(string.Format("[QUERY] exec {0} {1}",
+                        cmdTxt,
+                        DynamicParametersToString(parameter)
+                        ));
                 if (transaction != null)
                 {
                     res = transaction.Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
@@ -72,11 +77,8 @@ namespace AMWUtil.DataAccess
             finally
             {
                 if (logger != null)
-                    logger.LogDebug(string.Format("[QUERY] [{0}ms] rows={1} | {2}; {3}",
-                        (DateTime.Now - dt).TotalMilliseconds,
-                        (res == null ? "" : res.ToString()),
-                        cmdTxt,
-                        DynamicParametersToString(parameter)
+                    logger.LogDebug(string.Format("[QUERY] return {0}",
+                        res == null ? "NULL": res.Json()
                         ));
             }
             return res;
@@ -95,7 +97,12 @@ namespace AMWUtil.DataAccess
             DateTime dt = DateTime.Now;
             try
             {
-                
+
+                if (logger != null)
+                    logger.LogDebug(string.Format("[SCALAR] exec {0} {1}",
+                        cmdTxt,
+                        DynamicParametersToString(parameter)
+                        ));
                 if (transaction != null)
                 {
                     res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
@@ -124,11 +131,8 @@ namespace AMWUtil.DataAccess
             finally
             {
                 if (logger != null)
-                    logger.LogDebug(string.Format("[SCALAR] [{0}ms] value={1} | {2} {3}",
-                        (DateTime.Now - dt).TotalMilliseconds,
-                        res2,
-                        cmdTxt,
-                        DynamicParametersToString(parameter)
+                    logger.LogDebug(string.Format("[QUERY] return {0}",
+                        res2 == null ? "NULL" : res2.Json()
                         ));
             }
             return res;
@@ -146,6 +150,11 @@ namespace AMWUtil.DataAccess
             var dt = DateTime.Now;
             try
             {
+                if (logger != null)
+                    logger.LogDebug(string.Format("[EXEC_NONE] exec {0} {1}",
+                        cmdTxt,
+                        DynamicParametersToString(parameter)
+                        ));
                 if (transaction != null)
                 {
                     res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
@@ -173,11 +182,8 @@ namespace AMWUtil.DataAccess
             finally
             {
                 if (logger != null)
-                    logger.LogDebug(string.Format("[EXEC] [{0}ms] status={1} | {2}; {3}",
-                        (DateTime.Now - dt).TotalMilliseconds,
-                        res,
-                        cmdTxt,
-                        DynamicParametersToString(parameter)
+                    logger.LogDebug(string.Format("[EXEC_NONE] return {0}",
+                        res
                         ));
             }
             return res;

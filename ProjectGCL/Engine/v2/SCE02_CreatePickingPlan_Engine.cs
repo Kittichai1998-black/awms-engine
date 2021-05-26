@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class SCE02_CreatePickingPlanEngine : AWMSEngine.Engine.BaseEngine<TREQ_Picking_Plan,TRES__return>
+    public class SCE02_CreatePickingPlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Picking_Plan,TRES__return>
     {
         protected override TRES__return ExecuteEngine(TREQ_Picking_Plan reqVO)
         {
@@ -68,6 +68,7 @@ namespace ProjectGCL.Engine.v2
 
             doc = new amt_Document()
             {
+                Code = "PK" + ADO.WMSDB.DataADO.GetInstant().NextNum("PK_DOC", false, BuVO).ToString("000000000"),
                 DocumentType_ID = DocumentTypeID.PICKING,
                 DocumentProcessType_ID = DocumentProcessTypeID.FG_TRANSFER_WM,
                 ActionTime = req.API_DATE_TIME,

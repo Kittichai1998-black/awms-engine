@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class A03_2_PickingPlanClosedEngine : BaseEngine<A03_2_PickingPlanClosedEngine.TReq, TRES__return>
+    public class A03_2_PickingPlanClosed_Engine : BaseEngine<A03_2_PickingPlanClosed_Engine.TReq, TRES__return>
     {
 
         public class TReq

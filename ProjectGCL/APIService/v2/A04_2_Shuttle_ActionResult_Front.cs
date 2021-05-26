@@ -13,14 +13,14 @@ namespace ProjectGCL.APIService.v2
             public int mode;
         }
 
-        
-
         public A04_2_Shuttle_ActionResult_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
+
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
 
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();

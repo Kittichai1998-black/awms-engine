@@ -15,7 +15,8 @@ namespace ProjectGCL.APIService.v2
 
         protected override dynamic ExecuteEngineManual()
         {
-            Engine.v2.A02_Receive_MappingPallet2Gate exec = new Engine.v2.A02_Receive_MappingPallet2Gate();
+            this.BeginTransaction();
+            Engine.v2.A02_Receive_MappingPallet2Gate_Engine exec = new Engine.v2.A02_Receive_MappingPallet2Gate_Engine();
             var req = exec.ConverRequest(this.RequestVO);
             var res = exec.Execute(this.Logger, this.BuVO, req);
             return res;

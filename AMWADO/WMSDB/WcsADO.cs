@@ -10,13 +10,14 @@ namespace ADO.WMSDB
 {
     public class WcsADO:BaseAPI<WcsADO>
     {
-        public void SP_CREATEBUWORK(string trxRef, string docRef, string customer, string skuCode, string skuGrade, string skuLot,
-            decimal skuQty, string skuUnit, string skuStatus, decimal buQty, int itemNoStart, int itemNoEnd, string desWarehouseCode,
+        public void SP_CREATEBUWORK(long wms_ref_id, string trxRef, string docRef, string customer, string skuCode, string skuGrade, string skuLot,
+            decimal skuQty, string skuUnit, string skuStatus, decimal buQty, int itemNoStart, int itemNoEnd, 
+            string desWarehouseCode, string desAreaCode,
             string discharge, string remark, string bayLevelKeep, VOCriteria buVO)
         {
-
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("@IOType", IOType.INBOUND);
+            parameters.Add("@wms_ref_id", wms_ref_id);
             parameters.Add("@TrxRef", trxRef);
             parameters.Add("@DocRef", docRef);
             parameters.Add("@Priority", 1);
@@ -31,12 +32,13 @@ namespace ADO.WMSDB
             parameters.Add("@ItemNoStart", itemNoStart);
             parameters.Add("@ItemNoEnd", itemNoEnd);
             parameters.Add("@Des_Warehouse_Code", desWarehouseCode);
+            parameters.Add("@Des_Area_Code", desAreaCode);
             parameters.Add("@DisCharge", discharge);
             parameters.Add("@Remark", remark);
             parameters.Add("@Bay_Level_Keep", bayLevelKeep);
             parameters.Add("@rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_CREATEBUWORK]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CREATEBUWORK]", parameters, buVO);
             string rtFlag = parameters.Get<string>("@rtFlag");
             string rtDesc = parameters.Get<string>("@rtDesc");
 
@@ -53,7 +55,7 @@ namespace ADO.WMSDB
             parameters.Add("@sTrxRef", trxRef);
             parameters.Add("@status", "", System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
             parameters.Add("@message", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_Receive_Close]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_Receive_Close]", parameters, buVO);
             int status = parameters.Get<int>("@status");
             string message = parameters.Get<string>("@message");
 
@@ -71,7 +73,7 @@ namespace ADO.WMSDB
             parameters.Add("@sStation_keep", sStation_keep);
             parameters.Add("@rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_CreateBaseObject]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CreateBaseObject]", parameters, buVO);
             string rtFlag = parameters.Get<string>("@rtFlag");
             string rtDesc = parameters.Get<string>("@rtDesc");
 
@@ -92,7 +94,7 @@ namespace ADO.WMSDB
             parameters.Add("@arrange_no", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@arrange_result", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@arrange_status", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_QUEUE_ARRANGEBAY]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_QUEUE_ARRANGEBAY]", parameters, buVO);
             string rtFlag = parameters.Get<string>("@arrange_status");
             string rtDesc = parameters.Get<string>("@arrange_result");
             arrange_no = parameters.Get<string>("@arrange_no");
@@ -107,7 +109,7 @@ namespace ADO.WMSDB
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("@arrange_no", arrange_no);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_CANCEL_QUEUE_ARRANGE]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CANCEL_QUEUE_ARRANGE]", parameters, buVO);
 
         }
 
@@ -125,7 +127,7 @@ namespace ADO.WMSDB
             parameters.Add("@count_no", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@count_result", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@count_status", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_QUEUE_COUNTBAY]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_QUEUE_COUNTBAY]", parameters, buVO);
             string rtFlag = parameters.Get<string>("@count_status");
             string rtDesc = parameters.Get<string>("@count_result");
             count_no = parameters.Get<string>("@count_no");
@@ -140,7 +142,7 @@ namespace ADO.WMSDB
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("@count_no", count_no);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_CANCEL_QUEUE_COUNT]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CANCEL_QUEUE_COUNT]", parameters, buVO);
 
         }
 
@@ -152,7 +154,7 @@ namespace ADO.WMSDB
             parameters.Add("@StatusType", 1);
             parameters.Add("@StatusQueue", 2);
 
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_SHULOWBAT]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_SHULOWBAT]", parameters, buVO);
         }
         public void SP_ShuttelToStand(string shuttle, VOCriteria buVO)
         {
@@ -161,7 +163,7 @@ namespace ADO.WMSDB
 
             parameters.Add("@rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[dbo].[SP_ShuttelToStand]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_ShuttelToStand]", parameters, buVO);
             string rtFlag = parameters.Get<string>("@rtFlag");
             string rtDesc = parameters.Get<string>("@rtDesc");
 

@@ -1,4 +1,5 @@
 ﻿using AMSModel.Constant.EnumConst;
+using AMWUtil.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,6 @@ namespace AMSModel.Entity
         public string Code;
         public DocumentTypeID DocumentType_ID;
 
-        public amt_Document ParentDocument;
         public long? ParentDocument_ID;
 
         public long? Sou_Customer_ID;
@@ -47,7 +47,13 @@ namespace AMSModel.Entity
 
         public DocumentEventStatus EventStatus;
 
+        [FieldAttribute(IsDbField = false)]
+        public amt_Document ParentDocument;
+
+        [FieldAttribute(IsDbField = false)]
         public List<amt_DocumentItem> DocumentItems;
+
+        [FieldAttribute(IsDbField = false)]
         public List<amt_Document> DocumetnChilds;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AWMSEngine.APIService;
+using AWMSEngine.Controllers.V2;
 using ProjectGCL.GCLModel.Criterie;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,10 @@ namespace ProjectGCL.APIService.v2
 {
     public class A01_Recieve_PLAN_Front : BaseAPIService
     {
+        public A01_Recieve_PLAN_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        {
+        }
+
         public class TREQ
         {
             public string wms_doc;
@@ -70,7 +75,7 @@ namespace ProjectGCL.APIService.v2
                     Pallet_Detail = req_pallets
                 }
             };
-            Engine.v2.SCE01_CreateReceivePlanEngine exec = new Engine.v2.SCE01_CreateReceivePlanEngine();
+            Engine.v2.SCE01_CreateReceivePlan_Engine exec = new Engine.v2.SCE01_CreateReceivePlan_Engine();
             return exec.Execute(this.Logger, this.BuVO, req);
         }
     }

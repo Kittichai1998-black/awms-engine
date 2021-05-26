@@ -29,6 +29,8 @@ namespace ProjectGCL.APIService.v2
 
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
+
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             var loc = string.IsNullOrEmpty(req.location) ? null : ADO.WMSDB.DataADO.GetInstant()
                 .SelectBy<ams_AreaLocationMaster>("Name", req.location, BuVO)

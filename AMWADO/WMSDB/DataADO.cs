@@ -405,7 +405,8 @@ namespace ADO.WMSDB
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             foreach (var x in Enumerable.ToList(values))
             {
-                if (x.Key.In("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
+                if (x.Key.In("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime",
+                    "ParentDocument", "DocumentItems", "DocumetnChilds", "DocItemStos"))
                     continue;
 
                 if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
@@ -475,7 +476,8 @@ namespace ADO.WMSDB
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             foreach (var x in Enumerable.ToList(values))
             {
-                if (x.Key.In("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
+                if (x.Key.In("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime",
+                    "ParentDocument", "DocumentItems", "DocumetnChilds", "DocItemStos"))
                     continue;
 
                 commFields +=
@@ -534,10 +536,11 @@ namespace ADO.WMSDB
             long res = param.Get<long>("res");
             return res;
         }
-        public string NextTextNum(string key, bool prefixYM, int space, VOCriteria buVO)
+        public string NextTextNum(string key, string prefixCode, bool prefixYM, int space, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("key", key);
+            param.Add("prefixCode", prefixCode);
             param.Add("numZ", false);
             param.Add("prefixYM", prefixYM);
             param.Add("numspace", space);

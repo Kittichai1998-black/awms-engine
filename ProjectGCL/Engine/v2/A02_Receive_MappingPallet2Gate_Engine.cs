@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class A02_Receive_MappingPallet2Gate : BaseEngine<A02_Receive_MappingPallet2Gate.TReq, TRES__return>
+    public class A02_Receive_MappingPallet2Gate_Engine : BaseEngine<A02_Receive_MappingPallet2Gate_Engine.TReq, TRES__return>
     {
         protected override TRES__return ExecuteEngine(TReq reqVO)
         {

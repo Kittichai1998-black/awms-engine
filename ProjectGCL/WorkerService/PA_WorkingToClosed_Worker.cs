@@ -64,7 +64,7 @@ namespace ProjectGCL.WorkerService
                 //    .First(x=>areas.Any(y=>y.ID==x.AreaMaster_ID));
                 //var area = areas.First(x => x.ID == loc.AreaMaster_ID);
 
-                var doci = DataADO.GetInstant().SelectByID<amt_DocumentItem>(wq.TrxRef.Get2<long>(), buVO);
+                var doci = DataADO.GetInstant().SelectByID<amt_DocumentItem>(wq.WmsRefID.Get2<long>(), buVO);
                 var doc = DataADO.GetInstant().SelectByID<amt_Document>(doci.Document_ID, buVO);
 
                 AWMSEngine.Engine.V2.Business.ScanMapStoNoDoc exec = new AWMSEngine.Engine.V2.Business.ScanMapStoNoDoc();
@@ -121,6 +121,10 @@ namespace ProjectGCL.WorkerService
 
                 StorageObjectADO.GetInstant().PutV2(psto, buVO);
                 DocumentADO.GetInstant().CreateDocItemSto(doci.ID.Value, psto.id.Value, psto.qty, psto.unitID, psto.baseQty, psto.baseUnitID, buVO);
+
+                wq.Status = EntityStatus.DONE;
+                DataADO.GetInstant().UpdateBy<amt_Wcs_WQ_Done>(wq, buVO);
+            
             });
 
             buVO.SqlTransaction_Commit();

@@ -4,6 +4,7 @@ using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria;
 using AMSModel.Entity;
 using AMWUtil.Common;
+using AMWUtil.Logger;
 using AWMSEngine.HubService;
 using Microsoft.AspNetCore.SignalR;
 using ProjectGCL.ADOGCL;
@@ -17,7 +18,7 @@ namespace ProjectGCL.WorkerService
 {
     public class PK_NewToClosed_Worker : AWMSEngine.WorkerService.BaseWorkerService
     {
-        public PK_NewToClosed_Worker(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
+        public PK_NewToClosed_Worker(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, logger, commonHub)
         {
         }
 
@@ -120,8 +121,9 @@ namespace ProjectGCL.WorkerService
                 var _LINE = new List<GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine>();
                 select_pallet_alls.ForEach(pl =>
                 {
-                    ADO.WMSDB.WcsADO.GetInstant().SP_CREATEBUWORK(pl.doci_id.ToString(), doc.Code, pl.ref4, pl.sku, pl.ref1, pl.lot,
-                        pl.qty, pl.unit, pl.ref3, pl.qty, 0, 0, wh.Code, area.Code, "1", "", buVO);
+                    //TODO Create DO
+                    //ADO.WMSDB.WcsADO.GetInstant().SP_CREATEBUWORK(pl.doci_id.ToString(), doc.Code, pl.ref4, pl.sku, pl.ref1, pl.lot,
+                    //    pl.qty, pl.unit, pl.ref3, pl.qty, 0, 0, wh.Code, area.Code, "1", "", buVO);
 
                     _LINE.Add(new GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine()
                     {
@@ -182,7 +184,7 @@ namespace ProjectGCL.WorkerService
                     .FirstOrDefault();
                 var bsto = StorageObjectADO.GetInstant().Get(baseMst.ID.Value, StorageObjectType.BASE, false, true, buVO);
 
-                var doci = DataADO.GetInstant().SelectByID<amt_DocumentItem>(wq.TrxRef.Get2<long>(), buVO);
+                var doci = DataADO.GetInstant().SelectByID<amt_DocumentItem>(wq.WmsRefID, buVO);
                 var doc = DataADO.GetInstant().SelectByID<amt_Document>(doci.Document_ID, buVO);
 
                 docIDs.Add(doc.ID.Value);

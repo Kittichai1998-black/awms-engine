@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ADO.WMSDB;
 
 namespace AWMSEngine.WorkerService
 {
@@ -31,12 +32,6 @@ namespace AWMSEngine.WorkerService
             this.Logger = logger;
         }
 
-        protected BaseWorkerService(long workerServiceID, IHubContext<CommonMessageHub> commonHub)
-        {
-            WorkerServiceID = workerServiceID;
-            this.commonHub = commonHub;
-        }
-
         public Task Execute()
         {
             VOCriteria buVO = new VOCriteria();
@@ -52,6 +47,7 @@ namespace AWMSEngine.WorkerService
             var options = AMWUtil.Common.ObjectUtil.QryStrToDictionary(job.Options);
             this.Logger.LogInfo(prefixLog + "[Begin] Option=" + job.Options);
             int logRunTimeMS = 60000;
+            buVO.SqlConnection_Open(DataADO.GetInstant().CreateConnection());
             while (true)
             {
                 if (job == null) break;

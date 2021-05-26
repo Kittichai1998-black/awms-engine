@@ -9,7 +9,7 @@ namespace ProjectGCL.GCLModel.Entity
     public class amt_Wcs_WQ_Done : AMSModel.Entity.BaseEntityCreateModify
     {
         public string ApiRef;
-        public string TrxRef;
+        public long WmsRefID;
         public DocumentTypeID DocumentType_ID;
         public long Warehouse_ID;
         public string LocCode;
