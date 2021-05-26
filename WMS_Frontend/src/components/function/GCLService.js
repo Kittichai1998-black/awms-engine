@@ -32,6 +32,15 @@ export default class GCLService {
         return Axios(config).then(res=>res).catch(err=>{ return {_result: {status: 0, message: err.response}} })
     }
 
+    static getScanReceiveGateMappingData(){
+       return JSON.parse(localStorage.getItem('ScanReceiveGateMappingData')) || []
+    }
+
+    static pushScanReceiveGateMappingData(item){
+        let data=JSON.parse(localStorage.getItem('ScanReceiveGateMappingData')) || []
+        data.push(item)
+        localStorage.setItem('ScanReceiveGateMappingData',JSON.stringify(data))
+    }
     // static async GetSPReportAPI() {
     //     var config = {
     //         method: 'get',

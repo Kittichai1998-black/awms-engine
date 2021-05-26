@@ -143,7 +143,8 @@ const Login = props => {
 
                 const receiveIndex=res.data.webGroups.findIndex(v=>v.Name=="Receive")
                 if(receiveIndex>=0)res.data.webGroups[receiveIndex].WebPages.push(
-                    {GroupID: 2, Icon: "List_open",PathLV1: "receive",PathLV2: "monitorreceive",PathLV3: null,Visible: true,pageDesc: null,pageName: "Monitor Receive",subIcon: null}
+                    {GroupID: 2, Icon: "List_open",PathLV1: "receive",PathLV2: "monitorreceive",PathLV3: null,Visible: true,pageDesc: null,pageName: "Monitor Receive",subIcon: null},
+                    {GroupID: 2, Icon: "List_open",PathLV1: "receive",PathLV2: "scanreceivegatemapping",PathLV3: null,Visible: true,pageDesc: null,pageName: "Scan Receive Gate Mapping",subIcon: null}
                 )
 
                 localStorage.setItem("MenuItems", JSON.stringify(res.data.webGroups));

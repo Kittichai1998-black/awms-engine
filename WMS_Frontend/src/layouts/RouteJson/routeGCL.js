@@ -70,6 +70,11 @@ const MonitorReceive = Loadable({
   loader: () => import("../../views/page/GCL/Receive/MonitorReceive"),
   loading: Loading
 });
+
+const ScanReceiveGateMapping = Loadable({
+  loader: () => import("../../views/page/GCL/Receive/ScanReceiveGateMapping"),
+  loading: Loading
+});
 // const GR_Detail = Loadable({
 //   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
 //   loading: Loading
@@ -80,6 +85,7 @@ const routes = [
   { path: "/receive/mappingreceive", name: "GR HH", compoment: GR_PalletByHH, exact: true, child: true },
   { path: "/receive/registsht", name: "regis SH", compoment: RegistShuttle, exact: true, child: true },
   { path: "/receive/monitorreceive", name: "Monitor Receive", compoment: MonitorReceive, exact: true, child: true },
+  { path: "/receive/scanreceivegatemapping", name: "Scan Receive Gate Mapping", compoment: ScanReceiveGateMapping, exact: true, child: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/search", name: "GR Search", compoment: GR_Search, exact: true },
