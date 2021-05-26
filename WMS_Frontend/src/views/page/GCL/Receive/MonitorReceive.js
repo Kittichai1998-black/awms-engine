@@ -6,7 +6,7 @@ import {Button,IconButton,TextField, Dialog, DialogActions,DialogContent,DialogC
 // import ToastAlert from '../../../../components/function/ToastAlert';
 import GCLService from '../../../../components/function/GCLService';
 import Alert from '@material-ui/lab/Alert';
-import {AddCircleOutline,CloseSharp,Save, Cancel} from '@material-ui/icons'
+import {AddCircleOutline,CloseSharp,Save, Cancel,CheckCircleOutlineRounded} from '@material-ui/icons'
 import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
@@ -38,6 +38,7 @@ const MonitorReceive=(props)=>{
   const [isOpenModalAddReceive,setIsOpenModalAddReceive] = useState(false);
   const [toast,setToast] = useState({msg:null,open:false,type:null});
   const [cloasing,setCloasing] = useState([]);
+  const [confirmClosed,setConfirmClosed] = useState(null);
   let intervalGetSPReportAPI=null
 
   useEffect(() => {
@@ -87,7 +88,7 @@ const MonitorReceive=(props)=>{
     })
   }
 
-  const onCloase=(wms_doc)=>{
+  const onClosed=(wms_doc)=>{
     setCloasing([...cloasing,wms_doc]);
     GCLService.post('/v2/Recieve_PLAN_Close_Front',{wms_doc}).then(res=>{
       const indexLoading = cloasing.indexOf(wms_doc);
@@ -111,7 +112,7 @@ const MonitorReceive=(props)=>{
             size="medium"
             startIcon={<AddCircleOutline />}
             onClick={()=>setIsOpenModalAddReceive(true)}
-        > Add </Button>
+        > Add Receive</Button>
       </div>
       <TableContainer className="tableCustom" style={{maxHeight: 440}}>
         <Table stickyHeader aria-label="sticky table">
@@ -136,8 +137,8 @@ const MonitorReceive=(props)=>{
                     const value = row[column.id];
                     if(column.id=='action'){
                       return (
-                        <TableCell align={column.align} style={{padding:10}}>
-                            <Button variant="contained" color="secondary" size="small" onClick={()=>onCloase(row.wms_doc)} disabled={cloasing.length>0}>
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
+                            <Button variant="contained" color="secondary" size="small" onClick={()=>setConfirmClosed(row.wms_doc)} disabled={cloasing.length>0}>
                               {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<Cancel />} Closed
                             </Button>
                         </TableCell>
@@ -171,6 +172,19 @@ const MonitorReceive=(props)=>{
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
+
+      <Dialog maxWidth='xl' onClose={()=>setConfirmClosed(null)} aria-labelledby="simple-dialog-title" open={confirmClosed!=null}>
+        <DialogTitle id="simple-dialog-title">Are you sure?</DialogTitle>
+        <DialogContent>Closed "{confirmClosed}"</DialogContent>
+        <DialogActions style={{backgroundColor:'#eee'}}>
+          <Button size='medium' variant="contained" onClick={()=>setConfirmClosed(null)} color="secondary" startIcon={<CloseSharp/>} >
+            No
+          </Button>
+          <Button size='medium' variant="contained" onClick={()=>{onClosed(confirmClosed);setConfirmClosed(null)}} color="primary" startIcon={<CheckCircleOutlineRounded/>} type='submit'>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {toast.open &&
       <Snackbar anchorOrigin={{ vertical:'top', horizontal:'center' }} open={toast.open} autoHideDuration={5000} onClose={()=>setToast({msg:"",open:false,type:""})}>
@@ -207,7 +221,10 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
   const onSubmitForm=(event)=>{
     window.loading.onLoading();
     setIsLoading(true)
-    GCLService.post('/v2/Recieve_PLAN_Front',{wms_doc,customer,to_wh,grade,lot,no_strat,no_end,sku,status,qty_pallet,unit}).then(res=>{
+    let no_strat_value = !(no_strat=="") ? Number(no_strat) : no_strat;
+    let no_end_value = !(no_end=="") ? Number(no_end) : no_end;
+    let qty_pallet_value = !(qty_pallet=="") ? Number(qty_pallet) : qty_pallet;
+    GCLService.post('/v2/Recieve_PLAN_Front',{wms_doc,customer,to_wh,grade,lot,no_strat_value,no_end_value,sku,status,qty_pallet_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
@@ -223,8 +240,8 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
 
   return <>
     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" maxWidth='xs'>
-      <form onSubmit={onSubmitForm} autocomplete="off">
-      <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Data</center></DialogTitle>
+      <form onSubmit={onSubmitForm} autoComplete="off">
+      <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Receive</center></DialogTitle>
       <DialogContent>
           <TextField autoFocus type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
