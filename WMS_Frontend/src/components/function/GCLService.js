@@ -1,7 +1,7 @@
 import Axios from "axios";
 import MockDataGCL from "../Models/MockDataGCL";
 export default class GCLService {
-    static isMockData=true
+    static isMockData=false
     static mockDataGCL=MockDataGCL
     static API_DOMAIN= window.apipath
 
