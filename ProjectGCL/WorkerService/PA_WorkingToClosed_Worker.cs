@@ -160,7 +160,7 @@ namespace ProjectGCL.WorkerService
                                 BaseUnitType_ID = psto.baseUnitID,
                                 Quantity = psto.qty,
                                 UnitType_ID = psto.unitID,
-                                Status = EntityStatus.DONE
+                                Status = wq.ActionStatus
                             };
                             DataADO.GetInstant().Insert<amt_DocumentItemStorageObject>(disto, buVO);
                         }
@@ -172,11 +172,14 @@ namespace ProjectGCL.WorkerService
                         if (psto.eventStatus != StorageObjectEventStatus.PACK_RECEIVED)
                         {
                             //PSTO Update Status
-                            {
-                                psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
+                            psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
+                            StorageObjectADO.GetInstant().PutV2(psto, buVO);
 
-                                StorageObjectADO.GetInstant().PutV2(psto, buVO);
-                            }
+                            //UPDATE DISTO
+                            DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(
+                                ListKeyValue<string, object>.New("DocumentItem_ID", doci.ID).Add("Sou_StorageObject_ID", psto.id),
+                                ListKeyValue<string, object>.New("Status", wq.ActionStatus),
+                                buVO);
                         }
 
                     }
