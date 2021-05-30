@@ -27,8 +27,12 @@ namespace ProjectGCL.Engine.v2
 
             //จบงาน REJECTED ที่ยังไม่ได้รับเข้า
             ADO.WMSDB.DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
-                ListKeyValue<string, object>.New("Document_ID", doc.ID).Add("EventStatus",DocumentEventStatus.NEW),
-                ListKeyValue<string, object>.New("EventStatus", DocumentEventStatus.WORKED),
+                ListKeyValue<string, object>.New("Document_ID", doc.ID).Add("EventStatus", DocumentEventStatus.NEW),
+                ListKeyValue<string, object>.New("EventStatus", DocumentEventStatus.CLOSED).Add("Status", EntityStatus.DONE),
+                this.BuVO);
+            ADO.WMSDB.DataADO.GetInstant().UpdateBy<amt_Document>(
+                ListKeyValue<string, object>.New("ID", doc.ID),
+                ListKeyValue<string, object>.New("EventStatus", DocumentEventStatus.CLOSED).Add("Status", EntityStatus.DONE),
                 this.BuVO);
             ADO.WMSDB.WcsADO.GetInstant().SP_Receive_Close(IOType.INBOUND, doc.Code,this.BuVO);
 

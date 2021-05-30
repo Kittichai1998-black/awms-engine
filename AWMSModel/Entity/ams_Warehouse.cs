@@ -6,6 +6,7 @@ namespace AMSModel.Entity
 {
     public class ams_Warehouse : BaseEntitySTD
     {
+        public string Name2;
         public long? Branch_ID;
     }
 }

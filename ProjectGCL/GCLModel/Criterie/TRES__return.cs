@@ -9,11 +9,5 @@ namespace ProjectGCL.GCLModel.Criterie
     {
         public string API_REF;
         public DateTime Date_time;
-        public TResult _result;
-        public class TResult
-        {
-            public int status;
-            public string message;
-        }
     }
 }

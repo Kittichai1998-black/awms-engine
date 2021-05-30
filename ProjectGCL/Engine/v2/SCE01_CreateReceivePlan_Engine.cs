@@ -23,6 +23,7 @@ namespace ProjectGCL.Engine.v2
 
             return new TRES__return();
         }
+
         private TRES__return exec(TREQ_Recieve_Plan.TRecord.TLine req)
         {
 
@@ -42,19 +43,35 @@ namespace ProjectGCL.Engine.v2
                 countPallet -= loc.free_slot;
             }
 
-
+            bool isItemNew = false;
             amt_Document doc = New_Document(req, bookLocs);
             List<amt_DocumentItem> docis = new List<amt_DocumentItem>();
             req.Pallet_Detail.ForEach(req_pl =>
             {
                 if (req_pl.PALLET_STATUS.ToUpper() == "N")
+                {
+                    isItemNew = true;
                     docis.Add(New_DocumnetItem(doc, req, req_pl));
+                }
                 else if (req_pl.PALLET_STATUS.ToUpper() == "U")
                     Update_DocumnetItem(doc, req, req_pl);
                 else if (req_pl.PALLET_STATUS.ToUpper() == "C")
                     Cancel_DocumnetItem(doc, req, req_pl);
             });
 
+            if (isItemNew)
+            {
+                var old_book = doc.Options.QryStrGetValue("_book_bay_lv").Split(",").ToList();
+                var new_book = bookLocs.Select(x => x.bay_lv).ToList();
+                new_book.RemoveAll(x => old_book.Any(y => y == x));
+
+                if(new_book.Count > 0)
+                {
+                    new_book.AddRange(old_book);
+                    doc.Options = doc.Options.QryStrSetValue("_book_bay_lv",string.Join(",", new_book.ToArray()));
+                    DataADO.GetInstant().UpdateBy<amt_Document>(doc, BuVO);
+                }
+            }
 
 
             this.CallWCS_SP_CREATEBUWORK(doc, docis, "N");
@@ -121,6 +138,10 @@ namespace ProjectGCL.Engine.v2
             var sku = ADO.WMSDB.MasterADO.GetInstant().GetSKUMasterByCode(req_pl.SKU, this.BuVO);
             var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.Code == req_pl.UNIT);
             var pack = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterBySKU(sku.ID.Value, req_pl.UNIT, this.BuVO);
+            var wh = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Des_Warehouse_ID);
+            var area = this.StaticValue.AreaMasters.FirstOrDefault(x =>
+                        x.Name == (string.IsNullOrEmpty(req_pl.TO_LOCATION) ? wh.Code.Last() + "STO" : req_pl.TO_LOCATION) && x.Warehouse_ID == doc.Des_Warehouse_ID);
+            
             var doci = new amt_DocumentItem()
             {
                 Document_ID = doc.ID.Value,
@@ -140,7 +161,7 @@ namespace ProjectGCL.Engine.v2
                 Ref2 = req_pl.NO_Barcode,
                 Ref3 = req_pl.UD_CODE,
                 Ref4 = req.CUSTOMER_CODE,
-                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&sap_lot={req_pl.LOT}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
+                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&sap_lot={req_pl.LOT}&to_area={area.Code}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
                 AuditStatus = AuditStatus.PASSED,
                 EventStatus = DocumentEventStatus.NEW,
                 Status = EntityStatus.ACTIVE
@@ -150,6 +171,7 @@ namespace ProjectGCL.Engine.v2
 
             return doci;
         }
+       
         private amt_DocumentItem Update_DocumnetItem(amt_Document doc, TREQ_Recieve_Plan.TRecord.TLine req, TREQ_Recieve_Plan.TRecord.TLine.TPallet_Detail req_pl)
         {
             var _doci = DataADO.GetInstant().SelectBy<amt_DocumentItem>(
@@ -160,6 +182,9 @@ namespace ProjectGCL.Engine.v2
             var sku = ADO.WMSDB.MasterADO.GetInstant().GetSKUMasterByCode(req_pl.SKU, this.BuVO);
             var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.Code == req_pl.UNIT);
             var pack = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterBySKU(sku.ID.Value, req_pl.UNIT, this.BuVO);
+            var wh = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Des_Warehouse_ID);
+            var area = this.StaticValue.AreaMasters.FirstOrDefault(x =>
+                        x.Name == (string.IsNullOrEmpty(req_pl.TO_LOCATION) ? wh.Code.Last() + "STO" : req_pl.TO_LOCATION) && x.Warehouse_ID == doc.Des_Warehouse_ID);
             var doci = new amt_DocumentItem()
             {
                 ID = _doci.ID.Value,
@@ -180,7 +205,7 @@ namespace ProjectGCL.Engine.v2
                 Ref2 = req_pl.NO_Barcode,
                 Ref3 = req_pl.UD_CODE,
                 Ref4 = req.CUSTOMER_CODE,
-                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&sap_lot={req_pl.LOT}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
+                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&sap_lot={req_pl.LOT}&to_area={area.Code}&to_location={req_pl.TO_LOCATION}&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&to_wh_id={req.TO_WH_ID}",
                 AuditStatus = AuditStatus.PASSED,
                 EventStatus = _doci.EventStatus,
                 Status = _doci.Status
@@ -189,6 +214,7 @@ namespace ProjectGCL.Engine.v2
             DataADO.GetInstant().UpdateBy<amt_DocumentItem>(doci, this.BuVO);
             return doci;
         }
+       
         private amt_DocumentItem Cancel_DocumnetItem(amt_Document doc, TREQ_Recieve_Plan.TRecord.TLine req, TREQ_Recieve_Plan.TRecord.TLine.TPallet_Detail req_pl)
         {
             var _doci = DataADO.GetInstant().SelectBy<amt_DocumentItem>(
@@ -213,10 +239,10 @@ namespace ProjectGCL.Engine.v2
             {
                 docis.ForEach(doci =>
                 {
-                    WcsADO.GetInstant().SP_CREATEBUWORK(doci.ID.Value,doc.Code, doc.Code, doci.Ref3, doci.Code, doci.Ref1, doci.Ref2,
+                    WcsADO.GetInstant().SP_CREATEBUWORK(doci.ID.Value,doc.Code, doc.Code, doci.Ref3, doci.Code, doci.Ref1, doci.Lot,
                         doci.Quantity.Value, unit.Code, doci.Ref3.ToString(), doci.Quantity.Value,
                         doci.Ref2.Get2<int>(), doci.Ref2.Get2<int>(),
-                        des_wh.Code, doci.Options.QryStrGetValue("to_location"), des_wh.Code.Last()+".1", "",bay_level_keep, this.BuVO);
+                        des_wh.Code, doci.Options.QryStrGetValue("to_area"), des_wh.Code.Last()+".1", "",bay_level_keep, this.BuVO);
                 });
             }
         }

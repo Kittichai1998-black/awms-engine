@@ -110,14 +110,18 @@ namespace AWMSEngine.APIService
             {
                 this.BuVO = new VOCriteria();
                 this.BuVO.Set(BusinessVOConst.KEY_BASE_CONTROLLER, this.ControllerAPI);
+                //this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
 
-                getKey = new TGetKey();
-                getKey.token = this.ControllerAPI.Request.Headers["token"].ToString().Trim();
-                getKey.apikey = this.ControllerAPI.Request.Headers["apikey"].ToString().Trim();
+                if(this.ControllerAPI.Request.Headers.Keys.Select(x => x.ToLower()).Contains("token") || 
+                    this.ControllerAPI.Request.Headers.Keys.Select(x => x.ToLower()).Contains("apikey"))
+                {
+                    getKey = ObjectUtil.Cast2<TGetKey>(request);
+                    getKey.token = this.ControllerAPI.Request.Headers["token"].ToString().Trim();
+                    getKey.apikey = this.ControllerAPI.Request.Headers["apikey"].ToString().Trim();
+                    this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
+                }
                 //------GET token || apikey
-                if (request != null &&
-                    string.IsNullOrWhiteSpace(getKey.token) &&
-                    string.IsNullOrWhiteSpace(getKey.apikey))
+                else if (request != null)
                 {
                     getKey = ObjectUtil.Cast2<TGetKey>(request);
                     if (this.ControllerAPI.Request.Headers.ContainsKey("token") && !string.IsNullOrWhiteSpace(this.ControllerAPI.Request.Headers["token"].ToString()))
@@ -125,7 +129,6 @@ namespace AWMSEngine.APIService
 
 
                     this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
-                    this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 }
 
                 //-------CREATE FILE LOGGING & Decode TOKEN,APIKEY
@@ -168,7 +171,7 @@ namespace AWMSEngine.APIService
                 //-------START FILE LOGGING
                 this.Logger.LogInfo("############## START_TRANSACTION ##############");
                 this.Logger.LogInfo("token=" + getKey.token);
-                this.Logger.LogInfo("token=" + getKey.apikey);
+                this.Logger.LogInfo("apikey=" + getKey.apikey);
                 string _request_str = ObjectUtil.Json(request);
                 this.Logger.LogInfo("request=" + _request_str);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
@@ -216,6 +219,7 @@ namespace AWMSEngine.APIService
                     this.BuVO.SqlTransaction_Begin();
                     var res = this.ExecuteEngineManual();
                     response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
+                    response._result = result;
                     this.BuVO.SqlTransaction_Commit();
 
                 }
@@ -264,7 +268,7 @@ namespace AWMSEngine.APIService
                     //response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
                     if (response == null)
                     {
-                        response = new { _result = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESULT_API) };
+                        response = new { _result = result };
                     }
 
                     if (this.Logger.IsLogging)

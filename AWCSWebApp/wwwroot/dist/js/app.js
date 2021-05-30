@@ -1,9 +1,7 @@
 ﻿var app = app ?? {};
 app.api_url = '/v2/';
 app.init = () => {
-    app.
-
-        _header('menu');
+    app.load_header('menu');
     app.load_footer('cl');
     if (window.location.href.split('?').length >= 2)
         app.load_content(window.location.href.split('?')[1]);

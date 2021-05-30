@@ -9,8 +9,12 @@ namespace ProjectGCL.GCLModel.Entity
     {
         public string ApiRef;
         public TMode Mode;
-        public string LocName;
         public string ShuCode;
+        public string LocName;
+        public int? Bay;
+        public int? Lv;
+        public int? PalletCount;
+        public string PalletSort;
         public string Result;
 
         public enum TMode

@@ -10,6 +10,41 @@ namespace ADO.WMSDB
 {
     public class WcsADO:BaseAPI<WcsADO>
     {
+        public void SP_CREATE_DO_QUEUE(string TrxRef, string DocRef,long WmsRefID, long SeqGroup ,int Priority, string Customer
+            , string SkuCode, string SkuGrade, string SkuLot, decimal SkuQty, string SkuUnit
+            , string SkuStatus, string Base_code, string Warehouse_Code, string Des_Area_Code
+            , string Remark, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
+            parameters.Add("IOType", IOType.OUTBOUND);
+            parameters.Add("TrxRef", TrxRef);
+            parameters.Add("DocRef", DocRef);
+            parameters.Add("Wms_Ref_ID", WmsRefID);
+            parameters.Add("SeqGroup", SeqGroup);
+            parameters.Add("Priority", Priority);
+            parameters.Add("Customer", Customer);
+            parameters.Add("SkuCode", SkuCode);
+            parameters.Add("SkuGrade", SkuGrade);
+            parameters.Add("SkuLot", SkuLot);
+            parameters.Add("SkuQty", SkuQty);
+            parameters.Add("SkuUnit", SkuUnit);
+            parameters.Add("SkuStatus", SkuStatus);
+            parameters.Add("Base_code", Base_code);
+            parameters.Add("Warehouse_Code", Warehouse_Code);
+            parameters.Add("Des_Area_Code", Des_Area_Code);
+            parameters.Add("Remark", Remark);
+            parameters.Add("rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            parameters.Add("rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CREATE_DO_QUEUE]", parameters, buVO);
+            string rtFlag = parameters.Get<string>("@rtFlag");
+            string rtDesc = parameters.Get<string>("@rtDesc");
+
+            if (rtFlag != "1")
+            {
+                throw new Exception(rtDesc);
+            }
+        }
+
         public void SP_CREATEBUWORK(long wms_ref_id, string trxRef, string docRef, string customer, string skuCode, string skuGrade, string skuLot,
             decimal skuQty, string skuUnit, string skuStatus, decimal buQty, int itemNoStart, int itemNoEnd, 
             string desWarehouseCode, string desAreaCode,
@@ -99,7 +134,7 @@ namespace ADO.WMSDB
             string rtDesc = parameters.Get<string>("@arrange_result");
             arrange_no = parameters.Get<string>("@arrange_no");
 
-            if (rtFlag != "Y")
+            if (rtFlag != "IN PROGRESS")
             {
                 throw new Exception(rtDesc);
             }
@@ -109,8 +144,8 @@ namespace ADO.WMSDB
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("@arrange_no", arrange_no);
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CANCEL_QUEUE_ARRANGE]", parameters, buVO);
-
+            ADO.WCSDB.DataADO.GetInstant().QuerySP(
+                "[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_CANCEL_QUEUE_ARRANGE]", parameters, buVO);
         }
 
 
@@ -132,7 +167,7 @@ namespace ADO.WMSDB
             string rtDesc = parameters.Get<string>("@count_result");
             count_no = parameters.Get<string>("@count_no");
 
-            if (rtFlag != "Y")
+            if (rtFlag != "IN PROGRESS")
             {
                 throw new Exception(rtDesc);
             }

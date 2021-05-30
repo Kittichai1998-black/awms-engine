@@ -201,7 +201,7 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     if (stoBase.id != null)
                     {
-                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.PACK_NEW, StorageObjectEventStatus.PACK_RECEIVING, StorageObjectEventStatus.PACK_CANCELED))
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.BASE_ACTIVE))
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'เพิ่ม'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น " + stoBase.eventStatus);
 
                     }

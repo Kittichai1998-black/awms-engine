@@ -25,7 +25,8 @@ namespace ProjectGCL.APIService.v2
             this.BeginTransaction();
             TREQ_Recieve_Plan request = ObjectUtil.DynamicToModel<TREQ_Recieve_Plan>(this.RequestVO);
             Engine.v2.SCE01_CreateReceivePlan_Engine exec = new Engine.v2.SCE01_CreateReceivePlan_Engine();
-            return exec.Execute(this.Logger, this.BuVO, request);
+            var res = exec.Execute(this.Logger, this.BuVO, request);
+            return res;
         }
 
     }

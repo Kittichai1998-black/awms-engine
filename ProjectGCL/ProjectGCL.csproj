@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>cdb06a69-ea5d-4e8f-ae63-5f103b271ddc</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -55,6 +56,10 @@
   <ItemGroup>
     <Folder Include="APIService\Workqueue\" />
     <Folder Include="assets\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SSH.NET" Version="2020.0.1" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

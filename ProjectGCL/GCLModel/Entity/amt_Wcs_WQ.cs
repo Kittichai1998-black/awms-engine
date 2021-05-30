@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.GCLModel.Entity
 {
-    public class amt_Wcs_WQ_Done : AMSModel.Entity.BaseEntityCreateModify
+    public class amt_Wcs_WQ : AMSModel.Entity.BaseEntityCreateModify
     {
         public string ApiRef;
         public long WmsRefID;
-        public DocumentTypeID DocumentType_ID;
-        public long Warehouse_ID;
+        public IOType IOType;
         public string LocCode;
         public string BaseCode;
+        public string ActionResult;
+        public EntityStatus ActionStatus;
     }
 }

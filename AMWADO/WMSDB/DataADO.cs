@@ -363,7 +363,7 @@ namespace ADO.WMSDB
              where T : BaseEntityID
         {
             var _wheres = wheres.Items.Select(x => new SQLConditionCriteria(x.Key, x.Value, SQLOperatorType.EQUALS)).ToArray();
-            var _values = wheres.Items.Select(x => new KeyValuePair<string, object>(x.Key, x.Value)).ToArray();
+            var _values = values.Items.Select(x => new KeyValuePair<string, object>(x.Key, x.Value)).ToArray();
             return UpdateBy<T>(_wheres, _values, buVO);
         }
         public long? UpdateBy<T>(T model, VOCriteria buVO)

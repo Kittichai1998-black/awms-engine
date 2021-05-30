@@ -31,6 +31,20 @@ namespace AMWUtil.Common
                 return id;
             }
         }
+        public static long GenUniqNum()
+        {
+            lock (GenUniqID_Lock)
+            {
+                var d = DateTime.UtcNow;
+                long t = d.Second +
+                    (d.Minute * 60) +
+                    (d.Hour * 60 * 60) +
+                    (d.DayOfYear * 60 * 60 * 24) +
+                    (d.Year % 100 * 60 * 60 * 24 * 366);
+                GenUniqID_Run = GenUniqID_Run >= 1000 ? 0 : GenUniqID_Run + 1;
+                return (t * 1000) + GenUniqID_Run;
+            }
+        }
 
         public static string NumZ(long num, int space = 10)
         {
