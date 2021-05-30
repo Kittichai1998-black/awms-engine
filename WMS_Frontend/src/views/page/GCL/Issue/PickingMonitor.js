@@ -30,6 +30,8 @@ const useStyles = makeStyles({
   },
 });
 
+let intervalGetSPReportAPI=null
+
 const PickingMonitor=(props)=>{
   const classes = useStyles();
   const [dataTable, setDataTable] = useState([]);
@@ -39,8 +41,6 @@ const PickingMonitor=(props)=>{
   const [toast,setToast] = useState({msg:null,open:false,type:null});
   const [cloasing,setCloasing] = useState([]);
   const [confirmClosed,setConfirmClosed] = useState(null);
-  
-  let intervalGetSPReportAPI=null
 
   useEffect(() => {
         window.loading.onLoading();
@@ -80,13 +80,16 @@ const PickingMonitor=(props)=>{
   };
 
   const onAddPickingSuccess=()=>{
-    GCLService.get('/v2/GetSPReportAPI',{spname:'Picking_PLAN_Load_Front'}).then(res=>{
-      if(!res.data._result.status) {
-        setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
-        return ;
-      }
-      setDataTable(res.data.datas)
-    })
+    clearInterval(intervalGetSPReportAPI);
+    intervalGetSPReportAPI=setInterval(()=>{
+      GCLService.get('/v2/GetSPReportAPI',{spname:'Picking_PLAN_Load_Front'}).then(res=>{
+        if(!res.data._result.status) {
+          setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
+          return ;
+        }
+        setDataTable(res.data.datas)
+      })
+    },5000);
   }
 
   const onClosed=(wms_doc)=>{
@@ -221,7 +224,7 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     window.loading.onLoading();
     setIsLoading(true)
     let qty_pick_value = !(qty_pick=="") ? Number(qty_pick) : qty_pick
-    GCLService.post('/v2/Picking_Plan_Front',{wms_doc,customer,to_wh,grade,lot,sku,status,qty_pick_value,unit}).then(res=>{
+    GCLService.post('/v2/Picking_Plan_Front',{wms_doc,customer,to_wh,grade,lot,sku,status,qty_pick:qty_pick_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {

@@ -29,6 +29,7 @@ const useStyles = makeStyles({
     padding:15
   },
 });
+let intervalGetSPReportAPI=null
 
 const MonitorReceive=(props)=>{
   const classes = useStyles();
@@ -39,7 +40,6 @@ const MonitorReceive=(props)=>{
   const [toast,setToast] = useState({msg:null,open:false,type:null});
   const [cloasing,setCloasing] = useState([]);
   const [confirmClosed,setConfirmClosed] = useState(null);
-  let intervalGetSPReportAPI=null
 
   useEffect(() => {
         window.loading.onLoading();
@@ -79,13 +79,16 @@ const MonitorReceive=(props)=>{
   };
 
   const onAddReceiveSuccess=()=>{
-    GCLService.get('/v2/GetSPReportAPI',{spname:'Recieve_PLAN_Load_Front'}).then(res=>{
-      if(!res.data._result.status) {
-        setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
-        return ;
-      }
-      setDataTable(res.data.datas)
-    })
+    clearInterval(intervalGetSPReportAPI);
+    intervalGetSPReportAPI=setInterval(()=>{
+      GCLService.get('/v2/GetSPReportAPI',{spname:'Recieve_PLAN_Load_Front'}).then(res=>{
+        if(!res.data._result.status) {
+          setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
+          return ;
+        }
+        setDataTable(res.data.datas)
+      })
+    },5000)
   }
 
   const onClosed=(wms_doc)=>{
@@ -219,12 +222,13 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
   }, [])
 
   const onSubmitForm=(event)=>{
+    handleOnSuccess()
     window.loading.onLoading();
     setIsLoading(true)
     let no_strat_value = !(no_strat=="") ? Number(no_strat) : no_strat;
     let no_end_value = !(no_end=="") ? Number(no_end) : no_end;
     let qty_pallet_value = !(qty_pallet=="") ? Number(qty_pallet) : qty_pallet;
-    GCLService.post('/v2/Recieve_PLAN_Front',{wms_doc,customer,to_wh,grade,lot,no_strat_value,no_end_value,sku,status,qty_pallet_value,unit}).then(res=>{
+    GCLService.post('/v2/Recieve_PLAN_Front',{wms_doc,customer,to_wh,grade,lot,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
