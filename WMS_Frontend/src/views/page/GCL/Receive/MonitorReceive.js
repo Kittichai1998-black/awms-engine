@@ -6,7 +6,7 @@ import {Button,IconButton,TextField, Dialog, DialogActions,DialogContent,DialogC
 // import ToastAlert from '../../../../components/function/ToastAlert';
 import GCLService from '../../../../components/function/GCLService';
 import Alert from '@material-ui/lab/Alert';
-import {AddCircleOutline,CloseSharp,Save, Cancel,CheckCircleOutlineRounded} from '@material-ui/icons'
+import {AddCircleOutline,CloseSharp,Save, Cancel,CheckCircleOutlineRounded,CheckCircle} from '@material-ui/icons'
 import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
@@ -141,9 +141,11 @@ const MonitorReceive=(props)=>{
                     if(column.id=='action'){
                       return (
                         <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
-                            <Button variant="contained" color="secondary" size="small" onClick={()=>setConfirmClosed(row.wms_doc)} disabled={cloasing.length>0}>
-                              {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<Cancel />} Closed
+                            {row.status.toLowerCase()!='Closed'.toLowerCase() &&
+                            <Button variant="contained" color="primary" style={{backgroundColor:'#16C050'}} size="small" onClick={()=>setConfirmClosed(row.wms_doc)} disabled={cloasing.length>0}>
+                              {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<CheckCircle />} Closed
                             </Button>
+                            }
                         </TableCell>
                       );
                     }
