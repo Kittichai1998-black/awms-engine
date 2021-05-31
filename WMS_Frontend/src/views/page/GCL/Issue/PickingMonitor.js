@@ -19,7 +19,7 @@ const tableHaderColumns = [
   {id: 'qty', label: 'Qty', minWidth: 100, align:'right', format: (value) => Number(value.toFixed(3)).toLocaleString('en-US') },
   {id: 'unit', label: 'Unit', minWidth: 100 },
   {id: 'waiting_pallet', label: 'Waiting(Pallet)', minWidth: 100, align:'right'},
-  {id: 'received_pallet', label: 'Received(Pallet)', minWidth: 100, align:'right'},
+  {id: 'received_pallet', label: 'Picked(Pallet)', minWidth: 100, align:'right'},
   {id: 'action', label: '🛠', minWidth: 100, align:'center'},
 ];
 
