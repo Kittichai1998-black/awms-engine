@@ -22,8 +22,8 @@ const ScanShuttleCheckOut=(props)=>{
   const [isLoading,setIsLoading]=useState(false)
   const [toast,setToast] = useState({msg:null,open:false,type:null});
 
-  const [gate_code,setGateCode]=useState(props.gate_code||"")
-  const [shuttle,setShuttle]=useState("")
+  const [gate_code,setGateCode]=useState(props.location||"")
+  const [shuttle,setShuttle]=useState(props.shuttle || "")
 
   useEffect(() => {
     loadDataTable()

@@ -22,8 +22,8 @@ const ScanShuttleCheckIn=(props)=>{
   const [isLoading,setIsLoading]=useState(false)
   const [toast,setToast] = useState({msg:null,open:false,type:null});
 
-  const [gate_code,setGateCode]=useState("")
-  const [shuttle,setShuttle]=useState("")
+  const [gate_code,setGateCode]=useState(props.location || "")
+  const [shuttle,setShuttle]=useState(props.shuttle || "")
   const textFieldForshuttle = useRef(null);
 
   useEffect(() => {

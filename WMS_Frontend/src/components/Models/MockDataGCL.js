@@ -51,4 +51,13 @@ const monitorReceive = [
     {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
   ]
 
-  export default {monitorReceive,shuttleResult,DockOutboundDashboard}
+  const ListShuttle=[
+    {warehouse:"warehouse",location:"location1",shuttle:"shuttle1",online:"online"},
+    {warehouse:"warehouse",location:"location2",shuttle:"shuttle2",online:"online"},
+    {warehouse:"warehouse",location:"location3",shuttle:"shuttle3",online:"Offile"},
+    {warehouse:"warehouse",location:"location4",shuttle:"shuttle4",online:"online"},
+    {warehouse:"warehouse",location:"location5",shuttle:"shuttle5",online:"offline"},
+    {warehouse:"warehouse",location:"location6",shuttle:"shuttle6",online:"online"},
+  ]
+
+  export default {monitorReceive,shuttleResult,DockOutboundDashboard,ListShuttle}

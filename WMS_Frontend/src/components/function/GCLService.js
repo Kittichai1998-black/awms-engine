@@ -7,7 +7,7 @@ export default class GCLService {
 
     constructor() {}
 
-    static async get(urlPath,qryString){
+    static async get(urlPath,qryString=null){
         var config = {
             method: 'get',
             url: this.API_DOMAIN+urlPath,
@@ -19,7 +19,7 @@ export default class GCLService {
         return Axios(config).then(res=>res).catch(err=>{ return {data:{_result: {status: 0, message: err.message||'Network Error'}}} })
     }
 
-    static async post(urlPath,data,qryString=null){
+    static async post(urlPath,data=null,qryString=null){
         var config = {
             method: 'post',
             url: this.API_DOMAIN+urlPath,
