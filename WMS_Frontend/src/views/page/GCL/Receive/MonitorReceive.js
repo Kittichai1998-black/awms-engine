@@ -141,7 +141,7 @@ const MonitorReceive=(props)=>{
                     if(column.id=='action'){
                       return (
                         <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
-                            {row.status.toLowerCase()!='Closed'.toLowerCase() &&
+                            {(row.status||"").toLowerCase()!='Closed'.toLowerCase() &&
                             <Button variant="contained" color="primary" style={{backgroundColor:'#16C050'}} size="small" onClick={()=>setConfirmClosed(row.wms_doc)} disabled={cloasing.length>0}>
                               {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<CheckCircle />} Closed
                             </Button>
