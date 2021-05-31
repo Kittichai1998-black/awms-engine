@@ -41,4 +41,14 @@ const monitorReceive = [
     {id:14,mode:1,time:"24/06/2021",location:"testlocation",shuttle:"testshuttle",result:"testResult"},
   ]
 
-  export default {monitorReceive,shuttleResult}
+  const DockOutboundDashboard=[
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+  ]
+
+  export default {monitorReceive,shuttleResult,DockOutboundDashboard}
