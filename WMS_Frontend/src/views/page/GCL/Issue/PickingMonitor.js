@@ -11,15 +11,18 @@ import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
   {id: 'status', label: 'Status', minWidth: 100},
+  {id: 'priority', label: 'Priority', minWidth: 50},
+  {id: 'dock', label: 'Dock', minWidth: 50},
   {id: 'wms_doc', label: 'WMS\u00a0Doc', minWidth: 100 },
   {id: 'customer',label: 'Cutomer', minWidth: 100, },
   {id: 'grade',label: 'Grade', minWidth: 100},
   {id: 'lot', label: 'Lot', minWidth: 100},
   {id: 'no_pallet', label: 'No Pallet', minWidth: 100 },
   {id: 'qty', label: 'Qty', minWidth: 100, align:'right', format: (value) => Number(value.toFixed(3)).toLocaleString('en-US') },
-  {id: 'unit', label: 'Unit', minWidth: 100 },
+  {id: 'unit', label: 'Unit', minWidth: 50 },
   {id: 'waiting_pallet', label: 'Waiting(Pallet)', minWidth: 100, align:'right'},
-  {id: 'received_pallet', label: 'Picked(Pallet)', minWidth: 100, align:'right'},
+  {id: 'picking_pallet', label: 'Picking(Pallet)', minWidth: 100, align:'right'},
+  {id: 'picked_pallet', label: 'Picked(Pallet)', minWidth: 100, align:'right'},
   {id: 'action', label: '🛠', minWidth: 100, align:'center'},
 ];
 
@@ -138,7 +141,7 @@ const PickingMonitor=(props)=>{
               return (
                 <TableRow hover key={index}>
                   {tableHaderColumns.map((column,key) => {
-                    const value = row[column.id];
+                    const value = row[column.id] || "";
                     if(column.id=='action'){
                       return (
                         <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
@@ -151,9 +154,13 @@ const PickingMonitor=(props)=>{
                       );
                     }
                     return (
-                      <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
+                      column.id=='status'?
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: (value.toLowerCase()=='Worked'.toLowerCase()||value.toLowerCase()=='Closing'.toLowerCase()||value.toLowerCase()=='Closed'.toLowerCase())? '#33FF99' : (value.toLowerCase()=='Rejecting'.toLowerCase()||value.toLowerCase()=='Rejected'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
+                          {value}
+                        </TableCell>
+                        :<TableCell key={column.id+index} align={column.align} style={{padding:10}}>
+                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </TableCell>
                     );
                   })}
                 </TableRow>
@@ -206,6 +213,7 @@ const PickingMonitor=(props)=>{
 // model add
 const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=()=>{}})=>{
   const classes = useStyles();
+  const [priority,setPriority]=useState("")
   const [wms_doc,setWmsDoc]=useState("")
   const [customer,setCustomer]=useState("")
   const [to_wh,setToWH]=useState("")
@@ -215,6 +223,7 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
   const [status,setStatus]=useState("")
   const [qty_pick,setQtyPick]=useState("")
   const [unit,setUnit]=useState("")
+  const [dock,setDock]=useState("")
   const [isLoading,setIsLoading]=useState(false)
 
   useEffect(() => {
@@ -225,8 +234,9 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
   const onSubmitForm=(event)=>{
     window.loading.onLoading();
     setIsLoading(true)
+    let priority_value = !(priority=="") ? Number(priority) : priority;
     let qty_pick_value = !(qty_pick=="") ? Number(qty_pick) : qty_pick
-    GCLService.post('/v2/Picking_Plan_Front',{wms_doc,customer,to_wh,grade,lot,sku,status,qty_pick:qty_pick_value,unit}).then(res=>{
+    GCLService.post('/v2/Picking_Plan_Front',{priority:priority_value,wms_doc,customer,to_wh,grade,lot,sku,status,qty_pick:qty_pick_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
@@ -245,7 +255,8 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
       <form onSubmit={onSubmitForm} autoComplete="off">
       <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Picking</center></DialogTitle>
       <DialogContent>
-          <TextField autoFocus type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
+          <TextField autoFocus type="number" margin="dense" id="priority" label="Priority" fullWidth required InputProps={{step:1}} value={priority} onChange={(event)=>setPriority(event.target.value)} />
+          <TextField type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
           <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
@@ -253,7 +264,8 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />
           <TextField type="text" margin="dense" id="status" label="Status" fullWidth required value={status} onChange={(event)=>setStatus(event.target.value)} />
           <TextField type="number" margin="dense" id="qty_pick" label="Qty Pick" fullWidth required value={qty_pick} onChange={(event)=>setQtyPick(event.target.value)} />
-          <TextField type="text" margin="dense" id="unit" label="Unit" fullWidth required InputProps={{step:1}} value={unit} onChange={(event)=>setUnit(event.target.value)} />
+          <TextField type="text" margin="dense" id="unit" label="Unit" fullWidth required value={unit} onChange={(event)=>setUnit(event.target.value)} />
+          <TextField type="text" margin="dense" id="dock" label="Dock" fullWidth required value={dock} onChange={(event)=>setDock(event.target.value)} />
       </DialogContent>
       <DialogActions style={{backgroundColor:'#eee'}}>
         {isLoading ?
