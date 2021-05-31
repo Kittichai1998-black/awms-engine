@@ -135,8 +135,9 @@ const routes = [
   { path: "/issue/pickingmonitor", name: "Picking Monitor", compoment: PickingMonitor, exact: true, child: true },
   { path: "/warehouse/scanshuttlecheckin", name: "Scan Shuttle Check-In", compoment: ScanShuttleCheckIn, exact: true, child: true },
   { path: "/warehouse/scanshuttlecheckout", name: "Scan Shuttle Check-Out", compoment: ScanShuttleCheckOut, exact: true, child: true },
-  { path: "/monitor/dockoutbounddashboard", name: "Dock Outbound Dashboard", compoment: DockOutboundDashboard, exact: true, child: true },
   { path: "/monitor/listshuttle", name: "List Shuttle", compoment: ListShuttle, exact: true, child: true },
+
+  { path: "/monitor/dockoutbounddashboard", name: "Dock Outbound Dashboard", compoment: DockOutboundDashboard, exact: true, child: true },
 ];
 
 export default routes;
