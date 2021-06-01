@@ -1,0 +1,451 @@
+{
+  "datas": [
+    {
+      "Code": "Action Time",
+      "Messages": "เวลาทำการ"
+    },
+    {
+      "Code": "Add",
+      "Messages": "เพิ่ม"
+    },
+    {
+      "Code": "Advanced Search",
+      "Messages": "ค้นหาขั้นสูง"
+    },
+    {
+      "Code": "APIKey",
+      "Messages": "APIKey"
+    },
+    {
+      "Code": "Area Location",
+      "Messages": "พื้นที่"
+    },
+    {
+      "Code": "Area Route",
+      "Messages": "เส้นทางพื้นที่"
+    },
+    {
+      "Code": "Area Zone",
+      "Messages": "โซนพื้นที่"
+    },
+    {
+      "Code": "Branch",
+      "Messages": "สาขา"
+    },
+    {
+      "Code": "Counting",
+      "Messages": "การตรวจนับ"
+    },
+    {
+      "Code": "Counting Jobs",
+      "Messages": "งานเบิกตัวนับ"
+    },
+    {
+      "Code": "Create",
+      "Messages": "สร้างเอกสาร"
+    },
+    {
+      "Code": "Create From Customers",
+      "Messages": "สร้างเอกสารจากลูกค้า"
+    },
+    {
+      "Code": "Create From Suppliers",
+      "Messages": "สร้างเอกสารจากฝ่ายผลิต"
+    },
+    {
+      "Code": "Current",
+      "Messages": "ปัจจุบัน"
+    },
+    {
+      "Code": "Current Inventory",
+      "Messages": "สินค้าคลังปัจจุบัน"
+    },
+    {
+      "Code": "Customer",
+      "Messages": "ลูกค้า"
+    },
+    {
+      "Code": "Daily Count",
+      "Messages": "ตรวจนับรายวัน"
+    },
+    {
+      "Code": "Daily Count Sum",
+      "Messages": "ผลรวมตรวจนับรายวัน"
+    },
+    {
+      "Code": "Daily Issue",
+      "Messages": "เบิกออกรายวัน"
+    },
+    {
+      "Code": "Daily Issue Sum",
+      "Messages": "ผลรวมเบิกออกรายวัน"
+    },
+    {
+      "Code": "Daily Receive",
+      "Messages": "รับเข้ารายวัน"
+    },
+    {
+      "Code": "Daily Receive Sum",
+      "Messages": "ผลรวมรับเข้ารายวัน"
+    },
+    {
+      "Code": "Dashboard",
+      "Messages": "แดรชบอร์ด"
+    },
+    {
+      "Code": "Date/Time",
+      "Messages": "วัน/เวลา"
+    },
+    {
+      "Code": "Des.Warehouse",
+      "Messages": "แวร์เฮ้าส์ปลายทาง"
+    },
+    {
+      "Code": "Destination",
+      "Messages": "ปลายทาง"
+    },
+    {
+      "Code": "Destination Warehouse",
+      "Messages": "แวร์เฮ้าส์ปลายทาง"
+    },
+    {
+      "Code": "Detail",
+      "Messages": "รายละเอียด"
+    },
+    {
+      "Code": "Doc Date",
+      "Messages": "วันเอกสาร"
+    },
+    {
+      "Code": "Doc No.",
+      "Messages": "เลขเอกสาร"
+    },
+    {
+      "Code": "Doc Status",
+      "Messages": "สถานะเอกสาร"
+    },
+    {
+      "Code": "Doc.Date From",
+      "Messages": "จากวัน"
+    },
+    {
+      "Code": "Doc.Date To",
+      "Messages": "ถึงวัน"
+    },
+    {
+      "Code": "Document Date",
+      "Messages": "วันเอกสาร"
+    },
+    {
+      "Code": "Document No.",
+      "Messages": "เลขเอกสาร"
+    },
+    {
+      "Code": "EventStatus",
+      "Messages": "สถานะ QC"
+    },
+    {
+      "Code": "Gate",
+      "Messages": "ประตู"
+    },
+    {
+      "Code": "Home",
+      "Messages": "หน้าแรก"
+    },
+    {
+      "Code": "InBound Progress",
+      "Messages": "โปรเกรท ขารับเข้า"
+    },
+    {
+      "Code": "Issue",
+      "Messages": "เบิกออก"
+    },
+    {
+      "Code": "Log Out",
+      "Messages": "ออกจากระบบ"
+    },
+    {
+      "Code": "Manage Queue",
+      "Messages": "จัดการคิว"
+    },
+    {
+      "Code": "Manual Counting",
+      "Messages": "ตรวจนับ"
+    },
+    {
+      "Code": "Matser Volume",
+      "Messages": "ปริมาณหลัก"
+    },
+    {
+      "Code": "Modify",
+      "Messages": "เวลาแก้ไข"
+    },
+    {
+      "Code": "Movement",
+      "Messages": "ประเภทการขนย้าย"
+    },
+    {
+      "Code": "Movement Type",
+      "Messages": "ประเภทการขนย้าย"
+    },
+    {
+      "Code": "Mvt",
+      "Messages": "ประเภทการขนย้าย"
+    },
+    {
+      "Code": "ObjectSize Map",
+      "Messages": "ObjectSize Map"
+    },
+    {
+      "Code": "OutBound Progress",
+      "Messages": "โปรเกรท ขาเบิกออก"
+    },
+    {
+      "Code": "Pallet",
+      "Messages": "พาเลท"
+    },
+    {
+      "Code": "Pallet Master",
+      "Messages": "พาเลทหลัก"
+    },
+    {
+      "Code": "Pallet Type",
+      "Messages": "ประเภทพาเลท"
+    },
+    {
+      "Code": "Permission",
+      "Messages": "สิทธิ์การใช้งาน"
+    },
+    {
+      "Code": "Picking Jobs",
+      "Messages": "งานเบิกปัจจุบัน"
+    },
+    {
+      "Code": "Print Barcode Pallet",
+      "Messages": "พิมพ์บาร์โค้ดพาเลท"
+    },
+    {
+      "Code": "Priority",
+      "Messages": "ความสำคัญ"
+    },
+    {
+      "Code": "Product",
+      "Messages": "สินค้า"
+    },
+    {
+      "Code": "Qty",
+      "Messages": "จำนวน"
+    },
+    {
+      "Code": "Receive",
+      "Messages": "รับเข้า"
+    },
+    {
+      "Code": "Reject",
+      "Messages": "ยกเลิก"
+    },
+    {
+      "Code": "Remark",
+      "Messages": "ข้อสังเกต"
+    },
+    {
+      "Code": "Report",
+      "Messages": "รายงาน"
+    },
+    {
+      "Code": "Scan Pallet Infomation",
+      "Messages": "สแกนข้อมูลพาเลท"
+    },
+    {
+      "Code": "Scan Pallet Move",
+      "Messages": "สแกนพาเลท move"
+    },
+    {
+      "Code": "Search",
+      "Messages": "ค้นหา"
+    },
+    {
+      "Code": "Select Area",
+      "Messages": "เลือกพื้นที่"
+    },
+    {
+      "Code": "Setting",
+      "Messages": "ตั้งค่า"
+    },
+    {
+      "Code": "SKU",
+      "Messages": "เอสเคยู"
+    },
+    {
+      "Code": "SKU Convertor",
+      "Messages": "แปลงเอสเคยู"
+    },
+    {
+      "Code": "SKU Item",
+      "Messages": "เอสเคยูไอเท็ม"
+    },
+    {
+      "Code": "SKU Type",
+      "Messages": "ประเภทเอสเคยู"
+    },
+    {
+      "Code": "Sou.Customer",
+      "Messages": "ลูกค้าต้นทาง"
+    },
+    {
+      "Code": "Sou.Supplier",
+      "Messages": "ผู้ผลิตต้นทาง"
+    },
+    {
+      "Code": "Source",
+      "Messages": "ต้นทาง"
+    },
+    {
+      "Code": "Source Customer",
+      "Messages": "ลูกค้าปลายทาง"
+    },
+    {
+      "Code": "Source Supplier",
+      "Messages": "ผู้ผลิตต้นทาง"
+    },
+    {
+      "Code": "Stock Card",
+      "Messages": "บัตรสต็อก"
+    },
+    {
+      "Code": "Storage Object",
+      "Messages": "การเก็บข้อมูล"
+    },
+    {
+      "Code": "Supplier",
+      "Messages": "ผู้ผลิต"
+    },
+    {
+      "Code": "Time",
+      "Messages": "เวลา"
+    },
+    {
+      "Code": "User Account",
+      "Messages": "บัญชีผู้ใช้"
+    },
+    {
+      "Code": "WareHouse",
+      "Messages": "คลังสินค้า"
+    },
+    {
+      "Code": "SKU Code",
+      "Messages": "เอสเคยูโค้ด"
+    },
+    {
+      "Code": "Search of Code",
+      "Messages": "ค้นหาโค้ด"
+    },
+    {
+      "Code": "Code",
+      "Messages": "รหัส"
+    },
+    {
+      "Code": "Queue",
+      "Messages": "คิว"
+    },
+    {
+      "Code": "Source Warehouse",
+      "Messages": "คลังสินค้าต้นทาง"
+    },
+    {
+      "Code": "Document",
+      "Messages": "เอกสาร"
+    },
+    {
+      "Code": "Add Queue",
+      "Messages": "เพิ่มคิว"
+    },
+    {
+      "Code": "Status",
+      "Messages": "สถานะ"
+    },
+    {
+      "Code": "Add Sorting",
+      "Messages": "เพิ่มการเรียงลำดับ"
+    },
+    {
+      "Code": "Edit",
+      "Messages": "แก้ไข"
+    },
+    {
+      "Code": "Remove",
+      "Messages": "ลบ"
+    },
+    {
+      "Code": "Back",
+      "Messages": "กลับ"
+    },
+    {
+      "Code": "Cancel",
+      "Messages": "ยกเลิก"
+    },
+    {
+      "Code": "OK",
+      "Messages": "ตกลง"
+    },
+    {
+      "Code": "Process",
+      "Messages": "ดำเนินการ"
+    },
+    {
+      "Code": "Clear",
+      "Messages": " ล้าง"
+    },
+    {
+      "Code": "Barcode Pallet",
+      "Messages": "บาร์โค้ดพาเลท"
+    },
+    {
+      "Code": "Adjust Quantity",
+      "Messages": "ปรับปริมาณ"
+    },
+    {
+      "Code": "Next",
+      "Messages": "ต่อไป"
+    },
+    {
+      "Code": "Area",
+      "Messages": "พื้นที่"
+    },
+    {
+      "Code": "Scan Code",
+      "Messages": "สแกนโค้ด"
+    },
+    {
+      "Code": "Scan",
+      "Messages": "แสกน"
+    },
+    {
+      "Code": "Destination location",
+      "Messages": "โลเคชันปลายทาง"
+    },
+    {
+      "Code": "Select",
+      "Messages": "เลือก"
+    },
+    {
+      "Code": "Export Excel",
+      "Messages": "ส่งออก Excel"
+    },
+    {
+      "Code": "Delete",
+      "Messages": "ลบ"
+    },
+    {
+      "Code": "Save",
+      "Messages": " บันทึก"
+    }
+  ],
+  "counts": 110,
+  "_result": {
+    "status": 1,
+    "code": "I0000",
+    "message": "Success",
+    "stacktrace": null
+  }
+}
