@@ -1,1 +1,0 @@
-{"version":3,"sources":["TableCustom.css"],"names":[],"mappings":"AAAA,gCACI,UAAY,CACZ,WACJ","file":"148.b76f6146.chunk.css","sourcesContent":[".tableCustom::-webkit-scrollbar {\r\n    width: 0.5em;\r\n    height: 0.5em;\r\n}"]}
