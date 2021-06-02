@@ -134,7 +134,7 @@ const MonitorReceive=(props)=>{
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckinModal}>
         <DialogTitle>Shuttle Check-In</DialogTitle>
         <DialogContent>
-            <ScanShuttleCheckIn shuttle={inputShuttle} location={inputLocation} />
+            <ScanShuttleCheckIn shuttle={inputShuttle} gateCode={inputLocation} />
         </DialogContent>
         <DialogActions style={{backgroundColor:'#eee'}}>
           <Button size='medium' variant="contained" onClick={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} color="secondary" startIcon={<CloseSharp/>} >
@@ -147,7 +147,7 @@ const MonitorReceive=(props)=>{
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckoutModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckoutModal}>
         <DialogTitle>Shuttle Check-Out</DialogTitle>
         <DialogContent>
-            <ScanShuttleCheckOut shuttle={inputShuttle} location={inputLocation} />
+            <ScanShuttleCheckOut shuttle={inputShuttle} gateCode={inputLocation} />
         </DialogContent>
         <DialogActions style={{backgroundColor:'#eee'}}>
           <Button size='medium' variant="contained" onClick={()=>{setIsOpenCheckoutModal(false);setInputLocation(null);setInputShuttle(null);}} color="secondary" startIcon={<CloseSharp/>} >
