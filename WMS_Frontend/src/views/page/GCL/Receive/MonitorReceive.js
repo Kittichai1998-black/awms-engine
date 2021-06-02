@@ -212,18 +212,19 @@ const MonitorReceive=(props)=>{
 // model add
 const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=()=>{}})=>{
   const classes = useStyles();
+  const [status,setStatus]=useState("")
   const [priority,setPriority]=useState("")
-  const [wms_doc,setWmsDoc]=useState("")
-  const [customer,setCustomer]=useState("")
   const [to_wh,setToWH]=useState("")
+  const [wms_doc,setWmsDoc]=useState("")
+  const [customer,setCustomer]=useState("")  
   const [grade,setGrade]=useState("")
   const [lot,setLot]=useState("")
+  const [booking_location,setBookingLocation]=useState("")
   const [no_strat,setNoStrat]=useState("")
   const [no_end,setNoEnd]=useState("")
-  const [sku,setSKU]=useState("")
-  const [status,setStatus]=useState("")
-  const [qty_pallet,setQtyPallet]=useState("")
-  const [unit,setUnit]=useState("")
+  const [sku,setSKU]=useState("")  
+  const [qty_pallet,setQtyPerPallet]=useState("")
+  const [unit,setUnit]=useState("KG")
   const [isLoading,setIsLoading]=useState(false)
 
   useEffect(() => {
@@ -257,18 +258,18 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" maxWidth='xs'>
       <form onSubmit={onSubmitForm} autoComplete="off">
       <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Receive</center></DialogTitle>
-      <DialogContent>
+      <DialogContent>          
           <TextField autoFocus type="number" margin="dense" id="priority" label="Priority" fullWidth required InputProps={{step:1}} value={priority} onChange={(event)=>setPriority(event.target.value)} />
-          <TextField type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
-          <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
           <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
+          <TextField type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
+          <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />          
+          <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />         
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
           <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />
-          <TextField type="number" margin="dense" id="no_strat" label="No Strat"  required InputProps={{step:1}} value={no_strat} onChange={(event)=>setNoStrat(event.target.value)} />
-          <TextField type="number" margin="dense" id="no_end" label="No End" style={{marginLeft:10}}  required InputProps={{step:1}} value={no_end} onChange={(event)=>setNoEnd(event.target.value)} />
-          <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />
-          <TextField type="text" margin="dense" id="status" label="Status" fullWidth required value={status} onChange={(event)=>setStatus(event.target.value)} />
-          <TextField type="number" margin="dense" id="qty_pallet" label="Qty Pallet" fullWidth required value={qty_pallet} onChange={(event)=>setQtyPallet(event.target.value)} />
+          <TextField type="number" margin="dense" id="booking_location" label="Booking Location" fullWidth required value={booking_location} onChange={(event)=>setBookingLocation}/>
+          <TextField type="number" margin="dense" id="no_strat" label="No Start"  required InputProps={{step:1}} value={no_strat} onChange={(event)=>setNoStrat(event.target.value)} />
+          <TextField type="number" margin="dense" id="no_end" label="No End" /*style={{marginLeft:10}} */ required InputProps={{step:1}} value={no_end} onChange={(event)=>setNoEnd(event.target.value)} />          
+          <TextField type="number" margin="dense" id="qty_pallet" label="Qty Per Pallet" fullWidth required value={qty_pallet} onChange={(event)=>setQtyPerPallet(event.target.value)} />
           <TextField type="text" margin="dense" id="unit" label="Unit" fullWidth required InputProps={{step:1}} value={unit} onChange={(event)=>setUnit(event.target.value)} />
       </DialogContent>
       <DialogActions style={{backgroundColor:'#eee'}}>

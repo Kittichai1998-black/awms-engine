@@ -66,30 +66,14 @@ const StorageObject = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
-    { Header: "Lot", accessor: "Lot", width: 80 },
     { Header: "Grade", accessor: "Ref1", width: 80 },
-    {
-      Header: "Item Code",
-      accessor: "SKU_Code",
-      width: 100
-    },
-    {
-      Header: "Item Name",
-      accessor: "SKU_Name",
-      fixWidth: 200,
-
-    },
+    { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Pallet",
       accessor: "Pallet",
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
-    //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
-    //{ Header: "Customer", accessor: "For_Customer", width: 100 },
-    { Header: "Area", accessor: "Area", width: 100 },
-    { Header: "Location", accessor: "Location", width: 100 },
-
     {
       Header: "Qty",
       accessor: "SaleQty",
@@ -98,6 +82,20 @@ const StorageObject = props => {
       // Cell: e => getNumberQty(e.original)
     },
     { Header: "Unit", accessor: "Unit", width: 100 },
+    // {
+    //   Header: "Item Code",
+    //   accessor: "SKU_Code",
+    //   width: 100
+    // },
+    //{ Header: "Item Name",accessor: "SKU_Name",fixWidth: 200,},
+
+    //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
+    //{ Header: "Customer", accessor: "For_Customer", width: 100 },
+    //{ Header: "Area", accessor: "Area", width: 100 },
+    //{ Header: "Location", accessor: "Location", width: 100 },
+
+
+   
     { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
     { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
     { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },

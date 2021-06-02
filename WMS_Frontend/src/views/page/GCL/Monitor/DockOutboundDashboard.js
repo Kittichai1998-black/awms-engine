@@ -12,10 +12,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:'#FFF'
     },
     bgColor2:{
-        backgroundColor:'#BBB'
+        backgroundColor:'#AED6F1'
     },
     bgColor3:{
-        backgroundColor:'#ff89a5'
+        backgroundColor:'#F5B7B1'
     }
 }));
 
@@ -61,7 +61,7 @@ const DockOutboundDashboard=(props)=>{
     <Paper elevation={0} style={{width: '100%',height:'100%', padding:10}}>
         {/* <InputLabel id="demo-simple-select-label">Warehouse</InputLabel> */}
         <center>
-        <Select
+        <Select 
           labepd="demo-simple-select-label"
           id="demo-simple-select"
           value={warehouse}
@@ -73,7 +73,7 @@ const DockOutboundDashboard=(props)=>{
         </Select>
         </center>
         <Grid style={{marginTop:20}}>
-            <Grid container justify="center" spacing={2}>
+            <Grid container justify="left" spacing={2}>
                 {!isLoadingdataTable&& dataTable.map((dataItem,key) => (
                     <Grid key={key} item style={{width:'19%'}}>
                         {/* <Paper elevation={3} className={classes.paper}/> */}
@@ -81,10 +81,11 @@ const DockOutboundDashboard=(props)=>{
                             <CardHeader title={<h5 style={{fontWeight: 'bold',margin:0,fontSize:'1.2em'}}>{dataItem.head}</h5>} style={{borderBottom:'1px dashed #999', padding:'8px 10px'}}/>
                             <CardContent style={{padding:8,fontSize:'2em'}}>
                                 {/* <ul style={{padding:0}}> */}
-                                    <p><b>{dataItem.title}</b></p>
-                                    <p>{dataItem.detail1}</p>
-                                    <p>{dataItem.detail2}</p>
-                                    <p>{dataItem.detail3}</p>
+                                    <p style ={{fontSize:'0.6em'}}><b>{dataItem.title}</b></p>
+                                    <p style ={{fontSize:'0.6em'}}>{dataItem.detail1}</p>
+                                    <p style ={{fontSize:'0.6em'}}>{dataItem.detail2}</p>   
+                                    <p style ={{fontSize:'0.6em'}}>{dataItem.detail3}</p>                             
+                                  
                                 {/* </ul> */}
                             </CardContent>
                         </Card>
