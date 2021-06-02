@@ -42,13 +42,16 @@ const monitorReceive = [
   ]
 
   const DockOutboundDashboard=[
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
-    {dock:"testdock", sku :'testsku',lot:'testlot', grade:'testgrade', pallet:'testpallet'},
+    {head:"head1",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:1},
+    {head:"head2",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:2},
+    {head:"head3",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:2},
+    {head:"head4",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:3},
+    {head:"head5",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:1},
+    {head:"head6",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:3},
+    {head:"head7",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:1},
+    {head:"head8",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:2},
+    {head:"head9",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:3},
+    {head:"head10",title:"title",detail1:"shuttle1",detail1:"online",detail3:"online",bg_color:3},,
   ]
 
   const ListShuttle=[
