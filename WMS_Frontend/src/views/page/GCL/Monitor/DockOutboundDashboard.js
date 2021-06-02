@@ -8,10 +8,15 @@ import GCLService from '../../../../components/function/GCLService'
 import {AddCircleOutpne,CloseSharp,BrightnessHigh,Extension,Save} from '@material-ui/icons'
 
 const useStyles = makeStyles((theme) => ({
-    paper: {
-      height: 130,
-      width: 180,
+    bgColor1:{
+        backgroundColor:'#FFF'
     },
+    bgColor2:{
+        backgroundColor:'#BBB'
+    },
+    bgColor3:{
+        backgroundColor:'#ff89a5'
+    }
 }));
 
 const warehousepst=["W01","W02","W03","W04","W05","W06","W07","W08"]
@@ -37,7 +42,7 @@ const DockOutboundDashboard=(props)=>{
         setDataTable(res.data.datas)
         //auto load data
         intervalGetSPReportAPI=setInterval(()=>{
-            GCLService.get('/v2/GetSPReportAPI',{spname:'Dock_Outbound_Dashboard'}).then(res=>{
+            GCLService.get('/v2/GetSPReportAPI',{spname:'Dock_Outbound_Dashboard',warehouse:warehouse}).then(res=>{
                 if(!res.data._result.status) {
                     setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
                     return ;
@@ -70,16 +75,16 @@ const DockOutboundDashboard=(props)=>{
         <Grid style={{marginTop:20}}>
             <Grid container justify="center" spacing={2}>
                 {!isLoadingdataTable&& dataTable.map((dataItem,key) => (
-                    <Grid key={key} item>
+                    <Grid key={key} item style={{width:'19%'}}>
                         {/* <Paper elevation={3} className={classes.paper}/> */}
-                        <Card elevation={3} className={classes.paper}>
-                            <CardHeader subheader={`DOCK ${dataItem.dock}`} style={{borderBottom:'1px dashed #CCC'}}/>
-                            <CardContent style={{padding:8}}>
+                        <Card elevation={3} style={{width: '100%'}} className={dataItem.bg_color==2 ? classes.bgColor2 : (dataItem.bg_color==3 ? classes.bgColor3 : classes.bgColor1)}>
+                            <CardHeader title={<h5 style={{fontWeight: 'bold',margin:0,fontSize:'1.2em'}}>{dataItem.head}</h5>} style={{borderBottom:'1px dashed #999', padding:'8px 10px'}}/>
+                            <CardContent style={{padding:8,fontSize:'2em'}}>
                                 {/* <ul style={{padding:0}}> */}
-                                    <p><b>SKU</b> : {dataItem.sku}</p>
-                                    <p><b>LOT</b> : {dataItem.lot}</p>
-                                    <p><b>GRADE</b> : {dataItem.grade}</p>
-                                    <p><b>PALLET</b> : {dataItem.pallet}</p>
+                                    <p><b>{dataItem.title}</b></p>
+                                    <p>{dataItem.detail1}</p>
+                                    <p>{dataItem.detail2}</p>
+                                    <p>{dataItem.detail3}</p>
                                 {/* </ul> */}
                             </CardContent>
                         </Card>

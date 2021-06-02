@@ -236,7 +236,7 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     setIsLoading(true)
     let priority_value = !(priority=="") ? Number(priority) : priority;
     let qty_pick_value = !(qty_pick=="") ? Number(qty_pick) : qty_pick
-    GCLService.post('/v2/Picking_Plan_Front',{priority:priority_value,wms_doc,customer,to_wh,grade,lot,sku,status,qty_pick:qty_pick_value,unit}).then(res=>{
+    GCLService.post('/v2/Picking_Plan_Front',{priority:priority_value,wms_doc,customer,to_wh,grade,lot,sku,status,qty_pick:qty_pick_value,unit,dock}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
