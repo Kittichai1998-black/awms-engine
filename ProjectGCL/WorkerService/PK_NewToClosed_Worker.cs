@@ -38,7 +38,7 @@ namespace ProjectGCL.WorkerService
                     ListKeyValue<string, object>
                         .New("DocumentType_ID", DocumentTypeID.PICKING)
                         .Add("EventStatus", DocumentEventStatus.NEW)
-                        .Add("Status", EntityStatus.ACTIVE), buVO).ToList();
+                        .Add("Status", EntityStatus.ACTIVE), new VOCriteria()).ToList();
             if (docs.Count == 0) return;
 
 
@@ -70,7 +70,7 @@ namespace ProjectGCL.WorkerService
                         i++)
                         {
 
-                            if (pallets[i].ref3 == doci.Ref3 && pallets[i].ref4 == doci.Ref4)
+                            if (pallets[i].ref3 == doci.Ref3 && (pallets[i].ref4 == doci.Ref4 || string.IsNullOrEmpty(doci.Ref4)))
                             {
                                 if (pallets[0].bay != not_bay)
                                 {
@@ -121,7 +121,7 @@ namespace ProjectGCL.WorkerService
                                     BaseUnitType_ID = select_pl.unit_id,
                                     Quantity = select_pl.qty,
                                     UnitType_ID = select_pl.unit_id,
-                                    Status = EntityStatus.DONE
+                                    Status = EntityStatus.INACTIVE
                                 };
                                 DataADO.GetInstant().Insert<amt_DocumentItemStorageObject>(disto, buVO);
                             }
@@ -156,7 +156,7 @@ namespace ProjectGCL.WorkerService
                         {
                             //TODO
                             ADO.WMSDB.WcsADO.GetInstant().SP_CREATE_DO_QUEUE(
-                                doc.Code, doc.Code, pl.psto_id, pl._seq_group, pl._priority,
+                                doc.Code, doc.Code, pl._doci_id, pl._seq_group, pl._priority,
                                 pl.ref4, pl.psto_code, pl.ref1, pl.ref2, pl.qty, pl.unit, pl.ref3, pl.bsto_code, wh.Code,
                                 area.Code, "", buVO);
                         });
@@ -214,6 +214,19 @@ namespace ProjectGCL.WorkerService
                     buVO.SqlTransaction_Rollback();
                     this.Logger.LogError(ex.Message);
                     this.Logger.LogError(ex.StackTrace);
+
+
+                    DataADO.GetInstant().UpdateBy<amt_Document>(
+                        ListKeyValue<string, object>.New("ID", doc.ID).Add("Status", EntityStatus.ACTIVE),
+                        ListKeyValue<string, object>
+                        .New("EventStatus", DocumentEventStatus.REJECTED).Add("Status", EntityStatus.DONE)
+                        .Add("Options", doc.Options += "&_error=" + ex.Message)
+                            , buVO);
+
+                    DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
+                        ListKeyValue<string, object>.New("Document_ID", doc.ID).Add("Status", EntityStatus.ACTIVE),
+                        ListKeyValue<string, object>.New("EventStatus", DocumentEventStatus.REJECTED).Add("Status", EntityStatus.DONE)
+                            , buVO);
                 }
                 
 
@@ -231,8 +244,6 @@ namespace ProjectGCL.WorkerService
             if (wcsWq.Count == 0) return;
 
             List<StorageObjectCriteria> psto_picks = new List<StorageObjectCriteria>();
-            List<long> doci_ids = new List<long>();
-            List<long> docItemIDs = new List<long>();
             wcsWq.ForEach(wq =>
             {
                 try
@@ -246,27 +257,17 @@ namespace ProjectGCL.WorkerService
                         throw new Exception($"ไม่พบเลขพาเลท '{wq.BaseCode}' ในระบบ");
                     var psto = bsto.mapstos.First();
 
-                    //PICKED BASE
+                    //PICKED BASE //PICKED PACK
                     {
                         bsto.areaID = doc.Des_AreaMaster_ID;
                         bsto.parentID = null;
                         bsto.parentType = null;
-                        bsto.eventStatus = StorageObjectEventStatus.BASE_DONE;
+                        bsto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.BASE_DONE : StorageObjectEventStatus.BASE_ACTIVE;
                         StorageObjectADO.GetInstant().PutV2(bsto, buVO);
-                    }
 
-                    //PICKED PACK
-                    {
                         psto.areaID = doc.Des_AreaMaster_ID;
-                        psto.eventStatus = StorageObjectEventStatus.PACK_PICKED;
+                        psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_PICKED : StorageObjectEventStatus.PACK_PICKING;
                         StorageObjectADO.GetInstant().PutV2(psto, buVO);
-                    }
-
-                    //DONE WorkQueue
-                    {
-                        wq.Status = EntityStatus.DONE;
-                        wq.ActionResult = "Success";
-                        DataADO.GetInstant().UpdateBy<amt_Wcs_WQ>(wq, buVO);
                     }
 
                     //DONE DISTO
@@ -274,18 +275,17 @@ namespace ProjectGCL.WorkerService
                         DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(
                             ListKeyValue<string, object>
                                 .New("DocumentItem_ID", doci.ID.Value)
-                                .Add("StorageObject_ID", psto.id.Value),
+                                .Add("Sou_StorageObject_ID", psto.id.Value),
                             ListKeyValue<string, object>
-                                .New("Status", EntityStatus.DONE)
+                                .New("Status", wq.ActionStatus)
                                 .Add("Des_StorageObject_ID", psto.id.Value), buVO);
                     }
 
-                    //WORKED DocItem
+                    //DONE WorkQueue
                     {
-                        DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
-                            ListKeyValue<string, object>.New("ID", doci.ID),
-                            ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.WORKED).Add("status", EntityStatus.ACTIVE),
-                            buVO);
+                        wq.Status = EntityStatus.DONE;
+                        wq.ActionResult = "Success";
+                        DataADO.GetInstant().UpdateBy<amt_Wcs_WQ>(wq, buVO);
                     }
 
                     //SEND SCE PICKING_CONFIRM
@@ -342,7 +342,7 @@ namespace ProjectGCL.WorkerService
             });
 
 
-            doci_ids.ForEach(doci_id =>
+            wcsWq.GroupBy(x=>x.WmsRefID).Select(x=>x.Key).ToList().ForEach(doci_id =>
             {
                 int disto_count =
                 DataADO.GetInstant().CountBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]

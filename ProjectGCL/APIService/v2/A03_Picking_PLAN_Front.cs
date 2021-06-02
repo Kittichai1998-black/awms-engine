@@ -17,6 +17,7 @@ namespace ProjectGCL.APIService.v2
 
         public class TREQ
         {
+            public int priority = 1;
             public string wms_doc;
             public string customer;
             public string to_wh;
@@ -53,15 +54,15 @@ namespace ProjectGCL.APIService.v2
                         {
                             LOT = temp.lot,
                             SKU = temp.sku,
-                            UD_CODE = null,
+                            UD_CODE = temp.status,
                             FROM_LOCATION = null,
                             FROM_WH_ID = temp.to_wh,
-                            PRIORITY = "1",
+                            PRIORITY = temp.priority.ToString(),
                             QTY = temp.qty_pick,
                             UNIT = temp.unit,
                             WMS_LINE = "1",
-                            TO_Location_Destination = "808",
-                            TO_Location_Staging = "808"
+                            TO_Location_Destination = temp.dock,
+                            TO_Location_Staging = temp.dock
                         }
                     },
                 }

@@ -33,13 +33,6 @@ namespace ProjectGCL.APIService.v2
             this.BeginTransaction();
 
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-            var loc = string.IsNullOrEmpty(req.location) ? null : ADO.WMSDB.DataADO.GetInstant()
-                .SelectBy<ams_AreaLocationMaster>("Name", req.location, BuVO)
-                .FirstOrDefault(x=>x.Status == AMSModel.Constant.EnumConst.EntityStatus.ACTIVE);
-            var area = string.IsNullOrEmpty(req.location) ? null : 
-                StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.ID == loc.AreaMaster_ID);
-            var wh = string.IsNullOrEmpty(req.location) ? null :
-                StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.ID == area.Warehouse_ID);
 
 
             if (req.mode == amt_Wcs_Action.TMode.Cancel)
@@ -66,19 +59,36 @@ namespace ProjectGCL.APIService.v2
             else
             {
                 string _apiRef = string.Empty;
-                if (req.mode == amt_Wcs_Action.TMode.Sorting)
+                int? _bay = null;
+                int? _lv = null;
+                if(req.mode == amt_Wcs_Action.TMode.Sorting || req.mode == amt_Wcs_Action.TMode.Counting)
                 {
-                    ADO.WMSDB.WcsADO.GetInstant()
-                        .SP_QUEUE_ARRANGEBAY(wh.Code, loc.Bay.Value, loc.Lv.Value, req.actionType ?? 5, out _apiRef, BuVO);
-                }
-                else if (req.mode == amt_Wcs_Action.TMode.Counting)
-                {
-                    ADO.WMSDB.WcsADO.GetInstant()
-                        .SP_QUEUE_COUNTBAY(wh.Code, loc.Bay.Value, loc.Lv.Value, req.actionType ?? 7, out _apiRef, BuVO);
+
+                    var loc = string.IsNullOrEmpty(req.location) ? null : ADO.WMSDB.DataADO.GetInstant()
+                        .SelectBy<ams_AreaLocationMaster>("Name", req.location, BuVO)
+                        .FirstOrDefault(x => x.Status == AMSModel.Constant.EnumConst.EntityStatus.ACTIVE);
+                    var area = string.IsNullOrEmpty(req.location) ? null :
+                        StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.ID == loc.AreaMaster_ID);
+                    var wh = string.IsNullOrEmpty(req.location) ? null :
+                        StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.ID == area.Warehouse_ID);
+
+                    _bay = loc.Bay;
+                    _lv = loc.Lv;
+
+                    if (req.mode == amt_Wcs_Action.TMode.Sorting)
+                    {
+                        ADO.WMSDB.WcsADO.GetInstant()
+                            .SP_QUEUE_ARRANGEBAY(wh.Code, loc.Bay.Value, loc.Lv.Value, req.actionType ?? 5, out _apiRef, BuVO);
+                    }
+                    else if (req.mode == amt_Wcs_Action.TMode.Counting)
+                    {
+                        ADO.WMSDB.WcsADO.GetInstant()
+                            .SP_QUEUE_COUNTBAY(wh.Code, loc.Bay.Value, loc.Lv.Value, req.actionType ?? 7, out _apiRef, BuVO);
+                    }
                 }
                 else if (req.mode == amt_Wcs_Action.TMode.Check_IN)
                     ADO.WMSDB.WcsADO.GetInstant()
-                        .SP_SHULOWBAT(req.shuttle, BuVO);
+                        .SP_ShuttleBatteryFull(req.shuttle,req.location, BuVO);
                 else if (req.mode == amt_Wcs_Action.TMode.Check_Out)
                     ADO.WMSDB.WcsADO.GetInstant()
                         .SP_ShuttelToStand(req.shuttle, BuVO);
@@ -90,8 +100,8 @@ namespace ProjectGCL.APIService.v2
 
                     ShuCode = req.shuttle,
                     LocName = req.location,
-                    Bay = loc == null ? null : loc.Bay,
-                    Lv = loc == null ? null : loc.Lv,
+                    Bay = _bay,
+                    Lv = _lv,
 
                     Result = req.mode.In(amt_Wcs_Action.TMode.Sorting, amt_Wcs_Action.TMode.Counting)? "waiting":"completed",
                     Status = AMSModel.Constant.EnumConst.EntityStatus.ACTIVE

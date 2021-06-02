@@ -31,8 +31,11 @@ namespace ProjectGCL.WorkerService
         private void WorkingToWorked_WcsWQ(VOCriteria buVO)
         {
             var wcsWq = DataADO.GetInstant().SelectBy<amt_Wcs_WQ>(
-                ListKeyValue<string, object>.New("status", EntityStatus.ACTIVE).Add("IOType", IOType.INBOUND),
-                buVO)
+                new SQLConditionCriteria[]{
+                    new SQLConditionCriteria("Status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("IOType","1,3", SQLOperatorType.IN),
+                },
+                new VOCriteria())
                 .ToList();
 
             if (wcsWq.Count == 0) return;
@@ -169,9 +172,18 @@ namespace ProjectGCL.WorkerService
                     else
                     {
                         psto = bsto.mapstos.First();
-                        if (psto.eventStatus != StorageObjectEventStatus.PACK_RECEIVED)
+                        //if (psto.eventStatus != StorageObjectEventStatus.PACK_RECEIVED)
                         {
                             //PSTO Update Status
+                            var area_list = StaticValueManager.GetInstant().AreaMasters.FindAll(x => x.Warehouse_ID == doc.Des_Warehouse_ID);
+                            var loc = DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>("Code", wq.LocCode, buVO)
+                            .FirstOrDefault(x => x.Status == EntityStatus.ACTIVE && area_list.Any(y => y.ID == x.AreaMaster_ID));
+
+                            bsto.areaID = loc.AreaMaster_ID;
+                            bsto.parentType = StorageObjectType.LOCATION;
+                            bsto.parentID = loc.ID;
+                            StorageObjectADO.GetInstant().PutV2(bsto, buVO);
+
                             psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
                             StorageObjectADO.GetInstant().PutV2(psto, buVO);
 

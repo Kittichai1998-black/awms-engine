@@ -32,7 +32,7 @@ namespace ProjectGCL.Engine.v2
             var des_wh = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Name == req.TO_WH_ID);
             var freeLocs = AreaADO.GetInstant().ListFreeBayLvNotBook(des_wh.ID.Value, this.BuVO);
             List<SPGetFreeBayLvNotBook> bookLocs = new List<SPGetFreeBayLvNotBook>();
-            decimal countPallet = req.Pallet_Detail.Count();
+            decimal countPallet = req.TotalPallet;
             if (freeLocs.Sum(x => x.free_slot) < countPallet)
                 throw new Exception($"พื้นที่จัดเก็บเหลือ '{freeLocs.Sum(x => x.free_slot)}' ไม่เพียงพอจัดเก็บพาเลท '{countPallet}'");
             while (countPallet > 0)
@@ -121,7 +121,7 @@ namespace ProjectGCL.Engine.v2
 
                 Ref1 = req.API_REF,
                 Ref2 = req.WMS_DOC,
-                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray()),
+                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet="+req.TotalPallet+"&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray()),
 
                 EventStatus = DocumentEventStatus.NEW,
                 Status = EntityStatus.ACTIVE

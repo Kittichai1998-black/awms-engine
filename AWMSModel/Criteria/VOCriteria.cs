@@ -90,7 +90,6 @@ namespace AMSModel.Criteria
             var trans = this.SqlTransaction;
             if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
             {
-                var conn = trans.Connection;
                 trans.Commit();
                 trans.Dispose();
                 this.SqlTransaction = null;
@@ -99,9 +98,8 @@ namespace AMSModel.Criteria
         public void SqlTransaction_Rollback()
         {
             var trans = this.SqlTransaction;
-            if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
+            if (trans != null)
             {
-                var conn = trans.Connection;
                 trans.Rollback();
                 trans.Dispose();
                 this.SqlTransaction = null;

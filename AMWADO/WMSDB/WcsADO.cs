@@ -23,12 +23,12 @@ namespace ADO.WMSDB
             parameters.Add("SeqGroup", SeqGroup);
             parameters.Add("Priority", Priority);
             parameters.Add("Customer", Customer);
-            parameters.Add("SkuCode", SkuCode);
+            /*parameters.Add("SkuCode", SkuCode);
             parameters.Add("SkuGrade", SkuGrade);
             parameters.Add("SkuLot", SkuLot);
             parameters.Add("SkuQty", SkuQty);
             parameters.Add("SkuUnit", SkuUnit);
-            parameters.Add("SkuStatus", SkuStatus);
+            parameters.Add("SkuStatus", SkuStatus);*/
             parameters.Add("Base_code", Base_code);
             parameters.Add("Warehouse_Code", Warehouse_Code);
             parameters.Add("Des_Area_Code", Des_Area_Code);
@@ -86,7 +86,7 @@ namespace ADO.WMSDB
         public void SP_Receive_Close(IOType ioType,string trxRef, VOCriteria buVO)
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
-            parameters.Add("@iType", IOType.INBOUND);
+            parameters.Add("@iType", ioType);
             parameters.Add("@sTrxRef", trxRef);
             parameters.Add("@status", "", System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
             parameters.Add("@message", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
@@ -182,14 +182,23 @@ namespace ADO.WMSDB
         }
 
 
-        public void SP_SHULOWBAT(string shuttle, VOCriteria buVO)
+        public void SP_ShuttleBatteryFull(string shuttle, string location, VOCriteria buVO)
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
-            parameters.Add("@SHU_ID", shuttle);
-            parameters.Add("@StatusType", 1);
-            parameters.Add("@StatusQueue", 2);
+            parameters.Add("@SH_NAME", shuttle);
+            parameters.Add("@SS_NAME", location);
 
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_SHULOWBAT]", parameters, buVO);
+            parameters.Add("@rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            parameters.Add("@rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
+
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_ShuttleBatteryFull]", parameters, buVO);
+            string rtFlag = parameters.Get<string>("@rtFlag");
+            string rtDesc = parameters.Get<string>("@rtDesc");
+
+            if (rtFlag != "Y")
+            {
+                throw new Exception(rtDesc);
+            }
         }
         public void SP_ShuttelToStand(string shuttle, VOCriteria buVO)
         {
