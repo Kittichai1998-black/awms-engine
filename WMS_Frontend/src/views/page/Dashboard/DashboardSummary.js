@@ -3,18 +3,6 @@ import AmDashboardChart from '../../pageComponent/AmDashboardChart/AmDashboardCh
  
 const ChartJS = (props) => {
   const chartConfigs = [
-    [
-      {
-        type: 'bar',
-        title: "The Statistics of Receiving & Issue by Hourly",
-        spname: 'DASHBOARD_CHART_RECEIVEISSUE_HOUR',
-      },
-      {
-        type: 'bar',
-        title: "The Statistics of Receiving & Issue by Daily",
-        spname: 'DASHBOARD_CHART_RECEIVEISSUE_DAY',
-      },
-    ],
     // [
     //   {
     //     type: 'pie',
