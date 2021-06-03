@@ -256,12 +256,12 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
       <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Picking</center></DialogTitle>
       <DialogContent>
           <TextField autoFocus type="number" margin="dense" id="priority" label="Priority" fullWidth required InputProps={{step:1}} value={priority} onChange={(event)=>setPriority(event.target.value)} />
+          <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
           <TextField type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
-          <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
-          <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
-          <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />
+          <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
+          <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />          
           <TextField type="text" margin="dense" id="status" label="Status" fullWidth required value={status} onChange={(event)=>setStatus(event.target.value)} />
           <TextField type="number" margin="dense" id="qty_pick" label="Qty Pick" fullWidth required value={qty_pick} onChange={(event)=>setQtyPick(event.target.value)} />
           <TextField type="text" margin="dense" id="unit" label="Unit" fullWidth required value={unit} onChange={(event)=>setUnit(event.target.value)} />
