@@ -24,6 +24,7 @@ const ScanShuttleCheckIn=(props)=>{
 
   const [gate_code,setGateCode]=useState(props.gateCode || "")
   const [shuttle,setShuttle]=useState(props.shuttle || "")
+  const textFieldForGateCode = useRef(null);
   const textFieldForshuttle = useRef(null);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ const ScanShuttleCheckIn=(props)=>{
     setIsLoading(true)
     GCLService.post('/v2/Shuttle_CheckIn_Front',{mode:1, location:gate_code, shuttle:shuttle}).then(res=>{
       setIsLoading(false)
+      textFieldForGateCode.current.focus()
       if(!res.data._result.status) {
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
         return ;
@@ -84,6 +86,7 @@ const ScanShuttleCheckIn=(props)=>{
                 label="Gate" 
                 fullWidth required 
                 value={gate_code} 
+                inputRef={textFieldForGateCode}
                 InputProps={{
                     startAdornment: (<InputAdornment position="start"><BrightnessHigh /> </InputAdornment>),
                 }}

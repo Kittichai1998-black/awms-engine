@@ -106,6 +106,11 @@ const ListShuttle = Loadable({
   loading: Loading
 });
 
+const ScanLocationCounting = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ScanLocationCounting"),
+  loading: Loading
+});
+
 const routes = [
 
   { path: "/monitor/location", name: "Monitor Location", compoment: Monitor_Location, exact: true, child: true },
@@ -136,6 +141,7 @@ const routes = [
   { path: "/warehouse/scanshuttlecheckin", name: "Scan Shuttle Check-In", compoment: ScanShuttleCheckIn, exact: true, child: true },
   { path: "/warehouse/scanshuttlecheckout", name: "Scan Shuttle Check-Out", compoment: ScanShuttleCheckOut, exact: true, child: true },
   { path: "/monitor/listshuttle", name: "List Shuttle", compoment: ListShuttle, exact: true, child: true },
+  { path: "/warehouse/scanlocationcounting", name: "Scan Location Counting", compoment: ScanLocationCounting, exact: true, child: true },
 
   { path: "/monitor/dockoutbounddashboard", name: "Dock Outbound Dashboard", compoment: DockOutboundDashboard, exact: true, child: true },
 ];
