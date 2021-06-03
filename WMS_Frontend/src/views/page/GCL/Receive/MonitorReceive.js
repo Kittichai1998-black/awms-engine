@@ -266,7 +266,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />         
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
           <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />
-          <TextField type="number" margin="dense" id="booking_location" label="Booking Location" fullWidth required value={booking_location} onChange={(event)=>setBookingLocation}/>
+          <TextField type="number" margin="dense" id="booking_location" label="Booking Location" fullWidth required  value={booking_location} onChange={(event)=>setBookingLocation(event.target.value)} />
           <TextField type="number" margin="dense" id="no_strat" label="No Start"  required InputProps={{step:1}} value={no_strat} onChange={(event)=>setNoStrat(event.target.value)} />
           <TextField type="number" margin="dense" id="no_end" label="No End" /*style={{marginLeft:10}} */ required InputProps={{step:1}} value={no_end} onChange={(event)=>setNoEnd(event.target.value)} />          
           <TextField type="number" margin="dense" id="qty_pallet" label="Qty Per Pallet" fullWidth required value={qty_pallet} onChange={(event)=>setQtyPerPallet(event.target.value)} />
