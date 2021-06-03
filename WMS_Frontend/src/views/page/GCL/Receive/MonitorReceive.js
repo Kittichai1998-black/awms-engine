@@ -240,7 +240,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     let no_strat_value = !(no_strat=="") ? Number(no_strat) : no_strat;
     let no_end_value = !(no_end=="") ? Number(no_end) : no_end;
     let qty_pallet_value = !(qty_pallet=="") ? Number(qty_pallet) : qty_pallet;
-    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
+    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,booking_location,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
@@ -266,7 +266,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />         
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
           <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />
-          <TextField type="number" margin="dense" id="booking_location" label="Booking Location" fullWidth required value={booking_location} onChange={(event)=>setBookingLocation}/>
+          <TextField type="number" margin="dense" id="booking_location" label="Booking Location" fullWidth required  value={booking_location} onChange={(event)=>setBookingLocation(event.target.value)} />
           <TextField type="number" margin="dense" id="no_strat" label="No Start"  required InputProps={{step:1}} value={no_strat} onChange={(event)=>setNoStrat(event.target.value)} />
           <TextField type="number" margin="dense" id="no_end" label="No End" /*style={{marginLeft:10}} */ required InputProps={{step:1}} value={no_end} onChange={(event)=>setNoEnd(event.target.value)} />          
           <TextField type="number" margin="dense" id="qty_pallet" label="Qty Per Pallet" fullWidth required value={qty_pallet} onChange={(event)=>setQtyPerPallet(event.target.value)} />
@@ -289,5 +289,6 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     </Dialog>
   </>
 }
+
 
 export default MonitorReceive

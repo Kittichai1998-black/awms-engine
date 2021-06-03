@@ -82,12 +82,12 @@ const StorageObject = props => {
       // Cell: e => getNumberQty(e.original)
     },
     { Header: "Unit", accessor: "Unit", width: 100 },
-    // {
-    //   Header: "Item Code",
-    //   accessor: "SKU_Code",
-    //   width: 100
-    // },
-    //{ Header: "Item Name",accessor: "SKU_Name",fixWidth: 200,},
+    {
+      Header: "SKU Code",
+      accessor: "SKU_Code",
+      width: 100
+    },
+    { Header: "SKU Name",accessor: "SKU_Name",fixWidth: 200,},
 
     //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
     //{ Header: "Customer", accessor: "For_Customer", width: 100 },

@@ -91,16 +91,16 @@ const PA_Detail = props => {
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
         {
-            Header: "Item Code",
+            Header: "SKU Code",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
         {
-            Header: "Item Name",
+            Header: "SKU Name",
             Cell: e => { return e.original.SKUMaster_Name },
             CellPDF: e => { return e.SKUMaster_Name }, widthPDF: 40
         },
-
+        { Header: "Customer", accessor: "Customers", width: 130, widthPDF: 25 },
         { Header: "Lot", accessor: "Lot", width: 130, widthPDF: 25 },
         { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
@@ -113,7 +113,7 @@ const PA_Detail = props => {
             widthPDF: 30,
             width: 30,
         },
-
+        
 
     ];
 

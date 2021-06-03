@@ -58,7 +58,7 @@ const DocumentSearch = props => {
     };
     const iniCols = [
 
-       /* {
+        {
             Header: "Status", accessor: "EventStatus", width: 150,
             filterType: "dropdown",
             filterConfig: {
@@ -68,7 +68,7 @@ const DocumentSearch = props => {
                 widthDD: 150,
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
-        },*/
+        },
         
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
@@ -89,6 +89,7 @@ const DocumentSearch = props => {
         { Header: "Doc.WMS", accessor: "Ref2", width: 150 },
         //{ Header: "Customer", accessor: "ForCustomerName", width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
+        /*{ Header: "Booking", accessor: "", width: 150}, */
         {
             Header: "Doc. Date",
             accessor: "DocumentDate",

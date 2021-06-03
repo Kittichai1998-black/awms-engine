@@ -95,17 +95,22 @@ const PK_Detail = props => {
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
-            Header: "Item Code",
+            Header: "SKU Code",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code },
             widthPDF: 40
         },
         {
-            Header: "Item Name",
+            Header: "SKU Name",
             Cell: e => { return e.original.SKUMaster_Name },
             CellPDF: e => { return e.SKUMaster_Name },
             widthPDF: 40
         },
+
+        {
+          width:120, accessor: "Customer" ,Header: "Customers"
+        },
+        
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Picking Quantity", widthPDF: 20 },

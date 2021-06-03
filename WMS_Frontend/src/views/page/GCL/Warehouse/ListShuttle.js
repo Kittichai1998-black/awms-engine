@@ -12,7 +12,7 @@ import ScanShuttleCheckOut from './ScanShuttleCheckOut'
 import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
-  {id: 'online', label: 'Online', minWidth: 100},
+  {id: 'online', label: '', minWidth: 100},
   {id: 'warehouse', label: 'Warehouse', minWidth: 100},
   {id: 'location', label: 'Location', minWidth: 170},
   {id: 'shuttle', label: 'Shuttle Pallet', minWidth: 170 },
@@ -39,6 +39,8 @@ const MonitorReceive=(props)=>{
   const [isOpenCheckoutModal,setIsOpenCheckoutModal]=useState(false);
   const [inputLocation,setInputLocation]=useState("");
   const [inputShuttle,setInputShuttle]=useState("");
+  let intervalGetSPReportAPI_Front = null;
+  const [header, setheader] = useState();
 
   useEffect(() => {
         window.loading.onLoading();
@@ -50,7 +52,19 @@ const MonitorReceive=(props)=>{
               return ;
             }
             setDataTable(res.data.datas)
+            
+            //auto load data...
+            intervalGetSPReportAPI_Front=setInterval(()=>{
+              GCLService.get('/v2/Shuttle_List_Front').then(res=>{
+                if(!res.data._result.status) {
+                  setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
+                  return ;
+              }
+              setDataTable(res.data.datas)})
+            },5000)
         })
+
+   
 
         //on component unmount
         return () => {
@@ -65,7 +79,7 @@ const MonitorReceive=(props)=>{
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
+  
   return (
     <Paper className={classes.root}>
       <TableContainer className="tableCustom" style={{maxHeight: 440}}>
@@ -99,7 +113,7 @@ const MonitorReceive=(props)=>{
                     }
                     return (
                       column.id=='online'?
-                        <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: (value.toLowerCase()=='Offile'.toLowerCase()||value.toLowerCase()=='Offline'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10, color: (value.toLowerCase()=='Offile'.toLowerCase()||value.toLowerCase()=='Offline'.toLowerCase()) ? '#FF0000' : '#000000' }}>
                           {value}
                         </TableCell>
                         :<TableCell key={column.id+index} align={column.align} style={{padding:10}}>
@@ -120,6 +134,7 @@ const MonitorReceive=(props)=>{
           </TableBody>
         </Table>
       </TableContainer>
+
       <TablePagination
         rowsPerPageOptions={[10, 30, 100]}
         component="div"
@@ -129,7 +144,11 @@ const MonitorReceive=(props)=>{
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
-
+      C = Command,
+      S = Status,
+      B = Battery,
+      L = Location,
+      Z = Zone
       {/* checkin modal */}
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckinModal}>
         <DialogTitle>Shuttle Check-In</DialogTitle>
@@ -162,8 +181,15 @@ const MonitorReceive=(props)=>{
         </Alert>
       </Snackbar>
       }
+      
     </Paper>
   );
+
+  // let testt = 'The revolution will not be televised.';
+  // testt; 
+  
 }
+
+
 
 export default MonitorReceive
