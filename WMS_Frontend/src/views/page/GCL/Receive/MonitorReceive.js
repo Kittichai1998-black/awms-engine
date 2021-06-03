@@ -240,7 +240,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     let no_strat_value = !(no_strat=="") ? Number(no_strat) : no_strat;
     let no_end_value = !(no_end=="") ? Number(no_end) : no_end;
     let qty_pallet_value = !(qty_pallet=="") ? Number(qty_pallet) : qty_pallet;
-    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
+    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,booking_location,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {

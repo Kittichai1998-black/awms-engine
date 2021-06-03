@@ -52,16 +52,18 @@ const ScanReceiveGateMapping=(props)=>{
     GCLService.post('/v2/Recieve_MappingGate_Front',{gate_code,product_qr}).then(res=>{
       setIsLoading(false)
       if(!res.data._result.status) {
-        setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
-        return ;
+        setGateCode("")
+        setProductQR("")
+        setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})      
+        return ;       
       }
-
       GCLService.pushScanReceiveGateMappingData(dataTableModel(new Date(),gate_code,product_qr, res.data._result.message))
       setDataTable(GCLService.getScanReceiveGateMappingData().reverse())
       setGateCode("")
       setProductQR("")
       setToast({msg:"Success",open:true,type:'success'})
     })
+    
   }
 
   return (
@@ -69,7 +71,7 @@ const ScanReceiveGateMapping=(props)=>{
     <Paper elevation={0} style={{width: '100%',margin:'auto',marginBottom:25,maxWidth:800,padding:20}}>
         <div>
             <form autoComplete="off">
-                <TextField 
+                <TextField                     
                     style={{marginBottom:20}}
                     type="text"
                     id="gate_code" 
@@ -82,9 +84,10 @@ const ScanReceiveGateMapping=(props)=>{
                     disabled={isLoading}
                     onChange={(event)=>setGateCode(event.target.value)}
                     onKeyPress={(event)=>{if(event.key === "Enter")textFieldForProduct_qr.current.focus()}}
+                  
                 />
-                <TextField 
-                    style={{marginBottom:20}}
+                <TextField                     
+                    style={{marginBottom:20,width: '87%',margin:'auto',marginBottom:20}}
                     type="text"
                     id="product_qr" 
                     label="Product QR" 
@@ -96,9 +99,9 @@ const ScanReceiveGateMapping=(props)=>{
                     }}
                     disabled={gate_code==null || gate_code=="" || isLoading}
                     onChange={(event)=>setProductQR(event.target.value)}
-                    onKeyPress={(event)=>{if(event.key === "Enter")onPost()}}
+                    onKeyPress={(event)=>{if(event.key === "Enter")onPost()}}                    
                 />
-                <Button variant="contained" color="primary" fullWidth startIcon={isLoading?<CircularProgress color='inherit' size={30}/>:<Save/>} onClick={onPost}>POST</Button>
+                <Button variant="contained" color="primary" startIcon={isLoading?<CircularProgress color='inherit' size={30}/>:<Save/>} onClick={onPost}>POST</Button>
             </form >
         </div>
     </Paper>

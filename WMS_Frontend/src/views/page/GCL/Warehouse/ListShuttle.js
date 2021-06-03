@@ -12,7 +12,7 @@ import ScanShuttleCheckOut from './ScanShuttleCheckOut'
 import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
-  {id: 'online', label: 'Online', minWidth: 100},
+  {id: 'online', label: '', minWidth: 100},
   {id: 'warehouse', label: 'Warehouse', minWidth: 100},
   {id: 'location', label: 'Location', minWidth: 170},
   {id: 'shuttle', label: 'Shuttle Pallet', minWidth: 170 },
@@ -99,7 +99,7 @@ const MonitorReceive=(props)=>{
                     }
                     return (
                       column.id=='online'?
-                        <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: (value.toLowerCase()=='Offile'.toLowerCase()||value.toLowerCase()=='Offline'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10, color: (value.toLowerCase()=='Offile'.toLowerCase()||value.toLowerCase()=='Offline'.toLowerCase()) ? '#FF0000' : '#000000' }}>
                           {value}
                         </TableCell>
                         :<TableCell key={column.id+index} align={column.align} style={{padding:10}}>
