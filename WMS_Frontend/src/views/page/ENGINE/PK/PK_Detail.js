@@ -108,7 +108,7 @@ const PK_Detail = props => {
         },
 
         {
-          width:120, accessor: "Customer" ,Header: "Customers"
+          width:120, accessor: "Ref4" ,Header: "Customers"
         },
         
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
