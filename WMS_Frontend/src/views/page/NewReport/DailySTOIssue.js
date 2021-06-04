@@ -79,31 +79,13 @@ const DailySTOIssue = (props) => {
     }
 
     const columns = [
-        {
-            Header: 'Date', accessor: 'createTime', type: 'datetime', width: 130, sortable: false,
-            filterType: "datetime",
-            filterConfig: {
-                filterType: "datetime",
-            }
-            , customFilter: { field: "CreateTime" },
-            dateFormat: "DD/MM/YYYY HH:mm"
-        },
-        { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
-        { Header: 'Doc No.', accessor: 'docCode', width: 130, sortable: false },
-        {
-            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
-            filterConfig: {
-                filterType: "dropdown",
-                fieldLabel: ["Code", "Name"],
-                dataDropDown: MVTQuery,
-                typeDropDown: "normal",
-                widthDD: 320,
-            },
-        },
+        
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
-        //{ Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
+        { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },       
+        //{ Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
+        
         //{ Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
@@ -117,7 +99,28 @@ const DailySTOIssue = (props) => {
             "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
+        { Header: 'Doc No.', accessor: 'docCode', width: 130, sortable: false },
+        {
+            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
+            filterConfig: {
+                filterType: "dropdown",
+                fieldLabel: ["Code", "Name"],
+                dataDropDown: MVTQuery,
+                typeDropDown: "normal",
+                widthDD: 320,
+            },
+        },
 
+        {
+            Header: 'Date', accessor: 'createTime', type: 'datetime', width: 130, sortable: false,
+            filterType: "datetime",
+            filterConfig: {
+                filterType: "datetime",
+            }
+            , customFilter: { field: "CreateTime" },
+            dateFormat: "DD/MM/YYYY HH:mm"
+        },
+        
     ];
     const comma = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

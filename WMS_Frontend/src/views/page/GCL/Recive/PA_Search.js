@@ -89,7 +89,8 @@ const DocumentSearch = props => {
         { Header: "Doc.WMS", accessor: "Ref2", width: 150 },
         //{ Header: "Customer", accessor: "ForCustomerName", width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
-        /*{ Header: "Booking", accessor: "", width: 150}, */
+        { Header: "Booking", accessor: "", width: 150},
+        // { width: 120, accessor: "book_bay_lv", Header: "Booking", widthPDF: 20, Cell: e => getFormatPrscen(e.original), widthPDF: 15},
         {
             Header: "Doc. Date",
             accessor: "DocumentDate",
@@ -127,6 +128,12 @@ const DocumentSearch = props => {
         }
     ];
 
+    const getFormatPrscen = (e) => {
+        var query = queryString.parse(e.Options) 
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
+    }
 
     const getRedirect = data => {
         return (

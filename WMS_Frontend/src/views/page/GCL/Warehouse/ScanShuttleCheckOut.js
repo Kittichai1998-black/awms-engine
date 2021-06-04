@@ -28,6 +28,7 @@ const ScanShuttleCheckOut=(props)=>{
   const textFieldForGateCode = useRef(null);
 
   useEffect(() => {
+    textFieldForGateCode.current.focus()
     loadDataTable()
     //on component unmount
     return () => {
@@ -66,6 +67,8 @@ const ScanShuttleCheckOut=(props)=>{
       setIsLoading(false)
       textFieldForGateCode.current.focus()
       if(!res.data._result.status) {
+        setGateCode("")
+        setShuttle("")
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
         return ;
       }
