@@ -100,7 +100,7 @@ const PA_Detail = props => {
             Cell: e => { return e.original.SKUMaster_Name },
             CellPDF: e => { return e.SKUMaster_Name }, widthPDF: 40
         },
-        { Header: "Customer", accessor: "Customers", width: 130, widthPDF: 25 },
+        { Header: "Customer", accessor: "Ref4", width: 130, widthPDF: 25 },
         { Header: "Lot", accessor: "Lot", width: 130, widthPDF: 25 },
         { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },

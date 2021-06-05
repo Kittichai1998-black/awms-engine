@@ -38,7 +38,7 @@ const DocumentSearch = props => {
         var dataGenerate = DataGeneratePopup(data)
         var dataGenerateStatus = DataGenerateStatus(data)
 
-        return <div style={{ textAlign: "center" }}>
+        return <div style={{ textAlign: "left" }}>
             <AmDocumentStatus key={dataGenerateStatus[0].status} statusCode={dataGenerateStatus[0].statusValue} />{" "}
             {dataGenerate[0].label !== "error" ? null : <IconButton
                 aria-label="error"

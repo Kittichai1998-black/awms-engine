@@ -23,11 +23,13 @@ const ScanReceiveGateMapping=(props)=>{
 
     const [gate_code,setGateCode]=useState("")
     const [product_qr,setProductQR]=useState("")
+    const textFieldForGateCode = useRef(null);
     const textFieldForProduct_qr = useRef(null);
 
     const dataTableModel=(time,gate_code,product_qr,msg)=>{return {time,gate_code,product_qr,msg}}
 
     useEffect(() => {
+        textFieldForGateCode.current.focus()
         window.loading.onLoading();
         setDataTable(GCLService.getScanReceiveGateMappingData().reverse())
         window.loading.onLoaded();
@@ -51,6 +53,7 @@ const ScanReceiveGateMapping=(props)=>{
     setIsLoading(true)
     GCLService.post('/v2/Recieve_MappingGate_Front',{gate_code,product_qr}).then(res=>{
       setIsLoading(false)
+      textFieldForGateCode.current.focus()
       if(!res.data._result.status) {
         setGateCode("")
         setProductQR("")
@@ -71,13 +74,15 @@ const ScanReceiveGateMapping=(props)=>{
     <Paper elevation={0} style={{width: '100%',margin:'auto',marginBottom:25,maxWidth:800,padding:20}}>
         <div>
             <form autoComplete="off">
-                <TextField                     
+                <TextField  
+                                     
                     style={{marginBottom:20}}
                     type="text"
                     id="gate_code" 
                     label="Gate Code" 
                     fullWidth required 
                     value={gate_code} 
+                    inputRef={textFieldForGateCode}
                     InputProps={{
                         startAdornment: (<InputAdornment position="start"><BrightnessHigh /> </InputAdornment>),
                     }}
@@ -104,6 +109,7 @@ const ScanReceiveGateMapping=(props)=>{
                 <Button variant="contained" color="primary" startIcon={isLoading?<CircularProgress color='inherit' size={30}/>:<Save/>} onClick={onPost}>POST</Button>
             </form >
         </div>
+        
     </Paper>
     <Paper elevation={2} style={{width: '100%',minWidth:500,margin:'auto',marginBottom:20,maxWidth:800}}>
         <div>

@@ -105,7 +105,7 @@ const PI_Detail = props => {
             CellPDF: e => { return e.SKUMaster_Name }, widthPDF: 40
         },
 
-        { Header: "Customer", accessor: "Customer", widthPDF: 20 },
+        { Header: "Customer", accessor: "Ref4", widthPDF: 20 },
         { Header: " Control No.", accessor: "OrderNo", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
