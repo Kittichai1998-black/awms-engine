@@ -15,9 +15,9 @@ const tableHaderColumns = [
   {id: 'dock', label: 'Dock', minWidth: 50},
   {id: 'wms_doc', label: 'WMS\u00a0Doc', minWidth: 100 },
   {id: 'customer',label: 'Cutomer', minWidth: 100, },
+  {id: 'sku',label: 'Sku', minWidth: 100, },
   {id: 'grade',label: 'Grade', minWidth: 100},
   {id: 'lot', label: 'Lot', minWidth: 100},
-  {id: 'no_pallet', label: 'No Pallet', minWidth: 100 },
   {id: 'qty', label: 'Qty', minWidth: 100, align:'right', format: (value) => Number(value.toFixed(3)).toLocaleString('en-US') },
   {id: 'unit', label: 'Unit', minWidth: 50 },
   {id: 'waiting_pallet', label: 'Waiting(Pallet)', minWidth: 100, align:'right'},
@@ -158,6 +158,10 @@ const PickingMonitor=(props)=>{
                         <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: (value.toLowerCase()=='Worked'.toLowerCase()||value.toLowerCase()=='Closing'.toLowerCase()||value.toLowerCase()=='Closed'.toLowerCase())? '#33FF99' : (value.toLowerCase()=='Rejecting'.toLowerCase()||value.toLowerCase()=='Rejected'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
                           {value}
                         </TableCell>
+                      :column.id=='wms_doc'?
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
+                          <a target={'_blank'} href={'/issue/pickingdetail?docID='+row['id']}>{value}</a>
+                        </TableCell>
                         :<TableCell key={column.id+index} align={column.align} style={{padding:10}}>
                           {column.format && typeof value === 'number' ? column.format(value) : value}
                         </TableCell>
@@ -257,7 +261,7 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
       <DialogContent>
           <TextField autoFocus type="number" margin="dense" id="priority" label="Priority" fullWidth required InputProps={{step:1}} value={priority} onChange={(event)=>setPriority(event.target.value)} />
           <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
-          <TextField type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
+          <TextField type="text" margin="dense" id="wms_doc" label="DO" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />

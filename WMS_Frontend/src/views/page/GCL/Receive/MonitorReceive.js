@@ -11,10 +11,10 @@ import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
   {id: 'status', label: 'Status', minWidth: 100},
-  {id: 'priority', label: 'Priority', minWidth: 50},
   {id: 'warehouse', label: 'Warehouse', minWidth: 50},
   {id: 'wms_doc', label: 'WMS\u00a0Doc', minWidth: 100 },
   {id: 'customer',label: 'Cutomer', minWidth: 100, },
+  {id: 'sku', label: 'Sku', minWidth: 50},
   {id: 'grade',label: 'Grade', minWidth: 100},
   {id: 'lot', label: 'Lot', minWidth: 100},
   {id: 'no_pallet', label: 'No Pallet', minWidth: 100 },
@@ -157,7 +157,13 @@ const MonitorReceive=(props)=>{
                         <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: (value.toLowerCase()=='Worked'.toLowerCase()||value.toLowerCase()=='Closing'.toLowerCase()||value.toLowerCase()=='Closed'.toLowerCase())? '#33FF99' : (value.toLowerCase()=='Rejecting'.toLowerCase()||value.toLowerCase()=='Rejected'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
                           {value}
                         </TableCell>
-                        :<TableCell key={column.id+index} align={column.align} style={{padding:10}}>
+                        :
+                      column.id=='wms_doc'?
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
+                          <a target={'_blank'} href={'/receive/putawaydetail?docID='+row['id']}>{value}</a>
+                        </TableCell>
+                        :
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
                           {column.format && typeof value === 'number' ? column.format(value) : value}
                         </TableCell>
                     );
@@ -212,8 +218,8 @@ const MonitorReceive=(props)=>{
 // model add
 const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=()=>{}})=>{
   const classes = useStyles();
-  const [status,setStatus]=useState("")
-  const [priority,setPriority]=useState("")
+  const [status,setStatus]=useState("QI")
+  const [priority,setPriority]=useState("1")
   const [to_wh,setToWH]=useState("")
   const [wms_doc,setWmsDoc]=useState("")
   const [customer,setCustomer]=useState("")  
@@ -240,7 +246,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     let no_strat_value = !(no_strat=="") ? Number(no_strat) : no_strat;
     let no_end_value = !(no_end=="") ? Number(no_end) : no_end;
     let qty_pallet_value = !(qty_pallet=="") ? Number(qty_pallet) : qty_pallet;
-    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,booking_location,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
+    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,booking_location,status,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
@@ -259,18 +265,18 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
       <form onSubmit={onSubmitForm} autoComplete="off">
       <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Receive</center></DialogTitle>
       <DialogContent>          
-          <TextField autoFocus type="number" margin="dense" id="priority" label="Priority" fullWidth required InputProps={{step:1}} value={priority} onChange={(event)=>setPriority(event.target.value)} />
           <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
-          <TextField type="text" margin="dense" id="wms_doc" label="WMS Doc" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
+          <TextField type="text" margin="dense" id="wms_doc" label="BO" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />          
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />         
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
           <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />
-          <TextField type="number" margin="dense" id="booking_location" label="Booking Location" fullWidth required  value={booking_location} onChange={(event)=>setBookingLocation(event.target.value)} />
+          <TextField type="number" margin="dense" id="booking_location" label="Booking Count" fullWidth required  value={booking_location} onChange={(event)=>setBookingLocation(event.target.value)} />
           <TextField type="number" margin="dense" id="no_strat" label="No Start"  required InputProps={{step:1}} value={no_strat} onChange={(event)=>setNoStrat(event.target.value)} />
           <TextField type="number" margin="dense" id="no_end" label="No End" /*style={{marginLeft:10}} */ required InputProps={{step:1}} value={no_end} onChange={(event)=>setNoEnd(event.target.value)} />          
           <TextField type="number" margin="dense" id="qty_pallet" label="Qty Per Pallet" fullWidth required value={qty_pallet} onChange={(event)=>setQtyPerPallet(event.target.value)} />
           <TextField type="text" margin="dense" id="unit" label="Unit" fullWidth required InputProps={{step:1}} value={unit} onChange={(event)=>setUnit(event.target.value)} />
+          <TextField type="text" margin="dense" id="status" label="Status" fullWidth required  value={status} onChange={(event)=>setStatus(event.target.value)} />
       </DialogContent>
       <DialogActions style={{backgroundColor:'#eee'}}>
         {isLoading ?

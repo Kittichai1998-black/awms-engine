@@ -65,7 +65,7 @@ const PA_Detail = props => {
         }
         var TextHeader = [
             [
-                { label: "Doc No.", values: "Code" },
+                { label: "Putaway No.", values: "Code" },
                 { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
@@ -74,12 +74,12 @@ const PA_Detail = props => {
             ],
 
             [
-                { label: "Bagging", value: "Ref2" },
+                { label: "BO", value: "Ref2" },
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
                 { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
-                { label: "Remark", values: "Remark" }
+                { label: "Booking", values:"_book_bay_lv",  type:"option" }
             ]
         ];
         setheader(TextHeader)
@@ -89,30 +89,21 @@ const PA_Detail = props => {
 
 
     const columns = [
-        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
+        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 }, 
+        { Header: "Label", accessor: "ItemNo", width: 130, widthPDF: 25,Cell:e=>(e.original.ItemNo??"").replace(/ /g,"\xa0") },
+        { Header: "Customer", accessor: "Ref4", width: 130, widthPDF: 25 },  
         {
-            Header: "SKU Code",
+            Header: "Sku",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
-        {
-            Header: "SKU Name",
-            Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return e.SKUMaster_Name }, widthPDF: 40
-        },
-        { Header: "Customer", accessor: "Ref4", width: 130, widthPDF: 25 },
-        { Header: "Lot", accessor: "Lot", width: 130, widthPDF: 25 },
         { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
+        { Header: "Lot", accessor: "Lot", width: 130, widthPDF: 25 },
+        { Header: "No", accessor: "Ref2", widthPDF: 25 },
+        { Header: "UD", accessor: "Ref3", widthPDF: 25 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Receive QTY", widthPDF: 20 },
+        { width: 120, accessor: "Total QTY", Header: "Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
-        {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30,
-            width: 30,
-        },
         
 
     ];
@@ -129,28 +120,20 @@ const PA_Detail = props => {
                 else return null;
             }
         },
-        { Header: "Pack Code", accessor: "packCode", widthPDF: 10, width: 150, },
-        { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
-        { Header: "Pallet", width: 100, accessor: "rootCode", widthPDF: 10 },
-        { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
-        { Header: "Grade", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        { Header: "Label", accessor: "itemNo", width: 130, widthPDF: 25,Cell:e=>(e.original.itemNo??"").replace(/ /g,"\xa0") },
+        { Header: "Sku", accessor: "packCode", widthPDF: 10, width: 150  },
+        { Header: "Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
         { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
-        {
-            Header: "Quality Status", accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
+        //{ Header: "Location", accessor: "areaLocationCode", widthPDF: 10, width: 70, },
+        { Header: "Pallet No.", width: 100, accessor: "rootCode", widthPDF: 10 },
 
     ];
 
-    const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
+    const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }, { optionName:"_book_bay_lv"}];
 
     const getStatusGR = value => {
         if (value.status === 0)
-            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+            return <></>;
         else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else if (value.status === 3)
