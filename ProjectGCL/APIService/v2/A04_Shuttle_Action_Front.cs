@@ -38,9 +38,9 @@ namespace ProjectGCL.APIService.v2
             if (req.mode == amt_Wcs_Action.TMode.Cancel)
             {
                 var act = DataADO.GetInstant().SelectByID<amt_Wcs_Action>(req.id, BuVO);
-                if(act == null && req.mode.In(amt_Wcs_Action.TMode.Counting, amt_Wcs_Action.TMode.Sorting, amt_Wcs_Action.TMode.Cancel))
+                if (act == null && req.mode.In(amt_Wcs_Action.TMode.Counting, amt_Wcs_Action.TMode.Sorting, amt_Wcs_Action.TMode.Cancel))
                     act = DataADO.GetInstant().SelectBy<amt_Wcs_Action>(
-                        ListKeyValue<string,object>.New("LocName",req.location).Add("status",EntityStatus.ACTIVE), BuVO)
+                        ListKeyValue<string, object>.New("LocName", req.location).Add("status", EntityStatus.ACTIVE), BuVO)
                             .FirstOrDefault();
 
                 if (act == null)
@@ -53,7 +53,8 @@ namespace ProjectGCL.APIService.v2
                 else if (act.Mode == amt_Wcs_Action.TMode.Counting)
                     ADO.WMSDB.WcsADO.GetInstant()
                         .SP_CANCEL_QUEUE_COUNT(act.ApiRef, BuVO);
-                act.Status = EntityStatus.REMOVE;
+                act.Result = "remove";
+                act.Status = EntityStatus.DONE;
                 DataADO.GetInstant().UpdateBy<amt_Wcs_Action>(act, BuVO);
             }
             else
@@ -102,6 +103,7 @@ namespace ProjectGCL.APIService.v2
                     LocName = req.location,
                     Bay = _bay,
                     Lv = _lv,
+                    PalletSort = req.mode == amt_Wcs_Action.TMode.Sorting ? (req.actionType == 5 ? "OUT>IN" : "IN>OUT") : "",
 
                     Result = req.mode.In(amt_Wcs_Action.TMode.Sorting, amt_Wcs_Action.TMode.Counting)? "waiting":"completed",
                     Status = AMSModel.Constant.EnumConst.EntityStatus.ACTIVE

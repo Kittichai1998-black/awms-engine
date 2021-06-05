@@ -22,7 +22,7 @@ namespace ProjectGCL.GCLModel.Criterie
                 public string UNIT;
                 public string STATUS;
                 public string TO_WH_ID;
-                public int TotalPallet;
+                public int BookPallet;
                 public List<TPallet_Detail> Pallet_Detail;
                 public class TPallet_Detail
                 {

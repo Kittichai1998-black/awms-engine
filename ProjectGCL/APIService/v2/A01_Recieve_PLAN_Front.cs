@@ -24,7 +24,7 @@ namespace ProjectGCL.APIService.v2
             public string lot;
             public int no_strat;
             public int no_end;
-            public int total_pallet;
+            public int booking_location;
             public string sku;
             public string status;
             public decimal qty_pallet;
@@ -73,7 +73,7 @@ namespace ProjectGCL.APIService.v2
                     API_REF="AMS."+ObjectUtil.GenUniqID(),
                     API_DATE_TIME = DateTime.Now,
                     IsFromAMS = true,
-                    TotalPallet = temp.total_pallet,
+                    BookPallet = temp.booking_location,
                     Pallet_Detail = req_pallets
                 }
             };

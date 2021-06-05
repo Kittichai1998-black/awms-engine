@@ -501,14 +501,13 @@ namespace AWCSEngine.Engine.McRuntime
                         , GetTextStatus(this.McObj.DV_Pre_Status)                   //6
                         );
                 string str_line1_1 =
-                    string.Format("{0} >> [{1}] [{2}] | LOC={3} | STEP={4} | {6} | ERR={5}"
+                    string.Format("{0} >> [{1}] [{2}] | LOC={3} | STEP={4} | ERR={5}"
                         , new string(' ', this.Code.Length)                         //0
                         , this.McObj.IsOnline ? "ON" : "OFF"                  //1
                         , this.McObj.IsAuto ? "AUTO" : "MANUL"                    //2
                         , this.Cur_Location.Code                                    //3
                         , this.StepTxt                                              //4
                         , error                                                     //5
-                        , this.PlcADO.PlcLostTicks
                     );
 
 

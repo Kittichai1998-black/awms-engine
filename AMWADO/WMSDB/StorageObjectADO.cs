@@ -237,6 +237,7 @@ namespace ADO.WMSDB
             param.Add("id", sto.id);
             param.Add("type", sto.type);
             param.Add("mstID", sto.mstID);
+            param.Add("itemNo", sto.itemNo);
             param.Add("areaID", sto.areaID);
             param.Add("eventStatus", sto.eventStatus);
             param.Add("status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus));
