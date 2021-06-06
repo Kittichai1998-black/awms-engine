@@ -2,3 +2,7 @@
     width: 0.5em;
     height: 0.5em;
 }
+
+.tableViewStorageUsed td, .tableViewStorageUsed th{
+    border: 0.1px solid #AAA !important;
+}

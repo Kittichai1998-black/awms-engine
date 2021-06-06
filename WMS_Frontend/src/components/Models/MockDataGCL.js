@@ -63,4 +63,14 @@ const monitorReceive = [
     {warehouse:"warehouse",location:"location6",shuttle:"shuttle6",online:"online"},
   ]
 
-  export default {monitorReceive,shuttleResult,DockOutboundDashboard,ListShuttle}
+  const ViewStorageUsed=[
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"-,43,234,345,-,344,-,-,-,4"},
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"2343,-,234,345,-,344,45,-,7,-"},
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"-,43,234,345,-,-,-,-,-,-"},
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"2343,43,234,345,-,344,-,8,-,-"},
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"2343,-,234,345,-,344,-,-,-,4"},
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"2343,43,234,345,-,344,-,-,-,4"},
+    {location:"testL1",bank_min:3,bank_max:10, pallets:"-,43,234,345,-,344,-,-,-,4"},
+  ]
+
+  export default {monitorReceive,shuttleResult,DockOutboundDashboard,ListShuttle,ViewStorageUsed}
