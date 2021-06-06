@@ -85,11 +85,11 @@ const DocumentSearch = props => {
                 widthDD: 220,
             },
         },
-        { Header: "Grade", accessor: "Ref1", width: 150 },
-        { Header: "Doc.WMS", accessor: "Ref2", width: 150 },
+        { Header: "Doc.WMS", accessor: "Ref2", filterable: true,width: 150 },
+        { Header: "API Ref", accessor: "Ref1", filterable: true,width: 150 },
         //{ Header: "Customer", accessor: "ForCustomerName", width: 150 },
-        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
-        { Header: "Booking", accessor: "", width: 150},
+        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: true, width: 150 },
+        //{ Header: "Booking", values: "_book_bay_lv", type:"option",filterable: true, width: 150},
         // { width: 120, accessor: "book_bay_lv", Header: "Booking", widthPDF: 20, Cell: e => getFormatPrscen(e.original), widthPDF: 15},
         {
             Header: "Doc. Date",
@@ -161,7 +161,7 @@ const DocumentSearch = props => {
             <AmSearchDocument
                 iniCols={iniCols}
                 docTypeCode="1001"
-                buttonClose={true}
+                buttonClose={false}
                 buttonReject={false}
                 apiReject={"/v2/reject_document"}
                 apiClose={"/v2/closed_document_manual"}
