@@ -59,7 +59,7 @@ const ViewStorageUsed=(props)=>{
             setToast({msg:"Load data fail : "+res.data._result.message ,open:true,type:'error'})
             return ;
         }
-        setDataTable(res.data.datas)
+        initTable(res.data.datas)
         // intervalGetSPReportAPI=setInterval(()=>{
         //     GCLService.post('/v2/Shuttle_ActionResult_Front',{wh,lv,spname:"View_Warehouse_Used"}).then(res=>{
         //         if(!res.data._result.status) {
