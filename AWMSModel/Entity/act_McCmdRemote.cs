@@ -8,6 +8,7 @@ namespace AMSModel.Entity
 {
     public class act_McCmdRemote : BaseEntityCreateModify
     {
+        public string WmsRefID;
         public string AppName;
         public string CmdLine;
         public string Result;

@@ -105,7 +105,7 @@ namespace ProjectGCL.APIService.v2
                     Lv = _lv,
                     PalletSort = req.mode == amt_Wcs_Action.TMode.Sorting ? (req.actionType == 5 ? "OUT>IN" : "IN>OUT") : "",
 
-                    Result = req.mode.In(amt_Wcs_Action.TMode.Sorting, amt_Wcs_Action.TMode.Counting)? "waiting":"completed",
+                    Result = "Running",
                     Status = AMSModel.Constant.EnumConst.EntityStatus.ACTIVE
                 };
                 DataADO.GetInstant().Insert<amt_Wcs_Action>(act, BuVO);
