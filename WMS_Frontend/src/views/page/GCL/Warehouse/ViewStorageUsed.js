@@ -6,6 +6,7 @@ import {Button,IconButton, Dialog, DialogActions,DialogContent,DialogContentText
 import {Alert, TreeView, TreeItem} from '@material-ui/lab';
 import GCLService from '../../../../components/function/GCLService'
 import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style} from '@material-ui/icons'
+import CancelIcon from '@material-ui/icons/Cancel';
 import ScanLocationCounting from './ScanLocationCounting';
 import ScanLocationSorting from './ScanLocationSorting';
 import "../../../../assets/css/TableCustom.css";
@@ -191,28 +192,24 @@ const ViewStorageUsed=(props)=>{
 
         {/* countingModal modal */}
         <Dialog maxWidth='lg' onClose={()=>{setIsOpenCountingModal(false);setInputLocation(null);}} aria-labelledby="simple-dialog-title" open={isOpenCountingModal}>
+          <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setIsOpenCountingModal(false);setInputLocation(null);}} component="span" color="secondary">
+              <CancelIcon/>
+          </IconButton>
           <DialogTitle>Scan Location Counting</DialogTitle>
           <DialogContent>
               <ScanLocationCounting gateCode={inputLocation} />
           </DialogContent>
-          <DialogActions style={{backgroundColor:'#eee'}}>
-            <Button size='medium' variant="contained" onClick={()=>{setIsOpenCountingModal(false);setInputLocation(null);}} color="secondary" startIcon={<CloseSharp/>} >
-              Close
-            </Button>
-          </DialogActions>
         </Dialog>
 
         {/* sortingmodal */}
         <Dialog maxWidth='lg' onClose={()=>{setIsOpenSortingModal(false);setInputLocation(null);}} aria-labelledby="simple-dialog-title" open={isOpenSortingModal}>
+          <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setIsOpenSortingModal(false);setInputLocation(null);}} component="span" color="secondary">
+              <CancelIcon/>
+          </IconButton>
           <DialogTitle>Scan Location Sorting</DialogTitle>
           <DialogContent>
               <ScanLocationSorting gateCode={inputLocation} />
           </DialogContent>
-          <DialogActions style={{backgroundColor:'#eee'}}>
-            <Button size='medium' variant="contained" onClick={()=>{setIsOpenSortingModal(false);setInputLocation(null);}} color="secondary" startIcon={<CloseSharp/>} >
-              Close
-            </Button>
-          </DialogActions>
         </Dialog>
 
         {/* show detail */}

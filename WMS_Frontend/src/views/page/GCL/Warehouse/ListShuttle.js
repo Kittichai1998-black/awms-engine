@@ -6,9 +6,10 @@ import {Button,IconButton,TextField, Dialog, DialogActions,DialogContent,DialogC
 // import ToastAlert from '../../../../components/function/ToastAlert';
 import GCLService from '../../../../components/function/GCLService';
 import Alert from '@material-ui/lab/Alert';
-import {AddCircleOutline,CloseSharp,PlayForWork, Cancel,ExpandLess,CheckCircle} from '@material-ui/icons'
-import ScanShuttleCheckIn from './ScanShuttleCheckIn'
-import ScanShuttleCheckOut from './ScanShuttleCheckOut'
+import {AddCircleOutline,CloseSharp,PlayForWork, Cancel,ExpandLess,CheckCircle} from '@material-ui/icons';
+import ScanShuttleCheckIn from './ScanShuttleCheckIn';
+import ScanShuttleCheckOut from './ScanShuttleCheckOut';
+import CancelIcon from '@material-ui/icons/Cancel';
 import "../../../../assets/css/TableCustom.css";
 
 const tableHaderColumns = [
@@ -107,7 +108,7 @@ const MonitorReceive=(props)=>{
                       return (
                         <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
                             <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCheckinModal(true);setInputLocation(row.location);setInputShuttle(row.shuttle);}} style={{marginRight:5}}><PlayForWork /> in</Button>
-                            <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCheckoutModal(true);setInputLocation(row.location);setInputShuttle(row.shuttle);}}><ExpandLess/> out</Button>
+                            <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenCheckoutModal(true);setInputLocation(row.location);setInputShuttle(row.shuttle);}}><ExpandLess/> out</Button>
                         </TableCell>
                       );
                     }
@@ -151,28 +152,24 @@ const MonitorReceive=(props)=>{
       Z = Zone
       {/* checkin modal */}
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckinModal}>
+        <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} component="span" color="secondary">
+            <CancelIcon/>
+        </IconButton>
         <DialogTitle>Shuttle Check-In</DialogTitle>
         <DialogContent>
             <ScanShuttleCheckIn shuttle={inputShuttle} gateCode={inputLocation} />
         </DialogContent>
-        <DialogActions style={{backgroundColor:'#eee'}}>
-          <Button size='medium' variant="contained" onClick={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} color="secondary" startIcon={<CloseSharp/>} >
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* checkout modal */}
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckoutModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckoutModal}>
+        <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setIsOpenCheckoutModal(false);setInputLocation(null);setInputShuttle(null);}} component="span" color="secondary">
+            <CancelIcon/>
+        </IconButton>
         <DialogTitle>Shuttle Check-Out</DialogTitle>
         <DialogContent>
             <ScanShuttleCheckOut shuttle={inputShuttle} gateCode={inputLocation} />
         </DialogContent>
-        <DialogActions style={{backgroundColor:'#eee'}}>
-          <Button size='medium' variant="contained" onClick={()=>{setIsOpenCheckoutModal(false);setInputLocation(null);setInputShuttle(null);}} color="secondary" startIcon={<CloseSharp/>} >
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
       {toast.open &&
       <Snackbar anchorOrigin={{ vertical:'top', horizontal:'center' }} open={toast.open} autoHideDuration={5000} onClose={()=>setToast({msg:"",open:false,type:""})}>
