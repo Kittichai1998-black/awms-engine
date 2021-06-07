@@ -2,10 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
 import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress } from '@material-ui/core';
-import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
+import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment,Select,MenuItem,Grid } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import GCLService from '../../../../components/function/GCLService'
 import {AddCircleOutline,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save} from '@material-ui/icons'
+
+const dropdownpst=//["OUT > IN","IN > OUT"];
+[  {id: 'OUT > IN', value:'5'},
+   {id: 'IN > OUT', value:'6'}
+];
 
 const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
@@ -14,6 +19,10 @@ const tableHaderColumns = [
     {id: 'action',label: ' 🛠 ', minWidth: 100, }
 ];
 let intervalGetSPReportAPI=null
+
+// const dropdownpst = [{key:1, text: 'OUT', value: 5},
+// {key:2, text: 'IN', value: 6}
+// ]
 
 const ScanLocationSorting=(props)=>{
   const [dataTable, setDataTable] = useState([]);
@@ -29,8 +38,11 @@ const ScanLocationSorting=(props)=>{
   const [shuttle,setShuttle]=useState(props.shuttle || "");
 
   const textFieldForGateCode = useRef(null);
+  
+  const [actionType,setActionType]=useState(5);
 
   useEffect(() => {
+    textFieldForGateCode.current.focus()
     loadDataTable()
     //on component unmount
     return () => {
@@ -70,15 +82,19 @@ const ScanLocationSorting=(props)=>{
     setPage(0);
   };
 
+  
+  
   const onPost=()=>{
     if(gate_code=="")return;
     setIsLoading(true)
-    let reqData={mode:4, location:gate_code}
+    let reqData={mode:4, location:gate_code,actionType:actionType}
     if(shuttle!="")reqData.shuttle=shuttle
     GCLService.post('/v2/Shuttle_CheckIn_Front',reqData).then(res=>{
       setIsLoading(false)
       textFieldForGateCode.current.focus()
       if(!res.data._result.status){
+        setGateCode("")
+        setShuttle("")
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
         return ;
       }
@@ -87,6 +103,7 @@ const ScanLocationSorting=(props)=>{
       setShuttle("")
       setToast({msg:"Success",open:true,type:'success'})
     })
+
   }
 
   const onCancel=(id)=>{
@@ -107,6 +124,18 @@ const ScanLocationSorting=(props)=>{
   return (
     <Paper elevation={0} style={{width: '100%',height:'100%', padding:10}}>
     <Paper elevation={0} style={{width: '100%',margin:'auto',marginBottom:25,maxWidth:800,padding:20}}>
+    <center>
+          <Select 
+            labepd="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Sorting from" 
+            style={{width:"100%"}}
+            value={actionType} onChange={(e)=>setActionType(e.target.value)} >
+              
+            <MenuItem value="5">{"OUT>IN"}</MenuItem>
+            <MenuItem value="6">{"IN>OUT"}</MenuItem>
+          </Select>
+        </center>
         <div>
             <TextField 
                 style={{marginBottom:20}}

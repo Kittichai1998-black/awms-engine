@@ -83,6 +83,17 @@ const DailySTOSumReceive = (props) => {
        
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false, },
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
+        { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
+        {
+            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
+            filterConfig: {
+                filterType: "dropdown",
+                fieldLabel: ["Code", "Name"],
+                dataDropDown: MVTQuery,
+                typeDropDown: "normal",
+                widthDD: 320,
+            },
+        },
         //{ Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false, },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
         //{ Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false, },
@@ -98,17 +109,7 @@ const DailySTOSumReceive = (props) => {
             "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
-        { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
-        {
-            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
-            filterConfig: {
-                filterType: "dropdown",
-                fieldLabel: ["Code", "Name"],
-                dataDropDown: MVTQuery,
-                typeDropDown: "normal",
-                widthDD: 320,
-            },
-        },
+     
         {
             Header: 'Date', accessor: 'createDate', type: 'datetime', width: 130, sortable: false,
             filterType: "datetime",

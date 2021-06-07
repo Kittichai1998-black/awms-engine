@@ -124,7 +124,7 @@ const ViewStorageUsed=(props)=>{
   return (
     <Grid container spacing={2} style={{marginTop:10}}>
       <Grid item xs={2}>
-        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10}}>
+        <Paper elevation={3} style={{width: '50%',height:'50%', padding:5}}>
           <TreeView
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
