@@ -118,6 +118,7 @@ const ASRSConsole=(props)=>{
       setIsCmdLoading(false)
       textFieldCmd.current.focus()
       setCmdHistoryList([...cmdHistoryList,{text:`${appNameSelect.app_name} >> ${textFieldCmd.current.value}`,status:res.data._result.status}])
+      textFieldCmd.current.value=""
       if(!res.data._result.status) {
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
         return ;
@@ -156,7 +157,7 @@ const ASRSConsole=(props)=>{
                   <TableRow hover key={key}>
                     <TableCell>{machine.machine}</TableCell>
                     <TableCell>{machine.command}</TableCell>
-                    <TableCell>{machine.status}</TableCell>
+                    <TableCell style={{backgroundColor: machine.status_color || null}}>{machine.status}</TableCell>
                     <TableCell>{machine.arg1}</TableCell>
                     <TableCell>{machine.arg2}</TableCell>
                     <TableCell>{machine.arg3}</TableCell>
