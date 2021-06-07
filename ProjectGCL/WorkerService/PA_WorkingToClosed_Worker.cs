@@ -135,7 +135,7 @@ namespace ProjectGCL.WorkerService
                                     rootOptions = null,
                                     rootType = StorageObjectType.BASE,
                                     scanCode = doci.Code,
-                                    unitCode = "KG",
+                                    unitCode = StaticValueManager.GetInstant().UnitTypes.First(x => x.ID == doci.UnitType_ID).Code,
                                     warehouseID = doc.Des_Warehouse_ID.Value,
                                     validateSKUTypeCodes = null
                                 }).mapstos.First();

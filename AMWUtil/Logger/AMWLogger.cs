@@ -19,7 +19,7 @@ namespace AMWUtil.Logger
         //public FileStream FileLogger { get; set; }
         public string LogRefID { get; private set; }
         public DateTime LogDateTime { get; private set; }
-        public bool IsLogging { get; private set; }
+        public bool IsLogging { get; set; }
         public string ServiceName { get; private set; }
         public string SubServiceName { get; set; }
         public string FileFullName { get; private set; }

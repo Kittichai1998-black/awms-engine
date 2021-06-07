@@ -13,7 +13,7 @@ namespace ProjectGCL.APIService.v2
             public int mode;
         }
 
-        public A04_2_Shuttle_ActionResult_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public A04_2_Shuttle_ActionResult_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize, false)
         {
         }
 

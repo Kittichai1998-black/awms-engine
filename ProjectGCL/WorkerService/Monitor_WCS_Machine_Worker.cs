@@ -1,18 +1,18 @@
 ﻿using ADO.WMSDB;
-using AWMSEngine.Controllers.V2;
+using AMSModel.Criteria;
+using AMWUtil.Common;
+using AMWUtil.Logger;
+using AWMSEngine.HubService;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectGCL.APIService.v2
+namespace ProjectGCL.WorkerService
 {
-    public class A10_3_WCS_Monitor_Front : AWMSEngine.APIService.BaseAPIService
+    public class Monitor_WCS_Machine_Worker : AWMSEngine.WorkerService.BaseWorkerService
     {
-        public class TReq
-        {
-            public string machines;
-        }
         public class TRes
         {
             public TData[] datas;
@@ -21,24 +21,21 @@ namespace ProjectGCL.APIService.v2
                 public string machine;
                 public string command;
                 public string status;
-                public string message;
+                public string status_color;
                 public string arg1;
                 public string arg2;
                 public string arg3;
             }
         }
 
-        public A10_3_WCS_Monitor_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize, false)
+        public Monitor_WCS_Machine_Worker(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, logger, commonHub)
         {
         }
 
-        protected override dynamic ExecuteEngineManual()
+        protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
-            string db_env = BuVO.SqlConnection.Database.Split("_").Last();
-            TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-            //Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            //datas.Add("app_name", req.app_name);
-            //datas.Add("machines", req.machines);
+            string db_env = buVO.SqlConnection.Database.Split("_").Last();
+            buVO.Logger.IsLogging = false;
             string command = @$"select 
                         mcMst.code as machine,
                         mcObj.DV_Con_Comm as command,
@@ -50,13 +47,12 @@ namespace ProjectGCL.APIService.v2
                         concat('B: ',mcObj.DV_Pre_Battery) as arg3
 					from 
                         (select * from [ACS_GCL_{db_env}].[dbo].acs_McMaster where status=1) mcMst inner join
-                        string_split('{req.machines}',',') mc on mc.value=mcMst.Code inner join
                         [ACS_GCL_{db_env}].[dbo].act_McObject mcObj on mcMst.id=mcObj.id inner join
                         [ACS_GCL_{db_env}].[dbo].acs_Location loc on loc.id=mcObj.Cur_Location_ID";
 
-            var _res = DataADO.GetInstant().QueryString<TRes.TData>(command, null, BuVO).ToArray();
+            var _res = DataADO.GetInstant().QueryString<TRes.TData>(command, null, buVO).ToArray();
             TRes res = new TRes() { datas = _res };
-            return res;
+            this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], res.Json());
         }
     }
 }

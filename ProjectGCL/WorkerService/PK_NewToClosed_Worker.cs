@@ -284,7 +284,7 @@ namespace ProjectGCL.WorkerService
                     //DONE WorkQueue
                     {
                         wq.Status = EntityStatus.DONE;
-                        wq.ActionResult = "Success";
+                        wq.ActionResult = "[SUCCESS] label=" + doci.ItemNo;
                         DataADO.GetInstant().UpdateBy<amt_Wcs_WQ>(wq, buVO);
                     }
 
