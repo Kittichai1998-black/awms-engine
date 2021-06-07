@@ -33,7 +33,8 @@ const ViewStorageUsed=(props)=>{
   const [isOpenCountingModal,setIsOpenCountingModal]=useState(false);
   const [isOpenSortingModal,setIsOpenSortingModal]=useState(false);
   const [inputLocation,setInputLocation]=useState("");
-  const [showDatail,setShowDetail]=useState(null)
+  const [showDatail,setShowDetail]=useState(null);
+  const [banklength, setBanklength]=useState(1);
 
   const [tableHaderColumns,setTableHaderColumns] = React.useState([
     {id: 'location', label: 'loc/bank', minWidth: 120, align: 'center'},
@@ -74,15 +75,16 @@ const ViewStorageUsed=(props)=>{
   };
 
   const initTable=(data=[])=>{
-    let tHeader=[{id: 'location', label: 'loc/bank', minWidth: 120, align: 'center'}]
+    let tHeader=[{id: 'location', label: 'loc/bank', minWidth: 100, align: 'center'}]
     let banklength= 0;
     for(let vData of data){
       if(vData.bank_max > banklength) banklength=vData.bank_max
     }
+    setBanklength(banklength)
     for(let i=1;i<=banklength;i++){
-      tHeader.push({id: i, label: i, minWidth: 20, align: 'center'})
+      tHeader.push({id: i, label: i, minWidth: 15, align: 'center'})
     }
-    tHeader.push({id: 'action',label: ' 🛠 ', minWidth: 170, align: 'center'})
+    tHeader.push({id: 'action',label: ' 🛠 ', minWidth: 200, align: 'center'})
 
     let row=data.map((vData,key)=>{
       let resultItem={}
@@ -139,14 +141,14 @@ const ViewStorageUsed=(props)=>{
       </Grid>
     
       <Grid item xs={10}>
-        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10}}>
+        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, overflowX:'scroll'}}>
           {(dataTable.length<=0 && !isLoadingdataTable) ?
             <Alert severity='info'>Empty Data</Alert> :
             (isLoadingdataTable ? 
               <center><CircularProgress color='primary' size={50}/></center> :
               <table className='tableViewStorageUsed' cellSpacing='1' width='100%'>
                 <tr style={{fontWeight:'bold'}}>
-                  {tableHaderColumns.map((column) => (
+                  {/* {tableHaderColumns.map((column) => (
                       <td
                       key={column.id}
                       align={column.align}
@@ -154,7 +156,26 @@ const ViewStorageUsed=(props)=>{
                       >
                       {column.label}
                       </td>
-                  ))}
+                  ))} */}
+                  <td
+                      align="center"
+                      style={{ minWidth: tableHaderColumns[0].minWidth, backgroundColor:'#DDD',padding:10 }}
+                    >
+                      loc/bank
+                  </td>
+                  <td
+                      colSpan={banklength}
+                      align="center"
+                      style={{backgroundColor:'#DDD',padding:10 }}
+                    >
+                      From to
+                  </td>
+                  <td
+                      align="center"
+                      style={{ minWidth: 200, backgroundColor:'#DDD',padding:10 }}
+                    >
+                      action
+                  </td>
                 </tr>
                 {dataTable.map((row,index) => {
                 return (
@@ -171,13 +192,13 @@ const ViewStorageUsed=(props)=>{
                         if(column.id=='action'){
                           return (
                             <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere',backgroundColor:'#DDD'}}>
-                                <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location);}} style={{marginRight:5}}><Style /> count</Button>
-                                <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location);}}><Sort/> sort</Button>
+                                <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Style /> count</Button>
+                                <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Sort/> sort</Button>
                             </td>
                           )
                         }
                         return (
-                          <td key={column.id} align={column.align} style={{padding:5, overflowWrap: 'anywhere', backgroundColor: (value=="-"||value==""||column.id=='location'||column.id=='action')? '#FFF' : '#5454ff' }}>
+                          <td key={column.id} align={column.align} style={{ minWidth: column.minWidth, padding:5, overflowWrap: 'anywhere', backgroundColor: (value=="-"||value==""||column.id=='location'||column.id=='action')? '#FFF' : '#5454ff' }}>
                               {/* {value} */}
                           </td>
                         );

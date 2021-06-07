@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     margin:'auto'
   },
 });
-
+let intervalGetSPReportAPI_Front=null
 const MonitorReceive=(props)=>{
   const classes = useStyles();
   const [dataTable, setDataTable] = useState([]);
@@ -40,7 +40,6 @@ const MonitorReceive=(props)=>{
   const [isOpenCheckoutModal,setIsOpenCheckoutModal]=useState(false);
   const [inputLocation,setInputLocation]=useState("");
   const [inputShuttle,setInputShuttle]=useState("");
-  let intervalGetSPReportAPI_Front = null;
   const [header, setheader] = useState();
 
   useEffect(() => {
@@ -65,10 +64,9 @@ const MonitorReceive=(props)=>{
             },5000)
         })
 
-   
-
         //on component unmount
         return () => {
+          clearInterval(intervalGetSPReportAPI_Front);
         }
   }, [])
   

@@ -119,6 +119,10 @@ const ViewStorageUsed = Loadable({
   loader: () => import("../../views/page/GCL/Warehouse/ViewStorageUsed"),
   loading: Loading
 });
+const ASRSConsole = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ASRSConsole"),
+  loading: Loading
+});
 
 const routes = [
 
@@ -153,6 +157,7 @@ const routes = [
   { path: "/warehouse/scanlocationcounting", name: "Scan Location Counting", compoment: ScanLocationCounting, exact: true, child: true },
   { path: "/warehouse/scanlocationsorting", name: "Scan Location Sorting", compoment: ScanLocationSorting, exact: true, child: true },
   { path: "/warehouse/viewstorageused", name: "Scan Location Sorting", compoment: ViewStorageUsed, exact: true, child: true },
+  { path: "/warehouse/asrsconsole", name: "ASRS Console", compoment: ASRSConsole, exact: true, child: true },
 
   { path: "/monitor/dockoutbounddashboard", name: "Dock Outbound Dashboard", compoment: DockOutboundDashboard, exact: true, child: true },
 ];
