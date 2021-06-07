@@ -51,7 +51,7 @@ const StorageObject = props => {
     { Header: "Grade", accessor: "Ref1", width: 80 },
     { Header: "Lot", accessor: "Lot", width: 80 },
     { Header: "No", accessor: "Ref2", width: 80 },
-    { Header: "UD", accessor: "Ref4", width: 80 },
+    { Header: "UD", accessor: "Ref3", width: 80 },
     { Header: "Pallet", accessor: "Pallet", width: 100 },
     { Header: "Qty", accessor: "SaleQty", width: 70, type: "number" },
     { Header: "Unit", accessor: "Unit", width: 100 },
