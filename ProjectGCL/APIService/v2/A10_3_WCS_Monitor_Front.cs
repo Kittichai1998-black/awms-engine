@@ -21,7 +21,7 @@ namespace ProjectGCL.APIService.v2
                 public string machine;
                 public string command;
                 public string status;
-                public string message;
+                public string status_color;
                 public string arg1;
                 public string arg2;
                 public string arg3;
@@ -43,16 +43,18 @@ namespace ProjectGCL.APIService.v2
                         mcMst.code as machine,
                         mcObj.DV_Con_Comm as command,
                         mcObj.DV_Pre_Status as status,
-                        concat(loc.code,' (',loc.Name,')') as arg1,
+                        concat(loc.code,' (',loc.Name,')',
+                                ' | ',bsto.LabelData) as arg1,
+                        concat('STEP: ',mcObj.StepTxt) as arg2,
                         concat(
 	                        iif(mcObj.IsOnline=1,'ON','OFF'),' | ',
-	                        iif(mcObj.IsAuto=1,'AUTO','MANUAL')) as arg2,
-                        concat('B: ',mcObj.DV_Pre_Battery) as arg3
+	                        iif(mcObj.IsAuto=1,'AUTO','MANUAL')) as arg3
 					from 
                         (select * from [ACS_GCL_{db_env}].[dbo].acs_McMaster where status=1) mcMst inner join
                         string_split('{req.machines}',',') mc on mc.value=mcMst.Code inner join
                         [ACS_GCL_{db_env}].[dbo].act_McObject mcObj on mcMst.id=mcObj.id inner join
-                        [ACS_GCL_{db_env}].[dbo].acs_Location loc on loc.id=mcObj.Cur_Location_ID";
+                        [ACS_GCL_{db_env}].[dbo].acs_Location loc on loc.id=mcObj.Cur_Location_ID left join
+                        [ACS_GCL_{db_env}].[dbo].act_BaseObject bsto on bsto.id=mcObj.BaseObject_ID";
 
             var _res = DataADO.GetInstant().QueryString<TRes.TData>(command, null, BuVO).ToArray();
             TRes res = new TRes() { datas = _res };

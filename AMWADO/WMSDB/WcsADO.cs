@@ -191,7 +191,8 @@ namespace ADO.WMSDB
             parameters.Add("@rtFlag", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
             parameters.Add("@rtDesc", "", System.Data.DbType.String, System.Data.ParameterDirection.Output);
 
-            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + "].[dbo].[SP_ShuttleBatteryFull]", parameters, buVO);
+            ADO.WCSDB.DataADO.GetInstant().QuerySP("[ACS_GCL_" + buVO.SqlConnection.Database.Split("_").Last() + 
+                "].[dbo].[SP_ShuttleBatteryFull]", parameters, buVO);
             string rtFlag = parameters.Get<string>("@rtFlag");
             string rtDesc = parameters.Get<string>("@rtDesc");
 

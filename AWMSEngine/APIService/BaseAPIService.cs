@@ -43,7 +43,7 @@ namespace AWMSEngine.APIService
             this.APIServiceID = apiServiceID;
             this.IsLogging = true;
         }
-        public BaseAPIService(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isLogging = true)
+        public BaseAPIService(BaseController controllerAPI, int apiServiceID, bool isAuthenAuthorize, bool isLogging)
         {
             this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;

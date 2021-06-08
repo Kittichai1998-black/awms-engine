@@ -53,11 +53,11 @@ namespace AMWUtil.Logger
         ///
         public static AMWLogger GetLogger(string serviceName)
         {
-            return GetLogger(Guid.NewGuid().ToString(), serviceName, string.Empty);
+            return GetLogger(Guid.NewGuid().ToString(), serviceName, string.Empty, true);
         }
         public static AMWLogger GetLogger(string logName, string serviceName, bool isLogging = true)
         {
-            return GetLogger(logName, serviceName, string.Empty);
+            return GetLogger(logName, serviceName, string.Empty, isLogging);
         }
         public static AMWLogger GetLogger(string logName, string serviceName, string logref, bool isLogging = true)
         {

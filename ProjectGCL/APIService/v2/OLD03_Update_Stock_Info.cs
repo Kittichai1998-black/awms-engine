@@ -16,7 +16,7 @@ namespace ProjectGCL.APIService.v2
             public List<TRecord> record;
             public class TRecord
             {
-                public List<TLine> line;
+                public TLine line;
                 public class TLine
                 {
                     public string bagging_Order;
@@ -36,28 +36,28 @@ namespace ProjectGCL.APIService.v2
         {
             TReq _req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             BeginTransaction();
-            foreach( TReq.TRecord.TLine req in _req.record.First().line)
+            foreach( TReq.TRecord rec in _req.record)
             {
-
-                if (string.IsNullOrWhiteSpace(req.bagging_Order))
+                TReq.TRecord.TLine line = rec.line;
+                if (string.IsNullOrWhiteSpace(line.bagging_Order))
                     throw new Exception("parameter bagging_Order is null.");
-                if (string.IsNullOrWhiteSpace(req.plant))
+                if (string.IsNullOrWhiteSpace(line.plant))
                     throw new Exception("parameter plant is null.");
-                if (string.IsNullOrWhiteSpace(req.material_code))
+                if (string.IsNullOrWhiteSpace(line.material_code))
                     throw new Exception("parameter material_code is null.");
-                if (string.IsNullOrWhiteSpace(req.batch))
+                if (string.IsNullOrWhiteSpace(line.batch))
                     throw new Exception("parameter batch is null.");
-                if (string.IsNullOrWhiteSpace(req.uD_CODE))
+                if (string.IsNullOrWhiteSpace(line.uD_CODE))
                     throw new Exception("parameter uD_CODE is null.");
 
                 //var datas = DataADO.GetInstant().CreateDynamicParameters(req);
                 Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-                datas.Add("@FROM_BO", req.bagging_Order);
-                datas.Add("@TO_CUSTOMER", req.plant);
-                datas.Add("@TO_SKU", req.material_code);
-                datas.Add("@TO_LOT", req.batch);
+                datas.Add("@FROM_BO", line.bagging_Order);
+                datas.Add("@TO_CUSTOMER", line.plant);
+                datas.Add("@TO_SKU", line.material_code);
+                datas.Add("@TO_LOT", line.batch);
                 datas.Add("@TO_UNIT", "KG");
-                datas.Add("@TO_UD", req.uD_CODE);
+                datas.Add("@TO_UD", line.uD_CODE);
 
                 DataADO.GetInstant().QuerySP("SP_STO_PACK_UPDATE_BY_BO", datas, BuVO);
 

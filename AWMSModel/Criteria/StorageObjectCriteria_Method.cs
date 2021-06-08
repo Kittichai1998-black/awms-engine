@@ -245,6 +245,11 @@ namespace AMSModel.Criteria
                             mstID = x.mstID,
                             mstWeiKG = x.mstWeiKG,
                             skuID = x.skuID,
+                            itemNo = x.itemNo,
+                            cartonNo = x.cartonNo,
+                            incubationDate = x.incubationDate,
+                            productOwner = x.productOwner,
+                            shelfLifeDate = x.shelfLifeDate,
 
                             weiKG = x.weiKG,
                             volume = 0,

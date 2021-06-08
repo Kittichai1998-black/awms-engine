@@ -29,8 +29,8 @@ namespace ProjectGCL.APIService.v2
             string db_env = BuVO.SqlConnection.Database.Split("_").Last();
             DataADO.GetInstant().QueryString<dynamic>
                 (@$"insert into [ACS_GCL_{db_env}].[dbo].act_McCmdRemote(WmsRefID,AppName,CmdLine,Status,CreateBy,CreateTime)
-                    values('{this.Logger.LogRefID}','{req.app_name}','{req.command}',1,99,getdate()", null, BuVO);
-
+                    values('{this.Logger.LogRefID}','{req.app_name}','{req.command}',1,99,getdate())", null, BuVO);
+            CommitTransaction();
             int count = 0;
             do
             {
@@ -45,8 +45,8 @@ namespace ProjectGCL.APIService.v2
                     throw new Exception(res.Result);
                 else if(res.Status == EntityStatus.DONE && res.Result.StartsWith("OK"))
                     return new TRES__return();
-            
-            } while (count > 4);
+                count++;
+            } while (count < 4);
             throw new Exception("WCS Response Time Out");
         }
     }

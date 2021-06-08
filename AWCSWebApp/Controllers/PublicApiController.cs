@@ -756,17 +756,6 @@ namespace AWCSWebApp.Controllers
             {
                 string shu = (string)request.shu;
                 string gate = (string)request.gate;
-                /*var mcShu = StaticValueManager.GetInstant().GetMcMaster(shuCode);
-                var mcGate = StaticValueManager.GetInstant().GetMcMaster(gateCode);
-                var mcObjShu = DataADO.GetInstant().SelectByID<act_McObject>(mcShu.ID.Value, buVO);
-                var mcObjGate = DataADO.GetInstant().SelectByID<act_McObject>(mcGate.ID.Value, buVO);
-                if (mcObjShu.IsOnline)
-                {
-                    throw new Exception("Shuttle กำลังออนไลน์อยู่");
-                }
-                mcObjShu.IsOnline = true;
-                mcObjShu.Cur_Location_ID = mcObjGate.Cur_Location_ID;
-                DataADO.GetInstant().UpdateBy<act_McObject>(mcObjShu, buVO);*/
                 Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
                 parameter.Add("SH_NAME", shu);
                 parameter.Add("SS_NAME", gate);
