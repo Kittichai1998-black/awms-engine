@@ -33,7 +33,7 @@ const ASRSConsole=(props)=>{
     clearInterval(intervalGetSPReportAPI);
     let machinesString=""
     for (var key in machineChecked) {
-      if (machineChecked.hasOwnProperty(key) && machineChecked[key]==true)machinesString+=`${key},`;
+      if (machineChecked.hasOwnProperty(key) && machineChecked[key]==true && appNameSelect.machines.indexOf(key)>=0)machinesString+=`${key},`;
     }
     setIsLoading(true);
     GCLService.get('/v2/WCS_Monitor_Front',{machines:machinesString}).then(res=>{
@@ -59,7 +59,7 @@ const ASRSConsole=(props)=>{
     return () => {
       clearInterval(intervalGetSPReportAPI);
     }
-  }, [machineChecked]);
+  }, [machineChecked,appNameSelect]);
 
 //   useEffect(() => {
 //     console.log(machineChecked)
@@ -117,7 +117,7 @@ const ASRSConsole=(props)=>{
     GCLService.post('/v2/WCS_Post_Command_Front',{app_name:appNameSelect.app_name, command:textFieldCmd.current.value}).then(res=>{
       setIsCmdLoading(false)
       textFieldCmd.current.focus()
-      setCmdHistoryList([...cmdHistoryList,{text:`${appNameSelect.app_name} >> ${textFieldCmd.current.value}`,status:res.data._result.status}])
+      setCmdHistoryList([...cmdHistoryList,{app_name:appNameSelect.app_name, text:textFieldCmd.current.value, status:res.data._result.status}])
       textFieldCmd.current.value=""
       if(!res.data._result.status) {
         setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
@@ -132,12 +132,12 @@ const ASRSConsole=(props)=>{
       <Grid item xs={2}>
         <Paper elevation={3} style={{width: '100%',height:'100%', padding:10}}>
           <p>🧿 App Name</p>
-          {appNameList.map((item,key)=><Button key={key} variant={item.app_name==(appNameSelect?.app_name||'') ? 'contained' : 'text'} color='primary' fullWidth onClick={()=>{setAppNameSelect(item);setMachineChecked({})}}>{item.app_name||''}</Button>)}
+          {appNameList.map((item,key)=><Button key={key} variant={item.app_name==(appNameSelect?.app_name||'') ? 'contained' : 'text'} color='primary' fullWidth onClick={()=>{setAppNameSelect(item);}}>{item.app_name||''}</Button>)}
         </Paper>
       </Grid>
     
       <Grid item xs={10}>
-        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10,overflowY:"scroll", maxHeight:500}}>
+        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10,overflowY:"scroll", maxHeight:350}}>
           {isLoading && <center><CircularProgress color='primary' size={50} style={{position: 'absolute'}}/></center>}
           {machinesList.length>0 ?
           <TableContainer className="tableCustom">
@@ -173,7 +173,7 @@ const ASRSConsole=(props)=>{
 
     <Grid container spacing={1}>
       <Grid item xs={2}>
-        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, overflowY:"scroll", maxHeight:450}}>
+        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, overflowY:"scroll", maxHeight:400}}>
           <p>🧿 Machine Name</p>
           {appNameSelect?.machines?.map((item,key)=>
             <FormControlLabel
@@ -194,11 +194,11 @@ const ASRSConsole=(props)=>{
         </Paper>
       </Grid>
     
-      <Grid item xs={10}>
+      <Grid item xs={10} style={{maxHeight:200, height:200}}>
         <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, display:'flex', flexDirection:'column',justifyContent:'flex-end'}}>
-          <div style={{height:'auto',width:'100%',flex:'none',marginBottom:10,overflowY:"scroll", maxHeight:290}}>
+          <div style={{height:'auto',width:'100%',flex:'none',marginBottom:10,overflowY:"scroll", maxHeight:120}}>
               {cmdHistoryList.map((item,key)=>
-                <p style={{marginBottom:5, color:item.status ? '#1a9c30' : "#dc1212"}}>{item.text}</p>
+                <p style={{marginBottom:5, color:item.status ? '#1a9c30' : "#dc1212", cursor: 'pointer'}} onClick={()=>{textFieldCmd.current.value=item.text;textFieldCmd.current.focus();}} >{`${item.app_name}>> ${item.text}`}</p>
               )}
           </div>
           <div style={{display: 'flex', backgroundColor:"#EEE",justifyContent: 'space-between'}}>
