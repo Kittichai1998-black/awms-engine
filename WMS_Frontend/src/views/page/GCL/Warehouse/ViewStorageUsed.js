@@ -125,8 +125,8 @@ const ViewStorageUsed=(props)=>{
 
   return (
     <Grid container spacing={2} style={{marginTop:10}}>
-      <Grid item xs={2}>
-        <Paper elevation={3} style={{width: '50%',height:'50%', padding:5}}>
+      <Grid item style={{maxWidth:200,minWidth:150}}>
+        <Paper elevation={3} style={{padding:5}}>
           <TreeView
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
@@ -140,7 +140,7 @@ const ViewStorageUsed=(props)=>{
         </Paper>
       </Grid>
     
-      <Grid item xs={10}>
+      <Grid item style={{flex:1,overflowX:'hidden'}}>
         <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, overflowX:'scroll'}}>
           {(dataTable.length<=0 && !isLoadingdataTable) ?
             <Alert severity='info'>Empty Data</Alert> :
@@ -168,13 +168,13 @@ const ViewStorageUsed=(props)=>{
                       align="center"
                       style={{backgroundColor:'#DDD',padding:10 }}
                     >
-                      From to
+                      From 1 to {banklength}
                   </td>
                   <td
                       align="center"
                       style={{ minWidth: 200, backgroundColor:'#DDD',padding:10 }}
                     >
-                      action
+                      🛠
                   </td>
                 </tr>
                 {dataTable.map((row,index) => {
@@ -198,7 +198,7 @@ const ViewStorageUsed=(props)=>{
                           )
                         }
                         return (
-                          <td key={column.id} align={column.align} style={{ minWidth: column.minWidth, padding:5, overflowWrap: 'anywhere', backgroundColor: (value=="-"||value==""||column.id=='location'||column.id=='action')? '#FFF' : '#5454ff' }}>
+                          <td key={column.id} align={column.align} style={{ minWidth: column.minWidth, padding:5, overflowWrap: 'anywhere', backgroundColor: (value=="-"||value==""||value==null||column.id=='location'||column.id=='action')? '#FFF' : '#5454ff' }}>
                               {/* {value} */}
                           </td>
                         );
@@ -245,7 +245,7 @@ const ViewStorageUsed=(props)=>{
                   <tr style={{borderBottom:'0.1px solid #CCC'}}>
                     <td align='right' style={{padding:'2px 10px'}}>{column.id}</td>
                     {/* <td align='center'> <b>{'\u00a0\u00a0\u00a0|\u00a0\u00a0\u00a0'}</b> </td> */}
-                    <td align='left' style={{padding:'2px 10px',backgroundColor:(showDatail&& showDatail[column.id]=="-"||showDatail&& showDatail[column.id]=="")? '#FFF' : '#7E7EFF' }}>{showDatail&& showDatail[column.id]}</td>
+                    <td align='left' style={{padding:'2px 10px',backgroundColor:(showDatail&& showDatail[column.id]=="-"||showDatail&& showDatail[column.id]==""||showDatail&& showDatail[column.id]==null)? '#FFF' : '#7E7EFF' }}>{showDatail&& showDatail[column.id]}</td>
                   </tr>
                 )}
               </table>
