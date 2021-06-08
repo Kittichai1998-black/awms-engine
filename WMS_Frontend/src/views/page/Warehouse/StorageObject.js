@@ -39,9 +39,7 @@ const StorageObject = props => {
       },
       Cell: e => getStatus(e.original.Status)
     },
-    { Header: "BO", accessor: "Options", width: 100, Cell:e=>{
-      return queryString.parse(e.original.Options)["wms_doc"]
-     } },
+    { Header: "BO", accessor: "wms_doc", width: 100 },
     { Header: "Warehouse", accessor: "Warehouse", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
     { Header: "Label", accessor: "ItemNo", width: 200, Cell:e=>(e.original.ItemNo??"").replace(/ /g,"\xa0") },
@@ -51,7 +49,7 @@ const StorageObject = props => {
     { Header: "Grade", accessor: "Ref1", width: 80 },
     { Header: "Lot", accessor: "Lot", width: 80 },
     { Header: "No", accessor: "Ref2", width: 80 },
-    { Header: "UD", accessor: "Ref3", width: 80 },
+    { Header: "UD Code", accessor: "Ref3", width: 80 },
     { Header: "Pallet", accessor: "Pallet", width: 100 },
     { Header: "Qty", accessor: "SaleQty", width: 70, type: "number" },
     { Header: "Unit", accessor: "Unit", width: 100 },

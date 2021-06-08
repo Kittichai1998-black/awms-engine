@@ -56,7 +56,7 @@ const LabelH = styled.label`
 `;
 
 
-const CurrentInventory = (props) => {
+const CurrentInventoryLocation = (props) => {
     const { t } = useTranslation()
     const { classes } = props;
 
@@ -66,13 +66,17 @@ const CurrentInventory = (props) => {
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
     const columns = [
-        { Header: 'Customer', accessor: 'Code', width: 120, sortable: false },
-        { Header: 'Sku', accessor: 'Code', width: 120, sortable: false },
-        { Header: '-', accessor: 'Name', width: 150, sortable: false, },
-        { Header: 'Grade', accessor: 'Ref1', width: 100, sortable: false },
-        { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
-        { Header: 'Qty', accessor: 'qty', width: 70, sortable: false,Footer: false,filterable: false,},
-        { Header: 'Unit', accessor: 'unitType', filterable: false, width: 70, sortable: false },
+        { Header: 'Warehouse', accessor: 'WH_ID', width: 120, sortable: false },
+        { Header: 'Location', accessor: 'LOC_NAME', width: 70,sortable: false },
+        { Header: 'Bank', accessor: 'Bank', width: 70,sortable: false ,filterable: false,},
+        { Header: 'Customer', accessor: 'CUSTOMER_CODE', width: 70, sortable: false, },
+        { Header: 'Sku', accessor: 'SKU', width: 120, sortable: false },
+        { Header: 'Grade', accessor: 'GRADE', width: 100, sortable: false },
+        { Header: 'Lot', accessor: 'LOT', width: 100, sortable: false },
+        { Header: 'UD', accessor: 'UD_CODE', width: 70, sortable: false},
+        { Header: 'Pallet', accessor: 'PALLET', filterable: false, width: 70, sortable: false,Footer: false },
+        { Header: 'Qty', accessor: 'QTY', filterable: false, width: 70, sortable: false,Footer: false },
+        { Header: 'Unit', accessor: 'UNIT', filterable: false, width: 70, sortable: false },
         
     ];
 
@@ -86,8 +90,8 @@ const CurrentInventory = (props) => {
                 columnTable={columns}
                 page={true}
                 excelFooter={true}
-                fileNameTable={"CURINV"}
-                tableKey={"Code"}
+                fileNameTable={"CURINV_FROM_LOC"}
+                tableKey={"WH_ID"}
                 groupBy={false}
             ></AmReport>
         </>
@@ -95,4 +99,4 @@ const CurrentInventory = (props) => {
 
 }
 
-export default withStyles(styles)(CurrentInventory);
+export default withStyles(styles)(CurrentInventoryLocation);

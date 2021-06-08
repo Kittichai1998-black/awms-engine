@@ -29,11 +29,23 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
     return window.apipath + "/v2/GetSPReportAPI?"
       + "&packCode=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
       + "&packName=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
-      + "&orderNo=" + (valueText.OrderNo === undefined || valueText.OrderNo === null ? '' : encodeURIComponent(valueText.OrderNo.trim()))
-      + "&batch=" + (valueText.Batch === undefined || valueText.Batch === null ? '' : encodeURIComponent(valueText.Batch.trim()))
+      + "&ref1=" + (valueText.Ref1 === undefined || valueText.Ref1 === null ? '' : encodeURIComponent(valueText.Ref1.trim()))
       + "&lot=" + (valueText.Lot === undefined || valueText.Lot === null ? '' : encodeURIComponent(valueText.Lot.trim()))
+      + "&ref3=" + (valueText.ref3 === undefined || valueText.ref3 === null ? '' : encodeURIComponent(valueText.ref3.trim()))
 
       + "&spname=CURRENTINV_STOSUM";
+
+  } else if (fileNameTable === "CURINV_FROM_LOC") {
+    return window.apipath + "/v2/GetSPReportAPI?"
+      + "&WH_ID=" + (valueText.WH_ID === undefined || valueText.WH_ID === null ? '' : encodeURIComponent(valueText.WH_ID.trim()))
+      + "&CUSTOMER_CODE=" + (valueText.CUSTOMER_CODE === undefined || valueText.CUSTOMER_CODE === null ? '' : encodeURIComponent(valueText.CUSTOMER_CODE.trim()))
+      + "&SKU=" + (valueText.SKU === undefined || valueText.SKU === null ? '' : encodeURIComponent(valueText.SKU.trim()))
+      + "&GRADE=" + (valueText.GRADE === undefined || valueText.GRADE === null ? '' : encodeURIComponent(valueText.GRADE.trim()))
+      + "&LOT=" + (valueText.LOT === undefined || valueText.LOT === null ? '' : encodeURIComponent(valueText.LOT.trim()))
+      + "&UD_CODE=" + (valueText.UD_CODE === undefined || valueText.UD_CODE === null ? '' : encodeURIComponent(valueText.UD_CODE.trim()))
+      + "&LOC_NAME=" + (valueText.LOC_NAME === undefined || valueText.LOC_NAME === null ? '' : encodeURIComponent(valueText.LOC_NAME.trim()))
+
+      + "&spname=CURRENT_INVENTORY_SUMMARY_LOCATION";
 
   } else if (fileNameTable === "DAILYSTO_RECEIVE" || fileNameTable === "DAILYSTO_ISSUE" || fileNameTable === "DAILYSTO_COUNTING" || fileNameTable === "DAILYSTO_AUDIT") {
     if (IsEmptyObject(valueText)) {

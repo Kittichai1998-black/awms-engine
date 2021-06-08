@@ -101,8 +101,7 @@ const PA_Detail = props => {
         { Header: "Lot", accessor: "Lot", width: 130, widthPDF: 25 },
         { Header: "No", accessor: "Ref2", widthPDF: 25 },
         { Header: "UD", accessor: "Ref3", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Receive QTY", widthPDF: 20 },
-        { width: 120, accessor: "Total QTY", Header: "Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Receive Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         
 
