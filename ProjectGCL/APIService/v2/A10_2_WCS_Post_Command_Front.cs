@@ -47,6 +47,11 @@ namespace ProjectGCL.APIService.v2
                     return new TRES__return();
                 count++;
             } while (count < 4);
+
+            DataADO.GetInstant().QueryString<dynamic>
+                (@$"update [ACS_GCL_{db_env}].[dbo].act_McCmdRemote 
+                    set status=2,Result='ERROR' where WmsRefID='{this.Logger.LogRefID}' ", null, BuVO);
+
             throw new Exception("WCS Response Time Out");
         }
     }
