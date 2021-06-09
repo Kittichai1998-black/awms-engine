@@ -355,7 +355,7 @@ namespace AWMSEngine.APIService
             {
                 if (DateTime.Now > tokenInfo.BodyDecode.exp)
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.A0012);
+                    //throw new AMWException(this.Logger, AMWExceptionCode.A0012);
                 }
                 if (tokenInfo.HeadDecode.typ.Equals("jwt"))
                 {
