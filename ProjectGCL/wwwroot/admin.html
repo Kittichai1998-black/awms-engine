@@ -77,8 +77,21 @@
                 datas[key] = value;
             });
             console.log(datas);
+            $('#div_result').text('');
             _get($('#txt_root_api').val(), datas, function (res) {
-                $('#div_result').text(JSON.stringify(res));
+                let txt = "";
+                if (res._result.status === 1) {
+                    txt += "===== SUCCESS =====\n";
+                    $('#div_result').text();
+                    res.datas.forEach(x => {
+                        txt += JSON.stringify(x) + "\n";
+                    })
+                }
+                else {
+                    txt += "===== ERROR =====\n";
+                    txt += res._result.message;
+                }
+                $('#div_result').text(txt);
             });
         });
 

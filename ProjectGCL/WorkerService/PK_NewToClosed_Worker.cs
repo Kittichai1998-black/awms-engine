@@ -289,7 +289,7 @@ namespace ProjectGCL.WorkerService
                     }
 
                     //SEND SCE PICKING_CONFIRM
-                    if (doc.Options.QryStrGetValue("_is_from_ams") == "SCE")
+                    if (doc.Options.QryStrGetValue("_is_from_ams") == "SCE" && wq.ActionStatus == EntityStatus.DONE)
                     {
                         SceAPI.GetInstant().Picking_Confirm(new GCLModel.Criterie.TREQ_Picking_Confirm()
                         {
@@ -348,7 +348,8 @@ namespace ProjectGCL.WorkerService
                 DataADO.GetInstant().CountBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("DocumentItem_id",doci_id, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("Status",EntityStatus.DONE, SQLOperatorType.NOTEQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                 }, buVO);
 
                 if (disto_count == 0)
