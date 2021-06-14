@@ -39,69 +39,20 @@ const StorageObject = props => {
       },
       Cell: e => getStatus(e.original.Status)
     },
-    {
-      Header: "Warehouse Lock",
-      accessor: "IsHoldName",
-      width: 30,
-      sortable: false,
-      filterType: "dropdown",
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: Lock,
-        typeDropDown: "normal",
-        widthDD: 120,
-      },
-      Cell: e => getIsHold(e.original.IsHoldName)
-    },
-    {
-      Header: "Quality Status",
-      accessor: "AuditStatusName",
-      width: 50,
-      sortable: false,
-      filterType: "dropdown",
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: AuditStatusGCL,
-        typeDropDown: "normal",
-        widthDD: 120,
-      },
-      Cell: e => getAuditStatus(e.original.AuditStatusName)
-    },
-    { Header: "Lot", accessor: "Lot", width: 80 },
-    { Header: "Grade", accessor: "Ref1", width: 80 },
-    {
-      Header: "Item Code",
-      accessor: "SKU_Code",
-      width: 100
-    },
-    {
-      Header: "Item Name",
-      accessor: "SKU_Name",
-      fixWidth: 200,
-
-    },
-    {
-      Header: "Pallet",
-      accessor: "Pallet",
-      width: 130,
-      //Cell: e => getImgPallet(e.original.Pallet)
-    },
-
-    { Header: "Area", accessor: "Area", width: 100 },
+    { Header: "BO", accessor: "wms_doc", width: 100 },
+    { Header: "Warehouse", accessor: "Warehouse", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
-
-    {
-      Header: "Qty",
-      accessor: "SaleQty",
-      width: 70,
-      type: "number"
-      // Cell: e => getNumberQty(e.original)
-    },
+    { Header: "Label", accessor: "ItemNo", width: 200, Cell:e=>(e.original.ItemNo??"").replace(/ /g,"\xa0") },
+    { Header: "Customer", accessor: "Ref4", width: 100 },
+    { Header: "Sku", accessor: "SKU_Code", width: 100 },
+    { Header: "-", accessor: "SKU_Name", width: 200 },
+    { Header: "Grade", accessor: "Ref1", width: 80 },
+    { Header: "Lot", accessor: "Lot", width: 80 },
+    { Header: "No", accessor: "Ref2", width: 80 },
+    { Header: "UD Code", accessor: "Ref3", width: 80 },
+    { Header: "Pallet", accessor: "Pallet", width: 100 },
+    { Header: "Qty", accessor: "SaleQty", width: 70, type: "number" },
     { Header: "Unit", accessor: "Unit", width: 100 },
-    { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
-    { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
-    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
-
     {
       Header: "Received Time",
       accessor: "Receive_Time",

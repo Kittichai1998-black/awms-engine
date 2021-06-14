@@ -95,15 +95,17 @@ const PI_Detail = props => {
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
-            Header: "Item Code",
+            Header: "SKU Code",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
         {
-            Header: "Item Name",
+            Header: "SKU Name",
             Cell: e => { return e.original.SKUMaster_Name },
             CellPDF: e => { return e.SKUMaster_Name }, widthPDF: 40
         },
+
+        { Header: "Customer", accessor: "Ref4", widthPDF: 20 },
         { Header: " Control No.", accessor: "OrderNo", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },

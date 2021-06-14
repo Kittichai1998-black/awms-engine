@@ -111,6 +111,10 @@ const CurrentInventory = Loadable({
   loader: () => import("../../views/page/NewReport/CurrentInventory"),
   loading: Loading
 });
+const CurrentInventoryLocation = Loadable({
+  loader: () => import("../../views/page/NewReport/CurrentInventoryLocation"),
+  loading: Loading
+});
 
 const StockLocationUsed = Loadable({
   loader: () => import("../../views/page/NewReport/StockLocationUsed"),
@@ -487,6 +491,7 @@ let routes = [
   { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
   { path: "/warehouse/stockReplenishment", name: "Scan Pallet Information", compoment: StockReplenishment, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
+  { path: "/report/locationinventory", name: "Location Inventory", compoment: CurrentInventoryLocation, exact: true },
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },

@@ -39,6 +39,13 @@ const Throughput = (props) => {
 
 
     const columns = [
+        
+        { Header: 'In', accessor: 'count', width: 120, sortable: false },
+        { Header: 'Out', accessor: 'IOType', width: 120, sortable: false },
+        { Header: 'Hour', accessor: 'hour', width: 120, sortable: false },
+        { Header: 'Day', accessor: 'day', width: 120, sortable: false },
+        { Header: 'Month', accessor: 'month', width: 120, sortable: false },
+        { Header: 'Year', accessor: 'year', width: 120, sortable: false },
         {
             Header: 'Start Date', accessor: 'StartTime', type: 'datetime', width: 130, sortable: false,
             filterType: "datetime",
@@ -48,12 +55,6 @@ const Throughput = (props) => {
             , customFilter: { field: "StartTime" },
             dateFormat: "DD/MM/YYYY"
         },
-        { Header: 'In', accessor: 'count', width: 120, sortable: false },
-        { Header: 'Out', accessor: 'IOType', width: 120, sortable: false },
-        { Header: 'Hour', accessor: 'hour', width: 120, sortable: false },
-        { Header: 'Day', accessor: 'day', width: 120, sortable: false },
-        { Header: 'Month', accessor: 'month', width: 120, sortable: false },
-        { Header: 'Year', accessor: 'year', width: 120, sortable: false }
 
     ];
 

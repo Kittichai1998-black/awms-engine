@@ -73,6 +73,60 @@ const WCS_Queue = Loadable({
 //   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
 //   loading: Loading
 // });
+
+const MonitorReceive = Loadable({
+  loader: () => import("../../views/page/GCL/Receive/MonitorReceive"),
+  loading: Loading
+});
+
+const ScanReceiveGateMapping = Loadable({
+  loader: () => import("../../views/page/GCL/Receive/ScanReceiveGateMapping"),
+  loading: Loading
+});
+
+const PickingMonitor = Loadable({
+  loader: () => import("../../views/page/GCL/Issue/PickingMonitor"),
+  loading: Loading
+});
+
+const ScanShuttleCheckIn = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ScanShuttleCheckIn"),
+  loading: Loading
+});
+
+const ScanShuttleCheckOut = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ScanShuttleCheckOut"),
+  loading: Loading
+});
+
+const DockOutboundDashboard = Loadable({
+  loader: () => import("../../views/page/GCL/Monitor/DockOutboundDashboard"),
+  loading: Loading
+});
+
+const ListShuttle = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ListShuttle"),
+  loading: Loading
+});
+
+const ScanLocationCounting = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ScanLocationCounting"),
+  loading: Loading
+});
+
+const ScanLocationSorting = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ScanLocationSorting"),
+  loading: Loading
+});
+const ViewStorageUsed = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ViewStorageUsed"),
+  loading: Loading
+});
+const ASRSConsole = Loadable({
+  loader: () => import("../../views/page/GCL/Warehouse/ASRSConsole"),
+  loading: Loading
+});
+
 const routes = [
 
   { path: "/monitor/location", name: "Monitor Location", compoment: Monitor_Location, exact: true, child: true },
@@ -97,6 +151,19 @@ const routes = [
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
   { path: "/setting/registsht", name: "PK Search", compoment: RegistShuttle, exact: true },
+
+  { path: "/receive/monitorreceive", name: "Monitor Receive", compoment: MonitorReceive, exact: true, child: true },
+  { path: "/receive/scanreceivegatemapping", name: "Scan Receive Gate Mapping", compoment: ScanReceiveGateMapping, exact: true, child: true },
+  { path: "/issue/pickingmonitor", name: "Picking Monitor", compoment: PickingMonitor, exact: true, child: true },
+  { path: "/warehouse/scanshuttlecheckin", name: "Scan Shuttle Check-In", compoment: ScanShuttleCheckIn, exact: true, child: true },
+  { path: "/warehouse/scanshuttlecheckout", name: "Scan Shuttle Check-Out", compoment: ScanShuttleCheckOut, exact: true, child: true },
+  { path: "/monitor/listshuttle", name: "List Shuttle", compoment: ListShuttle, exact: true, child: true },
+  { path: "/warehouse/scanlocationcounting", name: "Scan Location Counting", compoment: ScanLocationCounting, exact: true, child: true },
+  { path: "/warehouse/scanlocationsorting", name: "Scan Location Sorting", compoment: ScanLocationSorting, exact: true, child: true },
+  { path: "/warehouse/viewstorageused", name: "Scan Location Sorting", compoment: ViewStorageUsed, exact: true, child: true },
+  { path: "/warehouse/asrsconsole", name: "ASRS Console", compoment: ASRSConsole, exact: true, child: true },
+
+  { path: "/monitor/dockoutbounddashboard", name: "Dock Outbound Dashboard", compoment: DockOutboundDashboard, exact: true, child: true },
 ];
 
 export default routes;

@@ -79,16 +79,9 @@ const DailySTOSumAudit = (props) => {
         all: "",
     }
 
-    const columns = [
-        {
-            Header: 'Date', accessor: 'createDate', type: 'datetime', width: 130, sortable: false,
-            filterType: "datetime",
-            filterConfig: {
-                filterType: "datetime",
-            }
-            , customFilter: { field: "CreateTime" },
-            dateFormat: "DD/MM/YYYY"
-        },
+    const columns = [   
+        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false, },
+        { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
@@ -100,8 +93,6 @@ const DailySTOSumAudit = (props) => {
                 widthDD: 320,
             },
         },
-        { Header: 'Item Code', accessor: 'pstoCode', width: 120, sortable: false, },
-        { Header: 'Item Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         //{ Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false, },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
         //{ Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false, },
@@ -117,6 +108,16 @@ const DailySTOSumAudit = (props) => {
             "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
+       
+        {
+            Header: 'Date', accessor: 'createDate', type: 'datetime', width: 130, sortable: false,
+            filterType: "datetime",
+            filterConfig: {
+                filterType: "datetime",
+            }
+            , customFilter: { field: "CreateTime" },
+            dateFormat: "DD/MM/YYYY"
+        },
     ];
     const getRedirect = (data) => {
         if (data.indexOf(',') > 0) {

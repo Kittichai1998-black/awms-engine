@@ -38,7 +38,7 @@ const DocumentSearch = props => {
         var dataGenerate = DataGeneratePopup(data)
         var dataGenerateStatus = DataGenerateStatus(data)
 
-        return <div style={{ textAlign: "center" }}>
+        return <div style={{ textAlign: "left" }}>
             <AmDocumentStatus key={dataGenerateStatus[0].status} statusCode={dataGenerateStatus[0].statusValue} />{" "}
             {dataGenerate[0].label !== "error" ? null : <IconButton
                 aria-label="error"
@@ -71,6 +71,7 @@ const DocumentSearch = props => {
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
         },
+        
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
             Header: "Process No.",
@@ -86,10 +87,14 @@ const DocumentSearch = props => {
                 widthDD: 220,
             },
         },
+        { Header: "Doc.WMS", accessor: "Ref2", filterable: true,width: 150 },
+        { Header: "API Ref", accessor: "Ref1", filterable: true,width: 150 },
         //{ Header: "Customer", accessor: "ForCustomerName", width: 150 },
-        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
+        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: true, width: 150 },
+        //{ Header: "Booking", values: "_book_bay_lv", type:"option",filterable: true, width: 150},
+        // { width: 120, accessor: "book_bay_lv", Header: "Booking", widthPDF: 20, Cell: e => getFormatPrscen(e.original), widthPDF: 15},
         {
-            Header: "Doc Date",
+            Header: "Doc. Date",
             accessor: "DocumentDate",
             width: 150,
             type: "datetime",

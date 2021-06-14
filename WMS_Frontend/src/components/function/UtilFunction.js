@@ -33,7 +33,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField, search
             searchValue = searchValue.substr(1, searchValue.length - 1)
 
         }
-        else if (searchValue.startsWith("%") || searchValue.endsWith("%") || searchValue.startsWith("*") || searchValue.endsWith("*")) {
+        else if (searchValue.indexOf("%") >=0 || searchValue.indexOf("*") >= 0) {
             searchSign = "LIKE";
 
         }

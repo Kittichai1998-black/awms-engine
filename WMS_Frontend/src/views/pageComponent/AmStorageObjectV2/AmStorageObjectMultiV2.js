@@ -59,7 +59,7 @@ const AmStorageObjectMulti = props => {
   const [hold, setHold] = useState(true);
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(50);
   const [mode, setMode] = useState("");
   const [aditStatus, setAditStatus] = useState("");
 

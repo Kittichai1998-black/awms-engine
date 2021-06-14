@@ -39,6 +39,13 @@ const DeadStock = (props) => {
 
 
     const columns = [
+        
+        { Header: 'Code', accessor: 'Code', width: 120, sortable: false },
+        { Header: 'Name', accessor: 'Name', width: 120, sortable: false },
+        { Header: 'Recive Date', accessor: 'ReciveDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY" },
+        { Header: 'ShelfLife Date', accessor: 'ShelfLifeDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY" },
+        { Header: 'Shelf Day', accessor: 'TotalShelfDay', width: 120, sortable: false, filterable: false, },
+        { Header: 'Recive Day', accessor: 'TotalRecive', width: 120, sortable: false, filterable: false, },
         {
             Header: 'Recive Date', accessor: 'ReciveDate', type: 'datetime', width: 130, sortable: false,
             filterType: "datetime",
@@ -48,12 +55,6 @@ const DeadStock = (props) => {
             , customFilter: { field: "ReciveDate" },
             dateFormat: "DD/MM/YYYY"
         },
-        { Header: 'Code', accessor: 'Code', width: 120, sortable: false },
-        { Header: 'Name', accessor: 'Name', width: 120, sortable: false },
-        { Header: 'Recive Date', accessor: 'ReciveDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY" },
-        { Header: 'ShelfLife Date', accessor: 'ShelfLifeDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY" },
-        { Header: 'Shelf Day', accessor: 'TotalShelfDay', width: 120, sortable: false, filterable: false, },
-        { Header: 'Recive Day', accessor: 'TotalRecive', width: 120, sortable: false, filterable: false, },
 
     ];
 

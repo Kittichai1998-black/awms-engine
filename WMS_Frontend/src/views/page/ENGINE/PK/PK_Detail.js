@@ -70,20 +70,20 @@ const PK_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Bagging", value: "Ref2" },
-                { label: "", value: "", values: "" }
-            ],
-            [
                 { label: "Process Type", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
 
+            [
+                { label: "DO", value: "Ref2" },
+                { label: "", value: "", values: "" }
+            ],
 
             DataprocessType,
 
             [
                 { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-                { label: "Remark", values: "Remark" }
+                { label: "Remark", values: "_error" , type:"option" }
             ]
         ];
         setheader(TextHeader)
@@ -95,29 +95,21 @@ const PK_Detail = props => {
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
-            Header: "Item Code",
+          width:120, accessor: "Ref4" ,Header: "Customers"
+        },
+        
+        {
+            Header: "SKU Code",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code },
             widthPDF: 40
         },
-        {
-            Header: "Item Name",
-            Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return e.SKUMaster_Name },
-            widthPDF: 40
-        },
-        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { Header: "Grade", accessor: "Ref1", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Picking Quantity", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
+        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
+        { width: 130, accessor: "Ref3", Header: "UD", widthPDF: 25 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Pick QTY", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Total QTY", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
-        {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
-        },
-
 
     ];
 
@@ -134,21 +126,12 @@ const PK_Detail = props => {
                 else return null;
             }
         },
-        { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
-        { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
-        { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
-        { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { Header: "Grade", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
-        { width: 70, accessor: "distoUnitCode", Header: "Unit", widthPDF: 10 },
-        {
-            Header: "Quality Status",
-            accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
+        { Header: "Label", accessor: "itemNo", width: 130, widthPDF: 25,Cell:e=>(e.original.itemNo??"").replace(/ /g,"\xa0") },
+        { Header: "Sku", accessor: "packCode", widthPDF: 10, width: 150  },
+        { Header: "Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
+        { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
+        //{ Header: "Location", accessor: "areaLocationCode", widthPDF: 10, width: 70, },
+        { Header: "Pallet No.", width: 100, accessor: "rootCode", widthPDF: 10 },
 
 
     ];
@@ -189,7 +172,7 @@ const PK_Detail = props => {
 
     const getStatusGR = value => {
         if (value.status === 0)
-            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+            return <></>;
         else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else if (value.status === 3)
