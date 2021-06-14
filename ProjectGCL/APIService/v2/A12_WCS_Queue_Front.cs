@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.APIService.v2
 {
-    public class A10_3_WCS_Monitor_Front : AWMSEngine.APIService.BaseAPIService
+    public class A12_WCS_Queue_Front : AWMSEngine.APIService.BaseAPIService
     {
         public class TReq
         {
@@ -15,20 +15,10 @@ namespace ProjectGCL.APIService.v2
         }
         public class TRes
         {
-            public TData[] datas;
-            public class TData
-            {
-                public string machine;
-                public string command;
-                public string status;
-                public string status_color;
-                public string arg1;
-                public string arg2;
-                public string arg3;
-            }
+            public dynamic[] datas;
         }
 
-        public A10_3_WCS_Monitor_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize, false)
+        public A12_WCS_Queue_Front(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize, false)
         {
         }
 
@@ -57,8 +47,7 @@ namespace ProjectGCL.APIService.v2
                         [ACS_GCL_{db_env}].[dbo].act_BaseObject bsto on bsto.id=mcObj.BaseObject_ID";*/
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
             parameters.Add("db_env", db_env);
-            parameters.Add("machines", req.machines);
-            var _res = DataADO.GetInstant().QuerySP<TRes.TData>("RP_A10_3_WCS_Monitor_Front", parameters, BuVO).ToArray();
+            var _res = DataADO.GetInstant().QuerySP<dynamic>("RP_A12_WCS_Queue_Front", parameters, BuVO).ToArray();
             TRes res = new TRes() { datas = _res };
             return res;
         }

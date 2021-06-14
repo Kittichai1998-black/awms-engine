@@ -12,11 +12,13 @@ const SettimeAlert = () => {
 };
 
 class apicall {
-  get(url) {
-    window.loading.onLoading();
+  get(url,noLoad) {
+    if(!noLoad)
+      window.loading.onLoading();
     return Axios.get(url + "&token=" + localStorage.getItem("Token")).then(
       res => {
-        window.loading.onLoaded();
+        if(!noLoad)
+          window.loading.onLoaded();
         if (res.data._result.status === 0) {
           if (res.data._result.code === "A0001") {
             sessionStorage.clear();
