@@ -52,9 +52,9 @@ const Export = (props) => {
     }, [dataSrc]);
 
     return <div>
-        <AmButton styleType="warning" onClick={(e) => onClickLoad(excelQueryAPI)}>
+        {/* <AmButton styleType="warning" onClick={(e) => onClickLoad(excelQueryAPI)}>
             {t('Export Excel')}
-        </AmButton>
+        </AmButton> */}
         <AmExportExcel
             data={dataSrc}
             fileName={fileName}
