@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
 import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress } from '@material-ui/core';
-import {Button,IconButton,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,Tooltip} from '@material-ui/core';
+import {Button,IconButton,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,Tooltip,Select,MenuItem} from '@material-ui/core';
 // import ToastAlert from '../../../../components/function/ToastAlert';
 import GCLService from '../../../../components/function/GCLService';
 import Alert from '@material-ui/lab/Alert';
 import {AddCircleOutline,CloseSharp,Save, Cancel,CheckCircleOutlineRounded,CheckCircle} from '@material-ui/icons'
 import "../../../../assets/css/TableCustom.css";
+
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const tableHaderColumns = [
   {id: 'status', label: 'Status', minWidth: 100},
@@ -43,6 +46,8 @@ const MonitorReceive=(props)=>{
   const [toast,setToast] = useState({msg:null,open:false,type:null});
   const [cloasing,setCloasing] = useState([]);
   const [confirmClosed,setConfirmClosed] = useState(null);
+
+  
 
   useEffect(() => {
         window.loading.onLoading();
@@ -233,6 +238,8 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
   const [unit,setUnit]=useState("KG")
   const [isLoading,setIsLoading]=useState(false)
 
+  const [booking_zone, setBooking_Zone] = useState("");
+
   useEffect(() => {
         //on component unmount
         return () => {}
@@ -246,7 +253,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
     let no_strat_value = !(no_strat=="") ? Number(no_strat) : no_strat;
     let no_end_value = !(no_end=="") ? Number(no_end) : no_end;
     let qty_pallet_value = !(qty_pallet=="") ? Number(qty_pallet) : qty_pallet;
-    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,booking_location,status,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
+    GCLService.post('/v2/Recieve_PLAN_Front',{priority:priority_value, wms_doc,customer,to_wh,grade,lot,booking_location,booking_zone:booking_zone,status,no_strat: no_strat_value, no_end: no_end_value,sku,status, qty_pallet:qty_pallet_value,unit}).then(res=>{
       window.loading.onLoaded();
       setIsLoading(false)
       if(!res.data._result.status) {
@@ -271,7 +278,22 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />         
           <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
           <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />
-          <TextField type="number" margin="dense" id="booking_location" label="Booking Count" fullWidth required  value={booking_location} onChange={(event)=>setBookingLocation(event.target.value)} />
+          <div>
+          <FormControl>
+          <InputLabel htmlFor="outlined-age-native-simple">Booking&nbsp;Zone</InputLabel>
+          <Select             
+            type="text"         
+            margin="dense"
+            id="booking_zone"            
+            label="Booking Zone"      
+            style={{width:"400%"}}   
+            fullWidth required value={booking_zone} onChange={(event)=>setBooking_Zone(event.target.value)} >          
+            <MenuItem value="inbound">{"Inbound"}</MenuItem>
+            <MenuItem value="outbound">{"Outbound"}</MenuItem>
+          </Select>
+          </FormControl>
+          </div>
+          <TextField type="text" margin="dense" id="booking_location" label="Booking Count" fullWidth required  value={booking_location} onChange={(event)=>setBookingLocation(event.target.value)} />  
           <TextField type="number" margin="dense" id="no_strat" label="No Start"  required InputProps={{step:1}} value={no_strat} onChange={(event)=>setNoStrat(event.target.value)} />
           <TextField type="number" margin="dense" id="no_end" label="No End" /*style={{marginLeft:10}} */ required InputProps={{step:1}} value={no_end} onChange={(event)=>setNoEnd(event.target.value)} />          
           <TextField type="number" margin="dense" id="qty_pallet" label="Qty Per Pallet" fullWidth required value={qty_pallet} onChange={(event)=>setQtyPerPallet(event.target.value)} />

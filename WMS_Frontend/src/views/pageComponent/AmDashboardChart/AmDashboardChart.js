@@ -202,10 +202,14 @@ const DashboardChartComponent = (props) => {
                 const imgData = canvas.toDataURL('image/png');
 
                 const pdf = new jsPDF({
-                    orientation: 'p',
+                    orientation: 'landscape',
                     unit: 'pt',
                     format: [canvaswidth, canvasheight]
                 });
+
+                // let width = parseInt(canvas.width);
+                // let height = parseInt(canvas.height);
+                
                 pdf.addImage(imgData, 'JPEG', 20, 20);
                 pdf.save("Dashboard.pdf");
             })

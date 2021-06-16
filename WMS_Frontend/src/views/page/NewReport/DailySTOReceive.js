@@ -74,6 +74,8 @@ const DailySTOReceive = (props) => {
 
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false },
+        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
+        { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
         { Header: 'Doc No.', accessor: 'docCode', width: 130, sortable: false },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
@@ -85,19 +87,18 @@ const DailySTOReceive = (props) => {
                 widthDD: 320,
             },
         },
-        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
+        
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
             Footer: true, filterable: false
         },
         { Header: 'Unit', accessor: 'unitType', width: 100, sortable: false, filterable: false, },
-        {
-            Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
-            Footer: true, filterable: false
+        // {
+        //     Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
+        //     Footer: true, filterable: false
 
-        },
-        { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },        
+        // },
+        // { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },        
         {
             Header: 'Date', accessor: 'createTime', type: 'datetime', width: 130, sortable: false,
             filterType: "datetime",
