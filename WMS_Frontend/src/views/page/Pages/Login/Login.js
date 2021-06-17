@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect, useContext } from "react";
+import React, { lazy, Suspense, useState, useEffect, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import styled from "styled-components";
@@ -30,6 +30,8 @@ import Axios from "axios";
 import { defaultProps } from "react-select/lib/Select";
 const AmButton = React.lazy(() => import('../../../../components/AmButton'));
 const AmInput = React.lazy(() => import('../../../../components/AmInput'));
+
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -95,6 +97,10 @@ const styles = theme => ({
 const Login = props => {
     const { classes } = props;
     const [showPassword, setShowPassword] = useState(false);
+
+    const gridForUser = useRef(null);
+    const gridForPassword = useRef(null);
+
     const [valueForm, setValueForm] = useState({
         username: "",
         password: "",
@@ -295,8 +301,10 @@ const Login = props => {
                                             placeholder="Username"
                                             onChangeV2={onHandleChange}
                                             value={valueForm.username}
+                                            inputRef={gridForUser}
                                             onKeyPress={(v, o, ele, event) => {
                                                 if (event.key === "Enter") {
+                                                    gridForPassword.current.focus()
                                                     onHandleLogin();
                                                 }
                                             }}
@@ -329,10 +337,12 @@ const Login = props => {
                                                 )
                                             }}
                                             value={valueForm.password}
+                                            inputRef={gridForPassword}
                                             onChangeV2={onHandleChange}
                                             onKeyPress={(v, o, ele, event) => {
                                                 if (event.key === "Enter") {
-                                                    onHandleLogin();
+                                                    gridForUser.current.focus()
+                                                    onHandleLogin();                                                    
                                                 }
                                             }} style={{ width: "100%" }}/>
                                     </Grid>
