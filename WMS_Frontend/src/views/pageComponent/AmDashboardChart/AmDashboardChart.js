@@ -200,17 +200,17 @@ const DashboardChartComponent = (props) => {
                 // console.log(canvas)
 
                 const imgData = canvas.toDataURL('image/png');
-
-                const pdf = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'pt',
-                    format: [canvaswidth, canvasheight]
-                });
+                const pdf = new jsPDF("l","mm","a4")
+                // const pdf = new jsPDF({
+                //     orientation: 'landscape',
+                //     unit: 'pt',
+                //     format: [canvaswidth, canvasheight]
+                // });
 
                 // let width = parseInt(canvas.width);
                 // let height = parseInt(canvas.height);
                 
-                pdf.addImage(imgData, 'JPEG', 20, 20);
+                pdf.addImage(imgData, 'JPEG', 20, 25, 260, 130);
                 pdf.save("Dashboard.pdf");
             })
             ;
