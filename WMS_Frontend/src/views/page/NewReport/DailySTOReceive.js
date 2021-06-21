@@ -72,8 +72,10 @@ const DailySTOReceive = (props) => {
 
     const columns = [
 
+        { Header: 'Customer', accessor: 'Ref4', width: 120, sortable: false },
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false },
+        { Header: 'Grade', accessor: 'Ref1', width:100, sortable: false},
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
         { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
         { Header: 'Doc No.', accessor: 'docCode', width: 130, sortable: false },
