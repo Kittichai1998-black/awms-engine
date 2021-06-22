@@ -151,11 +151,12 @@ const MonitorReceive=(props)=>{
       Z = Zone
 
       <p>Battery% : 
-        <span style={{color:'#33FF10'}}>สีเขียว</span> = 70-100 เปอร์เซ็นต์ | 
-        <span style={{color:'#F7FD04'}}>สีเหลือง</span> = 31-69 เปอร์เซ็นต์ | 
-        <span style={{color:'#F98404'}}>สีส้ม</span> = 11-30 เปอร์เซ็นต์ | 
-        <span style={{color:'#F54748'}}>สีแดง</span> = 0-10 เปอร์เซ็นต์
+        <span style={{color:'#F54748'}}>สีแดง</span> = 0-10 เปอร์เซ็นต์ |
+        <span style={{color:'#F98404'}}>สีส้ม</span> = 11-30 เปอร์เซ็นต์ |
+        <span style={{color:'#F7FD04'}}>สีเหลือง</span> = 31-69 เปอร์เซ็นต์ |
+        <span style={{color:'#33FF10'}}>สีเขียว</span> = 70-100 เปอร์เซ็นต์     
       </p>
+      
       {/* checkin modal */}
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckinModal}>
         <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} component="span" color="secondary">
