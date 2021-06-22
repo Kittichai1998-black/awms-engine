@@ -145,7 +145,8 @@ const PickingMonitor=(props)=>{
                     if(column.id=='action'){
                       return (
                         <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
-                          {(row.status||"").toLowerCase()!='Closed'.toLowerCase() || (row.status||"").toLowerCase()!='Rejecting'.toLowerCase() || (row.status||"").toLowerCase()!='Rejected'.toLowerCase()&&
+                          {(row.status||"").toLowerCase()!='Working'.toLowerCase()|| (row.status||"").toLowerCase()!='Rejected'.toLowerCase()&&
+                          // (row.status||"").toLowerCase()!='Closed'.toLowerCase() || (row.status||"").toLowerCase()!='Rejecting'.toLowerCase() || (row.status||"").toLowerCase()!='Rejected'.toLowerCase()&&
                             <Button variant="contained" color="primary" style={{backgroundColor:'#16C050'}} color="secondary" size="small" onClick={()=>setConfirmClosed(row.wms_doc)} disabled={cloasing.length>0}>
                               {cloasing.indexOf(row.wms_doc)>-1 ? <CircularProgress size={20} />:<CheckCircle />} Closed
                             </Button>
@@ -260,7 +261,7 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
       <DialogTitle id="form-dialog-title" onClose={handleClose}><center>Add Picking</center></DialogTitle>
       <DialogContent>
           <TextField autoFocus type="number" margin="dense" id="priority" label="Priority" fullWidth required InputProps={{step:1}} value={priority} onChange={(event)=>setPriority(event.target.value)} />
-          <TextField type="text" margin="dense" id="to_wh" label="To WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
+          <TextField type="text" margin="dense" id="to_wh" label="From WH" fullWidth required value={to_wh} onChange={(event)=>setToWH(event.target.value)} />
           <TextField type="text" margin="dense" id="wms_doc" label="DO" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />

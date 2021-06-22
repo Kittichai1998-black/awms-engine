@@ -81,9 +81,12 @@ const StockCard = (props) => {
 
     const columns = [        
 
+        { Header: 'Customer', accessor: 'Ref4', width: 120, sortable: false },
         { Header: 'SKU Code', accessor: 'SkuCode', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'SkuName', width: 150, sortable: false, filterable: false, },
         { Header: 'SKU Type', accessor: 'SkuTypeName', width: 140, sortable: false },
+        { Header: 'Grade', accessor: 'Ref1', width:100, sortable: false},
+        { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
         { Header: 'Doc No.', accessor: 'DocCode', width: 120, sortable: false, filterable: false, },
         {
             Header: 'Process No.', accessor: 'DocProcessTypeName', width: 220, sortable: false, filterable: false
@@ -97,7 +100,7 @@ const StockCard = (props) => {
             // },
         },
         //{ Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
-        { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
+        
         //{ Header: 'Control No.', accessor: 'OrderNo', width: 100, sortable: false },
         {
             Header: 'Issue', accessor: 'CreditQuantity', width: 70, sortable: false,

@@ -112,9 +112,10 @@ const MonitorReceive=(props)=>{
                     }
                     return (
                       column.id=='online'?
-                        <TableCell key={column.id+index} align={column.align} style={{padding:10, color: (value.toLowerCase()=='Offile'.toLowerCase()||value.toLowerCase()=='Offline'.toLowerCase()) ? '#FF0000' : '#000000' }}>
-                          {value}
-                        </TableCell>
+                      <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor:(value.split("|")[3].split(":")[1]<10.00)? '#F54748':(value.split("|")[3].split(":")[1]<30.00)? '#F98404':(value.split("|")[3].split(":")[1]<50.00||value.split("|")[3].split(":")[1]<70.00)? '#F7FD04':'#33FF10',
+                           color: (value.toLowerCase()=='Offile'.toLowerCase()||value.toLowerCase()=='Offline'.toLowerCase()) ? '#ff0000' : '#000000'}}>
+                                   {value} 
+                      </TableCell>
                         :<TableCell key={column.id+index} align={column.align} style={{padding:10}}>
                           {column.format && typeof value === 'number' ? column.format(value) : value}
                         </TableCell>
@@ -148,6 +149,14 @@ const MonitorReceive=(props)=>{
       B = Battery,
       L = Location,
       Z = Zone
+
+      <p>Battery% : 
+        <span style={{color:'#F54748'}}>สีแดง</span> = 0-10 เปอร์เซ็นต์ |
+        <span style={{color:'#F98404'}}>สีส้ม</span> = 11-30 เปอร์เซ็นต์ |
+        <span style={{color:'#F7FD04'}}>สีเหลือง</span> = 31-69 เปอร์เซ็นต์ |
+        <span style={{color:'#33FF10'}}>สีเขียว</span> = 70-100 เปอร์เซ็นต์     
+      </p>
+      
       {/* checkin modal */}
       <Dialog maxWidth='lg' onClose={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} aria-labelledby="simple-dialog-title" open={isOpenCheckinModal}>
         <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setIsOpenCheckinModal(false);setInputLocation(null);setInputShuttle(null);}} component="span" color="secondary">

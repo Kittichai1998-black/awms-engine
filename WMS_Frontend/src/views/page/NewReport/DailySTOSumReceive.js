@@ -81,8 +81,11 @@ const DailySTOSumReceive = (props) => {
 
     const columns = [        
        
+        { Header: 'Customer', accessor: 'Ref4', width: 120, sortable: false },
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false, },
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
+        { Header: 'Grade', accessor: 'Ref1', width:100, sortable: false},
+        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
@@ -95,7 +98,6 @@ const DailySTOSumReceive = (props) => {
             },
         },
         //{ Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false, },
-        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
         //{ Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false, },
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
@@ -103,12 +105,12 @@ const DailySTOSumReceive = (props) => {
             "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         { Header: 'Unit', accessor: 'unitType', width: 100, sortable: false, filterable: false, },
-        {
-            Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
-        },
-        { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
+        // {
+        //     Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
+        //     Footer: true,
+        //     "Cell": (e) => comma(e.value.toString()), filterable: false,
+        // },
+        // { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
      
         {
             Header: 'Date', accessor: 'createDate', type: 'datetime', width: 130, sortable: false,

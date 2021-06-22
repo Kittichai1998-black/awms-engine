@@ -18,12 +18,12 @@ const ChartJS = (props) => {
     [
       {
         type: 'bar',
-        title: "The Statistics of Throughtpu by Hourly",
+        title: "The Statistics of Throughput by Hourly",
         spname: 'DASHBOARD_CHART_THROUGHPUT_HOUR',
       },
       {
         type: 'bar',
-        title: "The Statistics of Throughtpu by Daily",
+        title: "The Statistics of Throughput by Daily",
         spname: 'DASHBOARD_CHART_THROUGHPUT_DAY',
       }
     ]
