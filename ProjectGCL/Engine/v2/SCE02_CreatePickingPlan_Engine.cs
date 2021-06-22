@@ -200,7 +200,7 @@ namespace ProjectGCL.Engine.v2
                                                                                         doci_gp._sum_qty_pick; //หยิบตามจำนวนที่ประมวลผลได้
                             pick_pallet._qty_pick += _pallet_qty_pick;
                             //คำนวนว่าแต่ละ documnet item หยิบสินค้าไปเท่าไหร
-                            foreach (var doci_info in doci_gp.DocItemInfos)
+                            foreach (var doci_info in doci_gp.doci_infos)
                             {
                                 decimal _doci_qty_pick = doci_info._pick_qty >= _pallet_qty_pick ? _pallet_qty_pick : doci_info._pick_qty;
                                 doci_info._pick_qty -= _doci_qty_pick;
@@ -248,18 +248,35 @@ namespace ProjectGCL.Engine.v2
                         doci_groups.OrderBy(x => x.seq_group)
                         .Where(x => x._sum_qty_pick > 0)
                         .GroupBy(x => new { sku = x.sku, grade = x.grade, lot = x.lot, ud_code = x.ud_code, customer = x.customer })
-                        .Select(x => new TDocItemGroup()
+                        .Select(x =>
                         {
-                            sku = x.Key.sku,
-                            grade = x.Key.grade,
-                            lot = x.Key.lot,
-                            ud_code = x.Key.ud_code,
-                            customer = x.Key.customer,
-                            loc_stage = x.First().loc_stage,
-                            seq_group = x.First().seq_group,
-                            priority = x.First().priority,
-                            DocItemInfos = x.Select(doci => new TDocItemGroup.TDocItemInfo() {
-                            }).ToList()
+                            var res_doci_infos = new List<TDocItemGroup.TDocItemInfo>();
+                            x.Select(doci_gp => doci_gp.doci_infos.Where(doci_info => doci_info._pick_qty > 0))
+                            .ToList()
+                            .ForEach(doci_infos=>
+                            {
+                                doci_infos.ToList().ForEach(doci_info =>
+                                {
+                                    res_doci_infos.Add(doci_info);
+                                });
+                            });
+
+
+                            var res = 
+                            new TDocItemGroup()
+                            {
+                                sku = x.Key.sku,
+                                grade = x.Key.grade,
+                                lot = x.Key.lot,
+                                ud_code = x.Key.ud_code,
+                                customer = x.Key.customer,
+                                loc_stage = x.First().loc_stage,
+                                seq_group = x.First().seq_group,
+                                priority = x.First().priority,
+                                doci_infos = res_doci_infos,
+                                _sum_qty_pick = res_doci_infos.Sum(y => y._pick_qty),
+                            };
+                            return res;
                         })
                         .ToList();
                     var pick_pallet_all2 = this.ProcessQueue(doci_groups_partial, false, pick_pallet_all);
@@ -271,7 +288,7 @@ namespace ProjectGCL.Engine.v2
 
         private class TDocItemGroup
         {
-            public List<TDocItemInfo> DocItemInfos;
+            public List<TDocItemInfo> doci_infos;
             public class TDocItemInfo
             {
                 public long id;
