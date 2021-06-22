@@ -66,7 +66,7 @@ const CurrentInventory = (props) => {
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
     const columns = [
-        { Header: 'Customer', accessor: 'Code', width: 120, sortable: false },
+        { Header: 'Customer', accessor: 'Ref4', width: 120, sortable: false },
         { Header: 'Sku', accessor: 'Code', width: 120, sortable: false },
         { Header: '-', accessor: 'Name', width: 150, sortable: false, },
         { Header: 'Grade', accessor: 'Ref1', width: 100, sortable: false },

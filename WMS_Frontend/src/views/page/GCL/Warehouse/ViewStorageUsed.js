@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
-import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress,Grid } from '@material-ui/core';
+import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress,Grid, jssPreset } from '@material-ui/core';
 import {Button,IconButton, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
 import {Alert, TreeView, TreeItem} from '@material-ui/lab';
 import GCLService from '../../../../components/function/GCLService'
-import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style} from '@material-ui/icons'
+import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style, RoomService} from '@material-ui/icons'
 import CancelIcon from '@material-ui/icons/Cancel';
 import ScanLocationCounting from './ScanLocationCounting';
 import ScanLocationSorting from './ScanLocationSorting';
@@ -38,7 +38,8 @@ const ViewStorageUsed=(props)=>{
 
   const [tableHaderColumns,setTableHaderColumns] = React.useState([
     {id: 'location', label: 'loc/bank', minWidth: 120, align: 'center'},
-    {id: 'action',label: 'Result', minWidth: 170},
+    {id: 'action',label: '🛠 ', minWidth: 170},
+    {id: 'count',label: 'Count', minWidth: 170},
   ]);
 
   useEffect(() => {
@@ -74,29 +75,38 @@ const ViewStorageUsed=(props)=>{
     })
   };
 
-  const initTable=(data=[])=>{
-    let tHeader=[{id: 'location', label: 'loc/bank', minWidth: 100, align: 'center'}]
-    let banklength= 0;
+  const initTable=(data=[])=>{  //SetColumn Table
+    let tHeader=[{id: 'location', label: 'loc/bank', minWidth: 100, align: 'center'}]  //COLUMN lOCATION
+    
+    let banklength= 0; //celltable
     for(let vData of data){
-      if(vData.bank_max > banklength) banklength=vData.bank_max
+      if(vData.bank_max > banklength) banklength=vData.bank_max   //จำนวนช่องเก็บสินค้า 1 to 48
     }
     setBanklength(banklength)
     for(let i=1;i<=banklength;i++){
-      tHeader.push({id: i, label: i, minWidth: 15, align: 'center'})
+    tHeader.push({id: i, label: i, minWidth: 15, align: 'center'}) //แสดงตาราง
     }
-    tHeader.push({id: 'action',label: ' 🛠 ', minWidth: 200, align: 'center'})
 
     let row=data.map((vData,key)=>{
       let resultItem={}
+      
       const pallets=vData.pallets.split(",")
       tHeader.forEach(hv=>{
-        if(hv.id=='location'){resultItem[hv.id]=vData[hv.id];}
+        if(hv.id=='location'){
+          resultItem[hv.id]=vData[hv.id];
+        }
         else{
           resultItem[hv.id]=pallets[Number(hv.id)-1]
         }
       })
-      return resultItem;
+      
+      return resultItem ;
     })
+
+    tHeader.push({id: 'count',label: 'count', minWidth:200, align: 'center'}) //column 🛠
+    tHeader.push({id: 'action',label: '🛠', minWidth:200, align: 'center'}) //column 🛠
+
+
     setTableHaderColumns(tHeader)
     setDataTable(row)
   };
@@ -110,6 +120,8 @@ const ViewStorageUsed=(props)=>{
     if(selectInput[0]!=null && selectInput[1]!=null) setSelected(nodeIds);
     
   };
+
+
 
   const renderTree = (nodes) => (
     Array.isArray(nodes) ? nodes.map((node)=>(
@@ -172,16 +184,27 @@ const ViewStorageUsed=(props)=>{
                   </td>
                   <td
                       align="center"
+                      style={{ minWidth: 120, backgroundColor:'#DDD',padding:10 }}
+                    >
+                      Sum
+                  </td>
+                  <td
+                      align="center"
                       style={{ minWidth: 200, backgroundColor:'#DDD',padding:10 }}
                     >
                       🛠
                   </td>
+                
                 </tr>
+
                 {dataTable.map((row,index) => {
+                  // console.log('----------------')
+                  // console.log(row)
                 return (
                     <tr key={index}>
                     {tableHaderColumns.map((column) => {
                         const value = row[column.id];
+                        
                         if(column.id=='location'){
                           return (
                             <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: '#eaff8b', cursor:'pointer' }} onClick={()=>setShowDetail(row)}>
@@ -189,22 +212,35 @@ const ViewStorageUsed=(props)=>{
                             </td>
                           );
                         }
+                        if(column.id=='count'){
+                          return (
+                            <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: '#fff'}}>
+                                {Object.keys(row).filter(x=>row[x]!='-').length-1}
+                            </td>
+                          );
+                        }
                         if(column.id=='action'){
                           return (
-                            <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere',backgroundColor:'#DDD'}}>
-                                <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Style /> count</Button>
-                                <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Sort/> sort</Button>
-                            </td>
-                          )
+                              <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere',backgroundColor:'#DDD'}}>
+                                  <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Style /> count</Button>
+                                  <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Sort/> sort</Button>
+                              </td>
+                          );
                         }
+                       
                         return (
+                          
                           <td key={column.id} align={column.align} style={{ minWidth: column.minWidth, padding:5, overflowWrap: 'anywhere', backgroundColor: (value=="-"||value==""||value==null||column.id=='location'||column.id=='action')? '#FFF' : '#5454ff' }}>
                               {/* {value} */}
                           </td>
                         );
+                        
                     })}
+                    
                     </tr>
+                    
                 );
+                
                 })}
               </table>
             )
@@ -241,11 +277,13 @@ const ViewStorageUsed=(props)=>{
           <DialogTitle style={{borderBottom:'1px solid #AAA'}}><center><b>{showDatail&& showDatail['location']}</b></center></DialogTitle>
           <DialogContent>
               <table className='' cellSpacing={1} width='100%'>
-                {tableHaderColumns.filter(v=>v.id!='location'&&v.id!='action').map((column) => 
+                {tableHaderColumns.filter(v=>v.id!='location'&&v.id!='action'&&v.id!='sum').map((column) => 
                   <tr style={{borderBottom:'0.1px solid #CCC'}}>
                     <td align='right' style={{padding:'2px 10px'}}>{column.id}</td>
                     {/* <td align='center'> <b>{'\u00a0\u00a0\u00a0|\u00a0\u00a0\u00a0'}</b> </td> */}
-                    <td align='left' style={{padding:'2px 10px',backgroundColor:(showDatail&& showDatail[column.id]=="-"||showDatail&& showDatail[column.id]==""||showDatail&& showDatail[column.id]==null)? '#FFF' : '#7E7EFF' }}>{showDatail&& showDatail[column.id]}</td>
+                    <td align='left' style={{padding:'2px 10px',backgroundColor:(showDatail&& showDatail[column.id]=="-"||showDatail&& showDatail[column.id]==""||showDatail&& showDatail[column.id]==null)? '#FFF' : '#7E7EFF' }}>
+                      {showDatail&& showDatail[column.id]}
+                      </td>
                   </tr>
                 )}
               </table>
