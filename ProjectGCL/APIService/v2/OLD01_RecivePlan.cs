@@ -34,6 +34,8 @@ namespace ProjectGCL.APIService.v2
                     {
                         new TREQ_Recieve_Plan.TRecord.TLine()
                         {
+                            BookZone = "inbound",
+                            BookCount = line.List_Pallet.Length,
                             API_REF = line.api_ref,
                             API_DATE_TIME = line.Date_time,
                             CUSTOMER_CODE = line.customer,
@@ -43,7 +45,7 @@ namespace ProjectGCL.APIService.v2
                             TO_WH_ID = wh.Name,
                             UNIT = line.unit,
                             WMS_DOC = line.doc_wms,
-                        
+
                             Pallet_Detail = line.List_Pallet.Select(x =>
                             {
                                 string grade = x.Substring(0,9).Trim();

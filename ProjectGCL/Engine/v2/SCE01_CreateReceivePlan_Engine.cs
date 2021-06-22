@@ -30,15 +30,34 @@ namespace ProjectGCL.Engine.v2
             req.API_REF = string.IsNullOrEmpty(req.API_REF) ? ObjectUtil.GenUniqID() : req.API_REF;
 
             var des_wh = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Name == req.TO_WH_ID);
-            var freeLocs = AreaADO.GetInstant().ListFreeBayLvNotBook(des_wh.ID.Value, this.BuVO);
+            var freeLocs = AreaADO.GetInstant().ListFreeBayLvNotBook(
+                des_wh.ID.Value, 
+                req.BookZone,
+                req.Pallet_Detail.First().SKU,
+                req.Pallet_Detail.First().LOT,
+                req.Pallet_Detail.First().GRADE_Barcode,
+                req.Pallet_Detail.First().UD_CODE,
+                req.CUSTOMER_CODE,
+                this.BuVO);
+
             List<SPGetFreeBayLvNotBook> bookLocs = new List<SPGetFreeBayLvNotBook>();
-            decimal countPallet = req.BookPallet > 0 ? req.BookPallet : req.Pallet_Detail.Count;
+            int countPallet = req.BookCount > 0 ? req.BookCount : req.Pallet_Detail.Count;
+            req.BookCount = countPallet;
             if (freeLocs.Sum(x => x.free_slot) < countPallet)
                 throw new Exception($"พื้นที่จัดเก็บเหลือ '{freeLocs.Sum(x => x.free_slot)}' ไม่เพียงพอจัดเก็บพาเลท '{countPallet}'");
             while (countPallet > 0)
             {
-                var loc = freeLocs.FirstOrDefault();
-                freeLocs.RemoveAt(0);
+                SPGetFreeBayLvNotBook loc = null;
+                loc =
+                    freeLocs.Where(x => x.free_slot >= countPallet)
+                        .OrderBy(x => x.free_slot - countPallet)
+                        .FirstOrDefault()//จำนวนพื้นที่เหลือ มากกว่า หรือ เท่ากับ พาเลทที่จะจัดเก็บ
+                        ??
+                    freeLocs.Where(x => x.free_slot < countPallet)
+                        .OrderByDescending(x => x.free_slot)
+                        .FirstOrDefault();//จำนวนพื้นที่เก็บได้เต็มพื้นที่
+
+                freeLocs.Remove(loc);
                 bookLocs.Add(loc);
                 countPallet -= loc.free_slot;
             }
@@ -121,7 +140,7 @@ namespace ProjectGCL.Engine.v2
 
                 Ref1 = req.API_REF,
                 Ref2 = req.WMS_DOC,
-                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet="+req.BookPallet+"&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray()),
+                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet="+req.BookCount+"&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray()),
 
                 EventStatus = DocumentEventStatus.NEW,
                 Status = EntityStatus.ACTIVE

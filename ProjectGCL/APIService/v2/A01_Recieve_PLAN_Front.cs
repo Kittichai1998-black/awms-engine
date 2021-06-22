@@ -24,6 +24,7 @@ namespace ProjectGCL.APIService.v2
             public string lot;
             public int no_strat;
             public int no_end;
+            public string booking_zone;
             public int booking_location;
             public string sku;
             public string status;
@@ -73,7 +74,7 @@ namespace ProjectGCL.APIService.v2
                     API_REF="AMS."+ObjectUtil.GenUniqID(),
                     API_DATE_TIME = DateTime.Now,
                     IsFromAMS = true,
-                    BookPallet = temp.booking_location,
+                    BookCount = temp.booking_location,
                     Pallet_Detail = req_pallets
                 }
             };

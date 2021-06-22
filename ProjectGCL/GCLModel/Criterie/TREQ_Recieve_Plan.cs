@@ -13,6 +13,7 @@ namespace ProjectGCL.GCLModel.Criterie
             public List<TLine> LINE;
             public class TLine
             {
+                public string BookZone = "inbound";
                 public bool IsFromAMS = false;
                 public string API_REF;
                 public DateTime API_DATE_TIME;
@@ -22,7 +23,7 @@ namespace ProjectGCL.GCLModel.Criterie
                 public string UNIT;
                 public string STATUS;
                 public string TO_WH_ID;
-                public int BookPallet;
+                public int BookCount;
                 public List<TPallet_Detail> Pallet_Detail;
                 public class TPallet_Detail
                 {

@@ -14,7 +14,7 @@ namespace ProjectGCL.GCLModel.Criterie
         {
             public string WH_ID;
             public string RACK_TYPE;
-            public string PALLET_QTY;
+            public decimal PALLET_QTY;
         }
     }
 }

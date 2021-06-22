@@ -25,6 +25,29 @@ namespace ProjectGCL.Engine.v2
         }
         private void exec(TREQ_SkuMaster.TRecord.TLine req)
         {
+            var unit = this.StaticValue.UnitTypes.First(x => x.Code == req.BASE_UNIT);
+            ams_SKUMaster sku = new ams_SKUMaster()
+            {
+                Code = req.SKU,
+                Name = req.SKU_DES,
+                Description = "",
+                UnitType_ID = unit.ID,
+                Status = EntityStatus.ACTIVE
+            };
+            sku.ID = DataADO.GetInstant().Insert<ams_SKUMaster>(sku, BuVO);
+            ams_PackMaster pack = new ams_PackMaster()
+            {
+                SKUMaster_ID = sku.ID.Value,
+                Name = sku.Name,
+                Code = sku.Code,
+                Description = sku.Description,
+                ObjectSize_ID = 3,
+                PackMasterType_ID = 1,
+                Status = EntityStatus.ACTIVE,
+                UnitType_ID = sku.UnitType_ID.Value,
+            };
+            pack.ID = DataADO.GetInstant().Insert<ams_PackMaster>(pack, BuVO);
+            this.StaticValue.LoadPackUnitConvert();
         }
     }
 }

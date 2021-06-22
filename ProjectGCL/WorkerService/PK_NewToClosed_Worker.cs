@@ -128,7 +128,7 @@ namespace ProjectGCL.WorkerService
 
                             var psto = StorageObjectADO.GetInstant().Get(select_pl.psto_id, StorageObjectType.PACK, false, false, buVO);
                             psto.eventStatus = StorageObjectEventStatus.PACK_PICKING;
-                            psto.options = psto.options.QryStrSetValue("qty_pick", select_pl._qty_pick);
+                            //psto.options = psto.options.QryStrSetValue("qty_pick", select_pl._qty_pick);
                             StorageObjectADO.GetInstant().PutV2(psto, buVO);
                             //StorageObjectADO.GetInstant().UpdateStatus(x.psto_id, null, null, StorageObjectEventStatus.PACK_PICKING, buVO);
                         });
@@ -315,7 +315,7 @@ namespace ProjectGCL.WorkerService
                                             LOT = psto.lot,
                                             PALLET_NO = psto.itemNo,
                                             QTY_Pallet = psto.qty,
-                                            QTY_Pick = psto.options.QryStrGetValue("qty_pick").Get2<decimal>(),
+                                            QTY_Pick = psto.options.QryStrGetValue("qty_pick").Get2<decimal>()----,
                                             SKU = psto.code,
                                             UNIT = psto.unitCode
                                         }

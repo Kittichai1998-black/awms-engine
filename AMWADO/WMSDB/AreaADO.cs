@@ -29,10 +29,19 @@ namespace ADO.WMSDB
             return res;
         }
 
-        public List<SPGetFreeBayLvNotBook> ListFreeBayLvNotBook(long whID,VOCriteria buVO)
+        public List<SPGetFreeBayLvNotBook> ListFreeBayLvNotBook(long whID, string bookZone,
+            string skuCode, string skuGrade, string skuLot, string udCode, string cusCode,
+            VOCriteria buVO)
         {
             Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
-            parameters.Add("whID", whID);
+            parameters.Add("@whID", whID);
+            parameters.Add("@bookZone", bookZone);
+            parameters.Add("@skuCode", skuCode);
+            parameters.Add("@skuGrade", skuGrade);
+            parameters.Add("@skuLot", skuLot);
+            parameters.Add("@udCode", udCode);
+            parameters.Add("@cusCode", cusCode);
+
 
             var res = this.Query<SPGetFreeBayLvNotBook>("SP_GET_FREE_BAY_LV_NOT_BOOK", 
                 System.Data.CommandType.StoredProcedure, 

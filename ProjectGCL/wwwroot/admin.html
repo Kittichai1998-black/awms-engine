@@ -9,38 +9,71 @@
             width: 400px;
             background-color: cornsilk;
         }
+
         [id^=txt_] {
             width: 100px;
             background-color: cornsilk;
         }
-        h3{
-            color:brown;
+
+        h3 {
+            color: brown;
         }
-        textarea{
-            width:95%;
-            height:300px;
+
+        textarea {
+            width: 95%;
+            height: 300px;
         }
-        .card{
-            border:1px solid #333;
-            display:block;
-            margin:8px;
-            padding:5px;
-            padding-bottom:15px;
-            box-shadow:#000000 1px 1px 3px;
+
+        .card {
+            border: 1px solid #333;
+            display: block;
+            margin: 8px;
+            padding: 5px;
+            padding-bottom: 15px;
+            box-shadow: #000000 1px 1px 3px;
         }
-        button{
-            font-size:large;
-            margin-left:30px;
-            background-color:dodgerblue;
-            color:aliceblue;
+
+        button {
+            font-size: large;
+            margin-left: 30px;
+            background-color: dodgerblue;
+            color: aliceblue;
         }
+
+        ul {
+            border: 1px solid #ccc;
+        }
+
+        li:hover {
+            background-color: antiquewhite;
+            cursor: pointer;
+        }
+
+        i {
+            color: gray;
+        }
+
+        .head {
+            background-color: #333;
+            color: #fff;
+        }
+
+        table {
+            margin: auto;
+            border-spacing: 0px;
+        }
+
+            table td {
+                border: 1px solid #333;
+                padding: 5px;
+            }
     </style>
 </head>
 <body>
     <h4>*การ manual ทุกอย่างเป็นการทำงานนอกเหนือจาก flow ซึ่ง USER จะไม่สามารถ ตรวจสอบย้อนกลับได้</h4>
     <label>Root API: </label><input type="text" id="txt_root_api" value="" width="500" />
     <hr />
-    <div class="card">
+    <!--<div class="card">
         <h3>ลบพาเลทสินค้า Receiving <input type="text" id="spname_1" value="ADMIN_REMOVE_PALLET_RECEIVING" disabled /></h3>
         Pallet: <input type="text" id="txt_1_1" />
         <button id="btn_1">SEND</button>
@@ -51,47 +84,80 @@
         Warehouse: <input type="text" id="txt_2_2" />
         Location: <input type="text" id="txt_2_3" />
         <button id="btn_2">SEND</button>
-    </div>
+    </div>-->
+    <ul id="ulMenu" style="height:200px;overflow-y:scroll;">
+        <li>ADMIN_LOCATION_CONFLICT | <i>ตรวจสอบ Location สินค้าที่ไม่ตรงกันของ WMS,WCS</i></li>
+        <li>ADMIN_REMOVE_PALLET_RECEIVING @Pallet | <i>ลบพาเลทสินค้า Receiving</i></li>
+        <li>ADMIN_UPDATE_PALLET_LOCATION @Pallet @Warehouse @Location | <i>แก้ไข Location พาเลท</i></li>
+        <li>ADMIN_CHECK_WCS_LOCATION @Warehouse @Location_BayLv | <i>ตรวจสอบสินค้าใน WCS</i></li>
+        <li>ADMIN_STO_CUSTOMER_UPDATE_BY_BO @BO @Customer | <i>update Customer ด้วย BO</i></li>
+        <li>ADMIN_STO_UD_UPDATE_BY_BO @BO @UD_Code | <i>update UD_code ด้วย BO</i></li>
+        <li>ADMIN_WMS_SYNC_LOCATION_TO_WCS @Warehouse @Location_BayLv | <i>update location สินค้าใน WCS ให้ตรงกับ WMS</i></li>
+    </ul>
+
     <div class="card">
-        <h3>อื่นๆ <input type="text" id="spname_99" /></h3>
+        <h3>FUNCTION: <input type="text" id="spname_99" /></h3>
         arg1: <input type="text" id="txt_99_1" />
         arg2: <input type="text" id="txt_99_2" />
         arg3: <input type="text" id="txt_99_3" />
         arg4: <input type="text" id="txt_99_4" />
         <button id="btn_99">SEND</button>
     </div>
-    <textarea id="div_result"></textarea>
+    <table id="div_result"></table>
 
     <script>
         let root_api = window.location.toString().substr(0, window.location.toString().lastIndexOf('/') + 1);
         $('#txt_root_api').val(root_api + 'v2/GetSPSearchAPI');
+
+        $('#ulMenu li').click((i, e) => {
+            $('[id^=txt_99_]').attr('placeholder', '')
+            let v1 = i.currentTarget.textContent.split('|')[0].trim();
+            let i2 = 1;
+            v1.split(' ').forEach((v) => {
+                let v2 = v.trim();
+                if (v2 == '')
+                    return;
+                else if (v2[0] == '@') {
+                    $('#txt_99_' + i2).val('');
+                    $('#txt_99_' + i2++).attr('placeholder', v2);
+                }
+                else
+                    $('#spname_99').val(v2);
+            });
+        });
 
         $('[id^=btn_]').click((e) => {
             var e_code = e.target.id.split('_')[1];
             var spname = $('#spname_' + e_code).val();
             let datas = {};
             datas['spname'] = spname;
-            $('[id^=txt_' + e_code + '_]').each((i,v) => {
+            $('[id^=txt_' + e_code + '_]').each((i, v) => {
                 let key = 'arg' + v.id.split('_')[2];
                 let value = v.value;
                 datas[key] = value;
             });
             console.log(datas);
-            $('#div_result').text('');
+            $('#div_result').html('');
             _get($('#txt_root_api').val(), datas, function (res) {
-                let txt = "";
-                if (res._result.status === 1) {
-                    txt += "===== SUCCESS =====\n";
-                    $('#div_result').text();
+                if (res._result.status === 1 && res.datas && res.datas.length > 0) {
+                    let tr_head = $('<tr class="head"></tr>');
+                    tr_head.append('<td>#</td>');
+                    Object.keys(res.datas[0]).forEach((v2) => {
+                        tr_head.append('<td>' + v2 + '</td>');
+                    });
+                    $('#div_result').append(tr_head);
+
+                    let _i = 1;
                     res.datas.forEach(x => {
-                        txt += JSON.stringify(x) + "\n";
-                    })
+                        let tr_body = $('<tr class="body"></tr>');
+                        tr_body.append('<td>' + (_i++) + '</td>');
+                        Object.keys(x).forEach((v2) => {
+                            tr_body.append('<td>' + x[v2] + '</td>');
+                        });
+                        $('#div_result').append(tr_body);
+                    });
                 }
-                else {
-                    txt += "===== ERROR =====\n";
-                    txt += res._result.message;
-                }
-                $('#div_result').text(txt);
+                alert(res._result.message);
             });
         });
 
