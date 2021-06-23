@@ -5,13 +5,14 @@ import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination
 import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import GCLService from '../../../../components/function/GCLService'
-import {AddCircleOutline,CloseSharp,BrightnessHigh,Apps,Save} from '@material-ui/icons'
+import {AddCircleOutline,CloseSharp,BrightnessHigh,Apps,CheckCircleOutlineRounded,Save} from '@material-ui/icons'
 
 const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center',format: (value) => `${new Date(value).toLocaleDateString()} ${new Date(value).toLocaleTimeString()}`},
     {id: 'gate_code', label: 'Gate\u00a0Code', minWidth: 170 },
     {id: 'product_qr',label: 'Product QR', minWidth: 170, },
     {id: 'msg',label: 'Message', minWidth: 170},
+    {id: 'action',label: ' 🛠 ', minWidth: 100, }
   ];
 
 const ScanReceiveGateMapping=(props)=>{
@@ -20,11 +21,12 @@ const ScanReceiveGateMapping=(props)=>{
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [isLoading,setIsLoading]=useState(false)
     const [toast,setToast] = useState({msg:null,open:false,type:null});
-
+    const [canceling,setCanceling] = useState([]);
     const [gate_code,setGateCode]=useState("")
     const [product_qr,setProductQR]=useState("")
     const textFieldForGateCode = useRef(null);
     const textFieldForProduct_qr = useRef(null);
+    const [confirmCancel,setConfirmCancel] = useState(null);
 
     const dataTableModel=(time,gate_code,product_qr,msg)=>{return {time,gate_code,product_qr,msg}}
 
@@ -67,6 +69,20 @@ const ScanReceiveGateMapping=(props)=>{
       setToast({msg:"Success",open:true,type:'success'})
     })
     
+  }
+  const onCancel=(id)=>{
+    setCanceling([...canceling,id])
+    GCLService.post('/v2/Recieve_MappingGate_Front',{id:id,mode:99}).then(res=>{
+        const indexLoading = canceling.indexOf(id);
+        if (indexLoading > -1)canceling.splice(indexLoading, 1);
+        setCanceling(canceling);
+        if(!res.data._result.status) {
+          setToast({msg:"Fail : "+res.data._result.message ,open:true,type:'error'})
+          return ;
+        }
+        // loadDataTable()
+        setToast({msg:"Success",open:true,type:'success'})
+      })
   }
 
   return (
@@ -126,14 +142,23 @@ const ScanReceiveGateMapping=(props)=>{
                         {column.label}
                         </TableCell>
                     ))}
-                    </TableRow>
+                    </TableRow> 
                 </TableHead>
                 <TableBody>
                     {dataTable.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                     return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                         {tableHaderColumns.map((column) => {
-                            const value = row[column.id];
+                            const value = row[column.id]|| "";
+                            if(column.id=='action'){
+                                return (
+                                  <TableCell key={column.id+index} align={column.align} style={{padding:10}}>
+                                      <Button variant="contained" color="secondary" size="small" onClick={()=>setConfirmCancel(row.id)} disabled={canceling.length>0}>
+                                        {canceling.indexOf(row.id)>-1 ? <CircularProgress size={20} />:<CloseSharp />} Cancel
+                                      </Button>
+                                  </TableCell>
+                                );
+                            }
                             return (
                             <TableCell key={column.id} align={column.align} style={{padding:10, overflowWrap: 'anywhere'}}>
                                 {column.format ? column.format(value) : value}
@@ -164,7 +189,18 @@ const ScanReceiveGateMapping=(props)=>{
             />
         </div>
     </Paper>
-    
+    <Dialog maxWidth='xl' onClose={()=>setConfirmCancel(null)} aria-labelledby="simple-dialog-title" open={confirmCancel!=null}>
+        <DialogTitle id="simple-dialog-title">Are you sure?</DialogTitle>
+        <DialogContent>Cancel "{confirmCancel}"</DialogContent>
+        <DialogActions style={{backgroundColor:'#eee'}}>
+          <Button size='medium' variant="contained" onClick={()=>setConfirmCancel(null)} color="secondary" startIcon={<CloseSharp/>} >
+            No
+          </Button>
+          <Button size='medium' variant="contained" onClick={()=>{onCancel(confirmCancel);setConfirmCancel(null)}} color="primary" startIcon={<CheckCircleOutlineRounded/>} type='submit'>
+            Yes
+          </Button>
+        </DialogActions>
+    </Dialog>
     {toast.open &&
       <Snackbar anchorOrigin={{ vertical:'top', horizontal:'center' }} open={toast.open} autoHideDuration={5000} onClose={()=>setToast({msg:"",open:false,type:""})}>
         <Alert elevation={6} variant="filled" onClose={()=>setToast({msg:"",open:false,type:""})} severity={toast.type}>
