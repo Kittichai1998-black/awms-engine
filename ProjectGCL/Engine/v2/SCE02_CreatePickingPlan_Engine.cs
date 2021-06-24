@@ -23,7 +23,39 @@ namespace ProjectGCL.Engine.v2
                 docis.AddRange(_docis);
             });
 
-            var pick_pallet_all = this.ProcessQueue(docis);
+            List<TDocItemGroup> doci_groups =
+                docis.GroupBy(x => new
+                {
+                    Document_ID = x.Document_ID,
+                    Sku = x.Code,
+                    Lot = x.Lot,
+                    Grade = x.Ref1,
+                    UDCode = x.Ref3,
+                    Customer = x.Ref4
+                }).Select(doci =>
+                {
+                    var doci_first = doci.OrderBy(x => x.Options.QryStrGetValue("priority").Get2<int>()).First();
+                    var res = new TDocItemGroup
+                            {
+                                customer = doci.Key.Customer,
+                                grade = doci.Key.Grade,
+                                lot = doci.Key.Lot,
+                                sku = doci.Key.Sku,
+                                priority = doci_first.Options.QryStrGetValue("priority").Get2<int>(),
+                                ud_code = doci.Key.UDCode,
+                                loc_stage = doci_first.Options.QryStrGetValue("loc_stage"),
+                                seq_group = doci_first.Options.QryStrGetValue("seq_group").Get2<int>(),
+                                _sum_qty_pick = doci.Sum(x => x.Quantity.Value),
+                                doci_infos = doci.Select(x => new TDocItemGroup.TDocItemInfo()
+                                {
+                                    id = x.ID.Value,
+                                    loc_from = x.Options.QryStrGetValue("loc_from"),
+                                    wms_line = x.Options.QryStrGetValue("wms_line")
+                                }).ToList()
+                            };
+                    return res;
+                }).ToList();
+            var pick_pallet_all = this.ProcessQueue(doci_groups);
 
             pick_pallet_all.ForEach(pallet =>
             {
