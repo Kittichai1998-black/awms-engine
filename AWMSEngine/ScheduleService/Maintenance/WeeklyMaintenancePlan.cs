@@ -1,6 +1,7 @@
 ﻿using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria;
 using AMSModel.Entity;
+using AWMSModel.Entity;
 using OfficeOpenXml.Table.PivotTable;
 using System;
 using System.Collections.Generic;

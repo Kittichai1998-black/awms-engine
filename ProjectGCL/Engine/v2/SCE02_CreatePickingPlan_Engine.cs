@@ -1,6 +1,7 @@
 ﻿using ADO.WMSDB;
 using ADO.WMSStaticValue;
 using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using AMSModel.Criteria.SP.Response;
 using AMSModel.Entity;
 using AMWUtil.Common;
@@ -14,6 +15,82 @@ namespace ProjectGCL.Engine.v2
 {
     public class SCE02_CreatePickingPlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Picking_Plan,TRES__return>
     {
+        private class TDocItemGroup
+        {
+            public List<TDocItemInfo> doci_infos;
+            public class TDocItemInfo
+            {
+                public long doc_id;
+                public string doc_code;
+                //public string wh_code;
+                //public string area_code;
+                public long doci_id;
+                public decimal _pick_qty;
+                public string wms_line;
+                public string loc_from;
+            }
+            public decimal _sum_qty_pick;
+            public string sku;
+            public string lot;
+            public string grade;
+            public string ud_code;
+            public string customer;
+
+            public string loc_stage;
+            public int priority;
+            public long seq_group;
+        }
+
+        private class TPalletPicking
+        {
+            public long psto_id;
+            public string psto_code;
+            public int bank;
+            public int bay;
+            public int lv;
+            public string wh_code;
+            public string bsto_code;
+            public string sku;
+            public string lot;
+            public string ref1;
+            public string ref2;
+            public string ref3;
+            public string ref4;
+            public string itemNo;
+            public string options;
+            public decimal qty;
+            public string unit;
+            public long unit_id;
+
+            public List<TDocItem> _docis;
+            public class TDocItem
+            {
+                public string doc_code;
+                public long doci_id;
+                public string wh_code;
+                public string area_code;
+                public decimal qty_pick;
+                public string wms_line;
+                public string loc_from;
+            }
+            public decimal _qty_pick;
+            public string _loc_stage;
+            public int _priority;
+            public long _seq_group;
+        }
+
+        private List<TPalletPicking> SP_STO_PROCESS_FOR_SHUTTLE(string sku, string lot, string ref1, string ref2, string ref3, string ref4)
+        {
+            Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
+            datas.Add("@sku", sku);
+            datas.Add("@lot", lot);
+            datas.Add("@ref1", ref1);
+            datas.Add("@ref2", ref2);
+            datas.Add("@ref3", ref3);
+            datas.Add("@ref4", ref4);
+            return DataADO.GetInstant().QuerySP<TPalletPicking>("SP_STO_PROCESS_FOR_SHUTTLE", datas, this.BuVO);
+        }
+
         protected override TRES__return ExecuteEngine(TREQ_Picking_Plan reqVO)
         {
             List<amt_DocumentItem> docis = new List<amt_DocumentItem>();
@@ -22,6 +99,10 @@ namespace ProjectGCL.Engine.v2
                 var _docis = exec(x);
                 docis.AddRange(_docis);
             });
+
+            List<amt_Document> docs = DataADO.GetInstant().SelectBy<amt_Document>(
+                new SQLConditionCriteria("ID", docis.GroupBy(x=>x.Document_ID).Select(x=>x.Key.ToString()).ToArray().Join(','), SQLOperatorType.IN), 
+                this.BuVO);
 
             List<TDocItemGroup> doci_groups =
                 docis.GroupBy(x => new
@@ -48,45 +129,23 @@ namespace ProjectGCL.Engine.v2
                                 _sum_qty_pick = doci.Sum(x => x.Quantity.Value),
                                 doci_infos = doci.Select(x => new TDocItemGroup.TDocItemInfo()
                                 {
-                                    id = x.ID.Value,
+                                    doc_id = x.Document_ID,
+                                    doc_code = docs.FirstOrDefault(doc => doc.ID == x.Document_ID).Code,
+                                    doci_id = x.ID.Value,
                                     loc_from = x.Options.QryStrGetValue("loc_from"),
                                     wms_line = x.Options.QryStrGetValue("wms_line")
                                 }).ToList()
                             };
                     return res;
                 }).ToList();
-            var pick_pallet_all = this.ProcessQueue(doci_groups);
+            var pick_pallet_all = this.ProcessPickingPallet(doci_groups);
+            this.UpdateDistoFromPickingPallet(pick_pallet_all);
+            this.PostPickingPalletToWCS(pick_pallet_all);
 
-            pick_pallet_all.ForEach(pallet =>
-            {
-                //CREATE DISTO
-                pallet._docis.ForEach(doci =>
-                {
-                    {
-                        amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject()
-                        {
-                            DocumentItem_ID = doci.doci_id,
-                            Sou_StorageObject_ID = pallet.psto_id,
-                            Des_StorageObject_ID = pallet.psto_id,
-                            IsLastSeq = true,
-                            BaseQuantity = doci.qty_pick,
-                            BaseUnitType_ID = pallet.unit_id,
-                            Quantity = doci.qty_pick,
-                            UnitType_ID = pallet.unit_id,
-                            Status = EntityStatus.INACTIVE
-                        };
-                        DataADO.GetInstant().Insert<amt_DocumentItemStorageObject>(disto, this.BuVO);
-                    }
-
-                    var psto = StorageObjectADO.GetInstant().Get(pallet.psto_id, StorageObjectType.PACK, false, false, this.BuVO);
-                    psto.eventStatus = StorageObjectEventStatus.PACK_PICKING;
-                    //psto.options = psto.options.QryStrSetValue("qty_pick", doci.qty_pick);
-                    StorageObjectADO.GetInstant().PutV2(psto, this.BuVO);
-                    //StorageObjectADO.GetInstant().UpdateStatus(x.psto_id, null, null, StorageObjectEventStatus.PACK_PICKING, buVO);
-                });
-            });
             return new TRES__return();
         }
+
+
         private List<amt_DocumentItem> exec(TREQ_Picking_Plan.TRecord.TLine req)
         {
             if (req.DOC_STATUS == "U")
@@ -192,7 +251,7 @@ namespace ProjectGCL.Engine.v2
             return doci;
         }
 
-        private List<TPalletPicking> ProcessQueue(List<TDocItemGroup> doci_groups, bool is_select_full_only = true, List<TPalletPicking> parent_pick_pallet_all = null)
+        private List<TPalletPicking> ProcessPickingPallet(List<TDocItemGroup> doci_groups, bool is_select_full_only = true, List<TPalletPicking> parent_pick_pallet_all = null)
         {
             List<TDocItemGroup> doci_partial_groups = new List<TDocItemGroup>();
             List<TPalletPicking> pick_pallet_all = parent_pick_pallet_all ?? new List<TPalletPicking>();
@@ -239,7 +298,8 @@ namespace ProjectGCL.Engine.v2
                                 doci_gp._sum_qty_pick -= _doci_qty_pick;
                                 pick_pallet._docis.Add(new TPalletPicking.TDocItem()
                                 {
-                                    doci_id = doci_info.id,
+                                    doc_code = doci_info.doc_code,
+                                    doci_id = doci_info.doci_id,
                                     loc_from = doci_info.loc_from,
                                     wms_line = doci_info.wms_line,
                                     qty_pick = _doci_qty_pick
@@ -311,80 +371,59 @@ namespace ProjectGCL.Engine.v2
                             return res;
                         })
                         .ToList();
-                    var pick_pallet_all2 = this.ProcessQueue(doci_groups_partial, false, pick_pallet_all);
+                    var pick_pallet_all2 = this.ProcessPickingPallet(doci_groups_partial, false, pick_pallet_all);
                 }
             }
             return pick_pallet_all;
         }
-
-
-        private class TDocItemGroup
+        private void UpdateDistoFromPickingPallet(List<TPalletPicking> pick_pallet_all)
         {
-            public List<TDocItemInfo> doci_infos;
-            public class TDocItemInfo
+            pick_pallet_all.ForEach(pallet =>
             {
-                public long id;
-                public decimal _pick_qty;
-                public string wms_line;
-                public string loc_from;
-            }
-            public decimal _sum_qty_pick;
-            public string sku;
-            public string lot;
-            public string grade;
-            public string ud_code;
-            public string customer;
+                //CREATE DISTO
+                if (pallet.qty - pallet._qty_pick > 0)
+                {
+                    pallet._qty_pick += (pallet.qty - pallet._qty_pick);
+                    pallet._docis.First().qty_pick += (pallet.qty - pallet._qty_pick);
+                }
+                pallet._docis.ForEach(doci =>
+                {
+                    {
+                        amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject()
+                        {
+                            DocumentItem_ID = doci.doci_id,
+                            Sou_StorageObject_ID = pallet.psto_id,
+                            Des_StorageObject_ID = pallet.psto_id,
+                            IsLastSeq = true,
+                            BaseQuantity = doci.qty_pick,
+                            BaseUnitType_ID = pallet.unit_id,
+                            Quantity = doci.qty_pick,
+                            UnitType_ID = pallet.unit_id,
+                            Status = EntityStatus.INACTIVE
+                        };
+                        DataADO.GetInstant().Insert<amt_DocumentItemStorageObject>(disto, this.BuVO);
+                    }
 
-            public string loc_stage;
-            public int priority;
-            public long seq_group;
+                    var psto = StorageObjectADO.GetInstant().Get(pallet.psto_id, StorageObjectType.PACK, false, false, this.BuVO);
+                    psto.eventStatus = StorageObjectEventStatus.PACK_PICKING;
+                    //psto.options = psto.options.QryStrSetValue("qty_pick", doci.qty_pick);
+                    StorageObjectADO.GetInstant().PutV2(psto, this.BuVO);
+                    //StorageObjectADO.GetInstant().UpdateStatus(x.psto_id, null, null, StorageObjectEventStatus.PACK_PICKING, buVO);
+                });
+            });
         }
-
-        private class TPalletPicking
+        private void PostPickingPalletToWCS(List<TPalletPicking> pick_pallet_all)
         {
-            public long psto_id;
-            public string psto_code;
-            public int bank;
-            public int bay;
-            public int lv;
-            public string wh_code;
-            public string bsto_code;
-            public string sku;
-            public string lot;
-            public string ref1;
-            public string ref2;
-            public string ref3;
-            public string ref4;
-            public string itemNo;
-            public string options;
-            public decimal qty;
-            public string unit;
-            public long unit_id;
-
-            public List<TDocItem> _docis;
-            public class TDocItem
+            pick_pallet_all.ForEach(pl =>
             {
-                public long doci_id;
-                public decimal qty_pick;
-                public string wms_line;
-                public string loc_from;
-            }
-            public decimal _qty_pick;
-            public string _loc_stage;
-            public int _priority;
-            public long _seq_group;
-        }
-
-        private List<TPalletPicking> SP_STO_PROCESS_FOR_SHUTTLE(string sku, string lot, string ref1, string ref2, string ref3, string ref4)
-        {
-            Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            datas.Add("@sku", sku);
-            datas.Add("@lot", lot);
-            datas.Add("@ref1", ref1);
-            datas.Add("@ref2", ref2);
-            datas.Add("@ref3", ref3);
-            datas.Add("@ref4", ref4);
-            return DataADO.GetInstant().QuerySP<TPalletPicking>("SP_STO_PROCESS_FOR_SHUTTLE", datas, this.BuVO);
+                pl._docis.ForEach(doci =>
+                {
+                    ADO.WMSDB.WcsADO.GetInstant().SP_CREATE_DO_QUEUE(
+                        doci.doc_code, doci.doc_code, doci.doci_id, pl._seq_group, pl._priority,
+                        pl.ref4, pl.psto_code, pl.ref1, pl.ref2, pl.qty, pl.unit, pl.ref3, pl.bsto_code, pl.wh_code,
+                        pl._loc_stage, "", this.BuVO);
+                });
+            });
         }
     }
 }

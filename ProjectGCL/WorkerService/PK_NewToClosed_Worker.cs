@@ -315,7 +315,7 @@ namespace ProjectGCL.WorkerService
                                             LOT = psto.lot,
                                             PALLET_NO = psto.itemNo,
                                             QTY_Pallet = psto.qty,
-                                            QTY_Pick = psto.options.QryStrGetValue("qty_pick").Get2<decimal>()----,
+                                            QTY_Pick = psto.options.QryStrGetValue("qty_pick").Get2<decimal>(),
                                             SKU = psto.code,
                                             UNIT = psto.unitCode
                                         }

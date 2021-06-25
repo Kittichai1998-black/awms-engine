@@ -196,6 +196,11 @@ namespace AMWUtil.Common
             return s.Select(x => x.Get2Try<T>()).ToArray();
         }
 
+        public static string Join(this string[] values,char separator)
+        {
+            return string.Join(separator, values);
+        }
+
         public static string RegexReplate(this string input, string pattern, string replacement)
         {
             return Regex.Replace(input, pattern, replacement);
