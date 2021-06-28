@@ -80,6 +80,10 @@ const PA_Detail = props => {
             [
                 { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Booking", values:"_book_bay_lv",  type:"option" }
+            ],
+            [
+                { label: "", values:"",  type:"" },
+                { label: "Location", values:"_book_bay_lv_location" }
             ]
         ];
         setheader(TextHeader)

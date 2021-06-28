@@ -9,8 +9,8 @@ import {AddCircleOutline,CloseSharp,BrightnessHigh,Extension,Save} from '@materi
 
 const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
-    {id: 'location', label: 'Gate\u00a0Code', minWidth: 170 },
-    {id: 'shuttle',label: 'Shuttle Pallet', minWidth: 170, },
+    {id: 'location', label: 'Gate\u00a0Code', minWidth: 120 ,align:'center' },
+    {id: 'shuttle',label: 'Shuttle Pallet', minWidth: 120, align:'center'},
     {id: 'result',label: 'Result', minWidth: 170},
   ];
 
@@ -145,6 +145,13 @@ const ScanShuttleCheckIn=(props)=>{
                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                         {tableHaderColumns.map((column) => {
                             const value = row[column.id];
+                            if(column.id=='time'){
+                              return (
+                                <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                                    {value.split("T").join("\n").split(".")[0]}
+                                </TableCell>
+                              );
+                            }
                             return (
                             <TableCell key={column.id} align={column.align} style={{padding:10, overflowWrap: 'anywhere'}}>
                                 {column.format ? column.format(value) : value}
