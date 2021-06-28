@@ -11,7 +11,7 @@ const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
     {id: 'location', label: 'Location', minWidth: 170 },
     {id: 'result',label: 'Result', minWidth: 170},
-    {id: 'action',label: ' 🛠 ', minWidth: 100, }
+    {id: 'action',label: '🛠', minWidth: 100}
 ];
 let intervalGetSPReportAPI=null
 const ScanLocationCounting=(props)=>{
@@ -152,12 +152,19 @@ const ScanLocationCounting=(props)=>{
                           <CircularProgress color='primary' size={50}/>
                         </TableCell>
                       </TableRow>
-                    }
+                    } 
                     {!isLoadingdataTable && dataTable.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                     return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                         {tableHaderColumns.map((column) => {
                             const value = row[column.id] || "";
+                            if(column.id=='time'){
+                              return(
+                                <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                                  {value.split("T").join("\n").split(".")[0]}
+                                </TableCell>
+                              )
+                            }
                             if(column.id=='action'){
                                 return (
                                   <TableCell key={column.id+index} align={column.align} style={{padding:10}}>

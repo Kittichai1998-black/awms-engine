@@ -16,6 +16,7 @@ const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
     {id: 'location', label: 'Location', minWidth: 170 },
     {id: 'result',label: 'Result', minWidth: 170},
+    {id: 'status',label: 'Status', minWidth: 100},
     {id: 'action',label: ' 🛠 ', minWidth: 100, }
 ];
 let intervalGetSPReportAPI=null
@@ -132,8 +133,8 @@ const ScanLocationSorting=(props)=>{
             style={{width:"100%"}}
             value={actionType} onChange={(e)=>setActionType(e.target.value)} >
               
-            <MenuItem value="5">{"OUT>IN"}</MenuItem>
-            <MenuItem value="6">{"IN>OUT"}</MenuItem>
+            <MenuItem value="5">{"Arrange pallets to Inbound"}</MenuItem>
+            <MenuItem value="6">{"Arrange pallets to Outbound"}</MenuItem>
           </Select>
         </center>
         <div>
@@ -195,6 +196,20 @@ const ScanLocationSorting=(props)=>{
                                       }
                                   </TableCell>
                                 );
+                            }
+                            if(column.id=='time'){
+                              return (
+                                <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                                    {value.split("T").join("\n").split(".")[0]}
+                                </TableCell>
+                              );
+                            }
+                            if(column.id=='status'){
+                              return(
+                                <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                                    {value}
+                                </TableCell>
+                              )
                             }
                             return (
                             <TableCell key={column.id} align={column.align} style={{padding:10, overflowWrap: 'anywhere'}}>
