@@ -71,6 +71,7 @@ const CurrentInventory = (props) => {
         { Header: '-', accessor: 'Name', width: 150, sortable: false, },
         { Header: 'Grade', accessor: 'Ref1', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
+        { Header: 'UD Code', accessor: 'Ref3', width: 100, sortable: false },
         { Header: 'Qty', accessor: 'qty', width: 70, sortable: false,Footer: false,filterable: false,},
         { Header: 'Unit', accessor: 'unitType', filterable: false, width: 70, sortable: false },
         
