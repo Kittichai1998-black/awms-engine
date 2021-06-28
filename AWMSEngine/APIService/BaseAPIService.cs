@@ -73,31 +73,22 @@ namespace AWMSEngine.APIService
         }
         private class TLock
         {
-            public int Owner;
-            public string KeyLock;
+            public long KeyLock;
         }
+        private object _LockGetKey = new object();
         private static List<TLock> lockRequests = new List<TLock>();
-        private object GetKeyLock(string token, long apiServiceID)
+        private object GetKeyLock(long apiServiceID)
         {
-            if (string.IsNullOrWhiteSpace(token))
-                return new object();
-            string keyLock = token + "/" + apiServiceID;
-            TLock _lock = lockRequests.FirstOrDefault(x => x.KeyLock == keyLock);
-            if (_lock == null)
+            lock (_LockGetKey)
             {
-                _lock = new TLock() { KeyLock = keyLock, Owner = this.GetHashCode() };
-                lockRequests.Add(_lock);
+                TLock _lock = lockRequests.FirstOrDefault(x => x.KeyLock == apiServiceID);
+                if (_lock == null)
+                {
+                    _lock = new TLock() { KeyLock = apiServiceID };
+                    lockRequests.Add(_lock);
+                }
+                return _lock;
             }
-            else
-            {
-                _lock.Owner = this.GetHashCode();
-            }
-
-            return _lock;
-        }
-        private void RemoveKeyLock()
-        {
-            lockRequests.RemoveAll(x => x.Owner == this.GetHashCode());
         }
 
         public dynamic Execute(dynamic request, int retryCountdown = 1)
@@ -164,7 +155,8 @@ namespace AWMSEngine.APIService
                         throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
                 //this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.DataADO.GetInstant().CreateConnection());
-                this.BuVO.SqlConnection_Open(ADO.WMSDB.DataADO.GetInstant().CreateConnection());
+                var conn = ADO.WMSDB.DataADO.GetInstant().CreateConnection();
+                this.BuVO.SqlConnection_Open(null);
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
 
 
@@ -214,7 +206,8 @@ namespace AWMSEngine.APIService
                 //-----------VALIDATE PERMISSION
                 this.VerifyPermission(tokenInfo, apiKeyInfo);
 
-                lock (this.GetKeyLock(getKey.token, this.APIServiceID))
+                var keyLock = this.GetKeyLock(this.APIServiceID);
+                lock (keyLock)
                 {
                     this.BuVO.SqlTransaction_Begin();
                     var res = this.ExecuteEngineManual();
@@ -262,7 +255,6 @@ namespace AWMSEngine.APIService
             }
             finally
             {
-                this.RemoveKeyLock();
                 try
                 {
                     //response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
