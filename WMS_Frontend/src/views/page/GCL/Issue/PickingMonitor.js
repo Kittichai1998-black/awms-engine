@@ -14,7 +14,7 @@ const tableHaderColumns = [
   {id: 'priority', label: 'Priority', minWidth: 50},
   {id: 'dock', label: 'Dock', minWidth: 50},
   {id: 'wms_doc', label: 'WMS\u00a0Doc', minWidth: 100 },
-  {id: 'customer',label: 'Cutomer', minWidth: 100, },
+  {id: 'customer',label: 'Customer', minWidth: 100, },
   {id: 'sku',label: 'Sku', minWidth: 100, },
   {id: 'grade',label: 'Grade', minWidth: 100},
   {id: 'lot', label: 'Lot', minWidth: 100},

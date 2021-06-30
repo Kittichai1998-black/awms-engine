@@ -27,6 +27,14 @@ namespace ADO.WMSStaticValue
 
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses ?? this.LoadWarehouse(); }
+        public ams_Warehouse GetWarehouses(long id)
+        {
+            return this.Warehouses.FirstOrDefault(x => x.ID == id);
+        }
+        public ams_Warehouse GetWarehouses(string code)
+        {
+            return this.Warehouses.FirstOrDefault(x => x.Code == code);
+        }
 
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters ?? this.LoadAreaMaster(); }

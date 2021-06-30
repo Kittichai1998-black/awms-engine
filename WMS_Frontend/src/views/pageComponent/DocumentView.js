@@ -1089,7 +1089,7 @@ const DocumentView = props => {
                         setSelection(data);
                     }} dataKey="ID"
                     columns={columns}
-                    pageSize={100}
+                    pageSize={1000}
                     dataSource={data}
                     height={200}
                     tableConfig={false}
@@ -1124,7 +1124,7 @@ const DocumentView = props => {
                 typeDoc ?
                     <AmTable
                         columns={columns}
-                        pageSize={100}
+                        pageSize={1000}
                         dataSource={data}
                         tableConfig={false}
                         height={200}
@@ -1226,7 +1226,7 @@ const DocumentView = props => {
                 typeDoc ? (
                     <AmTable dataKey="id"
                         columns={columnsDetailSOU}
-                        pageSize={100}
+                        pageSize={1000}
                         dataSource={dataDetailSOU}
                         tableConfig={false}
                         height={200}
@@ -1243,7 +1243,7 @@ const DocumentView = props => {
                     // />
                     <AmTable dataKey="id"
                         columns={columnsDetailDES}
-                        pageSize={100}
+                        pageSize={1000}
                         tableConfig={false}
                         dataSource={dataDetailDES}
                         height={200}

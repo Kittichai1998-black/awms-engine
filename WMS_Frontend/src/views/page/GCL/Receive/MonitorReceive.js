@@ -281,13 +281,7 @@ const AddReceiveModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
           <div>
           <FormControl>
           <InputLabel htmlFor="outlined-age-native-simple">Booking&nbsp;Zone</InputLabel>
-          <Select             
-            type="text"         
-            margin="dense"
-            id="booking_zone"            
-            label="Booking Zone"      
-            style={{width:"400%"}}   
-            fullWidth required value={booking_zone} onChange={(event)=>setBooking_Zone(event.target.value)} >          
+          <Select type="text" margin="dense" id="booking_zone" label="Booking Zone" style={{width:"150px"}} fullWidth required value={booking_zone} onChange={(event)=>setBooking_Zone(event.target.value)} >          
             <MenuItem value="inbound">{"Inbound"}</MenuItem>
             <MenuItem value="outbound">{"Outbound"}</MenuItem>
           </Select>

@@ -7,10 +7,6 @@ import Alert from '@material-ui/lab/Alert';
 import GCLService from '../../../../components/function/GCLService'
 import {AddCircleOutline,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save} from '@material-ui/icons'
 
-const dropdownpst=//["OUT > IN","IN > OUT"];
-[  {id: 'OUT > IN', value:'5'},
-   {id: 'IN > OUT', value:'6'}
-];
 
 const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
@@ -132,8 +128,8 @@ const ScanLocationSorting=(props)=>{
             style={{width:"100%"}}
             value={actionType} onChange={(e)=>setActionType(e.target.value)} >
               
-            <MenuItem value="5">{"OUT>IN"}</MenuItem>
-            <MenuItem value="6">{"IN>OUT"}</MenuItem>
+            <MenuItem value="5">{"จัดเรียงไปด้านขารับเข้า"}</MenuItem>
+            <MenuItem value="6">{"จัดเรียงไปด้านขาออก"}</MenuItem>
           </Select>
         </center>
         <div>
@@ -195,6 +191,13 @@ const ScanLocationSorting=(props)=>{
                                       }
                                   </TableCell>
                                 );
+                            }
+                            if(column.id=='time'){
+                              return (
+                                <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                                    {value.split("T").join("\n").split(".")[0]}
+                                </TableCell>
+                              );
                             }
                             return (
                             <TableCell key={column.id} align={column.align} style={{padding:10, overflowWrap: 'anywhere'}}>

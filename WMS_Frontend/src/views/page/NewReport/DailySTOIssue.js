@@ -84,7 +84,8 @@ const DailySTOIssue = (props) => {
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         { Header: 'Grade', accessor: 'Ref1', width:100, sortable: false},
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },    
+        { Header: 'No Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },   
+        { Header: 'Label', accessor: 'ItemNo', width: 150, sortable: false }, 
         { Header: 'Doc No.', accessor: 'docCode', width: 130, sortable: false },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",

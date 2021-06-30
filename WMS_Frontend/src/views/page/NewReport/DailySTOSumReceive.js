@@ -86,6 +86,7 @@ const DailySTOSumReceive = (props) => {
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         { Header: 'Grade', accessor: 'Ref1', width:100, sortable: false},
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
+        { Header: "Doc.WMS", accessor: '', filterable: true,width: 100 },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",

@@ -1,10 +1,8 @@
 ﻿using AMSModel.Constant.EnumConst;
 using AMSModel.Criteria;
 using AMSModel.Entity;
-using System;
+using AWMSModel.Entity;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
 {
