@@ -32,6 +32,16 @@ namespace ADO.WMSDB
                 }, buVO);
             return distos;
         }
+        public List<amt_DocumentItemStorageObject> List_byDesSto(long desStoID, VOCriteria buVO)
+        {
+            List<amt_DocumentItemStorageObject> distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("Des_StorageObject_ID", desStoID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
+                }, buVO);
+            return distos;
+        }
 
 
         public List<amt_DocumentItemStorageObject> Insert(List<amt_DocumentItemStorageObject> docItemSto, VOCriteria buVO)

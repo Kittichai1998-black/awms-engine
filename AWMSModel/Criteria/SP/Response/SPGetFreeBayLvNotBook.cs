@@ -10,6 +10,7 @@ namespace AMSModel.Criteria.SP.Response
     {
         public long whID;
         public long areaID;
+        public string name;
         public string bay_lv;
         public string bay;
         public string lv;
