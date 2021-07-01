@@ -89,7 +89,7 @@ const WCS_Queue = (props) => {
         { Header: 'Work', accessor: 'TypeNameWork',width: 270,  sortable: false },
         { Header: 'Status', accessor: 'QueueStatusname',width: 300,  sortable: false },
         { Header: 'Item No', accessor: 'BC_PALLET', width: 200,sortable: false },
-        { Header: 'Remark', accessor: 'Remark', width: 600 , sortable: false },
+        { Header: 'Remark', accessor: 'Remark', width: 700 , sortable: false },
     ];
 
     return (
