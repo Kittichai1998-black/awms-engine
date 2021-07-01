@@ -127,9 +127,8 @@ const ScanLocationSorting=(props)=>{
             label="Sorting from" 
             style={{width:"100%"}}
             value={actionType} onChange={(e)=>setActionType(e.target.value)} >
-              
-            <MenuItem value="5">{"จัดเรียงไปด้านขารับเข้า"}</MenuItem>
-            <MenuItem value="6">{"จัดเรียงไปด้านขาออก"}</MenuItem>
+            <MenuItem value="5">{"จัดเรียงไปด้านขาออก"}</MenuItem>
+            <MenuItem value="6">{"จัดเรียงไปด้านขารับเข้า"}</MenuItem>            
           </Select>
         </center>
         <div>
