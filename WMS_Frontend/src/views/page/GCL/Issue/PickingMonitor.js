@@ -156,7 +156,10 @@ const PickingMonitor=(props)=>{
                     }
                     return (
                       column.id=='status'?
-                        <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: (value.toLowerCase()=='Worked'.toLowerCase()||value.toLowerCase()=='Closing'.toLowerCase()||value.toLowerCase()=='Closed'.toLowerCase())? '#33FF99' : (value.toLowerCase()=='Rejecting'.toLowerCase()||value.toLowerCase()=='Rejected'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
+                        <TableCell key={column.id+index} align={column.align} style={{padding:10, backgroundColor: 
+                            (value.toLowerCase()=='Worked'.toLowerCase()||value.toLowerCase()=='Closing'.toLowerCase())?'#33FFFF':
+                                value.toLowerCase()=='Closed'.toLowerCase()? '#33FF99' : 
+                                (value.toLowerCase()=='Rejecting'.toLowerCase()||value.toLowerCase()=='Rejected'.toLowerCase()) ? '#FF5980' : '#FFF' }}>
                           {value}
                         </TableCell>
                       :column.id=='wms_doc'?

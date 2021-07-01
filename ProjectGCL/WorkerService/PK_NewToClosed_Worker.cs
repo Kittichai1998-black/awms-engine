@@ -48,93 +48,18 @@ namespace ProjectGCL.WorkerService
                 {
                     buVO.SqlTransaction_Begin();
 
-                    var docis =
-                    DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                    var docis = DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                         ListKeyValue<string, object>
                             .New("Document_ID", doc.ID)
                             .Add("EventStatus", DocumentEventStatus.NEW)
                             .Add("Status", EntityStatus.ACTIVE), buVO).ToList();
 
+                    var distos = DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO);
+                    var pstos = DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                        new SQLConditionCriteria[] { 
+                            new SQLConditionCriteria("ID",distos.Select(x=>x.Sou_StorageObject_ID).ToArray().JoinString(), SQLOperatorType.IN)
+                        }, buVO).ToList();
 
-                    List<TRES_SP> select_pallet_alls = new List<TRES_SP>();
-                    //group document item
-                    docis.ForEach(doci =>
-                    {
-                        List<TRES_SP> pallets = SP_STO_PROCESS_FOR_SHUTTLE(doci.Code, doci.Lot, doci.Ref1, doci.Ref2, doci.Ref3, doci.Ref4, buVO);
-                        pallets.RemoveAll(x => select_pallet_alls.Any(y => y.psto_id == x.psto_id));
-
-                        decimal pick_qty = doci.Quantity.Value;
-                        List<TRES_SP> select_pallets = new List<TRES_SP>();
-                        for (int i = 0, not_bay = -1;
-                        pick_qty > 0 && i < pallets.Count;
-                        i++)
-                        {
-
-                            if (pallets[i].ref3 == doci.Ref3 && (pallets[i].ref4 == doci.Ref4 || string.IsNullOrEmpty(doci.Ref4)))
-                            {
-                                if (pallets[0].bay != not_bay)
-                                {
-                                    pallets[i]._wms_line = doci.Options.QryStrGetValue("wms_line");
-                                    pallets[i]._loc_from = doci.Options.QryStrGetValue("loc_from");
-                                    pallets[i]._loc_stage = doci.Options.QryStrGetValue("loc_stag");
-                                    pallets[i]._qty_pick = pick_qty > pallets[i].qty ? pallets[i].qty : pick_qty;
-                                    pallets[i]._doci_id = doci.ID.Value;
-                                    pallets[i]._priority = doci.Options.QryStrGetValue("priority").Get2<int>();
-                                    long _seq_group = 0;
-                                    if (doci.Options.QryStrContainsKey("pick_group") && doci.Options.QryStrGetValue("pick_group") != "")
-                                    {
-                                        string str_pick_group = doci.Options.QryStrGetValue("pick_group").Trim();
-                                        long.TryParse(str_pick_group, out _seq_group);
-                                    }
-                                    if (_seq_group != 0)
-                                        _seq_group = (doci.ID.Value * 10000) + (_seq_group % 10000);
-                                    else
-                                        _seq_group = doci.ID.Value * 10000;
-                                    pallets[i]._seq_group = _seq_group;
-
-                                    pick_qty -= pallets[i].qty;
-                                    select_pallets.Add(pallets[i]);
-                                }
-                            }
-                            else
-                            {
-                                not_bay = pallets[i].bay;
-                            }
-                        }
-
-
-                        if (pick_qty > 0)
-                            throw new Exception($"สินค้า {doci.Code} lot {doci.Lot} มีจำนวนไม่เพียงพอ หรือมีพาเลทขวางกั้น {pick_qty}KG");
-
-                        select_pallets.ForEach(select_pl =>
-                        {
-                            //CREATE DISTO
-                            {
-                                amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject()
-                                {
-                                    DocumentItem_ID = doci.ID.Value,
-                                    DocumentType_ID = doc.DocumentType_ID,
-                                    Sou_StorageObject_ID = select_pl.psto_id,
-                                    Des_StorageObject_ID = select_pl.psto_id,
-                                    IsLastSeq = true,
-                                    BaseQuantity = select_pl.qty,
-                                    BaseUnitType_ID = select_pl.unit_id,
-                                    Quantity = select_pl.qty,
-                                    UnitType_ID = select_pl.unit_id,
-                                    Status = EntityStatus.INACTIVE
-                                };
-                                DataADO.GetInstant().Insert<amt_DocumentItemStorageObject>(disto, buVO);
-                            }
-
-                            var psto = StorageObjectADO.GetInstant().Get(select_pl.psto_id, StorageObjectType.PACK, false, false, buVO);
-                            psto.eventStatus = StorageObjectEventStatus.PACK_PICKING;
-                            //psto.options = psto.options.QryStrSetValue("qty_pick", select_pl._qty_pick);
-                            StorageObjectADO.GetInstant().PutV2(psto, buVO);
-                            //StorageObjectADO.GetInstant().UpdateStatus(x.psto_id, null, null, StorageObjectEventStatus.PACK_PICKING, buVO);
-                        });
-
-                        select_pallet_alls.AddRange(select_pallets);
-                    });
 
                     DataADO.GetInstant().UpdateBy<amt_Document>(
                         ListKeyValue<string, object>.New("ID", doc.ID).Add("Status", EntityStatus.ACTIVE),
@@ -146,53 +71,47 @@ namespace ProjectGCL.WorkerService
                         ListKeyValue<string, object>.New("EventStatus", DocumentEventStatus.WORKING)
                             , buVO);
 
-
                     var wh = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.ID == doc.Des_Warehouse_ID);
                     var area = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.ID == doc.Des_AreaMaster_ID);
 
-                    //SEND WCS PICKING
-                    {
-                        select_pallet_alls.ForEach(pl =>
-                        {
-                            //TODO
-                            ADO.WMSDB.WcsADO.GetInstant().SP_CREATE_DO_QUEUE(
-                                doc.Code, doc.Code, pl._doci_id, pl._seq_group, pl._priority,
-                                pl.ref4, pl.psto_code, pl.ref1, pl.ref2, pl.qty, pl.unit, pl.ref3, pl.bsto_code, wh.Code,
-                                area.Code, "", buVO);
-                        });
-                    }
 
                     //SEND SCE ALLOCATE
                     if (doc.Options.QryStrGetValue("_is_from_ams") == "SCE")
                     {
                         var _LINE = new List<GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine>();
-                        select_pallet_alls.ForEach(pl =>
+                        distos.ForEach(disto =>
                         {
-
-                            _LINE.Add(new GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine()
+                            var doci = docis.FirstOrDefault(x => x.Document_ID == disto.DocumentItem_ID);
+                            var psto = pstos.FirstOrDefault(x => x.ID == disto.Sou_StorageObject_ID);
+                            var unit = StaticValueManager.GetInstant().UnitTypes.First(x => x.ID == psto.UnitType_ID);
+                            if (doci != null)
                             {
-                                API_Date_Time = DateTime.Now,
-                                API_REF = doc.Options.QryStrGetValue("api_ref"),
-                                WMS_DOC = doc.Options.QryStrGetValue("wms_doc"),
-                                WH_ID = doc.Options.QryStrGetValue("wh_id"),
-                                CUSTOEMR_CODE = doc.Ref4,
-                                WMS_LINE = pl._wms_line,
-                                LOCATION_FROM = pl._loc_from,
-                                Location_Staging = pl._loc_stage,
-
-                                Pallet_Detail = new List<GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine.TPallet_Detail>()
+                                _LINE.Add(new GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine()
                                 {
-                                    new GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine.TPallet_Detail()
+                                    API_Date_Time = DateTime.Now,
+                                    API_REF = doc.Options.QryStrGetValue("api_ref"),
+                                    WMS_DOC = doc.Options.QryStrGetValue("wms_doc"),
+                                    WH_ID = doc.Options.QryStrGetValue("wh_id"),
+                                    CUSTOEMR_CODE = psto.Ref4,
+                                    WMS_LINE = doci.Options.QryStrGetValue("wms_line"),
+                                    LOCATION_FROM = doci.Options.QryStrGetValue("loc_from"),
+                                    Location_Staging = doci.Options.QryStrGetValue("loc_stage"),
+
+                                    Pallet_Detail = new List<GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine.TPallet_Detail>()
                                     {
-                                        LOT = pl.lot,
-                                        PALLET_NO = pl.itemNo,
-                                        QTY_Pallet = pl.qty,
-                                        QTY_Pick = pl._qty_pick,
-                                        UNIT = pl.unit,
-                                        SKU = pl.sku
+                                        new GCLModel.Criterie.TREQ_Allocated_LPN.TRecord.TLine.TPallet_Detail()
+                                        {
+                                            LOT = doci.Lot,
+                                            PALLET_NO = psto.ItemNo,
+                                            QTY_Pallet = psto.Quantity,
+                                            QTY_Pick = disto.Quantity.Value,
+                                            UNIT = unit.Code,
+                                            SKU = psto.Code
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                            
                         });
 
 
@@ -252,20 +171,28 @@ namespace ProjectGCL.WorkerService
 
                     var doci = DataADO.GetInstant().SelectByID<amt_DocumentItem>(wq.WmsRefID, buVO);
                     var doc = DataADO.GetInstant().SelectByID<amt_Document>(doci.Document_ID, buVO);
+                    var cur_loc = DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>("Code",wq.LocCode, buVO)
+                                .Where(x=>x.Status == EntityStatus.ACTIVE && StaticValueManager.GetInstant().AreaMasters.FindAll(y=>y.Warehouse_ID==doc.Des_Warehouse_ID).Any(y=>y.ID==x.AreaMaster_ID))
+                                .FirstOrDefault();
+                    if(cur_loc == null)
+                        throw new Exception($"Location '{wq.LocCode}' ไม่ถูกต้อง");
+
                     var bsto = StorageObjectADO.GetInstant().Get(wq.BaseCode, doc.Sou_Warehouse_ID, null, false, true, buVO);
                     if (bsto == null)
                         throw new Exception($"ไม่พบเลขพาเลท '{wq.BaseCode}' ในระบบ");
                     var psto = bsto.mapstos.First();
+                    var distos = ADO.WMSDB.DistoADO.GetInstant().List_byDesSto(psto.id.Value, buVO);
 
                     //PICKED BASE //PICKED PACK
                     {
-                        bsto.areaID = doc.Des_AreaMaster_ID;
-                        bsto.parentID = null;
-                        bsto.parentType = null;
+                        bsto.areaID = cur_loc.AreaMaster_ID;
+                        bsto.parentID = cur_loc.ID.Value;
+                        bsto.parentType = StorageObjectType.LOCATION;
                         bsto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.BASE_DONE : StorageObjectEventStatus.BASE_ACTIVE;
                         StorageObjectADO.GetInstant().PutV2(bsto, buVO);
 
                         psto.areaID = doc.Des_AreaMaster_ID;
+                        psto.options = psto.options.QryStrSetValue("pk_loc", wq.LocCode);
                         psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_PICKED : StorageObjectEventStatus.PACK_PICKING;
                         StorageObjectADO.GetInstant().PutV2(psto, buVO);
                     }
@@ -284,46 +211,49 @@ namespace ProjectGCL.WorkerService
                     //DONE WorkQueue
                     {
                         wq.Status = EntityStatus.DONE;
-                        wq.ActionResult = "[SUCCESS] label=" + doci.ItemNo;
+                        wq.ActionResult = "[SUCCESS] label=" + psto.itemNo;
                         DataADO.GetInstant().UpdateBy<amt_Wcs_WQ>(wq, buVO);
                     }
 
                     //SEND SCE PICKING_CONFIRM
                     if (doc.Options.QryStrGetValue("_is_from_ams") == "SCE" && wq.ActionStatus == EntityStatus.DONE)
                     {
-                        SceAPI.GetInstant().Picking_Confirm(new GCLModel.Criterie.TREQ_Picking_Confirm()
+                        distos.ForEach(disto =>
                         {
-                            RECORD = new GCLModel.Criterie.TREQ_Picking_Confirm.TRecord()
+                            SceAPI.GetInstant().Picking_Confirm(new GCLModel.Criterie.TREQ_Picking_Confirm()
                             {
-                                LINE = new List<GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine>()
-                            {
-                                new GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine()
+                                RECORD = new GCLModel.Criterie.TREQ_Picking_Confirm.TRecord()
                                 {
-                                    API_REF = doc.Ref1,
-                                    ACTIVITY_TYPE = doc.Options.QryStrGetValue("active_type"),
-                                    API_Date_Time = DateTime.Now,
-                                    CUSTOEMR_CODE = doc.Ref4,
-                                    LOCATION_FROM = doci.Options.QryStrGetValue("loc_from"),
-                                    Location_Staging = doci.Options.QryStrGetValue("loc_stag"),
-                                    WH_ID = doc.Options.QryStrGetValue("wh_id"),
-                                    WMS_DOC = doc.Ref2,
-                                    WMS_LINE = doc.Options.QryStrGetValue("wms_line"),
-                                    Pallet_Detail = new List<GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine.TPallet_Detail>()
+                                    LINE = new List<GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine>()
                                     {
-                                        new GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine.TPallet_Detail()
+                                        new GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine()
                                         {
-                                            LOT = psto.lot,
-                                            PALLET_NO = psto.itemNo,
-                                            QTY_Pallet = psto.qty,
-                                            QTY_Pick = psto.options.QryStrGetValue("qty_pick").Get2<decimal>(),
-                                            SKU = psto.code,
-                                            UNIT = psto.unitCode
+                                            API_REF = doc.Ref1,
+                                            ACTIVITY_TYPE = doc.Options.QryStrGetValue("active_type"),
+                                            API_Date_Time = DateTime.Now,
+                                            CUSTOEMR_CODE = doc.Ref4,
+                                            LOCATION_FROM = doci.Options.QryStrGetValue("loc_from"),
+                                            Location_Staging = doci.Options.QryStrGetValue("loc_stag"),
+                                            WH_ID = doc.Options.QryStrGetValue("wh_id"),
+                                            WMS_DOC = doc.Ref2,
+                                            WMS_LINE = doc.Options.QryStrGetValue("wms_line"),
+                                            Pallet_Detail = new List<GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine.TPallet_Detail>()
+                                            {
+                                                new GCLModel.Criterie.TREQ_Picking_Confirm.TRecord.TLine.TPallet_Detail()
+                                                {
+                                                    LOT = psto.lot,
+                                                    PALLET_NO = psto.itemNo,
+                                                    QTY_Pallet = psto.qty,
+                                                    QTY_Pick = disto.Quantity.Value,//psto.options.QryStrGetValue("qty_pick").Get2<decimal>(),
+                                                    SKU = psto.code,
+                                                    UNIT = psto.unitCode
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            }
-                        }, buVO);
+                            }, buVO);
+                        });
                     }
 
                     buVO.SqlTransaction_Commit();
@@ -383,7 +313,7 @@ namespace ProjectGCL.WorkerService
 
                     DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
                         ListKeyValue<string, object>.New("ID", doci.ID),
-                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSED).Add("status", EntityStatus.DONE),
+                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSING).Add("status", EntityStatus.DONE),
                         buVO);
 
                     buVO.SqlTransaction_Commit();
@@ -409,6 +339,7 @@ namespace ProjectGCL.WorkerService
                 {
                     new SQLConditionCriteria("document_id",doc_id, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("eventstatus",DocumentEventStatus.REMOVED, SQLOperatorType.NOTEQUALS),
+                    new SQLConditionCriteria("eventstatus",DocumentEventStatus.CLOSING, SQLOperatorType.NOTEQUALS),
                     new SQLConditionCriteria("eventstatus",DocumentEventStatus.CLOSED, SQLOperatorType.NOTEQUALS),
                 }, buVO);
 
@@ -416,7 +347,7 @@ namespace ProjectGCL.WorkerService
                 {
                     DataADO.GetInstant().UpdateBy<amt_Document>(
                         ListKeyValue<string, object>.New("ID", doc_id),
-                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSED).Add("status", EntityStatus.DONE),
+                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSING).Add("status", EntityStatus.DONE),
                         buVO);
                 }
             });

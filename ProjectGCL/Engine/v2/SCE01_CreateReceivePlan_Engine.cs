@@ -140,7 +140,8 @@ namespace ProjectGCL.Engine.v2
 
                 Ref1 = req.API_REF,
                 Ref2 = req.WMS_DOC,
-                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet="+req.BookCount+"&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray()),
+                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet="+req.BookCount + "&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray())
+                 + "&_book_locations=" + string.Join(',', bookLocs.Select(x => x.name).ToArray()),
 
                 EventStatus = DocumentEventStatus.NEW,
                 Status = EntityStatus.ACTIVE

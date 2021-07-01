@@ -145,6 +145,7 @@ namespace ProjectGCL.WorkerService
                             psto.ref2 = doci.Ref2;
                             psto.ref3 = doci.Ref3;
                             psto.ref4 = doci.Ref4;
+                            psto.options = psto.options.QryStrSetValue("pa_loc", wq.LocCode);
                             psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
 
                             StorageObjectADO.GetInstant().PutV2(psto, buVO);
@@ -185,6 +186,7 @@ namespace ProjectGCL.WorkerService
                             StorageObjectADO.GetInstant().PutV2(bsto, buVO);
 
                             psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
+                            psto.options = psto.options.QryStrSetValue("pa_loc", wq.LocCode);
                             StorageObjectADO.GetInstant().PutV2(psto, buVO);
 
                             //UPDATE DISTO
@@ -204,7 +206,7 @@ namespace ProjectGCL.WorkerService
                     //DONE WORKQUEUE
                     {
                         wq.Status = EntityStatus.DONE;
-                        wq.ActionResult = "[SUCCESS] label=" + doci.ItemNo;
+                        wq.ActionResult = "[SUCCESS] label=" + psto.itemNo;
                         DataADO.GetInstant().UpdateBy<amt_Wcs_WQ>(wq, buVO);
                     }
 
