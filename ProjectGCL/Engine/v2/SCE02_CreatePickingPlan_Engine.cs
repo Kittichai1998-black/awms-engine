@@ -1,7 +1,6 @@
 ﻿using ADO.WMSDB;
 using ADO.WMSStaticValue;
 using AMSModel.Constant.EnumConst;
-using AMSModel.Criteria;
 using AMSModel.Criteria.SP.Response;
 using AMSModel.Entity;
 using AMWUtil.Common;
@@ -13,84 +12,8 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class SCE02_CreatePickingPlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Picking_Plan,TRES__return>
+    public class SCE02_CreatePickingPlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Picking_Plan, TRES__return>
     {
-        private class TDocItemGroup
-        {
-            public List<TDocItemInfo> doci_infos;
-            public class TDocItemInfo
-            {
-                public long doc_id;
-                public string doc_code;
-                //public string wh_code;
-                //public string area_code;
-                public long doci_id;
-                public decimal _pick_qty;
-                public string wms_line;
-                public string loc_from;
-            }
-            public decimal _sum_qty_pick;
-            public string sku;
-            public string lot;
-            public string grade;
-            public string ud_code;
-            public string customer;
-
-            public string loc_stage;
-            public int priority;
-            public long seq_group;
-        }
-
-        private class TPalletPicking
-        {
-            public long psto_id;
-            public string psto_code;
-            public int bank;
-            public int bay;
-            public int lv;
-            public string wh_code;
-            public string bsto_code;
-            public string sku;
-            public string lot;
-            public string ref1;
-            public string ref2;
-            public string ref3;
-            public string ref4;
-            public string itemNo;
-            public string options;
-            public decimal qty;
-            public string unit;
-            public long unit_id;
-
-            public List<TDocItem> _docis;
-            public class TDocItem
-            {
-                public string doc_code;
-                public long doci_id;
-                public string wh_code;
-                public string area_code;
-                public decimal qty_pick;
-                public string wms_line;
-                public string loc_from;
-            }
-            public decimal _qty_pick;
-            public string _loc_stage;
-            public int _priority;
-            public long _seq_group;
-        }
-
-        private List<TPalletPicking> SP_STO_PROCESS_FOR_SHUTTLE(string sku, string lot, string ref1, string ref2, string ref3, string ref4)
-        {
-            Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            datas.Add("@sku", sku);
-            datas.Add("@lot", lot);
-            datas.Add("@ref1", ref1);
-            datas.Add("@ref2", ref2);
-            datas.Add("@ref3", ref3);
-            datas.Add("@ref4", ref4);
-            return DataADO.GetInstant().QuerySP<TPalletPicking>("SP_STO_PROCESS_FOR_SHUTTLE", datas, this.BuVO);
-        }
-
         protected override TRES__return ExecuteEngine(TREQ_Picking_Plan reqVO)
         {
             //CREATE DOCUMENT Picking List
@@ -98,12 +21,18 @@ namespace ProjectGCL.Engine.v2
             List<amt_Document> docs = new List<amt_Document>();
             reqVO.RECORD.LINE.ForEach(x =>
             {
-                ExecDocument(x,docs, docis);
+                ExecDocument(x, docs, docis);
             });
 
 
             List<TDocItemGroup> doc_gps = docis
-                .GroupBy(x => new { doc_id=x.Document_ID, lot = x.Lot, sku = x.Code, grade = x.Ref1, ud_code = x.Ref3, customer = x.Ref4,
+                .GroupBy(x => new {
+                    doc_id = x.Document_ID,
+                    lot = x.Lot,
+                    sku = x.Code,
+                    grade = x.Ref1,
+                    ud_code = x.Ref3,
+                    customer = x.Ref4,
                     wh_code = this.StaticValue.Warehouses.First(wh => wh.ID == docs.First(doc => doc.ID == x.Document_ID).Sou_Warehouse_ID).Code,
                     des_area_code = this.StaticValue.AreaMasters.First(ar => ar.ID == docs.First(doc => doc.ID == x.Document_ID).Des_AreaMaster_ID).Code
                 })
@@ -139,7 +68,7 @@ namespace ProjectGCL.Engine.v2
                 //WCS Post
                 string doc_code = pallet._docis.First().doc_code;
                 long doci_id = pallet._docis.First().doci_id;
-                string remark = pallet._docis.Count == 1 ? "" : "MIX="+pallet._docis.Select(x => x.doc_code).JoinString();
+                string remark = pallet._docis.Count == 1 ? "" : "MIX=" + pallet._docis.Select(x => x.doc_code).JoinString();
 
                 ADO.WMSDB.WcsADO.GetInstant().SP_CREATE_DO_QUEUE(
                     doc_code, doc_code, doci_id, pallet._seq_group, pallet._priority,
@@ -173,6 +102,13 @@ namespace ProjectGCL.Engine.v2
                     DataADO.GetInstant().Insert<amt_DocumentItemStorageObject>(disto, this.BuVO);
 
 
+                    var psto = StorageObjectADO.GetInstant().Get(pallet.psto_id, StorageObjectType.PACK, false, false, this.BuVO);
+                    psto.eventStatus = StorageObjectEventStatus.PACK_PICKING;
+                    //psto.options = psto.options.QryStrSetValue("qty_pick", doci.qty_pick);
+                    StorageObjectADO.GetInstant().PutV2(psto, this.BuVO);
+                    //StorageObjectADO.GetInstant().UpdateStatus(x.psto_id, null, null, StorageObjectEventStatus.PACK_PICKING, buVO);
+                });
+            });
             return new TRES__return();
         }
         private void ExecDocument(TREQ_Picking_Plan.TRecord.TLine req, List<amt_Document> out_docs, List<amt_DocumentItem> out_docis)
@@ -185,7 +121,7 @@ namespace ProjectGCL.Engine.v2
             List<amt_DocumentItem> docis = new List<amt_DocumentItem>();
             req.API_REF = string.IsNullOrEmpty(req.API_REF) ? ObjectUtil.GenUniqID() : req.API_REF;
             foreach (var pick in req.PICK_DETAIL.GroupBy(x =>
-                  new{
+                  new {
                       FROM_WH_ID = x.FROM_WH_ID,
                       TO_Location_Staging = x.TO_Location_Staging.Split(',')[0],
                   }))
@@ -201,7 +137,7 @@ namespace ProjectGCL.Engine.v2
                 });
             }
 
-        }          
+        }
 
         private amt_Document New_Document(TREQ_Picking_Plan.TRecord.TLine req, ams_Warehouse wh, ams_AreaMaster area)
         {
@@ -266,7 +202,7 @@ namespace ProjectGCL.Engine.v2
                 Ref2 = null,
                 Ref3 = req_pl.UD_CODE,
                 Ref4 = req.CUSTOMER_CODE,
-                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&pick_group={req.PICK_GROUP}&priority={req_pl.PRIORITY}"+
+                Options = $"_is_from_ams={(req.IsFromAMS ? "AMS" : "SCE")}&pick_group={req.PICK_GROUP}&priority={req_pl.PRIORITY}" +
                 $"&api_ref={req.API_REF}&wms_doc={req.WMS_DOC}&wms_line={req_pl.WMS_LINE}" +
                 $"&loc_from={req_pl.FROM_LOCATION}&loc_stage={req_pl.TO_Location_Staging}",
                 AuditStatus = AuditStatus.PASSED,
@@ -288,7 +224,7 @@ namespace ProjectGCL.Engine.v2
             doci_groups.ForEach(doci_gp =>
             {
                 //เลือกพาเลทที่ตรงตามเงื่อนไข ทั้งพาเลทเก่า(เคย process มาแล้ว) และใหม่
-                List<TPalletPicking> process_pallets = SP_STO_PROCESS_FOR_SHUTTLE(doci_gp.wh_code,doci_gp.sku, doci_gp.lot, doci_gp.grade, null, doci_gp.ud_code, doci_gp.customer);
+                List<TPalletPicking> process_pallets = SP_STO_PROCESS_FOR_SHUTTLE(doci_gp.wh_code, doci_gp.sku, doci_gp.lot, doci_gp.grade, null, doci_gp.ud_code, doci_gp.customer);
                 var old_process_pallets = pick_pallet_all.Where(x => process_pallets.Any(y => y.psto_id == x.psto_id)).ToList();
                 //process_pallets.RemoveAll(x => old_process_pallets.Any(y => y.psto_id == x.psto_id));
                 //process_pallets.AddRange(old_process_pallets);
@@ -321,8 +257,8 @@ namespace ProjectGCL.Engine.v2
                                 pick_pallet._docis = new List<TPalletPicking.TDocItem>();
                             }
 
-                            decimal _pallet_qty_pick = doci_gp._sum_qty_pick > (pick_pallet.qty - pick_pallet._qty_pick) ? 
-                                                                                        (pick_pallet.qty- pick_pallet._qty_pick) : //จำนวนคงเหลือในพาเลท หยิบทั้งหมด
+                            decimal _pallet_qty_pick = doci_gp._sum_qty_pick > (pick_pallet.qty - pick_pallet._qty_pick) ?
+                                                                                        (pick_pallet.qty - pick_pallet._qty_pick) : //จำนวนคงเหลือในพาเลท หยิบทั้งหมด
                                                                                         doci_gp._sum_qty_pick; //หยิบตามจำนวนที่ประมวลผลได้
                             pick_pallet._qty_pick += _pallet_qty_pick;
                             //คำนวนว่าแต่ละ documnet item หยิบสินค้าไปเท่าไหร
@@ -334,8 +270,7 @@ namespace ProjectGCL.Engine.v2
                                 doci_gp._sum_qty_pick -= _doci_qty_pick;
                                 pick_pallet._docis.Add(new TPalletPicking.TDocItem()
                                 {
-                                    doc_code = doci_info.doc_code,
-                                    doci_id = doci_info.doci_id,
+                                    doci_id = doci_info.id,
                                     loc_from = doci_info.loc_from,
                                     wms_line = doci_info.wms_line,
                                     doc_code = doci_info.wms_doc,
@@ -366,7 +301,7 @@ namespace ProjectGCL.Engine.v2
             });
 
             //ยังเบิกของไม่ครับตามรายการ
-            if(doci_groups.Any(x => x._sum_qty_pick > 0))
+            if (doci_groups.Any(x => x._sum_qty_pick > 0))
             {
                 //หยิบสินค้าได้ไม่ครบ และค้นหาในพาเลทเศษแล้ว
                 if (!is_select_full_only)
@@ -378,7 +313,7 @@ namespace ProjectGCL.Engine.v2
                 //หยิบสินค้าได้ไม่ครบ และยังไม่ได้ค้นหาในพาเลทเศษ ต้องการ process เพิ่มสำหรับพาเลทเศษ
                 if (is_select_full_only)
                 {
-                    var doci_groups_partial = 
+                    var doci_groups_partial =
                         doci_groups.OrderBy(x => x.seq_group)
                         .Where(x => x._sum_qty_pick > 0)
                         .GroupBy(x => new { sku = x.sku, grade = x.grade, lot = x.lot, ud_code = x.ud_code, customer = x.customer })
@@ -387,7 +322,7 @@ namespace ProjectGCL.Engine.v2
                             var res_doci_infos = new List<TDocItemGroup.TDocItemInfo>();
                             x.Select(doci_gp => doci_gp.doci_infos.Where(doci_info => doci_info._pick_qty > 0))
                             .ToList()
-                            .ForEach(doci_infos=>
+                            .ForEach(doci_infos =>
                             {
                                 doci_infos.ToList().ForEach(doci_info =>
                                 {
@@ -396,7 +331,7 @@ namespace ProjectGCL.Engine.v2
                             });
 
 
-                            var res = 
+                            var res =
                             new TDocItemGroup()
                             {
                                 sku = x.Key.sku,
@@ -443,9 +378,30 @@ namespace ProjectGCL.Engine.v2
             public int priority;
             public long seq_group;
         }
-        private void PostPickingPalletToWCS(List<TPalletPicking> pick_pallet_all)
+
+        private class TPalletPicking
         {
-            pick_pallet_all.ForEach(pl =>
+            public long psto_id;
+            public string psto_code;
+            public int bank;
+            public int bay;
+            public int lv;
+            public string wh_code;
+            public string bsto_code;
+            public string sku;
+            public string lot;
+            public string ref1;
+            public string ref2;
+            public string ref3;
+            public string ref4;
+            public string itemNo;
+            public string options;
+            public decimal qty;
+            public string unit;
+            public long unit_id;
+
+            public List<TDocItem> _docis;
+            public class TDocItem
             {
                 public long doci_id;
                 public decimal qty_pick;
@@ -459,7 +415,7 @@ namespace ProjectGCL.Engine.v2
             public decimal _qty_pick;
         }
 
-        private List<TPalletPicking> SP_STO_PROCESS_FOR_SHUTTLE(string wh_code,string sku, string lot, string ref1, string ref2, string ref3, string ref4)
+        private List<TPalletPicking> SP_STO_PROCESS_FOR_SHUTTLE(string wh_code, string sku, string lot, string ref1, string ref2, string ref3, string ref4)
         {
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             datas.Add("@wh_code", wh_code);

@@ -16,8 +16,6 @@ const PK_Detail = props => {
     const [docview, setdocview] = useState();
     const [header, setheader] = useState();
 
-
-
     useEffect(() => {
         if (header !== undefined) {
             setdocview(<DocView
@@ -132,7 +130,7 @@ const PK_Detail = props => {
         { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
         //{ Header: "Location", accessor: "areaLocationCode", widthPDF: 10, width: 70, },
         { Header: "Pallet No.", width: 100, accessor: "rootCode", widthPDF: 10 },
-
+        { Header: "Location", width: 100, accessor: "options", widthPDF: 10,Cell:e=>queryString.parse(e.original.options).pa_loc }
 
     ];
 

@@ -156,7 +156,7 @@ namespace AWMSEngine.APIService
                 }
                 //this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.DataADO.GetInstant().CreateConnection());
                 var conn = ADO.WMSDB.DataADO.GetInstant().CreateConnection();
-                this.BuVO.SqlConnection_Open(null);
+                this.BuVO.SqlConnection_Open(conn);
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
 
 

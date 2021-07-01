@@ -188,6 +188,7 @@ namespace ProjectGCL.WorkerService
                         bsto.areaID = cur_loc.AreaMaster_ID;
                         bsto.parentID = cur_loc.ID.Value;
                         bsto.parentType = StorageObjectType.LOCATION;
+                        bsto.options = psto.options.QryStrSetValue("pk_loc", wq.LocCode);
                         bsto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.BASE_DONE : StorageObjectEventStatus.BASE_ACTIVE;
                         StorageObjectADO.GetInstant().PutV2(bsto, buVO);
 
@@ -299,7 +300,7 @@ namespace ProjectGCL.WorkerService
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PICKING, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                    //new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("eventStatus",DocumentEventStatus.WORKED, SQLOperatorType.EQUALS)
                 }, buVO);
             if (docis.Count == 0) return;
@@ -313,7 +314,7 @@ namespace ProjectGCL.WorkerService
 
                     DataADO.GetInstant().UpdateBy<amt_DocumentItem>(
                         ListKeyValue<string, object>.New("ID", doci.ID),
-                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSING).Add("status", EntityStatus.DONE),
+                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSING).Add("status", EntityStatus.ACTIVE),
                         buVO);
 
                     buVO.SqlTransaction_Commit();
@@ -347,7 +348,7 @@ namespace ProjectGCL.WorkerService
                 {
                     DataADO.GetInstant().UpdateBy<amt_Document>(
                         ListKeyValue<string, object>.New("ID", doc_id),
-                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSING).Add("status", EntityStatus.DONE),
+                        ListKeyValue<string, object>.New("eventstatus", DocumentEventStatus.CLOSING).Add("status", EntityStatus.ACTIVE),
                         buVO);
                 }
             });
