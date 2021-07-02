@@ -5,8 +5,10 @@ import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination
 import {Button,IconButton, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
 import {Alert, TreeView, TreeItem} from '@material-ui/lab';
 import GCLService from '../../../../components/function/GCLService'
-import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style, RoomService} from '@material-ui/icons'
+import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style, RoomService, CallEndOutlined, CheckBox} from '@material-ui/icons'
 import CancelIcon from '@material-ui/icons/Cancel';
+import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
+import LockRoundedIcon from '@material-ui/icons/LockRounded';
 import ScanLocationCounting from './ScanLocationCounting';
 import ScanLocationSorting from './ScanLocationSorting';
 import "../../../../assets/css/TableCustom.css";
@@ -74,6 +76,18 @@ const ViewStorageUsed=(props)=>{
         // },5000)
     })
   };
+  const lockLocation=async(loc_name,ioType,isLock)=>{
+    let loc_name2 = loc_name.split(' ')[0];
+    GCLService.get('/v2/GetSPSearchAPI',{arg1:'',arg2:loc_name2,arg3:ioType,arg4:isLock,spname:"ADMIN_LOCATION_LOCK"}).then(res=>{
+      if(!res.data._result.status) {
+          setToast({msg:"Update data fail : "+res.data._result.message ,open:true,type:'error'})
+          return ;
+      }else{
+        const selectInput=selected.split('-');
+        loadDataTable(selectInput[0],Number(selectInput[1]));
+      }
+    });
+  };
 
   const initTable=(data=[])=>{  //SetColumn Table
     let tHeader=[{id: 'location', label: 'loc/bank', minWidth: 100, align: 'center'}]  //COLUMN lOCATION
@@ -93,10 +107,10 @@ const ViewStorageUsed=(props)=>{
       const pallets=vData.pallets.split(",")
       tHeader.forEach(hv=>{
         if(hv.id=='location'){
-          resultItem[hv.id]=vData[hv.id];
+          resultItem[hv.id]={ val:vData[hv.id],isInLock:vData.isInLock,isOutLock:vData.isOutLock };
         }
         else{
-          resultItem[hv.id]=pallets[Number(hv.id)-1]
+          resultItem[hv.id]={ val:pallets[Number(hv.id)-1],isInLock:vData.isInLock,isOutLock:vData.isOutLock };
         }
       })
       
@@ -184,9 +198,15 @@ const ViewStorageUsed=(props)=>{
                   </td>
                   <td
                       align="center"
-                      style={{ minWidth: 120, backgroundColor:'#DDD',padding:10 }}
+                      style={{ minWidth: 60, backgroundColor:'#DDD',padding:10 }}
                     >
                       Sum
+                  </td>
+                  <td
+                      align="center"
+                      style={{ minWidth: 120, backgroundColor:'#DDD',padding:10 }}
+                    >
+                      Lock (IN/OUT)
                   </td>
                   <td
                       align="center"
@@ -204,33 +224,45 @@ const ViewStorageUsed=(props)=>{
                     <tr key={index}>
                     {tableHaderColumns.map((column) => {
                         const value = row[column.id];
-                        
                         if(column.id=='location'){
                           return (
-                            <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: '#eaff8b', cursor:'pointer' }} onClick={()=>setShowDetail(row)}>
-                                {value}
-                            </td>
+                            <>
+                              <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: (value.isOutLock||value.isInLock?'#ffa9b1':'#eaff8b'), cursor:'pointer' }} onClick={()=>setShowDetail(row)}>
+                                  {value.val}
+                              </td>
+                            </>
                           );
                         }
                         if(column.id=='count'){
                           return (
                             <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: '#fff'}}>
-                                {Object.keys(row).filter(x=>row[x]!='-').length-1}
+                                {Object.keys(row).filter(x=>row[x].val!='-').length-1}
                             </td>
                           );
                         }
                         if(column.id=='action'){
                           return (
-                              <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere',backgroundColor:'#DDD'}}>
-                                  <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Style /> count</Button>
-                                  <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location);}} style={{margin:2.5}}><Sort/> sort</Button>
+                            <>
+                              <td key={column.id} align="center" style={{overflowWrap: 'anywhere',backgroundColor:'#FFF'}}>
+                                <Button variant="contained" color={row.location.isInLock?"secondary":""} size="small" style={{margin:1,padding:1}}
+                                onClick={()=>{lockLocation(row.location.val,1,row.location.isInLock?0:1)}}>
+                                {row.location.isInLock?<LockRoundedIcon/>:<LockOpenRoundedIcon/>}</Button>
+                                  
+                                <Button variant="contained" color={row.location.isOutLock?"secondary":""} size="small" style={{margin:1,padding:1}}
+                                onClick={()=>{lockLocation(row.location.val,2,row.location.isOutLock?0:1)}}>
+                                {row.location.isOutLock?<LockRoundedIcon/>:<LockOpenRoundedIcon/>}</Button>
                               </td>
+                              <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere',backgroundColor:'#DDD'}}>
+                                  <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location.val);}} style={{margin:2.5}}><Style /> count</Button>
+                                  <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location.val);}} style={{margin:2.5}}><Sort/> sort</Button>
+                              </td>
+                            </>
                           );
                         }
                        
                         return (
                           
-                          <td key={column.id} align={column.align} style={{ minWidth: column.minWidth, padding:5, overflowWrap: 'anywhere', backgroundColor: (value=="-"||value==""||value==null||column.id=='location'||column.id=='action')? '#FFF' : '#5454ff' }}>
+                          <td key={column.id} align={column.align} style={{ minWidth: column.minWidth, padding:5, overflowWrap: 'anywhere', backgroundColor: (value.val=="-"||value.val==""||value.val==null||column.id=='location'||column.id=='action')? '#FFF' : (value.isOutLock||value.isInLock?'#dc3545':'#5454ff') }}>
                               {/* {value} */}
                           </td>
                         );
