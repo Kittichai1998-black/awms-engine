@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGCL.Engine.v2
 {
-    public class SCE01_CreateReceivePlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Recieve_Plan,TRES__return>
+    public class SCE01_CreateReceivePlan_Engine : AWMSEngine.Engine.BaseEngine<TREQ_Recieve_Plan, TRES__return>
     {
         protected override TRES__return ExecuteEngine(TREQ_Recieve_Plan reqVO)
         {
@@ -31,7 +31,7 @@ namespace ProjectGCL.Engine.v2
 
             var des_wh = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Name == req.TO_WH_ID);
             var freeLocs = AreaADO.GetInstant().ListFreeBayLvNotBook(
-                des_wh.ID.Value, 
+                des_wh.ID.Value,
                 req.BookZone,
                 req.Pallet_Detail.First().SKU,
                 req.Pallet_Detail.First().LOT,
@@ -84,10 +84,10 @@ namespace ProjectGCL.Engine.v2
                 var new_book = bookLocs.Select(x => x.bay_lv).ToList();
                 new_book.RemoveAll(x => old_book.Any(y => y == x));
 
-                if(new_book.Count > 0)
+                if (new_book.Count > 0)
                 {
                     new_book.AddRange(old_book);
-                    doc.Options = doc.Options.QryStrSetValue("_book_bay_lv",string.Join(",", new_book.ToArray()));
+                    doc.Options = doc.Options.QryStrSetValue("_book_bay_lv", string.Join(",", new_book.ToArray()));
                     DataADO.GetInstant().UpdateBy<amt_Document>(doc, BuVO);
                 }
             }
@@ -140,7 +140,7 @@ namespace ProjectGCL.Engine.v2
 
                 Ref1 = req.API_REF,
                 Ref2 = req.WMS_DOC,
-                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet="+req.BookCount + "&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray())
+                Options = "_is_from_ams=" + (req.IsFromAMS ? "AMS" : "SCE") + "&_total_pallet=" + req.BookCount + "&_book_bay_lv=" + string.Join(',', bookLocs.Select(x => x.bay_lv).ToArray())
                  + "&_book_locations=" + string.Join(',', bookLocs.Select(x => x.name).ToArray()),
 
                 EventStatus = DocumentEventStatus.NEW,
@@ -161,7 +161,7 @@ namespace ProjectGCL.Engine.v2
             var wh = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Des_Warehouse_ID);
             var area = this.StaticValue.AreaMasters.FirstOrDefault(x =>
                         x.Name == (string.IsNullOrEmpty(req_pl.TO_LOCATION) ? wh.Code.Last() + "STO" : req_pl.TO_LOCATION) && x.Warehouse_ID == doc.Des_Warehouse_ID);
-            
+
             var doci = new amt_DocumentItem()
             {
                 Document_ID = doc.ID.Value,
@@ -191,7 +191,7 @@ namespace ProjectGCL.Engine.v2
 
             return doci;
         }
-       
+
         private amt_DocumentItem Update_DocumnetItem(amt_Document doc, TREQ_Recieve_Plan.TRecord.TLine req, TREQ_Recieve_Plan.TRecord.TLine.TPallet_Detail req_pl)
         {
             var _doci = DataADO.GetInstant().SelectBy<amt_DocumentItem>(
@@ -234,7 +234,7 @@ namespace ProjectGCL.Engine.v2
             DataADO.GetInstant().UpdateBy<amt_DocumentItem>(doci, this.BuVO);
             return doci;
         }
-       
+
         private amt_DocumentItem Cancel_DocumnetItem(amt_Document doc, TREQ_Recieve_Plan.TRecord.TLine req, TREQ_Recieve_Plan.TRecord.TLine.TPallet_Detail req_pl)
         {
             var _doci = DataADO.GetInstant().SelectBy<amt_DocumentItem>(
@@ -259,10 +259,10 @@ namespace ProjectGCL.Engine.v2
             {
                 docis.ForEach(doci =>
                 {
-                    WcsADO.GetInstant().SP_CREATEBUWORK(doci.ID.Value,doc.Code, doc.Code, doci.Ref3, doci.Code, doci.Ref1, doci.Lot,
+                    WcsADO.GetInstant().SP_CREATEBUWORK(doci.ID.Value, doc.Code, doc.Code, doci.Ref3, doci.Code, doci.Ref1, doci.Lot,
                         doci.Quantity.Value, unit.Code, doci.Ref3.ToString(), doci.Quantity.Value,
                         doci.Ref2.Get2<int>(), doci.Ref2.Get2<int>(),
-                        des_wh.Code, doci.Options.QryStrGetValue("to_area"), des_wh.Code.Last()+".1", "",bay_level_keep, this.BuVO);
+                        des_wh.Code, doci.Options.QryStrGetValue("to_area"), des_wh.Code.Last() + ".1", "", bay_level_keep, this.BuVO);
                 });
             }
         }

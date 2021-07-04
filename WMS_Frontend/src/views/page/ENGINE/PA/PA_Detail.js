@@ -83,7 +83,7 @@ const PA_Detail = props => {
             ],
             [
                 { label: "", values:"",  type:"" },
-                { label: "Location", values:"_book_bay_lv_location" }
+                { label: "", values:"_book_locations",  type:"option" }
             ]
         ];
         setheader(TextHeader)
@@ -129,7 +129,7 @@ const PA_Detail = props => {
         { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
         //{ Header: "Location", accessor: "areaLocationCode", widthPDF: 10, width: 70, },
         { Header: "Pallet No.", width: 100, accessor: "rootCode", widthPDF: 10 },
-
+        { Header: "Location", width: 100, accessor: "options", widthPDF: 10,Cell:e=>queryString.parse(e.original.options).pa_loc }
     ];
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }, { optionName:"_book_bay_lv"}];

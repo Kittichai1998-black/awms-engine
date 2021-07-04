@@ -31,8 +31,16 @@ namespace ProjectGCL.APIService.v2
         protected override dynamic ExecuteEngineManual()
         {
             string db_env = BuVO.SqlConnection.Database.Split("_").Last();
-            var _res = DataADO.GetInstant().QueryString<TSP>
-                ("select GroupName as app_name,code as machine from [ACS_GCL_" + db_env + "].[dbo].acs_McMaster where status=1", null, BuVO);
+            string query = $@"select wh.Name as app_name,mcMst.code as machine from 
+                                [ACS_GCL_{db_env}].[dbo].acs_McMaster mcMst inner join
+                                [ACS_GCL_{db_env}].[dbo].act_McObject mcObj on mcMst.ID=mcObj.McMaster_ID inner join
+                                [ACS_GCL_{db_env}].[dbo].acs_Location loc on loc.id=mcObj.Cur_Location_ID inner join
+                                [ACS_GCL_{db_env}].[dbo].acs_Area ar on ar.id=loc.Area_ID inner join
+                                [ACS_GCL_{db_env}].[dbo].acs_Warehouse wh on wh.id=ar.Warehouse_ID
+                                where mcMst.status=1 and mcObj.Status=1 
+                                order by wh.Name,mcMst.Code";
+            //string query = "select GroupName as app_name,code as machine from [ACS_GCL_" + db_env + "].[dbo].acs_McMaster where status=1";
+            var _res = DataADO.GetInstant().QueryString<TSP>(query, null, BuVO);
             TRes res = new TRes();
             res.datas = _res.GroupBy(x => x.app_name)
                 .Select(x => new TRes.TData() { app_name = x.Key, machines = x.Select(y => y.machine).ToArray() })

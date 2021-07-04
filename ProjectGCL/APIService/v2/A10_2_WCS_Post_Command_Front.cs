@@ -27,6 +27,15 @@ namespace ProjectGCL.APIService.v2
         {
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             string db_env = BuVO.SqlConnection.Database.Split("_").Last();
+            string mc_name = (req.command.StartsWith("/") ? req.command.Split(' ')[1] : req.command.Split(' ').First()).ToUpper();
+
+            dynamic mcMst = DataADO.GetInstant().QueryString<dynamic>
+                (@$"select AppName from [ACS_GCL_{db_env}].[dbo].acs_McMaster where code='{mc_name}' ", null, BuVO).FirstOrDefault();
+            if (mcMst == null)
+                throw new Exception($"ไม่พบ Machine '{mc_name}'");
+            string app_name = mcMst.AppName;
+            req.app_name = app_name;
+
             DataADO.GetInstant().QueryString<dynamic>
                 (@$"insert into [ACS_GCL_{db_env}].[dbo].act_McCmdRemote(WmsRefID,AppName,CmdLine,Status,CreateBy,CreateTime)
                     values('{this.Logger.LogRefID}','{req.app_name}','{req.command}',1,99,getdate())", null, BuVO);
@@ -46,7 +55,7 @@ namespace ProjectGCL.APIService.v2
                 else if(res.Status == EntityStatus.DONE && res.Result.StartsWith("OK"))
                     return new TRES__return();
                 count++;
-            } while (count < 4);
+            } while (count < 20);
 
             DataADO.GetInstant().QueryString<dynamic>
                 (@$"update [ACS_GCL_{db_env}].[dbo].act_McCmdRemote 

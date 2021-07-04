@@ -106,7 +106,7 @@ namespace ProjectGCL.WorkerService
                                     locationCode = loc.Code,
                                     lot = doci.Lot,
                                     mode = VirtualMapSTOModeType.REGISTER,
-                                    options = doci.Options,
+                                    options = doci.Options.QryStrSetValue("pa_loc", wq.LocCode),
                                     orderNo = null,
                                     productDate = doci.ProductionDate,
                                     rootID = null,
@@ -128,7 +128,7 @@ namespace ProjectGCL.WorkerService
                                     locationCode = null,
                                     lot = doci.Lot,
                                     mode = VirtualMapSTOModeType.REGISTER,
-                                    options = doci.Options,
+                                    options = doci.Options.QryStrSetValue("pa_loc", wq.LocCode),
                                     orderNo = null,
                                     productDate = doci.ProductionDate,
                                     rootID = bsto.id,
@@ -145,7 +145,6 @@ namespace ProjectGCL.WorkerService
                             psto.ref2 = doci.Ref2;
                             psto.ref3 = doci.Ref3;
                             psto.ref4 = doci.Ref4;
-                            psto.options = psto.options.QryStrSetValue("pa_loc", wq.LocCode);
                             psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
 
                             StorageObjectADO.GetInstant().PutV2(psto, buVO);
@@ -183,6 +182,7 @@ namespace ProjectGCL.WorkerService
                             bsto.areaID = loc.AreaMaster_ID;
                             bsto.parentType = StorageObjectType.LOCATION;
                             bsto.parentID = loc.ID;
+                            bsto.options = bsto.options.QryStrSetValue("pa_loc", wq.LocCode);
                             StorageObjectADO.GetInstant().PutV2(bsto, buVO);
 
                             psto.eventStatus = wq.ActionStatus == EntityStatus.DONE ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_RECEIVING;
