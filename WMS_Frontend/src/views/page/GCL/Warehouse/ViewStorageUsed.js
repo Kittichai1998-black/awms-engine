@@ -207,7 +207,7 @@ const ViewStorageUsed=(props)=>{
                         
                         if(column.id=='location'){
                           return (
-                            <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: '#eaff8b', cursor:'pointer' }} onClick={()=>setShowDetail(row)}>
+                            <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: (Object.keys(row).filter(x=>row[x]!='-').length-1 < 43 ||(Object.keys(row).filter(x=>row[x]!='-').length-1 === 43))? '#eaff8b': '#ff0000', cursor:'pointer' }} onClick={()=>setShowDetail(row)}>
                                 {value}
                             </td>
                           );
