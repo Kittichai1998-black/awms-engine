@@ -206,7 +206,7 @@ const ViewStorageUsed=(props)=>{
                       align="center"
                       style={{ minWidth: 120, backgroundColor:'#DDD',padding:10 }}
                     >
-                      Lock (IN/OUT)
+                      Putawy/Picking
                   </td>
                   <td
                       align="center"
