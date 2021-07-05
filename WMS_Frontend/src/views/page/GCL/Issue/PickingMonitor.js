@@ -16,7 +16,7 @@ const tableHaderColumns = [
   {id: 'wms_doc', label: 'WMS\u00a0Doc', minWidth: 100 },
   {id: 'customer',label: 'Customer', minWidth: 100, },
   {id: 'sku',label: 'Sku', minWidth: 100, },
-  {id: 'grade',label: 'Grade', minWidth: 100},
+  // {id: 'grade',label: 'Grade', minWidth: 100},
   {id: 'lot', label: 'Lot', minWidth: 100},
   {id: 'qty', label: 'Qty', minWidth: 100, align:'right', format: (value) => Number(value.toFixed(3)).toLocaleString('en-US') },
   {id: 'unit', label: 'Unit', minWidth: 50 },
@@ -268,7 +268,7 @@ const AddPickingModal=({open,handleClose,handleSetToast=()=>{},handleOnSuccess=(
           <TextField type="text" margin="dense" id="wms_doc" label="DO" fullWidth required value={wms_doc} onChange={(event)=>setWmsDoc(event.target.value)} helperText={null}/>
           <TextField type="text" margin="dense" id="customer" label="Customer" fullWidth required value={customer} onChange={(event)=>setCustomer(event.target.value)} />
           <TextField type="text" margin="dense" id="sku" label="SKU" fullWidth required value={sku} onChange={(event)=>setSKU(event.target.value)} />
-          <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} />
+          {/* <TextField type="text" margin="dense" id="grade" label="Grade" fullWidth required value={grade} onChange={(event)=>setGrade(event.target.value)} /> */}
           <TextField type="text" margin="dense" id="lot" label="Lot" fullWidth required value={lot} onChange={(event)=>setLot(event.target.value)} />          
           <TextField type="text" margin="dense" id="status" label="Status" fullWidth required value={status} onChange={(event)=>setStatus(event.target.value)} />
           <TextField type="number" margin="dense" id="qty_pick" label="Qty Pick" fullWidth required value={qty_pick} onChange={(event)=>setQtyPick(event.target.value)} />
