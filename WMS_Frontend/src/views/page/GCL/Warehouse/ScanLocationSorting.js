@@ -7,11 +7,16 @@ import Alert from '@material-ui/lab/Alert';
 import GCLService from '../../../../components/function/GCLService'
 import {AddCircleOutline,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save} from '@material-ui/icons'
 
+const dropdownpst=//["OUT > IN","IN > OUT"];
+[  {id: 'OUT > IN', value:'5'},
+   {id: 'IN > OUT', value:'6'}
+];
 
 const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
     {id: 'location', label: 'Location', minWidth: 170 },
     {id: 'result',label: 'Result', minWidth: 170},
+    {id: 'pallets',label: '', minWidth: 100 , align: 'center'},
     {id: 'action',label: ' 🛠 ', minWidth: 100, }
 ];
 let intervalGetSPReportAPI=null
@@ -127,8 +132,9 @@ const ScanLocationSorting=(props)=>{
             label="Sorting from" 
             style={{width:"100%"}}
             value={actionType} onChange={(e)=>setActionType(e.target.value)} >
-            <MenuItem value="5">{"จัดเรียงไปด้านขาออก"}</MenuItem>
-            <MenuItem value="6">{"จัดเรียงไปด้านขารับเข้า"}</MenuItem>            
+              
+            <MenuItem value="5">{"จัดเรียงไปด้านขารับออก"}</MenuItem>
+            <MenuItem value="6">{"จัดเรียงไปด้านขารับเข้า"}</MenuItem>
           </Select>
         </center>
         <div>
@@ -197,6 +203,13 @@ const ScanLocationSorting=(props)=>{
                                     {value.split("T").join("\n").split(".")[0]}
                                 </TableCell>
                               );
+                            }
+                            if(column.id=='pallets'){
+                              return(
+                                <TableCell key={column.id} align={column.align} style={{padding:10}}>
+                                    {value}
+                                </TableCell>
+                              )
                             }
                             return (
                             <TableCell key={column.id} align={column.align} style={{padding:10, overflowWrap: 'anywhere'}}>

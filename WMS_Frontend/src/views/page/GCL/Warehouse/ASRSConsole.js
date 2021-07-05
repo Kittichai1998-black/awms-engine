@@ -9,6 +9,8 @@ import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore
 import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 import * as signalR from '@aspnet/signalr';
 import "../../../../assets/css/TableCustom.css";
+import Container from '@material-ui/core/Container';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
 let intervalGetSPReportAPI=null
@@ -22,8 +24,34 @@ const ASRSConsole=(props)=>{
   const [machineChecked, setMachineChecked] = React.useState({});
   const [machinesList, setMachinesList] = React.useState([]);
   const [cmdHistoryList, setCmdHistoryList] = React.useState([]);
-
+  const [showDatail,setShowDetail]=useState(null);
+  const [open, setOpen] = React.useState(false);
   const textFieldCmd = useRef(null);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
+  function createData(Comm,Name) {
+    return { Comm,Name};
+  }
+
+  const rowsCommand = [
+    createData(1,'เริ่มทำงาน'),
+    createData(2, 'กลับHome(เฉพาะSRM Inbound)'),
+    createData(3, 'ทำงานคำสั่งล่าสุด'),
+    createData(4, 'สลับทิศทางคำสั่งล่าสุด'),
+    createData(5, 'อ่านข้อมูลPallet ID'),
+    createData(7, 'ยกเลิกคำสั่งปัจจุบัน'),
+    createData(8, 'Reset ระบบ'),
+    createData(9, 'Clear Alarm (Status 100ขึ้นไป)'),
+    createData(10, 'ไปตำแหน่งต้นทาง (Surwayแบบไม่ยื่นอาร์ม)'),
+    createData(11, 'เริ่มทำงาน (ไม่สนใจBarcode)'),
+  ];
 
   useEffect(() => {
     loadAppName()
@@ -128,6 +156,7 @@ const ASRSConsole=(props)=>{
   }
 
   return (<>
+  <Container maxWidth="xl">
     <Grid container spacing={1} style={{marginTop:10}}>
       <Grid item xs={2}>
         <Paper elevation={3} style={{width: '100%',height:'100%', padding:10}}>
@@ -137,7 +166,7 @@ const ASRSConsole=(props)=>{
       </Grid>
     
       <Grid item xs={10}>
-        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10,overflowY:"scroll", maxHeight:350}}>
+        <Paper elevation={3} style={{width: '100%',height: 400, padding:10,overflowY:"scroll", maxHeight:400}}>
           {isLoading && <center><CircularProgress color='primary' size={50} style={{position: 'absolute'}}/></center>}
           {machinesList.length>0 ?
           <TableContainer className="tableCustom">
@@ -150,6 +179,7 @@ const ASRSConsole=(props)=>{
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg1</TableCell>
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg2</TableCell>
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg3</TableCell>
+                  {/* <TableCell style={{padding:"5px 10px",color: '#888'}}>Control</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -161,6 +191,13 @@ const ASRSConsole=(props)=>{
                     <TableCell>{machine.arg1}</TableCell>
                     <TableCell>{machine.arg2}</TableCell>
                     <TableCell>{machine.arg3}</TableCell>
+                    {/* <TableCell>
+                      <Button variant="contained"
+                          color="primary"
+                          size="medium"
+                          onClick={handleClickOpen}
+                          >Guide</Button>
+                    </TableCell> */}
                   </TableRow>
                 )}                
               </TableBody>
@@ -168,12 +205,41 @@ const ASRSConsole=(props)=>{
           </TableContainer>
           : <Alert severity='info'>Please select machine</Alert>}
         </Paper>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="from-dialog-title" maxWidth='xl'>
+          <DialogTitle id="alert-dialog-title"><center><b>{"Control Machine"}</b></center></DialogTitle>
+            <DialogContent>
+              <TableContainer className="tableCustom" cellSpacing={1}>
+              
+              <Table>
+                <TableHead style={{backgroundColor:'#77ACF1'}}>
+                  <TableRow>
+                    <TableCell style={{padding:"5px 10px"}}>Machine</TableCell>
+                    <TableCell style={{padding:"5px 10px"}}><center>Comm</center></TableCell>
+                    <TableCell style={{padding:"5px 10px"}}><center>Name</center></TableCell>
+                  </TableRow>
+                </TableHead>
+                {/* {machinesList.map((machine) =>
+                <TableBody>
+                   {rowsCommand.map((row) =>
+                    <TableRow style={{cursor:'pointer'}}>
+                      <TableCell>{machine.machine}</TableCell>
+                      <TableCell>{row.Comm}</TableCell>
+                      <TableCell>{row.Name}</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+                )} */}
+              </Table>
+              
+            </TableContainer>
+            </DialogContent>
+      </Dialog>
       </Grid>
     </Grid>
-
-    <Grid container spacing={1}>
+                   
+    <Grid container spacing={1} style={{marginTop:10}}>
       <Grid item xs={2}>
-        <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, overflowY:"scroll", maxHeight:400}}>
+        <Paper elevation={3} style={{width: '100%',height: '100%', padding:10, overflowY:"scroll", maxHeight:270}}>
           <p>🧿 Machine Name</p>
           {appNameSelect?.machines?.map((item,key)=>
             <FormControlLabel
@@ -230,6 +296,7 @@ const ASRSConsole=(props)=>{
         }
       </Grid>
     </Grid>
+    </Container>
   </>)
 }
 
