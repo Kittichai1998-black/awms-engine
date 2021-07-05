@@ -226,11 +226,9 @@ const ViewStorageUsed=(props)=>{
                         const value = row[column.id];
                         if(column.id=='location'){
                           return (
-                            <>
                               <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere', backgroundColor: (value.isOutLock||value.isInLock?'#ffa9b1':'#eaff8b'), cursor:'pointer' }} onClick={()=>setShowDetail(row)}>
                                   {value.val}
                               </td>
-                            </>
                           );
                         }
                         if(column.id=='count'){
@@ -306,15 +304,15 @@ const ViewStorageUsed=(props)=>{
           {/* <IconButton style={{position:"absolute",top:-5, right:0}} size='medium' variant="contained" onClick={()=>{setShowDetail(null)}} component="span" color="secondary">
               <CloseSharp/>
           </IconButton> */}
-          <DialogTitle style={{borderBottom:'1px solid #AAA'}}><center><b>{showDatail&& showDatail['location']}</b></center></DialogTitle>
+          <DialogTitle style={{borderBottom:'1px solid #AAA'}}><center><b>{showDatail&& showDatail['location'].val}</b></center></DialogTitle>
           <DialogContent>
               <table className='' cellSpacing={1} width='100%'>
                 {tableHaderColumns.filter(v=>v.id!='location'&&v.id!='action'&&v.id!='sum').map((column) => 
                   <tr style={{borderBottom:'0.1px solid #CCC'}}>
                     <td align='right' style={{padding:'2px 10px'}}>{column.id}</td>
                     {/* <td align='center'> <b>{'\u00a0\u00a0\u00a0|\u00a0\u00a0\u00a0'}</b> </td> */}
-                    <td align='left' style={{padding:'2px 10px',backgroundColor:(showDatail&& showDatail[column.id]=="-"||showDatail&& showDatail[column.id]==""||showDatail&& showDatail[column.id]==null)? '#FFF' : '#7E7EFF' }}>
-                      {showDatail&& showDatail[column.id]}
+                    <td align='left' style={{padding:'2px 10px',backgroundColor:(!showDatail || !showDatail[column.id] || showDatail[column.id].val=="" || showDatail[column.id].val=="-" || showDatail[column.id].val==null)? '#FFF' : '#7E7EFF' }}>
+                      {showDatail&&showDatail[column.id]&& showDatail[column.id].val}
                       </td>
                   </tr>
                 )}

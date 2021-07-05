@@ -90,6 +90,7 @@ namespace ProjectGCL.Engine.v2
                     amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject()
                     {
                         DocumentItem_ID = doci.doci_id,
+                        DocumentType_ID = DocumentTypeID.PICKING,
                         Sou_StorageObject_ID = pallet.psto_id,
                         Des_StorageObject_ID = pallet.psto_id,
                         IsLastSeq = true,
