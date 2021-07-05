@@ -179,7 +179,7 @@ const ASRSConsole=(props)=>{
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg1</TableCell>
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg2</TableCell>
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg3</TableCell>
-                  <TableCell style={{padding:"5px 10px",color: '#888'}}>Control</TableCell>
+                  {/* <TableCell style={{padding:"5px 10px",color: '#888'}}>Control</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -191,13 +191,13 @@ const ASRSConsole=(props)=>{
                     <TableCell>{machine.arg1}</TableCell>
                     <TableCell>{machine.arg2}</TableCell>
                     <TableCell>{machine.arg3}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Button variant="contained"
                           color="primary"
                           size="medium"
                           onClick={handleClickOpen}
-                          >KEY</Button>
-                    </TableCell>
+                          >Guide</Button>
+                    </TableCell> */}
                   </TableRow>
                 )}                
               </TableBody>
@@ -218,7 +218,7 @@ const ASRSConsole=(props)=>{
                     <TableCell style={{padding:"5px 10px"}}><center>Name</center></TableCell>
                   </TableRow>
                 </TableHead>
-                {machinesList.map((machine) =>
+                {/* {machinesList.map((machine) =>
                 <TableBody>
                    {rowsCommand.map((row) =>
                     <TableRow style={{cursor:'pointer'}}>
@@ -228,7 +228,7 @@ const ASRSConsole=(props)=>{
                     </TableRow>
                   )}
                 </TableBody>
-                )}
+                )} */}
               </Table>
               
             </TableContainer>
