@@ -84,7 +84,7 @@ const DailySTOSumIssue = (props) => {
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         { Header: 'Grade', accessor: 'Ref1', width:100, sortable: false},
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
-        { Header: 'Doc.WMS', accessor: 'Ref2', width: 100, sortable: false, },
+        { Header: 'Doc.WMS', accessor: 'docWMS', width: 100, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docWMS)},
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
@@ -128,7 +128,7 @@ const DailySTOSumIssue = (props) => {
             });
             return (
                 <div style={{ display: "flex", maxWidth: '160px' }}><label className={classes.textNowrap}>{data}</label>
-                    <AmRediRectInfo type={"dialog"} bodyDialog={datashow} titleDialog="List of Document No." />
+                    <AmRediRectInfo type={"dialog"} bodyDialog={datashow} titleDialog="List of Document" />
                 </div>
             )
         } else {

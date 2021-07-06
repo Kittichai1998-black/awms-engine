@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import AmDashboardChart from '../../pageComponent/AmDashboardChart/AmDashboardChart';
- 
+import { useTranslation } from 'react-i18next'
+
+
 const ChartJS = (props) => {
+  const { t } = useTranslation();
   const chartConfigs = [
+    
     // [
     //   {
     //     type: 'pie',
@@ -15,15 +19,15 @@ const ChartJS = (props) => {
     //     spname: 'DASHBOARD_CHART_PIE_ISSUE',
     //   },
     // ],
-    [
+    [ 
       {
         type: 'bar',
-        title: "The Statistics of Throughput by Hourly",
+        title: t("The Statistics of Throughput by Hourly"),
         spname: 'DASHBOARD_CHART_THROUGHPUT_HOUR',
       },
       {
         type: 'bar',
-        title: "The Statistics of Throughput by Daily",
+        title: t("The Statistics of Throughput by Daily"),
         spname: 'DASHBOARD_CHART_THROUGHPUT_DAY',
       }
     ]
