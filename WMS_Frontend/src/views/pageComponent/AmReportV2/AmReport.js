@@ -95,7 +95,7 @@ const AmReport = props => {
       if (res) {
         if (res.data._result.status !== 0) {
           setDataSource(res.data.datas)
-          setCount(res.data.datas[0] ? res.data.datas[0].totalRecord : 0)
+          setCount(res.data.counts,res.data.datas[0] ? res.data.datas[0].totalRecord : 0)
         }
       }
     });

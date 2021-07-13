@@ -2,10 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
 import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress } from '@material-ui/core';
-import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
+import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment,MenuItem,Select } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import GCLService from '../../../../components/function/GCLService'
 import {AddCircleOutline,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save} from '@material-ui/icons'
+
+const dropdownpst=//["OUT > IN","IN > OUT"];
+[  {id: 'OUT > IN', value:'7'},
+   {id: 'IN > OUT', value:'8'}
+];
 
 const tableHaderColumns = [
     {id: 'time', label: 'Time', minWidth: 120, align: 'center'},
@@ -28,6 +33,7 @@ const ScanLocationCounting=(props)=>{
   const [shuttle,setShuttle]=useState(props.shuttle || "");
 
   const textFieldForGateCode = useRef(null);
+  const [actionType,setActionType]=useState(7);
 
   useEffect(() => {
     textFieldForGateCode.current.focus()
@@ -109,6 +115,18 @@ const ScanLocationCounting=(props)=>{
   return (
     <Paper elevation={0} style={{width: '100%',height:'100%', padding:10}}>
     <Paper elevation={0} style={{width: '100%',margin:'auto',marginBottom:25,maxWidth:800,padding:20}}>
+        <center>
+          <Select 
+            labepd="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Sorting from" 
+            style={{width:"100%"}}
+            value={actionType} onChange={(e)=>setActionType(e.target.value)} >
+              
+            <MenuItem value="7">{"ด้านหน้าไปด้านหลัง"}</MenuItem>
+            <MenuItem value="8">{"ด้านหลังไปด้านหน้า"}</MenuItem>
+          </Select>
+        </center>
         <div>
             <TextField 
                 style={{marginBottom:20}}

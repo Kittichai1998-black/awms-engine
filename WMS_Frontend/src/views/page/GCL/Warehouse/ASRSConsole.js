@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, } from "react";
 import Axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
 import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TextField,TableRow,Snackbar,CircularProgress,Grid,FormControlLabel } from '@material-ui/core';
 import {Button,IconButton, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment,Checkbox } from '@material-ui/core';
 import {Alert, TreeView, TreeItem} from '@material-ui/lab';
 import GCLService from '../../../../components/function/GCLService'
-import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style} from '@material-ui/icons'
+import {Sort,CloseSharp,BrightnessHigh,CheckCircleOutlineRounded,Save,ExpandMore, ChevronRight, Style, EmojiFoodBeverageOutlined} from '@material-ui/icons'
 import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 import * as signalR from '@aspnet/signalr';
 import "../../../../assets/css/TableCustom.css";
 import Container from '@material-ui/core/Container';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
+import ViewListIcon from '@material-ui/icons/ViewList';
+import { withStyles } from "@material-ui/core/styles";
+import { object } from "prop-types";
 
 let intervalGetSPReportAPI=null
 const ASRSConsole=(props)=>{
@@ -24,14 +25,25 @@ const ASRSConsole=(props)=>{
   const [machineChecked, setMachineChecked] = React.useState({});
   const [machinesList, setMachinesList] = React.useState([]);
   const [cmdHistoryList, setCmdHistoryList] = React.useState([]);
-  const [showDatail,setShowDetail]=useState(null);
+  const [results, setResults] = useState("");
+  // const [clear, setClear] = useState()
   const [open, setOpen] = React.useState(false);
+  const [openadd,setOpenAdd] = React.useState(false);
   const textFieldCmd = useRef(null);
 
   const handleClickOpen = () => {
     setOpen(true);
+    setResults("");
   };
 
+  const handleClickadd = (event) => {
+    setOpenAdd(true);
+    setResults(event.target.textContent);
+    console.log(event.target.textContent);
+  }
+  const handleCloseadd = () => {
+    setOpenAdd(false);
+  }
   const handleClose = () => {
     setOpen(false);
   };
@@ -40,7 +52,7 @@ const ASRSConsole=(props)=>{
     return { Comm,Name};
   }
 
-  const rowsCommand = [
+  const rowsCommandSRM = [
     createData(1,'เริ่มทำงาน'),
     createData(2, 'กลับHome(เฉพาะSRM Inbound)'),
     createData(3, 'ทำงานคำสั่งล่าสุด'),
@@ -52,6 +64,25 @@ const ASRSConsole=(props)=>{
     createData(10, 'ไปตำแหน่งต้นทาง (Surwayแบบไม่ยื่นอาร์ม)'),
     createData(11, 'เริ่มทำงาน (ไม่สนใจBarcode)'),
   ];
+
+  const rowCommandSHU = [
+    createData(1,'เริ่มทำงาน'),                                createData(2, 'Home Inbound'),
+    createData(3, 'ทำงานคำสั่งล่าสุด'),                         createData(7, 'ยกเลิกคำสั่งปัจจุบันของชัทเทิล'),
+    createData(9, 'Clear Alarm (Status 100ขึ้นไป)'),          createData(12, 'Home Outbound'),
+    createData(55, 'รับเข้าพาเลทจากInbound'),                 createData(56,'รับเข้าพาเลทจากOutbound'),
+    createData(57, 'เบิกสินค้าไปยังStandby Inbound'),           createData(58, 'เบิกสินค้าไปยังStandby Outbound'),                  
+    createData(60, 'ปิดการสั่งงาน(เบิก/รับเข้า)'),                createData(62,'ชัทเทิลวิ่งไปStandby Inbound'),        
+    createData(63, 'จัดตำแหน่งพาเลทไปยังฝั่ง Inbound'),         createData(64, 'จัดตำแหน่งพาเลทไปยังฝั่ง Outbound'),          
+    createData(72, 'ชัทเทิลวิ่งไปStandby Outbound'),            createData(90, 'หยุดชัทเทิลทันที'),                         
+    createData(99, 'ยืนยันจบการทำงานให้ชัทเทิล'),
+
+  ];
+  const { classes } = props;
+  const [souloc,setSouLoc]=useState("")
+  const [desloc,setDesLoc]=useState("")
+  const [unit,setUnit]=useState("")
+  const [palletid,setPalletID]=useState("")
+  const [weigh,setWeigh]=useState("")
 
   useEffect(() => {
     loadAppName()
@@ -139,6 +170,20 @@ const ASRSConsole=(props)=>{
     setMachineChecked({ ...machineChecked, [event.target.name]: event.target.checked });
   };
 
+  const onChange = (event) => {
+    setResults(event.target.value);
+    setSouLoc(event.target.value);
+    setDesLoc(event.target.value);
+    setUnit(event.target.value);
+    setPalletID(event.target.value);
+    setWeigh(event.target.value);
+  }
+
+  const handleCellClick = (event) => {
+    setResults(event.target.textContent);
+    console.log(event.target.textContent);
+  };
+
   const onPostCmd=()=>{
     if(!appNameSelect || !appNameSelect.app_name || !textFieldCmd.current.value) return;
     setIsCmdLoading(true)
@@ -179,7 +224,7 @@ const ASRSConsole=(props)=>{
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg1</TableCell>
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg2</TableCell>
                   <TableCell style={{padding:"5px 10px",color: '#888'}}>Arg3</TableCell>
-                  {/* <TableCell style={{padding:"5px 10px",color: '#888'}}>Control</TableCell> */}
+                  <TableCell style={{padding:"5px 10px",color: '#888'}}>Control</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -191,13 +236,13 @@ const ASRSConsole=(props)=>{
                     <TableCell>{machine.arg1}</TableCell>
                     <TableCell>{machine.arg2}</TableCell>
                     <TableCell>{machine.arg3}</TableCell>
-                    {/* <TableCell>
+                    <TableCell>
                       <Button variant="contained"
                           color="primary"
                           size="medium"
-                          onClick={handleClickOpen}
-                          >Guide</Button>
-                    </TableCell> */}
+                          onClick={()=>handleClickOpen(machine.machine)}
+                          ><ViewListIcon></ViewListIcon></Button>
+                    </TableCell>
                   </TableRow>
                 )}                
               </TableBody>
@@ -211,29 +256,90 @@ const ASRSConsole=(props)=>{
               <TableContainer className="tableCustom" cellSpacing={1}>
               
               <Table>
-                <TableHead style={{backgroundColor:'#77ACF1'}}>
+                <TableHead style={{backgroundColor:'#77ACF4'}}>
                   <TableRow>
-                    <TableCell style={{padding:"5px 10px"}}>Machine</TableCell>
-                    <TableCell style={{padding:"5px 10px"}}><center>Comm</center></TableCell>
+                    <TableCell style={{padding:"5px 10px"}}>Machine&Command</TableCell>
                     <TableCell style={{padding:"5px 10px"}}><center>Name</center></TableCell>
                   </TableRow>
                 </TableHead>
-                {/* {machinesList.map((machine) =>
-                <TableBody>
-                   {rowsCommand.map((row) =>
-                    <TableRow style={{cursor:'pointer'}}>
-                      <TableCell>{machine.machine}</TableCell>
-                      <TableCell>{row.Comm}</TableCell>
-                      <TableCell>{row.Name}</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-                )} */}
+                
+                
+                {machinesList.map((machine,index) => {
+                  const Item = machine.machine.slice(0,3);
+                  
+                  return (<TableBody style={{cursor:'pointer'}} key={index} variant="outlined">
+                    {rowsCommandSRM.map((row,key) => {
+                      const Command = row.Comm;
+                    if(Item == "SRM" && Command == 1 ||Item == "SRM" && Command == 2 ||Item == "SRM" && Command == 10){
+                      return(
+                        <TableRow hover key={key} onClick={handleClose}>
+                          <TableCell onClick={handleClickadd}>
+                            {machine.machine}&nbsp;{row.Comm}
+                          </TableCell>
+                          <TableCell>
+                            {row.Name}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    } else {
+                      return(
+                        <TableRow hover key={key} onClick={handleClose}>
+                          <TableCell onClick={handleCellClick}>
+                            {machine.machine}&nbsp;{row.Comm}
+                          </TableCell>
+                          <TableCell>
+                            {row.Name}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                      // console.log(Item)
+                    }
+                      )}
+                      {rowCommandSHU.map((row,key) => {
+                    if(Item == "SHU"){
+                      return(
+                        <TableRow hover key={key} onClick={handleClose}>
+                          <TableCell onClick={handleClickadd}>
+                            {machine.machine}&nbsp;{row.Comm}
+                          </TableCell>
+                          <TableCell>
+                            {row.Name}
+                          </TableCell>
+                        </TableRow>
+                      );
+                      }
+                      // console.log(Item)
+                    }
+                      )}
+                      
+                      </TableBody>
+                    );
+                    })}
+                
               </Table>
-              
             </TableContainer>
             </DialogContent>
-      </Dialog>
+          </Dialog>
+          <Dialog open={openadd} onClose={handleCloseadd} aria-labelledby="form-dialog-title" maxWidth='lg'>
+            <DialogTitle id="form-dialog-title"><center>Add Command</center></DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  ระหว่างคำสั่งที่ 1, 2, 10 จำเป็นต้องเซตคำสั่งเพิ่มเติม
+                </DialogContentText>
+                  <TextField type="text" margin="dense" value={results} style={{width:"150px",paddingRight: "20px",paddingTop:"16px"}} onChange={(event)=>setResults(event.target.value)}/>
+                  <TextField type="text" margin="dense" label="Souloc" style={{width:"150px",paddingRight: "20px"}}  onChange={(event)=>setSouLoc(event.target.value)}/>
+                  <TextField type="text" margin="dense" label="Desloc" style={{width:"150px",paddingRight: "20px"}}  onChange={(event)=>setDesLoc(event.target.value)}/>
+                  <TextField type="text" margin="dense" label="Unit"   style={{width:"150px", paddingRight: "20px",}} onChange={(event)=>setUnit(event.target.value)}/>
+                  <TextField type="text" margin="dense" label="Palletid"  style={{width:"150px",paddingRight: "20px"}} onChange={(event)=>setPalletID(event.target.value)}/>
+                  <TextField type="text" margin="dense" label="Weigh" defaultValue="1500" style={{width:"150px", paddingRight: "20px"}} value={weigh} onChange={(event)=>setWeigh(event.target.value)}/>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={onChange} color='#fff' style={{backgroundColor:'#2979ff'}}>
+                  Submit
+                </Button>
+              </DialogActions>
+          </Dialog>
       </Grid>
     </Grid>
                    
@@ -271,15 +377,20 @@ const ASRSConsole=(props)=>{
             <div style={{flex:10,marginRight:5}}>
               <TextField
                 // label="Command"
+                value={results}
                 fullWidth
                 placeholder="Enter your command"
                 inputRef={textFieldCmd}
+                onChange={onChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <OfflineBoltIcon />
                     </InputAdornment>
-                )}}
+                    
+                ),
+                disableUnderline: true,
+              }}
                 disabled={isCmdLoading || !appNameSelect || !appNameSelect.app_name}
                 onKeyPress={(event)=>{if(event.key === "Enter")onPostCmd()}}
               />
@@ -291,7 +402,7 @@ const ASRSConsole=(props)=>{
         <Snackbar anchorOrigin={{ vertical:'top', horizontal:'center' }} open={toast.open} autoHideDuration={5000} onClose={()=>setToast({msg:"",open:false,type:""})}>
           <Alert elevation={6} variant="filled" onClose={()=>setToast({msg:"",open:false,type:""})} severity={toast.type}>
             {toast.msg}
-          </Alert>
+          </Alert> 
         </Snackbar>
         }
       </Grid>

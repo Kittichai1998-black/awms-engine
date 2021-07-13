@@ -251,8 +251,8 @@ const ViewStorageUsed=(props)=>{
                                 {row.location.isOutLock?<LockRoundedIcon/>:<LockOpenRoundedIcon/>}</Button>
                               </td>
                               <td key={column.id} align={column.align} style={{overflowWrap: 'anywhere',backgroundColor:'#DDD'}}>
-                                  <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location.val);}} style={{margin:2.5}}><Style /> count</Button>
-                                  <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location.val);}} style={{margin:2.5}}><Sort/> sort</Button>
+                                  <Button variant="contained" color="primary" size="small" onClick={()=>{setIsOpenCountingModal(true);setInputLocation(row.location.val.split("(")[0]);}} style={{margin:2.5}}><Style /> count</Button>
+                                  <Button variant="contained" color="secondary" size="small" onClick={()=>{setIsOpenSortingModal(true);setInputLocation(row.location.val.split("(")[0]);}} style={{margin:2.5}}><Sort/> sort</Button>
                               </td>
                             </>
                           );
