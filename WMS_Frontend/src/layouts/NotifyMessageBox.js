@@ -27,7 +27,7 @@ const NotifyBox = React.memo(({notify}) => {
     </div>
   ));
   const reCreateItems = notify.notifyList.map(x=> {return {label:
-        <div style={{cursor:"pointer", fontSize:"14px",width:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace: "nowrap"}}><label style={{fontWeight:"bold", margin:0}}>{x.Title} : </label>{x.Message}</div>
+        <div style={{cursor:"pointer", fontSize:"14px",width:"300px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace: "nowrap"}}><label style={{fontWeight:"bold", margin:0}}>{x.Title} : </label>{x.Message}</div>
         , action:() => {
         notify.setNotifyState(false)
       }, selectable:true
@@ -35,7 +35,7 @@ const NotifyBox = React.memo(({notify}) => {
   });
   reCreateItems.push({label:"", action:() => {}, divider:true})
   reCreateItems.push({label:
-      <div><label style={{fontWeight:"bold", margin:0}}><Link to={"/Notify"}>More...</Link></label></div>
+      <div><label style={{fontWeight:"bold", margin:0}}><Link to={"/report/notifydaily"}>More...</Link></label></div>
       , action:() => {notify.setNotifyState(false)}
   })
   return <AmDropdownMenu customToggle={customToggleBTN} title={<div><NotificationsIcon /></div>} 

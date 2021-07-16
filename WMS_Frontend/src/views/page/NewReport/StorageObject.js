@@ -115,7 +115,7 @@ const StorageObject = props => {
     {
       width: 60,
       accessor: "",
-      Header: "Log ",
+      Header: "Log",
       filterable: false,
       Cell: e => getRedirectLog(e.original)
     }
@@ -264,7 +264,7 @@ const StorageObject = props => {
         dataRemark={columns}
         export={false}
         multi={true}
-        action={false}
+        // action={false}
 
       />
     </>

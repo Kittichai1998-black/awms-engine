@@ -199,7 +199,7 @@ const AmTable = props => {
           ...row,
           getFooterProps: () => ({
             style: {
-              backgroundColor: "#c8ced3"
+              backgroundColor: "##eceff1"
             }
           })
         };

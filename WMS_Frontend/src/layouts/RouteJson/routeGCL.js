@@ -73,6 +73,11 @@ const WCS_Log = Loadable({
   loader: () => import("../../views/page/NewReport/WCS_Log"),
   loading: Loading
 });
+
+const NotifyDaily = Loadable({
+  loader: () => import("../../views/page/NewReport/NotifyDaily"),
+  loading: Loading
+});
 // const GR_Detail = Loadable({
 //   loader: () => import("../../views/page/GCL/Recive/GR_Detail"),
 //   loading: Loading
@@ -138,6 +143,7 @@ const routes = [
   { path: "/receive/registsht", name: "regis SH", compoment: RegistShuttle, exact: true, child: true },
   { path: "/monitor/wcs_queue", name: "wcs_queue", compoment: WCS_Queue, exact: true, child: true },
   { path: "/report/wcs_log", name: "wcs_log", compoment: WCS_Log, exact: true, child: true },
+  { path: "/report/notifydaily", name: "notifydaily", compoment: NotifyDaily, exact: true, child: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/search", name: "GR Search", compoment: GR_Search, exact: true },

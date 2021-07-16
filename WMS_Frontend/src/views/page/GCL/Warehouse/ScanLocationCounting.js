@@ -123,8 +123,8 @@ const ScanLocationCounting=(props)=>{
             style={{width:"100%"}}
             value={actionType} onChange={(e)=>setActionType(e.target.value)} >
               
-            <MenuItem value="7">{"ด้านหน้าไปด้านหลัง"}</MenuItem>
-            <MenuItem value="8">{"ด้านหลังไปด้านหน้า"}</MenuItem>
+            <MenuItem value="7">{"หน้าไปหลัง"}</MenuItem>
+            <MenuItem value="8">{"หลังไปหน้า"}</MenuItem>
           </Select>
         </center>
         <div>

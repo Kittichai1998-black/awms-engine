@@ -219,7 +219,7 @@ const StorageObject = props => {
         dataRemark={columns}
         export={false}
         multi={true}
-        action={true}
+        // action={true}
       />
     </div>
   );
