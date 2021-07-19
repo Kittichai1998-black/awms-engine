@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Axios from "axios";
-import { makeStyles } from '@material-ui/core/styles';
+// import { makeStyles } from '@material-ui/core/styles';
 import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,Snackbar,CircularProgress } from '@material-ui/core';
-import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
+// import {Button,TextField, Dialog, DialogActions,DialogContent,DialogContentText,DialogTitle,InputAdornment } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import GCLService from '../../../components/function/GCLService'
-import {AddCircleOutline,CloseSharp,BrightnessHigh,Extension,Save} from '@material-ui/icons'
+// import GCLService from '../../../components/function/GCLService'
+// import {AddCircleOutline,CloseSharp,BrightnessHigh,Extension,Save} from '@material-ui/icons'
 
 const tableHaderColumns = [
     {id: 'CreateTime', label: 'Time', minWidth: 120, align: 'center'},
@@ -18,7 +18,7 @@ const NotifyDaily=(props)=>{
   const [dataTable, setDataTable] = useState([]);
   const [isLoadingdataTable, setIsLoadingdataTable] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [toast,setToast] = useState({msg:null,open:false,type:null});
 
   useEffect(() => {

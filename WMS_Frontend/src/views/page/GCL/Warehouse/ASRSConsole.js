@@ -370,7 +370,7 @@ const ASRSConsole=(props)=>{
         </Paper>
       </Grid>
     
-      <Grid item xs={10} style={{maxHeight:200, height:200}}>
+      <Grid item xs={10}>
         <Paper elevation={3} style={{width: '100%',height:'100%', padding:10, display:'flex', flexDirection:'column',justifyContent:'flex-end'}}>
           <div style={{height:'auto',width:'100%',flex:'none',marginBottom:10,overflowY:"scroll", maxHeight:120}}>
               {cmdHistoryList.map((item,key)=> 

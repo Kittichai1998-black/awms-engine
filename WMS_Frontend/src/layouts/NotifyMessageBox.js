@@ -6,6 +6,7 @@ import * as signalR from '@aspnet/signalr';
 import AmDropdownMenu from "../components/AmDropDownMenu";
 import Axios from "axios";
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import Badge from '@material-ui/core/Badge';
 
 const useStyles = makeStyles((theme) => ({
     grow: {

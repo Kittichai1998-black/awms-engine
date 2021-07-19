@@ -20,6 +20,7 @@ import { Redirect } from 'react-router-dom';
 import NotifyBox from "./NotifyMessageBox";
 import AmDropdownMenu from "../components/AmDropDownMenu";
 
+
 const drawerWidth = 240;
 
 const divLingLogo = {
@@ -325,18 +326,7 @@ const HeaderLayout = (props) => {
           </div>
           <div className={classes.grow} />
           <div style={{display:"flex"}}>
-            <NotifyBox
-              // data={data}
-              storageKey='notific_key'
-              notific_key='timestamp'
-              notific_value='update'
-              heading='Notification Alerts'
-              sortedByKey={false}
-              showDate={true}
-              size={64}
-              color="yellow"
-              // markAsReadFn={() => yourOwnFunctionHandler()}
-              />
+            <NotifyBox/>
             {renderMenu([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}], "lang", <label style={{cursor:"pointer",margin:"0",serSelect:"none"}}>{localStorage.getItem("Lang")}</label>)}
             {renderMenu([{label:"Logout", onClick:()=> handleLogout()}], "user", <label style={{cursor:"pointer",margin:"0",serSelect:"none"}}><AccountCircle />{localStorage.getItem('Username')}</label>)}
           </div>
